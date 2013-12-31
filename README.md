@@ -52,7 +52,7 @@ select new { lake, fishes = lake.Fishes() }
 
 Download
 --
-- [CsvLINQPadDriver.lpx](http://???)
+- [CsvLINQPadDriver.lpx](https://github.com/dobrou/CsvLINQPadDriver/releases)
 
 Prerequisites
 --
@@ -108,7 +108,7 @@ Known Issues / TODO
 
 Author
 --
-- Martin Dobroucký (dobrou@gmail.com)
+- Martin Dobrouckï¿½ (dobrou@gmail.com)
 
 Credits
 --
