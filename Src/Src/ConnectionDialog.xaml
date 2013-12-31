@@ -1,0 +1,40 @@
+﻿<Window x:Class="CsvLINQPadDriver.ConnectionDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Title="CSV files"
+    SizeToContent="Height"
+    Width="500" WindowStartupLocation="CenterOwner" Height="Auto">
+    <StackPanel Margin="7" Height="Auto">
+
+        <Label Padding="0,0,0,3" Focusable="False" Content="CSV Files (drag&amp;drop or type one file/directory per line):"/>
+        <TextBox 
+            AcceptsReturn="True" 
+            Height="Auto" 
+            MaxHeight="600px"
+            HorizontalScrollBarVisibility="Auto"
+            VerticalScrollBarVisibility="Auto"
+            Text="{Binding Files, UpdateSourceTrigger=PropertyChanged}" 
+            ToolTip="CSV Files. Drag&amp;Drop or type one file per line. Support mask '*.csv' or recursive '**.csv'."
+            AllowDrop="True"
+            PreviewDragEnter="TextBox_DragEnter" 
+            PreviewDragOver="TextBox_DragEnter" 
+            PreviewDrop="TextBox_DragDrop" 
+        />
+
+        <DockPanel>
+            <Label Padding="0,0,0,3" Content="CSV separator (autodetect if empty): "/>
+            <TextBox MaxLength="1" MaxLines="1" Text="{Binding CsvSeparator}" ToolTip="Character used to separate columns in csv file. If empty, separator is autodetected for each file."/>
+        </DockPanel>
+   
+        <CheckBox IsChecked="{Binding DetectRelations}" ToolTip="If checked, relations between csv files/tables will be detected and created. (Based on files and column names.)">Detect relations</CheckBox>
+        <CheckBox IsChecked="{Binding IgnoreInvalidFiles}" ToolTip="If checked, files with suspicious format will be ignored. (Only one column, variable count of columns in rows...)">Ignore files with invalid format</CheckBox>
+        <CheckBox IsChecked="{Binding DebugInfo}" ToolTip="Show/hide additional driver debug info.">Debug info</CheckBox>
+        <CheckBox IsChecked="{Binding Persist}">Remember this connection</CheckBox>
+
+        <DockPanel LastChildFill="False" Margin="0,8,0,0">
+            <Button Name="btnCancel" DockPanel.Dock="Right" Content="Cancel" Margin="5,0,0,0" Padding="8,3" MinWidth="60" IsCancel="True" />
+            <Button Name="btnOK" DockPanel.Dock="Right" Content="OK" Margin="5,0,0,0" Padding="8,3" MinWidth="60" IsDefault="True" Click="btnOK_Click" />
+        </DockPanel>
+
+    </StackPanel>    
+</Window>

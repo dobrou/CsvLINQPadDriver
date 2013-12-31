@@ -1,0 +1,103 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{551CE65D-8945-43E4-B5B3-9EE058971524}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>CsvLINQPadDriver</RootNamespace>
+    <AssemblyName>CsvLINQPadDriver</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>CsvLINQPadDriver.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="CsvHelper">
+      <HintPath>packages\CsvHelper.2.3.0\lib\net40-client\CsvHelper.dll</HintPath>
+    </Reference>
+    <Reference Include="LINQPad">
+      <HintPath>C:\Program Files (x86)\LINQPad4\LINQPad.exe</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xaml" />
+    <Reference Include="System.XML" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="CsvLINQPadDriver.snk" />
+    <None Include="DevDeploy.bat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <Compile Include="Src\CodeGen\CsvCSharpCodeGenerator.cs" />
+    <Compile Include="Src\CodeGen\CsvDataContextBase.cs" />
+    <Compile Include="Src\CodeGen\CsvRowMappingBase.cs" />
+    <Compile Include="Src\ConnectionDialog.xaml.cs">
+      <DependentUpon>ConnectionDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Src\DataModel\CsvDataModelGenerator.cs" />
+    <Compile Include="Src\CodeGen\CsvRowBase.cs" />
+    <Compile Include="Src\CodeGen\CsvTableBase.cs" />
+    <Compile Include="Src\CsvDataContextDriver.cs" />
+    <Compile Include="Src\CsvDataContextDriverProperties.cs" />
+    <Compile Include="Src\Helpers\LazyEnumerable.cs" />
+    <Compile Include="Src\Helpers\Logger.cs" />
+    <Compile Include="Src\Helpers\StringExtensions.cs" />
+    <Compile Include="Src\DataModel\CsvColumn.cs" />
+    <Compile Include="Src\DataModel\CsvDatabase.cs" />
+    <Compile Include="Src\DataModel\CsvRelation.cs" />
+    <Compile Include="Src\DataModel\CsvTable.cs" />
+    <Compile Include="Src\Helpers\FileUtils.cs" />
+    <Compile Include="Src\SchemaBuilder.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="Src\ConnectionDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <PropertyGroup>
+    <PostBuildEvent>DevDeploy.bat</PostBuildEvent>
+  </PropertyGroup>
+</Project>
