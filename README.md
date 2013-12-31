@@ -108,7 +108,7 @@ Known Issues / TODO
 
 Author
 --
-- Martin Dobrouck� (dobrou@gmail.com)
+- Martin Dobroucký (dobrou@gmail.com)
 
 Credits
 --
