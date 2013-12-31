@@ -11,12 +11,23 @@ namespace CsvLINQPadDriver.CodeGen
     /// </summary>
     internal class CsvCSharpCodeGenerator
     {
-        public static string GenerateCode(CsvDatabase db, ref string nameSpace, ref string typeName)
+        public static string GenerateCode(CsvDatabase db, ref string nameSpace, ref string typeName, CsvDataContextDriverProperties props)
         {
-            return new CsvCSharpCodeGenerator().GenerateSrcFile(db, nameSpace, typeName);
+            return new CsvCSharpCodeGenerator(nameSpace, typeName, props).GenerateSrcFile(db);
         }
 
-        public string GenerateSrcFile(CsvDatabase db, string contextNameSpace, string contextTypeName)
+        private string contextNameSpace;
+        private string contextTypeName;
+        private CsvDataContextDriverProperties properties;
+      
+        public CsvCSharpCodeGenerator(string contextNameSpace, string contextTypeName, CsvDataContextDriverProperties properties)
+        {
+            this.contextNameSpace = contextNameSpace;
+            this.contextTypeName = contextTypeName;
+            this.properties = properties;
+        }
+
+        public string GenerateSrcFile(CsvDatabase db)
         {
             var src = 
 @"using System;
@@ -44,16 +55,16 @@ namespace " + contextNameSpace + @"
 
     //Data types "
 + string.Join("", from table in db.Tables select 
-        GenerateTableRowDataTypeClass(table, db, contextTypeName)
-        + GenerateTableClass(table, db, contextTypeName)
-        + GenerateTableRowDataTypeMappingClass(table, db, contextTypeName)
+        GenerateTableRowDataTypeClass(table, db, properties.RelationsAsMethods)
+        + GenerateTableClass(table, db)
+        + GenerateTableRowDataTypeMappingClass(table, db)
 ) + @"       
 }//namespace
 ";
             return src;
         }
 
-        internal string GenerateTableClass(CsvTable table, CsvDatabase db, string contextTypeName)
+        internal string GenerateTableClass(CsvTable table, CsvDatabase db)
         {
             var src = @"
     public class " + GetTableClassName(table) + @" : " + GetClassName(typeof(CsvTableBase<,>)) + @"<" + GetRowClassName(table) + @"," + contextTypeName + @">
@@ -78,7 +89,7 @@ namespace " + contextNameSpace + @"
             return src;
         }
 
-        internal string GenerateTableRowDataTypeMappingClass(CsvTable table, CsvDatabase db, string contextTypeName)
+        internal string GenerateTableRowDataTypeMappingClass(CsvTable table, CsvDatabase db)
         {
             var src = @"
     internal class " + GetRowMappingClassName(table) + @" : " + GetClassName(typeof(CsvRowMappingBase<,>)) + @"<" + GetRowClassName(table) + @"," + contextTypeName + @">
@@ -91,7 +102,7 @@ namespace " + contextNameSpace + @"
 " + string.Join("", from c in table.Columns select @"
             Map( c => c." + c.CodeName + @" ).Index(" + c.CsvColumnIndex + @");" //.Name(c.CsvColumnName)
 ) + string.Join("", from rel in table.Relations select @"
-            Map( c => c." + rel.CodeName + @"_).ConvertUsing( row => { 
+            Map( c => c." + rel.CodeName + @").ConvertUsing( row => { 
                 var sourceId = row.GetField(" + rel.SourceColumn.CsvColumnIndex + @" /*" + rel.SourceColumn.CodeName + @"*/); 
                 return new " + GetClassName(typeof(LazyEnumerable<>)) + @"<" + GetRowClassName(rel.TargetTable) + @">( () => {
                     return this.dataContext." + rel.TargetTable.CodeName + @".Where" + rel.TargetColumn.CodeName + @"( sourceId );
@@ -104,7 +115,7 @@ namespace " + contextNameSpace + @"
             return src;
         }
 
-        internal string GenerateTableRowDataTypeClass(CsvTable table, CsvDatabase db, string contextTypeName)
+        internal string GenerateTableRowDataTypeClass(CsvTable table, CsvDatabase db, bool relationsAsMethods)
         {
             var src = @"
     public class " + GetRowClassName(table) + @" : " + GetClassName(typeof(CsvRowBase)) + @"
@@ -115,8 +126,8 @@ namespace " + contextNameSpace + @"
 ) + @"       
         //Relations " 
 + string.Join("", from rel in table.Relations select @"
-        internal IEnumerable<" + GetRowClassName(rel.TargetTable) + @"> " + rel.CodeName + @"_ { get; set; }
-        public IEnumerable<" + GetRowClassName(rel.TargetTable) + @"> " + rel.CodeName + @"() { return " + rel.CodeName + @"_; } "
+        " + (relationsAsMethods ? "internal" : "public") + @" IEnumerable<" + GetRowClassName(rel.TargetTable) + @"> " + rel.CodeName + @" { get; " + (relationsAsMethods ? "" : "internal") + @" set; }
+        public IEnumerable<" + GetRowClassName(rel.TargetTable) + @"> Get" + rel.CodeName + @"() { return " + rel.CodeName + @"; } "
 ) + @"
     } "
 ;

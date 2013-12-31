@@ -15,7 +15,8 @@ namespace CsvLINQPadDriver
     internal class SchemaBuilder
     {
 
-        internal static List<ExplorerItem> GetSchemaAndBuildAssembly(CsvDataContextDriverProperties props, AssemblyName assemblyName, ref string nameSpace, ref string typeName) {
+        internal static List<ExplorerItem> GetSchemaAndBuildAssembly(CsvDataContextDriverProperties props, AssemblyName assemblyName, ref string nameSpace, ref string typeName) 
+        {
 
             Logger.Log("Build started: " + props.Files);
             var sw = Stopwatch.StartNew();
@@ -25,7 +26,7 @@ namespace CsvLINQPadDriver
 
             Logger.Log("Model created. ({0} ms)", sw2.ElapsedMilliseconds); sw2.Restart();
 
-            string code = CsvCSharpCodeGenerator.GenerateCode(db, ref nameSpace, ref typeName);
+            string code = CsvCSharpCodeGenerator.GenerateCode(db, ref nameSpace, ref typeName, props);
 
             Logger.Log("Code generated. ({0} ms)", sw2.ElapsedMilliseconds); sw2.Restart();
 
@@ -33,7 +34,7 @@ namespace CsvLINQPadDriver
 
             Logger.Log("Assembly compiled. ({0} ms)", sw2.ElapsedMilliseconds); sw2.Restart();
 
-            List<ExplorerItem> schema = GetSchema(db);
+            List<ExplorerItem> schema = GetSchema(db, props);
 
             Logger.Log("Schema tree created. ({0} ms)", sw2.ElapsedMilliseconds); sw2.Restart();
 
@@ -74,7 +75,8 @@ namespace CsvLINQPadDriver
         /// <param name="code"></param>
         /// <param name="name"></param>
         /// <returns></returns>
-        private static string[] BuildAssembly(string code, AssemblyName name) {
+        private static string[] BuildAssembly(string code, AssemblyName name) 
+        {
             CompilerResults results;
             using (var codeProvider = new CSharpCodeProvider(new Dictionary<string, string>() { { "CompilerVersion", "v4.0" } })) {
                 var options = new CompilerParameters(new string[]
@@ -100,7 +102,8 @@ namespace CsvLINQPadDriver
         /// </summary>
         /// <param name="db"></param>
         /// <returns></returns>
-        private static List<ExplorerItem> GetSchema(CsvDatabase db) {
+        private static List<ExplorerItem> GetSchema(CsvDatabase db, CsvDataContextDriverProperties props)
+        {
             var schema = (
                 from table in db.Tables ?? Enumerable.Empty<CsvTable>()
                 select new ExplorerItem(table.DisplayName, ExplorerItemKind.QueryableObject, ExplorerIcon.Table) {
@@ -115,7 +118,7 @@ namespace CsvLINQPadDriver
                         from r in table.Relations
                         select new ExplorerItem(r.DisplayName, ExplorerItemKind.CollectionLink, ExplorerIcon.ManyToMany)
                         {
-                            DragText = r.CodeName+"()",
+                            DragText = props.RelationsAsMethods ? "Get"+r.CodeName+"()" : r.CodeName,
                             //TODO HyperlinkTarget =                             
                         }
                     ).ToList(),

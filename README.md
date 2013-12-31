@@ -32,13 +32,13 @@ public class CsvDataContext {
 public class Lakes {
   public string LakeName { get; set; }
   public string ID { get; set; }
-  public IEnumerable<Fishes> Fishes() {...} //All Fishes where Lakes.ID == Fishes.LakeID
+  public IEnumerable<Fishes> Fishes { get; set; } //All Fishes where Lakes.ID == Fishes.LakeID
 }
 public class Fishes {
   public string FishName { get; set; }
   public string FishID { get; set; }
   public string LakeID { get; set; }
-  public IEnumerable<Lakes> Lakes() {...} //All Lakes where Lakes.ID == Fishes.LakeID
+  public IEnumerable<Lakes> Lakes { get; set; } //All Lakes where Lakes.ID == Fishes.LakeID
 }
 /// and mappings etc.
 ```
@@ -46,8 +46,8 @@ public class Fishes {
 And you can query data with LINQ like:
 ```csharp
 from lake in Lakes
-where lake.LakeName.StartsWith("S") && lake.Fishes().Any()
-select new { lake, fishes = lake.Fishes() }
+where lake.LakeName.StartsWith("S") && lake.Fishes.Any()
+select new { lake, fishes = lake.Fishes }
 ```
 
 Download
@@ -82,6 +82,7 @@ Configuration Options
   - `c:\x\**.csv` - all files in folder `c:\x` and all sub-directories
 - CSV Separator - character used to separate columns in files. Can be `,`,`\t`, etc. If empty, separator is auto-detected.
 - Detect relations - if checked, driver will try to detect and generate relations between files.
+- Relations as methods - if checked - relations will be generated as Methods. So LINQPad will not follow relations in .Dump(). If unchecked - relations will be generated as Properties.
 - Ignore files with invalid format - files with strange content not similar to CSV format will be ignored.
 - Debug info - additional debug information will be available. For example generated Data Context source.
 - Remember this connection - if checked, connection info will be saved and available after LINQPad restart.
@@ -91,7 +92,7 @@ Performance
 When executing LINQ query on CSV context:
 - Only files used in query are loaded from disk.
 - As soon as any record from file is accessed, whole file is loaded into memory.
-- Relations is backed up by Lookup tables.
+- Relations are lazy evaluated and retreived using cached Lookup tables.
 
 Don't expect performance comparable with SQL server. But for reasonably sized CSV files there should not be any problem. 
 

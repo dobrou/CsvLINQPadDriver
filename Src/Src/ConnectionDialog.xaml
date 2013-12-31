@@ -25,8 +25,9 @@
             <Label Padding="0,0,0,3" Content="CSV separator (autodetect if empty): "/>
             <TextBox MaxLength="1" MaxLines="1" Text="{Binding CsvSeparator}" ToolTip="Character used to separate columns in csv file. If empty, separator is autodetected for each file."/>
         </DockPanel>
-   
+
         <CheckBox IsChecked="{Binding DetectRelations}" ToolTip="If checked, relations between csv files/tables will be detected and created. (Based on files and column names.)">Detect relations</CheckBox>
+        <CheckBox IsChecked="{Binding RelationsAsMethods}"  IsEnabled="{Binding DetectRelations}" ToolTip="If checked - relations will be generated as Methods. So LINQPad will not follow relations in .Dump(). If unchecked - relations will be generated as Properties." Margin="16,0,0,0">Relations as methods</CheckBox>
         <CheckBox IsChecked="{Binding IgnoreInvalidFiles}" ToolTip="If checked, files with suspicious format will be ignored. (Only one column, variable count of columns in rows...)">Ignore files with invalid format</CheckBox>
         <CheckBox IsChecked="{Binding DebugInfo}" ToolTip="Show/hide additional driver debug info.">Debug info</CheckBox>
         <CheckBox IsChecked="{Binding Persist}">Remember this connection</CheckBox>
