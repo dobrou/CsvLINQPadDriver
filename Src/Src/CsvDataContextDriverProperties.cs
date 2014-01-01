@@ -65,7 +65,7 @@ namespace CsvLINQPadDriver
         /// </summary>
         public bool DebugInfo
         {
-            get { return ((string)driverData.Element("DebugInfo")).ToBool() ?? true; }
+            get { return ((string)driverData.Element("DebugInfo")).ToBool() ?? false; }
             set { driverData.SetElementValue("DebugInfo", value); }
         }
 

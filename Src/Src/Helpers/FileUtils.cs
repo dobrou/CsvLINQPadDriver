@@ -12,6 +12,8 @@ namespace CsvLINQPadDriver.Helpers
 
         public static IList<T> CsvReadRows<T>(string fileName, char csvSeparator, CsvClassMap csvClassMap = null) where T : class, new()
         {
+            Logger.Log("CsvReadRows<{0}> started.", typeof(T).FullName);
+            IList<T> items;
             try
             {
                 var csvOptions = GetReadRowsOptions(csvSeparator);
@@ -21,7 +23,7 @@ namespace CsvLINQPadDriver.Helpers
                 using (var sr = new StreamReader(fileName, true))
                 using (var cr = new CsvReader(sr, csvOptions))
                 {
-                    return cr.GetRecords<T>().ToList();
+                    items = cr.GetRecords<T>().ToList();
                 }
             }
             catch (Exception ex)
@@ -29,6 +31,9 @@ namespace CsvLINQPadDriver.Helpers
                 Logger.Log("CsvReadRows<{0}> failed: {1}", typeof(T).FullName, ex.ToString());
                 return new T[] { };
             }
+
+            Logger.Log("CsvReadRows<{0}> finished. Loaded {1} items.", typeof(T).FullName, items.Count);
+            return items;
         }
 
         private static CsvConfiguration GetReadRowsOptions(char csvSeparator) 
@@ -85,6 +90,7 @@ namespace CsvLINQPadDriver.Helpers
         /// <returns>True if file contains reasonable csv data. False if file does not look like CSV formatted data.</returns>
         public static bool CsvIsFormatValid(string fileName, char csvSeparator)
         {
+            Logger.Log("CsvIsFormatValid<{0}> started.", fileName);
             if (!File.Exists(fileName))
                 return false;
 
@@ -103,7 +109,7 @@ namespace CsvLINQPadDriver.Helpers
                     if (!cr.Read())
                         return false;
                     var r1 = cr.CurrentRecord;
-                    
+
                     //0 or 1 column
                     if (r1.Length <= 1)
                         return false;
@@ -117,10 +123,10 @@ namespace CsvLINQPadDriver.Helpers
                         return false;
 
                     //too many strange characters
-                    int charsCount = r1.Concat(r2).Sum(s => (s??"").Length);
-                    int validCharsCount = r1.Concat(r2).Sum(s => Enumerable.Range(0,(s??"").Length).Count(i => char.IsLetterOrDigit(s,i)) );
+                    int charsCount = r1.Concat(r2).Sum(s => (s ?? "").Length);
+                    int validCharsCount = r1.Concat(r2).Sum(s => Enumerable.Range(0, (s ?? "").Length).Count(i => char.IsLetterOrDigit(s, i)));
                     const double validCharsMinOKRation = 0.5;
-                    if(validCharsCount < validCharsMinOKRation * charsCount)
+                    if (validCharsCount < validCharsMinOKRation*charsCount)
                         return false;
                 }
                 return true;
@@ -130,7 +136,10 @@ namespace CsvLINQPadDriver.Helpers
                 Logger.Log("Format detection failed: {0}", ex.ToString());
                 return false;
             }
-
+            finally
+            {
+                Logger.Log("CsvIsFormatValid<{0}> finished.", fileName);
+            }
         }
 
         public static char CsvDetectSeparator(string fileName, string[] csvData = null)

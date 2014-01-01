@@ -140,7 +140,7 @@ namespace CsvLINQPadDriver.DataModel
                 select new CsvRelation()
                 {
                     CodeName = r.t2.CodeName + "_" + r.c2.CodeName + "_" + r.c1.CodeName,
-                    DisplayName = r.c1.DisplayName + ":" + r.t2.DisplayName + "." + r.c2.DisplayName,
+                    DisplayName = r.t2.DisplayName + " (" + r.c2.DisplayName + "==" + r.c1.DisplayName + ")",
                     SourceTable = r.t1,
                     SourceColumn = r.c1,
                     TargetTable = r.t2,

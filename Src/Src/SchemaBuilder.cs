@@ -15,9 +15,9 @@ namespace CsvLINQPadDriver
     internal class SchemaBuilder
     {
 
-        internal static List<ExplorerItem> GetSchemaAndBuildAssembly(CsvDataContextDriverProperties props, AssemblyName assemblyName, ref string nameSpace, ref string typeName) 
+        internal static List<ExplorerItem> GetSchemaAndBuildAssembly(CsvDataContextDriverProperties props, AssemblyName assemblyName, ref string nameSpace, ref string typeName)
         {
-
+            Logger.LogEnabled = props.DebugInfo;
             Logger.Log("Build started: " + props.Files);
             var sw = Stopwatch.StartNew();
             var sw2 = Stopwatch.StartNew();

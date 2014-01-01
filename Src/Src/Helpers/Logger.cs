@@ -14,12 +14,16 @@ namespace CsvLINQPadDriver.Helpers
 
         public static void Log(string str, params object[] parameters)
         {
+            if (!LogEnabled)
+                return;
             Instance.AddLog(str,parameters);
         }
 
         private void AddLog(string str, params object[] parameters)
         {
-            this.Add(string.Format(DateTime.Now.ToString("HH:mm:ss.fff") + ": ("+sw.ElapsedMilliseconds+"ms) " + str, parameters));
+            if (!LogEnabled)
+                return;
+            this.Add(string.Format(DateTime.Now.ToString("HH:mm:ss.fff") + ": (" + sw.ElapsedMilliseconds + "ms) " + str, parameters));
             sw.Restart();
         }
 
