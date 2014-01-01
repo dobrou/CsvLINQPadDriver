@@ -241,6 +241,42 @@ namespace CsvLINQPadDriver.Helpers
             }
         }
 
+
+        private static readonly string[] sizeUnits = new string[] { "B", "KB", "MB", "GB", "TB" };
+        private const long sizeUnitsStep = 1024;
+        /// <summary>
+        /// Return file size in human readable format with best matching size units. (B,KB...)
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <returns></returns>
+        public static string GetFileSizeInfo(string fileName)
+        {
+            string sizeInfo;
+            try
+            {
+                var size = new FileInfo(fileName).Length;
+                if (size <= 0)
+                {
+                    sizeInfo = "0" + sizeUnits.First();
+                }
+                else
+                {
+                    int sizeUnitRank = Math.Min(sizeUnits.Length - 1, (int)Math.Log(size, sizeUnitsStep));
+                    double sizeInUnit = size / Math.Pow(sizeUnitsStep, sizeUnitRank);
+                    sizeInfo = sizeInUnit.ToString("0.#") + " " + sizeUnits[sizeUnitRank];
+                }
+            }
+            catch (Exception ex)
+            {
+                if (ex is IOException || ex is FileNotFoundException)
+                {
+                    sizeInfo = "Error";
+                }
+                throw;
+            }
+            return sizeInfo;
+        }
+
     }
 
 }

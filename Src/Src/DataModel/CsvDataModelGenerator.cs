@@ -45,7 +45,7 @@ namespace CsvLINQPadDriver.DataModel
                     select new CsvTable() {
                         FilePath = file,
                         CodeName = GetSafeCodeName(Path.GetFileNameWithoutExtension(fileName) + (string.IsNullOrWhiteSpace(fileDir) ? "" : ("_" + fileDir))),
-                        DisplayName = fileName + (string.IsNullOrWhiteSpace(fileDir) ? "" : (" in " + fileDir)),
+                        DisplayName = fileName + (string.IsNullOrWhiteSpace(fileDir) ? "" : (" in " + fileDir)) + " (" + FileUtils.GetFileSizeInfo(file) + ")",
                         CsvSeparator = csvSeparator,
                         Columns = (
                             from col in FileUtils.CsvReadHeader(file, csvSeparator).Select((value,index) => new { value, index })
