@@ -52,7 +52,7 @@ select new { lake, fishes = lake.Fishes }
 
 Download
 --
-- [CsvLINQPadDriver.lpx](https://github.com/dobrou/CsvLINQPadDriver/releases)
+- v1.1 - [CsvLINQPadDriver.v1.1.lpx](http://goo.gl/zx4Abl)
 
 Prerequisites
 --
