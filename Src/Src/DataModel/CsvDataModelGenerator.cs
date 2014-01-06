@@ -38,7 +38,7 @@ namespace CsvLINQPadDriver.DataModel
                 Tables = (
                     from file in files
                     where File.Exists(file)
-                    let csvSeparator = (string.IsNullOrWhiteSpace(Properties.CsvSeparator) ? FileUtils.CsvDetectSeparator(file) : Properties.CsvSeparator[0])
+                    let csvSeparator = Properties.CsvSeparatorChar ?? FileUtils.CsvDetectSeparator(file)
                     where !Properties.IgnoreInvalidFiles || FileUtils.CsvIsFormatValid(file, csvSeparator)
                     let fileName = Path.GetFileName(file)
                     let fileDir = (Path.GetDirectoryName(file.Remove(0, baseDir.Length)+"x")??"").TrimStart(Path.DirectorySeparatorChar)

@@ -23,7 +23,7 @@
 
         <DockPanel>
             <Label Padding="0,0,0,3" Content="CSV separator (autodetect if empty): "/>
-            <TextBox MaxLength="1" MaxLines="1" Text="{Binding CsvSeparator}" ToolTip="Character used to separate columns in csv file. If empty, separator is autodetected for each file."/>
+            <TextBox MaxLength="6" MaxLines="1" Text="{Binding CsvSeparator}" ToolTip="Character used to separate columns in csv file. If empty, separator is autodetected for each file."/>
         </DockPanel>
 
         <CheckBox IsChecked="{Binding DetectRelations}" ToolTip="If checked, relations between csv files/tables will be detected and created. (Based on files and column names.)">Detect relations</CheckBox>

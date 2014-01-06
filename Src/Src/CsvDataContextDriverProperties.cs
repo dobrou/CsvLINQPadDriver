@@ -1,4 +1,7 @@
-﻿using System.Xml.Linq;
+﻿using System;
+using System.Linq;
+using System.Text.RegularExpressions;
+using System.Xml.Linq;
 using LINQPad.Extensibility.DataContext;
 using CsvLINQPadDriver.Helpers;
 
@@ -36,9 +39,28 @@ namespace CsvLINQPadDriver
         /// <summary>
         /// Default csv separator. If empty or null, separator will be autodetected
         /// </summary>
-        public string CsvSeparator {
+        public string CsvSeparator 
+        {
             get { return (string)driverData.Element("CsvSeparator") ?? ""; }
             set { driverData.SetElementValue("CsvSeparator", value); }
+        }
+
+        public char? CsvSeparatorChar
+        {
+            get
+            {
+                string separator = CsvSeparator;
+                if (string.IsNullOrEmpty(separator))
+                    return null;
+                try
+                {
+                    return Regex.Unescape(separator).FirstOrDefault();
+                }
+                catch (ArgumentException)
+                {
+                    return separator.First();
+                }
+            }
         }
 
         /// <summary>
