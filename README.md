@@ -87,6 +87,15 @@ Configuration Options
 - Debug info - additional debug information will be available. For example generated Data Context source.
 - Remember this connection - if checked, connection info will be saved and available after LINQPad restart.
 
+Relations
+--
+There is no definion of relations between CSV files, but we can guess some relations from files and columns names.
+Relations between `fileName.columnName` are detected in cases similar to following examples:
+- `Fishes.LakeID` <-> `Lakes.ID`
+- `Fishes.LakesID` <-> `Lakes.ID`
+- `Fishes.LakeID` <-> `Lakes.LakeID`
+- `Fishes.ID` <-> `Lakes.FishID`
+
 Performance
 --
 When executing LINQ query on CSV context:
@@ -99,13 +108,14 @@ Don't expect performance comparable with SQL server. But for reasonably sized CS
 Data types
 --
 Everything is string. Because there is no data type info in CSV files, this is best we can do.
-However, driver provides few extension methods providing easy conversion from string to common types:
+However, driver provides few extension methods providing easy conversion from string to nullable of common types:
 `"123".ToInt()` , `"123".ToDouble()`, etc.
 
 Known Issues / TODO
 --
 - Some strange Unicode chracters in column names may cause errors in generated data context source code.
 - Uniqueness of column names is not checked.
+- Writing changes on objects back to CSV is not directly supported, there is no `.SubmitChanges()` . 
 
 Author
 --
