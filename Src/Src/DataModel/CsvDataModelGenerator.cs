@@ -157,6 +157,7 @@ namespace CsvLINQPadDriver.DataModel
         private static readonly Regex codeNameInvalidCharacters = new Regex(@"[^\p{Ll}\p{Lu}\p{Lt}\p{Lo}\p{Nd}\p{Nl}\p{Mn}\p{Mc}\p{Cf}\p{Pc}\p{Lm}]", RegexOptions.Compiled);
         private const string safeChar = "_";
         private const int maxLength = 128;
+        private static string[] invalidIdentifierNames = new string[]{"System"};
         private CodeDomProvider csCodeProvider = Microsoft.CSharp.CSharpCodeProvider.CreateProvider("C#");
         protected string GetSafeCodeName(string name)
         {
@@ -175,7 +176,7 @@ namespace CsvLINQPadDriver.DataModel
             if (!char.IsLetter(safeName, 0))
                 safeName = safeChar + safeName;
 
-            if (!csCodeProvider.IsValidIdentifier(safeName))
+            if (!csCodeProvider.IsValidIdentifier(safeName) || invalidIdentifierNames.Contains(safeName))
                 safeName = safeName + safeChar;
             
             return safeName;

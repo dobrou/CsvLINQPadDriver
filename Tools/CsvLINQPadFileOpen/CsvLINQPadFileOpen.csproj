@@ -4,16 +4,17 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{551CE65D-8945-43E4-B5B3-9EE058971524}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <ProjectGuid>{238A7302-9986-4633-BA23-381105C96575}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CsvLINQPadDriver</RootNamespace>
-    <AssemblyName>CsvLINQPadDriver</AssemblyName>
+    <RootNamespace>CsvLINQPadFileOpen</RootNamespace>
+    <AssemblyName>CsvLINQPadFileOpen</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -23,6 +24,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -31,64 +33,67 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <SignAssembly>true</SignAssembly>
+    <StartupObject>
+    </StartupObject>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyOriginatorKeyFile>CsvLINQPadDriver.snk</AssemblyOriginatorKeyFile>
+    <ApplicationIcon>Icon.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>false</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>..\..\Local\CsvLINQPadDriver.Original.e2b1b697c284321f.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="CsvHelper">
-      <HintPath>packages\CsvHelper.2.3.0\lib\net40-client\CsvHelper.dll</HintPath>
-    </Reference>
-    <Reference Include="LINQPad">
-      <HintPath>C:\Program Files (x86)\LINQPad4\LINQPad.exe</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
-    <Reference Include="System.Data" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xaml" />
-    <Reference Include="System.XML" />
     <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="CsvLINQPadDriver.snk" />
-    <None Include="DevDeploy.bat">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <Compile Include="Properties\VersionInfo.cs" />
-    <Compile Include="Src\CodeGen\CsvCSharpCodeGenerator.cs" />
-    <Compile Include="Src\CodeGen\CsvDataContextBase.cs" />
-    <Compile Include="Src\CodeGen\CsvRowMappingBase.cs" />
-    <Compile Include="Src\ConnectionDialog.xaml.cs">
-      <DependentUpon>ConnectionDialog.xaml</DependentUpon>
+    <Compile Include="FileSelectDialog.xaml.cs">
+      <DependentUpon>FileSelectDialog.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Src\DataModel\CsvDataModelGenerator.cs" />
-    <Compile Include="Src\CodeGen\CsvRowBase.cs" />
-    <Compile Include="Src\CodeGen\CsvTableBase.cs" />
-    <Compile Include="Src\CsvDataContextDriver.cs" />
-    <Compile Include="Src\CsvDataContextDriverProperties.cs" />
-    <Compile Include="Src\Helpers\LazyEnumerable.cs" />
-    <Compile Include="Src\Helpers\Logger.cs" />
-    <Compile Include="Src\Helpers\StringExtensions.cs" />
-    <Compile Include="Src\DataModel\CsvColumn.cs" />
-    <Compile Include="Src\DataModel\CsvDatabase.cs" />
-    <Compile Include="Src\DataModel\CsvRelation.cs" />
-    <Compile Include="Src\DataModel\CsvTable.cs" />
-    <Compile Include="Src\Helpers\FileUtils.cs" />
-    <Compile Include="Src\SchemaBuilder.cs" />
+    <Compile Include="LINQPadFileOpen.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="..\..\Src\Properties\VersionInfo.cs">
+      <Link>Properties\VersionInfo.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <EmbeddedResource Include="..\..\README.md">
+      <Link>DriverBinaries\README.md</Link>
+    </EmbeddedResource>
+    <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="Src\ConnectionDialog.xaml">
-      <Generator>MSBuild:Compile</Generator>
+    <EmbeddedResource Include="..\..\Deploy\header.xml">
+      <Link>DriverBinaries\header.xml</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\Src\bin\Debug\CsvHelper.dll">
+      <Link>DriverBinaries\CsvHelper.dll</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\Src\bin\Debug\CsvLINQPadDriver.dll">
+      <Link>DriverBinaries\CsvLINQPadDriver.dll</Link>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="FileSelectDialog.xaml">
       <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Icon.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
@@ -98,7 +103,4 @@
   <Target Name="AfterBuild">
   </Target>
   -->
-  <PropertyGroup>
-    <PostBuildEvent>DevDeploy.bat</PostBuildEvent>
-  </PropertyGroup>
 </Project>

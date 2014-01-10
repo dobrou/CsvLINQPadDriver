@@ -3,6 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CsvLINQPadDriver", "CsvLINQPadDriver.csproj", "{551CE65D-8945-43E4-B5B3-9EE058971524}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CsvLINQPadFileOpen", "..\Tools\CsvLINQPadFileOpen\CsvLINQPadFileOpen.csproj", "{238A7302-9986-4633-BA23-381105C96575}"
+	ProjectSection(ProjectDependencies) = postProject
+		{551CE65D-8945-43E4-B5B3-9EE058971524} = {551CE65D-8945-43E4-B5B3-9EE058971524}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -13,6 +18,10 @@ Global
 		{551CE65D-8945-43E4-B5B3-9EE058971524}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{551CE65D-8945-43E4-B5B3-9EE058971524}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{551CE65D-8945-43E4-B5B3-9EE058971524}.Release|Any CPU.Build.0 = Release|Any CPU
+		{238A7302-9986-4633-BA23-381105C96575}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{238A7302-9986-4633-BA23-381105C96575}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{238A7302-9986-4633-BA23-381105C96575}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{238A7302-9986-4633-BA23-381105C96575}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

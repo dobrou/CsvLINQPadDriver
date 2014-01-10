@@ -3,7 +3,9 @@
 
 del %output%
 
-%zip% a -tzip "%output%" header.xml ..\Src\bin\Debug\CsvLINQPadDriver.dll ..\Src\bin\Debug\CsvHelper.dll ..\README.md
+%zip% a -tzip "%output%" header.xml ..\Src\bin\Debug\CsvLINQPadDriver.dll ..\Src\bin\Debug\CsvHelper.dll ..\README.md ..\Tools\CsvLINQPadFileOpen\bin\Debug\CsvLINQPadFileOpen.exe
 
 @echo Package %output% created.
 @pause
+
+

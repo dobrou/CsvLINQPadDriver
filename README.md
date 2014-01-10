@@ -8,6 +8,20 @@ You can query data in CSV files with LINQ, just like it would be regular databas
 Driver automatically generates new data types for every CSV file with corresponding properties and mappings for all columns.
 Based on column and file names, possible relations between CSV tables are detected and generated.
 
+Website
+--
+https://github.com/dobrou/CsvLINQPadDriver
+
+Download
+--
+- v1.2
+  - **[CsvLINQPadFileOpen.exe](http://goo.gl/6ftHNV)** - Preferred. It's installer and CSV context loader in one package.
+      - Automatically installs CSV driver into LINQPad. 
+      - Loads new CSV context with files from command-line. You can associate this executable to open CSV files, so they will load directly into LINQPad.
+  - [CsvLINQPadDriver.v1.2.lpx](http://goo.gl/4m2E2P) - Manual installation.
+
+
+
 Example
 --
 Let's have 2 CSV files:
@@ -50,30 +64,33 @@ where lake.LakeName.StartsWith("S") && lake.Fishes.Any()
 select new { lake, fishes = lake.Fishes }
 ```
 
-Download
---
-- v1.1 - [CsvLINQPadDriver.v1.1.lpx](http://goo.gl/zx4Abl)
-
 Prerequisites
 --
-- CsvLINQPadDriver requires LINQPad 4 and .NET Framework 4.0/4.5.
+- LINQPad 4 
+- .NET Framework 4.0/4.5
 
 Installation
 --
-1. Get CsvLINQPadDriver.lpx file
-- Open LINQPad
-- Click `Add connection` main window
-- Click button `View more drivers...`
-- Click button `Browse` and select downloaded .lpx file
+- Using CsvLINQPadFileOpen.exe:
+  - Driver will be installed automatically on first run.
+- Or driver can be installed manually:
+  1. Get CsvLINQPadDriver.lpx file
+  - Open LINQPad
+  - Click `Add connection` main window
+  - Click button `View more drivers...`
+  - Click button `Browse` and select downloaded .lpx file
 
 Usage
 --
-You can add CSV context to LINQPad same way as any other context.
-- Click `Add connection`
-- Select `CSV Context Driver` and click `Next`
-- Enter CSV file names or Drag&Drop files from explorer. 
-  Optionally configure other options. 
-- Query your data
+- CSV context can be added to LINQPad same way as any other context.
+  - Click `Add connection`
+  - Select `CSV Context Driver` and click `Next`
+  - Enter CSV file names or Drag&Drop files from explorer. 
+    Optionally configure other options. 
+  - Query your data
+- Or run `CsvLINQPadFileOpen.exe` with CSV files as arguments. 
+  - `CsvLINQPadFileOpen.exe mydata.csv`
+  - New CSV data context will be created and loaded in LINQPad
 
 Configuration Options
 --
