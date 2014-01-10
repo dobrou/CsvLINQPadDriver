@@ -96,7 +96,7 @@ namespace CsvLINQPadDriver
         /// </summary>
         public bool IgnoreInvalidFiles
         {
-            get { return ((string)driverData.Element("IgnoreInvalidFiles")).ToBool() ?? true; }
+            get { return ((string)driverData.Element("IgnoreInvalidFiles")).ToBool() ?? false; }
             set { driverData.SetElementValue("IgnoreInvalidFiles", value); }
         }
 

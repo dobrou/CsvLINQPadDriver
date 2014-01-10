@@ -17,17 +17,26 @@ namespace CsvLINQPadFileOpen
         [STAThread]
         static void Main(string[] args)
         {
+
             if(!IsLINQPadOK())
                 return;
 
             //no args - ask for input
             if (args == null || args.Length == 0)
             {
-                var fileSelector = new FileSelectDialog(files: "#No files given. Please Drag&Drop some .csv files on me or put them as arguments on commandline.\n#Drag&Drop or type file paths, or directory paths with pattern like *.csv or **.csv (** will recurse subdirectory)\nc:\\*.csv");
-                bool? result = fileSelector.ShowDialog();
-                if (result != true)
-                    return;
-                args = fileSelector.Files.Split('\n').Where(l => !l.StartsWith("#")).ToArray();
+                using (var fileDialog = new System.Windows.Forms.OpenFileDialog()
+                {
+                    Filter = "CSV files (*.csv)|*.csv|All files (*.*)|*.*",
+                    CheckFileExists = true,
+                    Multiselect = true,
+                    Title = "CsvLINQPadFileOpen - Select CSV files to load",
+                })
+                {
+                    var dialogResult = fileDialog.ShowDialog();
+                    if (dialogResult != DialogResult.OK)
+                        return;
+                    args = fileDialog.FileNames;
+                }
             }
 
             CheckDeployCsvPlugin();
@@ -93,7 +102,7 @@ namespace CsvLINQPadFileOpen
                 //copy self
                 string exeFile = Assembly.GetExecutingAssembly().Location;
                 using (Stream res = new FileStream(exeFile, FileMode.Open, FileAccess.Read))
-                using (FileStream fileStream = new FileStream(Path.Combine(pluginDir, Path.GetFileName(exeFile)), FileMode.CreateNew, FileAccess.Write))
+                using (FileStream fileStream = new FileStream(Path.Combine(pluginDir, typeof(CsvLINQPadFileOpen.LINQPadFileOpen).FullName.Split('.')[0] + ".exe"), FileMode.CreateNew, FileAccess.Write))
                 {
                     res.CopyTo(fileStream);
                 }
@@ -119,8 +128,8 @@ namespace CsvLINQPadFileOpen
                 expression = "from x in this." + GetFileNameSafe(files[0]) + "\nwhere Regex.IsMatch( x.ToRowString(), \".*\")\nselect x";
                 files = new[] {Path.GetDirectoryName(files[0])};
             }
-            
-            string linqfile = Path.GetTempFileName() + ".linq";
+
+            string linqfile = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName() + ".linq");
             string linq = linqConfigCsv.Replace("{{FILES}}", string.Join(",",files)) + expression;
                 
             File.WriteAllText(linqfile, linq);
@@ -132,7 +141,7 @@ namespace CsvLINQPadFileOpen
         static string GetFileNameSafe(string fileName)
         {
             fileName = Path.GetFileNameWithoutExtension(fileName);
-            foreach (var ic in Path.GetInvalidFileNameChars().Concat(new []{' ',',','-'}))
+            foreach (var ic in Path.GetInvalidFileNameChars().Concat(new []{' ',',','-','.'}))
             {
                 fileName = fileName.Replace(ic, '_');
             }

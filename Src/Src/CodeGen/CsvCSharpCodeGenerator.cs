@@ -136,7 +136,7 @@ namespace " + contextNameSpace + @"
 
         private string GetRowClassName(CsvTable table)
         {
-            return "T" + table.CodeName;
+            return "T" + table.CodeName + "Row";
         }
         private string GetRowMappingClassName(CsvTable table)
         {
