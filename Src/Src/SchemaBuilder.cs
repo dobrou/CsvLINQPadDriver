@@ -1,6 +1,7 @@
 ﻿using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using CsvHelper;
@@ -84,9 +85,11 @@ namespace CsvLINQPadDriver
                         typeof(SchemaBuilder).Assembly.Location,
                         typeof(CsvReader).Assembly.Location,
                         "System.dll", "System.Core.dll", "System.Xml.dll", "System.Data.Services.Client.dll",
-                    },
-                    name.CodeBase,
-                    true);
+                    }){
+                    IncludeDebugInformation = true, 
+                    OutputAssembly = name.CodeBase,
+                    CompilerOptions = @"/doc:""" + Path.ChangeExtension( name.CodeBase, "xml") + @"""",
+                };
                 results = codeProvider.CompileAssemblyFromSource(options, code);
             }
 

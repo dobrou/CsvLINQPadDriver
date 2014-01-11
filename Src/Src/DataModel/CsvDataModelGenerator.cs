@@ -1,6 +1,7 @@
 ﻿using System;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -45,13 +46,13 @@ namespace CsvLINQPadDriver.DataModel
                     select new CsvTable() {
                         FilePath = file,
                         CodeName = GetSafeCodeName(Path.GetFileNameWithoutExtension(fileName) + (string.IsNullOrWhiteSpace(fileDir) ? "" : ("_" + fileDir))),
-                        DisplayName = fileName + (string.IsNullOrWhiteSpace(fileDir) ? "" : (" in " + fileDir)) + " (" + FileUtils.GetFileSizeInfo(file) + ")",
+                        DisplayName = fileName + (string.IsNullOrWhiteSpace(fileDir) ? "" : (" in " + fileDir)) + " " + FileUtils.GetFileSizeInfo(file) + "",
                         CsvSeparator = csvSeparator,
                         Columns = (
                             from col in FileUtils.CsvReadHeader(file, csvSeparator).Select((value,index) => new { value, index })
                             select new CsvColumn() {
-                                DisplayName = col.value ?? "",
                                 CodeName = GetSafeCodeName(col.value),
+                                DisplayName = "",
                                 CsvColumnName = col.value ?? "",
                                 CsvColumnIndex = col.index,
                             }
@@ -60,29 +61,61 @@ namespace CsvLINQPadDriver.DataModel
                 ).ToList(),
             };
 
-            MakeCodeNamesUnique(db);
-
             if (Properties.DetectRelations)
             {
                 DetectRelations(db);
             }
+
+            MakeCodeNamesUnique(db);
+
+            //adjust displaynames
+            foreach (var x in db.Tables)                                x.DisplayName = x.CodeName + (string.IsNullOrWhiteSpace(x.DisplayName) ? "" : " (" + x.DisplayName + ")");
+            foreach (var x in db.Tables.SelectMany(t => t.Columns))     x.DisplayName = x.CodeName + (string.IsNullOrWhiteSpace(x.DisplayName) ? "" : " (" + x.DisplayName + ")");
+            foreach (var x in db.Tables.SelectMany(t => t.Relations))   x.DisplayName = x.CodeName + (string.IsNullOrWhiteSpace(x.DisplayName) ? "" : " (" + x.DisplayName + ")");
 
             return db;
         }
 
         protected void MakeCodeNamesUnique(CsvDatabase db)
         {
-            //TODO
-            /*
-            var tablesWithDupNames = db.Tables
-                .ToLookup(table => table.CodeName)
-                .Where(tgroup => tgroup.Count() > 1)
-                ;
-            foreach (var tables in tablesWithDupNames)
+            MakeNamesUnique( db.Tables, t => t.CodeName, (t,n) => t.CodeName = n);
+            foreach (var table in db.Tables)
             {
-                tables.ToList().ForEach();
+                MakeNamesUnique( table.Columns, c => c.CodeName, (c,n) => c.CodeName = n);
+                MakeNamesUnique( table.Relations, r => r.CodeName, (r, n) => r.CodeName = n);
+            }            
+        }
+
+        /// <summary>
+        /// Makes all names on items unique by adding default suffixes.
+        /// </summary>
+        /// <typeparam name="TItem"></typeparam>
+        /// <param name="items"></param>
+        /// <param name="nameGet"></param>
+        /// <param name="nameSet"></param>
+        protected static void MakeNamesUnique<TItem>(IList<TItem> items, Func<TItem, string> nameGet, Action<TItem, string> nameSet)
+        {
+            var nameGroups = items.ToLookup(nameGet);
+            var names = new HashSet<string>(nameGroups.Select(g => g.Key));
+
+            var nameGroupsWithDuplicates = nameGroups.Where(g => g.Count() > 1);
+            //with all groups with duplicate names
+            foreach (var nameGroup in nameGroupsWithDuplicates)
+            {
+                string name = nameGroup.Key;
+                //with all names, except first
+                foreach (var itemWithDuplName in nameGroup.Skip(1))
+                {
+                    //get first unique name
+                    var newname = 
+                        Enumerable.Range(1, int.MaxValue)
+                        .Select(i => i.ToString(CultureInfo.InvariantCulture))
+                        .Select(s => name + s) //1,2,3,4...
+                        .First(nname => !names.Contains(nname));
+                    nameSet(itemWithDuplName, newname);
+                    names.Add(newname);
+                }
             }
-             */
         }
 
         protected IEnumerable<string> GetTableForeignKeyPossibleNames(CsvTable table)
@@ -139,8 +172,8 @@ namespace CsvLINQPadDriver.DataModel
                     ).SelectMany(r => r).Distinct()
                 select new CsvRelation()
                 {
-                    CodeName = r.t2.CodeName + "_" + r.c2.CodeName + "_" + r.c1.CodeName,
-                    DisplayName = r.t2.DisplayName + " (" + r.c2.DisplayName + "==" + r.c1.DisplayName + ")",
+                    CodeName = r.t2.CodeName,
+                    DisplayName = r.c1.CodeName + "==" + r.t2.CodeName + @"." + r.c2.CodeName,
                     SourceTable = r.t1,
                     SourceColumn = r.c1,
                     TargetTable = r.t2,
@@ -158,8 +191,8 @@ namespace CsvLINQPadDriver.DataModel
         private const string safeChar = "_";
         private const int maxLength = 128;
         private static string[] invalidIdentifierNames = new string[]{"System"};
-        private CodeDomProvider csCodeProvider = Microsoft.CSharp.CSharpCodeProvider.CreateProvider("C#");
-        protected string GetSafeCodeName(string name)
+        private static Lazy<CodeDomProvider> csCodeProvider = new Lazy<CodeDomProvider>(() => Microsoft.CSharp.CSharpCodeProvider.CreateProvider("C#")); 
+        protected static string GetSafeCodeName(string name)
         {
             string safeName = name ?? "";
 
@@ -176,7 +209,7 @@ namespace CsvLINQPadDriver.DataModel
             if (!char.IsLetter(safeName, 0))
                 safeName = safeChar + safeName;
 
-            if (!csCodeProvider.IsValidIdentifier(safeName) || invalidIdentifierNames.Contains(safeName))
+            if (!csCodeProvider.Value.IsValidIdentifier(safeName) || invalidIdentifierNames.Contains(safeName))
                 safeName = safeName + safeChar;
             
             return safeName;
