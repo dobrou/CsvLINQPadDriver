@@ -1,15 +1,15 @@
-﻿using System.CodeDom.Compiler;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using CsvHelper;
+﻿using CsvHelper;
 using CsvLINQPadDriver.CodeGen;
 using CsvLINQPadDriver.DataModel;
 using CsvLINQPadDriver.Helpers;
 using LINQPad.Extensibility.DataContext;
 using Microsoft.CSharp;
+using System.CodeDom.Compiler;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Reflection;
 
 namespace CsvLINQPadDriver
 {
@@ -121,7 +121,7 @@ namespace CsvLINQPadDriver
                         from r in table.Relations
                         select new ExplorerItem(r.DisplayName, ExplorerItemKind.CollectionLink, ExplorerIcon.ManyToMany)
                         {
-                            DragText = props.RelationsAsMethods ? "Get"+r.CodeName+"()" : r.CodeName,
+                            DragText = props.RelationsAsMethods ? r.CodeName+"()" : r.CodeName,
                             //TODO HyperlinkTarget =                             
                         }
                     ).ToList(),

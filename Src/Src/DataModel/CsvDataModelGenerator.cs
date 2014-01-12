@@ -1,11 +1,11 @@
-﻿using System;
+﻿using CsvLINQPadDriver.Helpers;
+using System;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
-using CsvLINQPadDriver.Helpers;
 
 namespace CsvLINQPadDriver.DataModel
 {
@@ -81,8 +81,8 @@ namespace CsvLINQPadDriver.DataModel
             MakeNamesUnique( db.Tables, t => t.CodeName, (t,n) => t.CodeName = n);
             foreach (var table in db.Tables)
             {
-                MakeNamesUnique( table.Columns, c => c.CodeName, (c,n) => c.CodeName = n);
-                MakeNamesUnique( table.Relations, r => r.CodeName, (r, n) => r.CodeName = n);
+                MakeNamesUnique(table.Columns, c => c.CodeName, (c, n) => c.CodeName = n);
+                MakeNamesUnique(table.Relations, c => c.CodeName, (c, n) => c.CodeName = n, table.Columns.Select(c => c.CodeName));
             }            
         }
 
@@ -93,28 +93,24 @@ namespace CsvLINQPadDriver.DataModel
         /// <param name="items"></param>
         /// <param name="nameGet"></param>
         /// <param name="nameSet"></param>
-        protected static void MakeNamesUnique<TItem>(IList<TItem> items, Func<TItem, string> nameGet, Action<TItem, string> nameSet)
+        /// <param name="reservedNames"></param>
+        protected static void MakeNamesUnique<TItem>(IEnumerable<TItem> items, Func<TItem, string> nameGet, Action<TItem, string> nameSet, IEnumerable<string> reservedNames = null)
         {
-            var nameGroups = items.ToLookup(nameGet);
-            var names = new HashSet<string>(nameGroups.Select(g => g.Key));
+            var names = new HashSet<string>(reservedNames ?? Enumerable.Empty<string>(), StringComparer.Ordinal);
 
-            var nameGroupsWithDuplicates = nameGroups.Where(g => g.Count() > 1);
-            //with all groups with duplicate names
-            foreach (var nameGroup in nameGroupsWithDuplicates)
+            foreach (var item in items)
             {
-                string name = nameGroup.Key;
-                //with all names, except first
-                foreach (var itemWithDuplName in nameGroup.Skip(1))
+                string name = nameGet(item);
+                if (names.Contains(name))
                 {
                     //get first unique name
-                    var newname = 
-                        Enumerable.Range(1, int.MaxValue)
-                        .Select(i => i.ToString(CultureInfo.InvariantCulture))
-                        .Select(s => name + s) //1,2,3,4...
-                        .First(nname => !names.Contains(nname));
-                    nameSet(itemWithDuplName, newname);
-                    names.Add(newname);
+                    name = Enumerable.Range(1, int.MaxValue)
+                            .Select(i => i.ToString(CultureInfo.InvariantCulture))
+                            .Select(s => name + s) //1,2,3,4...
+                            .First(nname => !names.Contains(nname));
+                    nameSet(item, name);
                 }
+                names.Add(name);
             }
         }
 
@@ -181,16 +177,20 @@ namespace CsvLINQPadDriver.DataModel
                 }
             );
 
+            //add relations to DB structure
             foreach (var relationsGroup in relations.GroupBy(r => r.SourceTable))
             {
-                relationsGroup.Key.Relations.AddRange(relationsGroup);
+                foreach (var relation in relationsGroup)
+                {
+                    relationsGroup.Key.Relations.Add(relation);   
+                }                
             }
         }
 
         private static readonly Regex codeNameInvalidCharacters = new Regex(@"[^\p{Ll}\p{Lu}\p{Lt}\p{Lo}\p{Nd}\p{Nl}\p{Mn}\p{Mc}\p{Cf}\p{Pc}\p{Lm}]", RegexOptions.Compiled);
         private const string safeChar = "_";
         private const int maxLength = 128;
-        private static string[] invalidIdentifierNames = new string[]{"System"};
+        private static string[] invalidIdentifierNames = new string[] { "System", "ToRowString" };
         private static Lazy<CodeDomProvider> csCodeProvider = new Lazy<CodeDomProvider>(() => Microsoft.CSharp.CSharpCodeProvider.CreateProvider("C#")); 
         protected static string GetSafeCodeName(string name)
         {

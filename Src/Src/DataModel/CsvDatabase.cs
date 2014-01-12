@@ -4,7 +4,7 @@ namespace CsvLINQPadDriver.DataModel
 {
     public class CsvDatabase
     {
-        public List<CsvTable> Tables { get; set; }
+        public IList<CsvTable> Tables { get; set; }
         public string Name { get; set; }
 
         public CsvDatabase()

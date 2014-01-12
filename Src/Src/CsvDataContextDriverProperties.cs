@@ -1,9 +1,9 @@
-﻿using System;
+﻿using CsvLINQPadDriver.Helpers;
+using LINQPad.Extensibility.DataContext;
+using System;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
-using LINQPad.Extensibility.DataContext;
-using CsvLINQPadDriver.Helpers;
 
 namespace CsvLINQPadDriver
 {

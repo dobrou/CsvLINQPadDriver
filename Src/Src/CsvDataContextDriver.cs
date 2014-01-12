@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Reflection;
-using CsvLINQPadDriver.Helpers;
+﻿using CsvLINQPadDriver.Helpers;
 using LINQPad.Extensibility.DataContext;
+using System.Collections.Generic;
+using System.Reflection;
 
 namespace CsvLINQPadDriver
 {

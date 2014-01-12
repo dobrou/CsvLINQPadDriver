@@ -1,5 +1,5 @@
-﻿using System.Reflection;
-using CsvLINQPadDriver.Properties;
+﻿using CsvLINQPadDriver.Properties;
+using System.Reflection;
 
 [assembly: AssemblyCompany("Martin Dobroucký (dobrou@gmail.com)")]
 [assembly: AssemblyCopyright("Copyright © Martin Dobroucký 2013")]

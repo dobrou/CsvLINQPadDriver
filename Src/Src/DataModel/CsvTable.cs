@@ -4,14 +4,14 @@ namespace CsvLINQPadDriver.DataModel
 {
     public class CsvTable
     {
+        public string CodeName { get; set; }
+        public string DisplayName { get; set; }
+
         public string FilePath { get; set; }
         public char CsvSeparator { get; set; }
 
-        public string CodeName { get; set; }
-        public string DisplayName { get; set; }
-        
-        public List<CsvColumn> Columns { get; set; }
-        public List<CsvRelation> Relations { get; set; } 
+        public IList<CsvColumn> Columns { get; set; }
+        public IList<CsvRelation> Relations { get; set; } 
 
         public CsvTable()
         {

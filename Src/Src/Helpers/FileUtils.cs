@@ -1,9 +1,9 @@
-﻿using System;
+﻿using CsvHelper;
+using CsvHelper.Configuration;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using CsvHelper;
-using CsvHelper.Configuration;
 
 namespace CsvLINQPadDriver.Helpers
 {
@@ -14,12 +14,12 @@ namespace CsvLINQPadDriver.Helpers
         {
             Logger.Log("CsvReadRows<{0}> started.", typeof(T).FullName);
             IList<T> items;
+            var csvOptions = GetReadRowsOptions(csvSeparator);
+            if (csvClassMap != null)
+                csvOptions.RegisterClassMap(csvClassMap);
+
             try
             {
-                var csvOptions = GetReadRowsOptions(csvSeparator);
-                if (csvClassMap != null)
-                    csvOptions.RegisterClassMap(csvClassMap);
-
                 using (var sr = new StreamReader(fileName, true))
                 using (var cr = new CsvReader(sr, csvOptions))
                 {
@@ -53,10 +53,9 @@ namespace CsvLINQPadDriver.Helpers
 
         public static string[] CsvReadHeader(string fileName, char csvSeparator)
         {
+            var csvOptions = GetReadHeaderOptions(csvSeparator);
             try
             {
-                var csvOptions = GetReadHeaderOptions(csvSeparator);
-
                 using (var sr = new StreamReader(fileName, true))
                 using (var cr = new CsvReader(sr, csvOptions))
                 {
