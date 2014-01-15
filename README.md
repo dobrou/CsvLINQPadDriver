@@ -14,13 +14,11 @@ https://github.com/dobrou/CsvLINQPadDriver
 
 Download
 --
-- v1.2
-  - **[CsvLINQPadFileOpen.exe](http://goo.gl/6ftHNV)** - Preferred. It's installer and CSV context loader in one package.
+- v1.3
+  - **[CsvLINQPadFileOpen.exe](http://goo.gl/fWIVKq)** - Preferred. It's installer and CSV context loader in one package.
       - Automatically installs CSV driver into LINQPad. 
       - Loads new CSV context with files from command-line. You can associate this executable to open CSV files, so they will load directly into LINQPad.
-  - [CsvLINQPadDriver.v1.2.lpx](http://goo.gl/4m2E2P) - Manual installation.
-
-
+  - [CsvLINQPadDriver.lpx](http://goo.gl/3Q2JBV) - Manual installation.
 
 Example
 --
