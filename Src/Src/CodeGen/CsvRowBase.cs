@@ -5,10 +5,10 @@ namespace CsvLINQPadDriver.CodeGen
     public class CsvRowBase
     {
         /// <summary>
-        /// All properties in one string, usefull for fulltext search
+        /// All string properties in one string, usefull for fulltext search
         /// </summary>
         /// <returns></returns>
-        public string ToRowString()
+        public override string ToString()
         {
             //get all public string properties
             var data = this.GetType()

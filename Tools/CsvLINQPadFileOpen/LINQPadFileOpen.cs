@@ -17,6 +17,8 @@ namespace CsvLINQPadFileOpen
             if(!IsLINQPadOK())
                 return;
 
+            CheckDeployCsvPlugin();
+
             //no args - ask for input
             if (args == null || args.Length == 0)
             {
@@ -34,8 +36,6 @@ namespace CsvLINQPadFileOpen
                     args = fileDialog.FileNames;
                 }
             }
-
-            CheckDeployCsvPlugin();
 
             //CSV context
             OpenCsv(args);
@@ -70,17 +70,46 @@ namespace CsvLINQPadFileOpen
 
         static void CheckDeployCsvPlugin()
         {
-            string pluginSubDir = "CsvLINQPadDriver (e2b1b697c284321f)";
+            const string pluginDllName = "CsvLINQPadDriver.dll";
+            const string pluginSubDir = "CsvLINQPadDriver (e2b1b697c284321f)";
             string pluginBaseDir = new string[] { @"%programdata%\LINQPad\Drivers\DataContext\4.0\" }
                 .Select(Environment.ExpandEnvironmentVariables)
                 //.Where(Directory.Exists)
-                .FirstOrDefault()
+                .FirstOrDefault() ?? ""
             ;
             //if (pluginBaseDir == null) return; //plugin base dir not found, better to end then try something
 
             string pluginDir = Path.Combine(pluginBaseDir, pluginSubDir);
-            if (Directory.Exists(pluginDir))
-                return; //plugin already installed
+            string pluginDll = Path.Combine(pluginDir, pluginDllName);
+
+            bool isUpdate = false;
+            if (Directory.Exists(pluginDir) && File.Exists(pluginDll))
+            {
+                isUpdate = true;
+                //compare file versions
+                try
+                {
+                    Version installedVersion = AssemblyName.GetAssemblyName(pluginDll).Version;
+                    Version bundledVersion;
+
+                    
+                    using (Stream bundledAssemblyData = Assembly.GetExecutingAssembly().GetManifestResourceStream("CsvLINQPadFileOpen.DriverBinaries.CsvLINQPadDriver.dll"))
+                    using (MemoryStream ms = new MemoryStream())
+                    {
+                        bundledAssemblyData.CopyTo(ms);
+                        var bundledAssembly = Assembly.ReflectionOnlyLoad(ms.ToArray());
+                        bundledVersion = bundledAssembly.GetName().Version;
+                    }
+
+                    if(installedVersion >= bundledVersion)
+                        return; //plugin already installed with update version
+                }
+                catch
+                {
+                    return; //silently ignore read version errors
+                }
+                
+            }
 
             try
             {
@@ -90,7 +119,7 @@ namespace CsvLINQPadFileOpen
                 foreach (string resName in Assembly.GetExecutingAssembly().GetManifestResourceNames().Where(n => n.StartsWith(pluginResourcesPrefix)))
                 {
                     using (Stream res = Assembly.GetExecutingAssembly().GetManifestResourceStream(resName))
-                    using (FileStream fileStream = new FileStream(Path.Combine(pluginDir, resName.Substring(pluginResourcesPrefix.Length)), FileMode.CreateNew, FileAccess.Write))
+                    using (FileStream fileStream = new FileStream(Path.Combine(pluginDir, resName.Substring(pluginResourcesPrefix.Length)), FileMode.Create, FileAccess.Write))
                     {
                         res.CopyTo(fileStream);
                     }
@@ -98,15 +127,22 @@ namespace CsvLINQPadFileOpen
                 //copy self
                 string exeFile = Assembly.GetExecutingAssembly().Location;
                 using (Stream res = new FileStream(exeFile, FileMode.Open, FileAccess.Read))
-                using (FileStream fileStream = new FileStream(Path.Combine(pluginDir, typeof(CsvLINQPadFileOpen.LINQPadFileOpen).FullName.Split('.')[0] + ".exe"), FileMode.CreateNew, FileAccess.Write))
+                using (FileStream fileStream = new FileStream(Path.Combine(pluginDir, typeof(CsvLINQPadFileOpen.LINQPadFileOpen).FullName.Split('.')[0] + ".exe"), FileMode.Create, FileAccess.Write))
                 {
                     res.CopyTo(fileStream);
                 }
                 ShowMessage("CsvLINQPadDriver installed successfully.\nContinue with opening CSV context.", pluginDir);
             }
-            catch (Exception ex)
+            catch(Exception ex)
             {
-                ShowMessage("CsvLINQPadDriver installation into '{0}' failed.\nPlease install driver manually from .lpx file.\nError:\n {1}", pluginDir, ex.ToString());
+                if (isUpdate)
+                {
+                    return; //silently ignore write errors
+                }
+                else
+                {
+                    ShowMessage("CsvLINQPadDriver installation into '{0}' failed.\nPlease install driver manually from .lpx file.\nError:\n {1}", pluginDir, ex.ToString());
+                }
             }
         }
 

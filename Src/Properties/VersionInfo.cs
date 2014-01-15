@@ -11,7 +11,7 @@ namespace CsvLINQPadDriver.Properties
 {
     internal class VersionInfo
     {
-        internal const string MainVersion = "1.2";
+        internal const string MainVersion = "1.3";
     }
 }
 

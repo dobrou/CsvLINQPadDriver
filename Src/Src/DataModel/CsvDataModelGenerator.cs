@@ -136,6 +136,9 @@ namespace CsvLINQPadDriver.DataModel
 
         protected void DetectRelations(CsvDatabase db)
         {
+            //limit maximum relations count
+            int maximumRelationsCount = db.Tables.Count*db.Tables.Count;
+
             var tcl = (
                 from tab in db.Tables 
                 from col in tab.Columns 
@@ -180,19 +183,23 @@ namespace CsvLINQPadDriver.DataModel
             );
 
             //add relations to DB structure
-            foreach (var relationsGroup in relations.GroupBy(r => r.SourceTable))
+            int relationCount = 0;
+            foreach (var relationsGroup in relations.Take(maximumRelationsCount).GroupBy(r => r.SourceTable))
             {
                 foreach (var relation in relationsGroup)
                 {
-                    relationsGroup.Key.Relations.Add(relation);   
+                    relationsGroup.Key.Relations.Add(relation);
+                    relationCount++;
                 }                
             }
+
+            Logger.Log("Relations detected {0} {1}", relationCount, relationCount >= maximumRelationsCount ? "Maximum limit reached" : "");
         }
 
         private static readonly Regex codeNameInvalidCharacters = new Regex(@"[^\p{Ll}\p{Lu}\p{Lt}\p{Lo}\p{Nd}\p{Nl}\p{Mn}\p{Mc}\p{Cf}\p{Pc}\p{Lm}]", RegexOptions.Compiled);
         private const string safeChar = "_";
         private const int maxLength = 128;
-        private static string[] invalidIdentifierNames = new string[] { "System", "ToRowString" };
+        private static string[] invalidIdentifierNames = new string[] { "System", "ToString", "Equals", "GetHashCode" };
         private static Lazy<CodeDomProvider> csCodeProvider = new Lazy<CodeDomProvider>(() => Microsoft.CSharp.CSharpCodeProvider.CreateProvider("C#")); 
         protected static string GetSafeCodeName(string name)
         {
