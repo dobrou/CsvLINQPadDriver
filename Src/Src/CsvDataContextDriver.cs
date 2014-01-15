@@ -1,4 +1,7 @@
-﻿using CsvLINQPadDriver.Helpers;
+﻿using System;
+using CsvLINQPadDriver.DataDisplay;
+using CsvLINQPadDriver.Helpers;
+using LINQPad;
 using LINQPad.Extensibility.DataContext;
 using System.Collections.Generic;
 using System.Reflection;
@@ -27,6 +30,21 @@ namespace CsvLINQPadDriver
                 return true;
             }
             return false;
+        }
+
+        public override ICustomMemberProvider GetCustomDisplayMemberProvider(object objectToWrite)
+        {            
+            return CsvRowMemberProvider.GetCsvRowMemberProvider(objectToWrite) ?? base.GetCustomDisplayMemberProvider(objectToWrite);
+        }
+
+        public override void DisplayObjectInGrid(object objectToDisplay, GridOptions options)
+        {
+            base.DisplayObjectInGrid(objectToDisplay, options);
+        }
+
+        public override Version Version
+        {
+            get { return Assembly.GetExecutingAssembly().GetName().Version; }
         }
 
         public override IEnumerable<string> GetAssembliesToAdd(IConnectionInfo cxInfo)

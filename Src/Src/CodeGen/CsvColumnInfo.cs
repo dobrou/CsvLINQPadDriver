@@ -4,13 +4,13 @@ using System.Linq.Expressions;
 
 namespace CsvLINQPadDriver.CodeGen
 {
-    public class CsvColumnInfo<TRow>
+    public class CsvColumnInfo
     {
         public int CsvColumnIndex { get; set; }
         public string PropertyName { get; set; }
     }
 
-    public class CsvColumnInfoList<TRow> : List<CsvColumnInfo<TRow>>
+    public class CsvColumnInfoList<TRow> : List<CsvColumnInfo>
     {
         /// <summary>
         /// 
@@ -23,7 +23,7 @@ namespace CsvLINQPadDriver.CodeGen
             if (member == null) throw new ArgumentException("'property' must be only property access", "property");
             string propertyName = member.Member.Name; //it's PropertyInfo or FieldInfo
 
-            this.Add(new CsvColumnInfo<TRow>()
+            this.Add(new CsvColumnInfo()
             {
                 CsvColumnIndex = csvColumnIndex,
                 PropertyName = propertyName,

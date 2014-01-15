@@ -121,7 +121,7 @@ namespace CsvLINQPadDriver
                         from r in table.Relations
                         select new ExplorerItem(r.DisplayName, ExplorerItemKind.CollectionLink, ExplorerIcon.ManyToMany)
                         {
-                            DragText = props.RelationsAsMethods ? r.CodeName+"()" : r.CodeName,
+                            DragText = r.CodeName,
                             //TODO HyperlinkTarget =                             
                         }
                     ).ToList(),

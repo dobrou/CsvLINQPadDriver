@@ -29,7 +29,8 @@ namespace CsvLINQPadDriver.Helpers
             catch (Exception ex)
             {
                 Logger.Log("CsvReadRows<{0}> failed: {1}", typeof(T).FullName, ex.ToString());
-                return new T[] { };
+                //return new T[] { };
+                throw;
             }
 
             Logger.Log("CsvReadRows<{0}> finished. Loaded {1} items.", typeof(T).FullName, items.Count);
@@ -152,7 +153,7 @@ namespace CsvLINQPadDriver.Helpers
                 try
                 {
                     //get most used char from separators as separator
-                    var bestSeparators = (csvData ?? File.ReadLines(fileName).Take(2).ToArray())
+                    var bestSeparators = (csvData ?? File.ReadLines(fileName).Take(1).ToArray())
                         .SelectMany(l => l.ToCharArray())
                         .Where(defaultCsvSeparators.Contains)
                         .GroupBy(c => c)

@@ -65,6 +65,7 @@
     <Compile Include="Src\ConnectionDialog.xaml.cs">
       <DependentUpon>ConnectionDialog.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Src\DataDisplay\CsvRowMemberProvider.cs" />
     <Compile Include="Src\DataModel\CsvDataModelGenerator.cs" />
     <Compile Include="Src\CodeGen\CsvRowBase.cs" />
     <Compile Include="Src\CodeGen\CsvTableBase.cs" />
@@ -78,6 +79,7 @@
     <Compile Include="Src\DataModel\CsvRelation.cs" />
     <Compile Include="Src\DataModel\CsvTable.cs" />
     <Compile Include="Src\Helpers\FileUtils.cs" />
+    <Compile Include="Src\DataDisplay\HideFromDumpAttribute.cs" />
     <Compile Include="Src\SchemaBuilder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

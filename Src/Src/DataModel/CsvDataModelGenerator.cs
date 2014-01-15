@@ -29,11 +29,12 @@ namespace CsvLINQPadDriver.DataModel
             this.Properties = properties;
         }
 
-        public CsvDatabase CreateModel() {
+        public CsvDatabase CreateModel() 
+        {
             string[] files = FileUtils.EnumFiles(Properties.Files.Split('\n'));
-         
             string baseDir = FileUtils.GetLongestCommonPrefixPath(files);
 
+            //create db structure
             var db = new CsvDatabase() {
                 Name = baseDir,
                 Tables = (
@@ -61,12 +62,23 @@ namespace CsvLINQPadDriver.DataModel
                 ).ToList(),
             };
 
+            //unique code names
+            MakeCodeNamesUnique(db.Tables, t => t.CodeName, (t, n) => t.CodeName = n);
+            foreach (var table in db.Tables)
+            {
+                MakeCodeNamesUnique(table.Columns, c => c.CodeName, (c, n) => c.CodeName = n);
+            }
+            
+            //relations
             if (Properties.DetectRelations)
             {
                 DetectRelations(db);
-            }
+                foreach (var table in db.Tables)
+                {
+                    MakeCodeNamesUnique(table.Relations, c => c.CodeName, (c, n) => c.CodeName = n, table.Columns.Select(c => c.CodeName));
+                }            
 
-            MakeCodeNamesUnique(db);
+            }
 
             //adjust displaynames
             foreach (var x in db.Tables)                                x.DisplayName = x.CodeName + (string.IsNullOrWhiteSpace(x.DisplayName) ? "" : " (" + x.DisplayName + ")");
@@ -74,16 +86,6 @@ namespace CsvLINQPadDriver.DataModel
             foreach (var x in db.Tables.SelectMany(t => t.Relations))   x.DisplayName = x.CodeName + (string.IsNullOrWhiteSpace(x.DisplayName) ? "" : " (" + x.DisplayName + ")");
 
             return db;
-        }
-
-        protected void MakeCodeNamesUnique(CsvDatabase db)
-        {
-            MakeNamesUnique( db.Tables, t => t.CodeName, (t,n) => t.CodeName = n);
-            foreach (var table in db.Tables)
-            {
-                MakeNamesUnique(table.Columns, c => c.CodeName, (c, n) => c.CodeName = n);
-                MakeNamesUnique(table.Relations, c => c.CodeName, (c, n) => c.CodeName = n, table.Columns.Select(c => c.CodeName));
-            }            
         }
 
         /// <summary>
@@ -94,7 +96,7 @@ namespace CsvLINQPadDriver.DataModel
         /// <param name="nameGet"></param>
         /// <param name="nameSet"></param>
         /// <param name="reservedNames"></param>
-        protected static void MakeNamesUnique<TItem>(IEnumerable<TItem> items, Func<TItem, string> nameGet, Action<TItem, string> nameSet, IEnumerable<string> reservedNames = null)
+        protected static void MakeCodeNamesUnique<TItem>(IEnumerable<TItem> items, Func<TItem, string> nameGet, Action<TItem, string> nameSet, IEnumerable<string> reservedNames = null)
         {
             var names = new HashSet<string>(reservedNames ?? Enumerable.Empty<string>(), StringComparer.Ordinal);
 

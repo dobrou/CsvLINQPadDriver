@@ -73,13 +73,12 @@ namespace CsvLINQPadDriver
         }
 
         /// <summary>
-        /// If True - relations will be generated as Methods. So LINQPad will not follow relations in .Dump()
-        /// If False - relations will be generated as Properties
+        /// If True - LINQPad will not show relations content in .Dump(). This prevents loading too many data.
         /// </summary>
-        public bool RelationsAsMethods
+        public bool HideRelationsFromDump
         {
-            get { return ((string)driverData.Element("RelationsAsMethods")).ToBool() ?? true; }
-            set { driverData.SetElementValue("RelationsAsMethods", value); }
+            get { return ((string)driverData.Element("HideRelationsFromDump")).ToBool() ?? true; }
+            set { driverData.SetElementValue("HideRelationsFromDump", value); }
         }
 
         /// <summary>
