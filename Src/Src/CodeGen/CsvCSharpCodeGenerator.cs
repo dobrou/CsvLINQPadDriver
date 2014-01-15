@@ -10,7 +10,7 @@ namespace CsvLINQPadDriver.CodeGen
     /// <summary>
     /// Generates data context and classes source code from data model.
     /// </summary>
-    internal class CsvCSharpCodeGenerator
+    public class CsvCSharpCodeGenerator
     {
         public const string DefaultContextTypeName = "CsvDataContext";
 

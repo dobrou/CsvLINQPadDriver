@@ -7,10 +7,10 @@ namespace CsvLINQPadDriver.CodeGen
 {
     public class CsvRowMappingBase<TRow> where TRow : CsvRowBase, new()
     {
-        readonly ICollection<CsvColumnInfo> propertiesInfo;
-        internal readonly Action<TRow> relationsInit;
+        private readonly ICollection<CsvColumnInfo> propertiesInfo;
+        private readonly Action<TRow> relationsInit;
 
-        internal CsvRowMappingBase(ICollection<CsvColumnInfo> propertiesInfo, Action<TRow> relationsInit)
+        public CsvRowMappingBase(ICollection<CsvColumnInfo> propertiesInfo, Action<TRow> relationsInit)
         {
             this.propertiesInfo = propertiesInfo;
             this.relationsInit = relationsInit;

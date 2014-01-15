@@ -174,7 +174,6 @@ namespace CsvLINQPadDriver.DataModel
                 select new CsvRelation()
                 {
                     CodeName = r.t2.CodeName,
-                    DisplayName = r.c1.CodeName + "==" + r.t2.CodeName + @"." + r.c2.CodeName,
                     SourceTable = r.t1,
                     SourceColumn = r.c1,
                     TargetTable = r.t2,

@@ -110,22 +110,26 @@ namespace CsvLINQPadDriver
                 from table in db.Tables ?? Enumerable.Empty<CsvTable>()
                 select new ExplorerItem(table.DisplayName, ExplorerItemKind.QueryableObject, ExplorerIcon.Table) {
                     DragText = table.CodeName,
+                    IsEnumerable = true,        
+                    ToolTipText = table.FilePath,
                     Children = (
                         from c in table.Columns ?? Enumerable.Empty<CsvColumn>()
                         select new ExplorerItem(c.DisplayName, ExplorerItemKind.Property, ExplorerIcon.Column) 
                         {
                             DragText = c.CodeName,
+                            ToolTipText = (c.CsvColumnIndex + 1) + ":" + c.CsvColumnName,
                         }
                     ).Concat(
                         from r in table.Relations
                         select new ExplorerItem(r.DisplayName, ExplorerItemKind.CollectionLink, ExplorerIcon.ManyToMany)
                         {
                             DragText = r.CodeName,
-                            //TODO HyperlinkTarget =                             
+                            ToolTipText = string.Format("Relation to {0} where {1}.{2} == {3}.{4}", r.TargetTable.CodeName, r.SourceTable.CodeName, r.SourceColumn.CodeName, r.TargetTable.CodeName, r.TargetColumn.CodeName ),
                         }
-                    ).ToList(),
+                    ).ToList(),                    
                 }
             ).ToList();
+
             return schema;
         }
     }
