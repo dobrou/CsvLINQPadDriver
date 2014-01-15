@@ -162,7 +162,7 @@ namespace CsvLINQPadFileOpen
             }
 
             string linqfile = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName() + ".linq");
-            string linq = linqConfigCsv.Replace("{{FILES}}", string.Join(",",files)) + expression;
+            string linq = linqConfigCsv.Replace("{{FILES}}", string.Join("\n",files)) + expression;
                 
             File.WriteAllText(linqfile, linq);
             Process.Start(linqfile);
