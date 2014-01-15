@@ -8,18 +8,19 @@ using System.Linq.Expressions;
 
 namespace CsvLINQPadDriver.CodeGen
 {
-    public class CsvTableBase<TRow,TContext> : IEnumerable<TRow> where TRow : CsvRowBase<TContext>, new() where TContext : CsvDataContextBase
+    public class CsvTableBase<TRow,TContext> : IEnumerable<TRow> where TRow : CsvRowBase, new() where TContext : CsvDataContextBase
     {
         private readonly bool isDataCached;
         private LazyEnumerable<TRow> dataCache;
         internal protected TContext dataContext;
 
         internal readonly ICollection<CsvColumnInfo> PropertiesInfo;
+        internal readonly Action<TRow> RelationsInit;
 
         private readonly char csvSeparator;
         public string FileName { get; private set; }
 
-        public CsvTableBase(TContext dataContext, char csvSeparator, string fileName, ICollection<CsvColumnInfo> propertiesInfo, bool isDataCached = true)
+        public CsvTableBase(TContext dataContext, char csvSeparator, string fileName, ICollection<CsvColumnInfo> propertiesInfo, Action<TRow> relationsInit, bool isDataCached = true)
         {
             this.FileName = fileName;
             this.csvSeparator = csvSeparator;
@@ -27,11 +28,12 @@ namespace CsvLINQPadDriver.CodeGen
             this.dataContext = dataContext;
             this.dataCache = new LazyEnumerable<TRow>(() => GetDataDirect().ToList() );
             this.PropertiesInfo = propertiesInfo;
+            this.RelationsInit = relationsInit;
         }
 
         private IEnumerable<TRow> GetDataDirect()
         {
-            return FileUtils.CsvReadRows<TRow>(FileName, csvSeparator, new CsvRowMappingBase<TRow, TContext>(dataContext, PropertiesInfo));                   
+            return FileUtils.CsvReadRows(FileName, csvSeparator, new CsvRowMappingBase<TRow>(PropertiesInfo, RelationsInit));                   
         }
 
         private IEnumerable<TRow> GetDataCached()

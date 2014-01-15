@@ -4,26 +4,24 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using CsvLINQPadDriver.CodeGen;
 
 namespace CsvLINQPadDriver.Helpers
 {
     public class FileUtils
     {
 
-        public static IList<T> CsvReadRows<T>(string fileName, char csvSeparator, CsvClassMap csvClassMap = null) where T : class, new()
+        public static IList<T> CsvReadRows<T>(string fileName, char csvSeparator, CsvRowMappingBase<T> csvClassMap) where T : CsvRowBase, new()
         {
             Logger.Log("CsvReadRows<{0}> started.", typeof(T).FullName);
-            IList<T> items;
-            var csvOptions = GetReadRowsOptions(csvSeparator);
-            if (csvClassMap != null)
-                csvOptions.RegisterClassMap(csvClassMap);
+            var items = new List<T>();
 
             try
             {
-                using (var sr = new StreamReader(fileName, true))
-                using (var cr = new CsvReader(sr, csvOptions))
+                foreach (var rowRaw in CsvReadRows(fileName, csvSeparator).Skip(1))
                 {
-                    items = cr.GetRecords<T>().ToList();
+                    var row = csvClassMap.InitRowObject(rowRaw);
+                    items.Add(row);
                 }
             }
             catch (Exception ex)
@@ -37,17 +35,32 @@ namespace CsvLINQPadDriver.Helpers
             return items;
         }
 
-        private static CsvConfiguration GetReadRowsOptions(char csvSeparator) 
+        public static IEnumerable<string[]> CsvReadRows(string fileName, char csvSeparator)
+        {
+            var csvOptions = GetReadRowsOptions(csvSeparator);
+
+            using (var sr = new StreamReader(fileName, true))
+            using (var cp = new CsvParser(sr, csvOptions))
+            {
+                string[] row;
+                while ((row = cp.Read()) != null)
+                {
+                    yield return row;
+                }
+            }
+        }
+
+        private static CsvConfiguration GetReadRowsOptions(char csvSeparator)
         {
             var csvOptions = new CsvConfiguration()
-            {               
+            {
                 Delimiter = csvSeparator.ToString(),
                 HasHeaderRecord = true,
                 DetectColumnCountChanges = false,
                 IgnoreReadingExceptions = true,
                 WillThrowOnMissingField = false,
                 IgnorePrivateAccessor = true, //this enables writing to private properties
-                BufferSize = 1024*1024*5,
+                BufferSize = 1024 * 1024 * 5,
             };
             return csvOptions;
         }
@@ -58,26 +71,25 @@ namespace CsvLINQPadDriver.Helpers
             try
             {
                 using (var sr = new StreamReader(fileName, true))
-                using (var cr = new CsvReader(sr, csvOptions))
+                using (var cp = new CsvParser(sr, csvOptions))
                 {
-                    cr.Read();
-                    return cr.CurrentRecord;
+                    return cp.Read();
                 }
             }
             catch (Exception ex)
             {
                 Logger.Log("CsvReadHeader failed: {0}", ex.ToString());
-                return new string[]{ "Error: " + ex.ToString()};
+                return new string[] { "Error: " + ex.ToString() };
             }
         }
 
-        private static CsvConfiguration GetReadHeaderOptions(char csvSeparator) 
+        private static CsvConfiguration GetReadHeaderOptions(char csvSeparator)
         {
             var csvOptions = new CsvConfiguration()
             {
                 Delimiter = csvSeparator.ToString(),
                 HasHeaderRecord = false,
-                
+
             };
             return csvOptions;
         }
@@ -126,7 +138,7 @@ namespace CsvLINQPadDriver.Helpers
                     int charsCount = r1.Concat(r2).Sum(s => (s ?? "").Length);
                     int validCharsCount = r1.Concat(r2).Sum(s => Enumerable.Range(0, (s ?? "").Length).Count(i => char.IsLetterOrDigit(s, i)));
                     const double validCharsMinOKRation = 0.5;
-                    if (validCharsCount < validCharsMinOKRation*charsCount)
+                    if (validCharsCount < validCharsMinOKRation * charsCount)
                         return false;
                 }
                 return true;
@@ -145,10 +157,10 @@ namespace CsvLINQPadDriver.Helpers
         public static char CsvDetectSeparator(string fileName, string[] csvData = null)
         {
             var defaultCsvSeparators = new char[] { ',', ';', '\t' };
-            if(Path.HasExtension(fileName) && Path.GetExtension(fileName) == "tsv")
+            if (Path.HasExtension(fileName) && Path.GetExtension(fileName) == "tsv")
                 defaultCsvSeparators = new char[] { '\t', ',', ';' };
 
-            if(File.Exists(fileName))
+            if (File.Exists(fileName))
             {
                 try
                 {
@@ -169,13 +181,13 @@ namespace CsvLINQPadDriver.Helpers
                     Logger.Log("Separator detection failed: {0}", ex.ToString());
                 }
             }
-            
+
             return defaultCsvSeparators.First();
         }
 
         public static string GetLongestCommonPrefixPath(string[] paths)
         {
-            string[] pathsValid = 
+            string[] pathsValid =
                 paths
                 .Where(p => !p.StartsWith("#"))
                 .Where(p => !string.IsNullOrWhiteSpace(p))
@@ -189,7 +201,7 @@ namespace CsvLINQPadDriver.Helpers
 
         public static string[] EnumFiles(IEnumerable<string> paths)
         {
-            string[] files = 
+            string[] files =
                 paths
                 .Where(p => !p.StartsWith("#"))
                 .Where(p => !string.IsNullOrWhiteSpace(p))
@@ -208,7 +220,7 @@ namespace CsvLINQPadDriver.Helpers
                 //directly one file            
                 if (File.Exists(path))
                 {
-                    return new[] {path};
+                    return new[] { path };
                 }
 
                 var file = Path.GetFileName(path);
@@ -228,8 +240,8 @@ namespace CsvLINQPadDriver.Helpers
                     baseDir = Path.GetDirectoryName(path) ?? "";
                 }
 
-                if(!Directory.Exists(baseDir)) 
-                    return new string[]{};
+                if (!Directory.Exists(baseDir))
+                    return new string[] { };
 
                 var files = Directory.EnumerateFiles(baseDir, file, file.Contains("**") ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly).ToArray();
                 return files;
@@ -237,7 +249,7 @@ namespace CsvLINQPadDriver.Helpers
             catch (Exception ex)
             {
                 Logger.Log("Path resolve error: {0}", ex.ToString());
-                return new string[] {};
+                return new string[] { };
             }
         }
 

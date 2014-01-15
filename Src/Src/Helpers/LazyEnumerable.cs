@@ -11,7 +11,7 @@ namespace CsvLINQPadDriver.Helpers
 
         public LazyEnumerable(Func<IEnumerable<T>> dataSource)
         {
-            this.data = new Lazy<IEnumerable<T>>(dataSource, LazyThreadSafetyMode.ExecutionAndPublication);
+            this.data = new Lazy<IEnumerable<T>>(dataSource, LazyThreadSafetyMode.None);
         }
 
         public IEnumerator<T> GetEnumerator()

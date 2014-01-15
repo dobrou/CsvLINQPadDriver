@@ -2,10 +2,8 @@
 
 namespace CsvLINQPadDriver.CodeGen
 {
-    public class CsvRowBase<TContext>
+    public class CsvRowBase
     {
-        internal protected TContext Context { get; set; }
-
         /// <summary>
         /// All properties in one string, usefull for fulltext search
         /// </summary>

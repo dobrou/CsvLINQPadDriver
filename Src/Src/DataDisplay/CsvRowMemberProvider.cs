@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using CsvLINQPadDriver.CodeGen;
 using LINQPad;
@@ -9,17 +10,19 @@ namespace CsvLINQPadDriver.DataDisplay
 {
     internal class CsvRowMemberProvider : ICustomMemberProvider
     {
-        public static bool IsCsvRowType(Type t)
+        protected class ProviderData
         {
-            while (t != null)
-            {
-                if (t.IsGenericType && t.GetGenericTypeDefinition() == typeof (CsvRowBase<>)) return true;
-                t = t.BaseType;
-            }
-            return false;
+            public IList<PropertyInfo> properties;
+            public IList<FieldInfo> fields;
+            public Func<object,object[]> valuesGet;
         }
 
-        public static bool IsMemberVisible(MemberInfo member)
+        protected static bool IsSupportedType(Type t)
+        {
+            return typeof(CsvRowBase).IsAssignableFrom(t);
+        }
+
+        protected static bool IsMemberVisible(MemberInfo member)
         {
             return
                 (MemberTypes.Field | MemberTypes.Property).HasFlag(member.MemberType)
@@ -27,50 +30,73 @@ namespace CsvLINQPadDriver.DataDisplay
             ;
         }
 
+        protected static ProviderData GetProviderData(Type objectType)
+        {
+            var data = new ProviderData()
+            {
+                properties = objectType.GetProperties().Where(IsMemberVisible).ToList(),
+                fields = objectType.GetFields().Where(IsMemberVisible).ToList(),
+            };
+
+            var param = Expression.Parameter(typeof(object));
+            data.valuesGet = Expression.Lambda<Func<object,object[]>>(
+                Expression.NewArrayInit( typeof(object),
+                    Enumerable.Concat(
+                        data.properties.Select(pi => Expression.Property( Expression.TypeAs(param, objectType), pi)),
+                        data.fields.Select(fi => Expression.Field( Expression.TypeAs(param, objectType), fi))
+                    )
+                )            
+            , param).Compile();
+            
+            return data;
+        }
+
+        protected static Dictionary<Type, ProviderData> ProvidersDataCache = new Dictionary<Type, ProviderData>();
+
         public static ICustomMemberProvider GetCsvRowMemberProvider(object objectToDisplay)
         {
-            if (!IsCsvRowType(objectToDisplay.GetType()))
+            var objectType = objectToDisplay.GetType();
+            if (!IsSupportedType(objectType))
                 return null;
-            return new CsvRowMemberProvider(objectToDisplay);
+
+            ProviderData providerData;
+            if (!ProvidersDataCache.TryGetValue(objectType, out providerData))
+            {
+                providerData = GetProviderData(objectType);
+                ProvidersDataCache.Add(objectType, providerData);
+            }
+            return new CsvRowMemberProvider(objectToDisplay, providerData);
+
         }
 
         private object objectToDisplay;
-        private IList<PropertyInfo> propsToWrite;
-        private IList<FieldInfo> fieldsToWrite;
+        private ProviderData providerData;
 
-        public CsvRowMemberProvider(object objectToDisplay)
+        protected CsvRowMemberProvider(object objectToDisplay, ProviderData providerData)
         {
             this.objectToDisplay = objectToDisplay;
-            propsToWrite = objectToDisplay.GetType().GetProperties()
-                .Where(IsMemberVisible)
-                .ToList();
-            fieldsToWrite = objectToDisplay.GetType().GetFields()
-                .Where(IsMemberVisible)
-                .ToList();
+            this.providerData = providerData;
         }
 
         public IEnumerable<string> GetNames()
         {
             return Enumerable.Concat(
-                propsToWrite.Select(p => p.Name),
-                fieldsToWrite.Select(p => p.Name)
+                providerData.properties.Select(p => p.Name),
+                providerData.fields.Select(p => p.Name)
             );
         }
 
         public IEnumerable<Type> GetTypes()
         {
             return Enumerable.Concat(
-                propsToWrite.Select(p => p.PropertyType),
-                fieldsToWrite.Select(p => p.FieldType)
+                providerData.properties.Select(p => p.PropertyType),
+                providerData.fields.Select(p => p.FieldType)
             );
         }
 
         public IEnumerable<object> GetValues()
         {
-            return Enumerable.Concat(
-                propsToWrite.Select(p => p.GetValue(objectToDisplay, null)),
-                fieldsToWrite.Select(p => p.GetValue(objectToDisplay))
-            );
+            return providerData.valuesGet(objectToDisplay);
         }
     }
 }

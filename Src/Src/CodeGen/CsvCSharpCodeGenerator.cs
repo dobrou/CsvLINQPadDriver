@@ -1,5 +1,6 @@
 ﻿using CsvLINQPadDriver.DataDisplay;
 using CsvLINQPadDriver.DataModel;
+using CsvLINQPadDriver.Helpers;
 using System;
 using System.Linq;
 
@@ -11,12 +12,12 @@ namespace CsvLINQPadDriver.CodeGen
     /// </summary>
     internal class CsvCSharpCodeGenerator
     {
-        public const string defaultContextTypeName = "CsvDataContext";
+        public const string DefaultContextTypeName = "CsvDataContext";
 
         public static string GenerateCode(CsvDatabase db, ref string nameSpace, ref string typeName, CsvDataContextDriverProperties props)
         {
-            typeName = defaultContextTypeName;
-            return new CsvCSharpCodeGenerator(nameSpace, defaultContextTypeName, props).GenerateSrcFile(db);
+            typeName = DefaultContextTypeName;
+            return new CsvCSharpCodeGenerator(nameSpace, DefaultContextTypeName, props).GenerateSrcFile(db);
         }
 
         private string contextNameSpace;
@@ -56,6 +57,10 @@ namespace " + contextNameSpace + @"
                 new " + typeof(CsvColumnInfoList<>).GetCodeTypeClassName(table.GetCodeRowClassName()) + @"() { "
     + string.Join("", from c in table.Columns select @"
                     { " + c.CsvColumnIndex + @", x => x." + c.CodeName + @" }, ") + @"
+                },
+                r => { "
+    + string.Join("", from r in table.Relations select @"
+                    r." + r.CodeName + @" = new " + typeof(LazyEnumerable<>).GetCodeTypeClassName(r.TargetTable.GetCodeRowClassName()) + @"( () => " + r.TargetTable.CodeName + @".WhereIndexed( tr => tr." + r.TargetColumn.CodeName + @" , """ + r.TargetColumn.CodeName + @""", r." + r.SourceColumn.CodeName + @") );") + @"
                 }
             ); "
 ) + @"  
@@ -74,14 +79,14 @@ namespace " + contextNameSpace + @"
         internal string GenerateTableRowDataTypeClass(CsvTable table, CsvDatabase db, bool hideRelationsFromDump)
         {
             var src = @"
-    public class " + table.GetCodeRowClassName() + @" : " + typeof(CsvRowBase<>).GetCodeTypeClassName() + @"<" + contextTypeName + @">
+    public class " + table.GetCodeRowClassName() + @" : " + typeof(CsvRowBase).GetCodeTypeClassName() + @"
     {"
 + string.Join("", from c in table.Columns select @"
         public string " + c.CodeName + @" { get; set; } "
 ) + string.Join("", from rel in table.Relations select @"
         /// <summary>" + System.Security.SecurityElement.Escape(rel.DisplayName) + @"</summary> " + (hideRelationsFromDump ? @"
         [" + typeof(HideFromDumpAttribute).GetCodeTypeClassName() + "]" : "") + @"
-        public IEnumerable<" + rel.TargetTable.GetCodeRowClassName() + @"> " + rel.CodeName + @" { get { return base.Context." + rel.TargetTable.CodeName + @".WhereIndexed( r => r." + rel.TargetColumn.CodeName + @" , """ + rel.TargetColumn.CodeName + @""", this." + rel.SourceColumn.CodeName + @"); } }"
+        public IEnumerable<" + rel.TargetTable.GetCodeRowClassName() + @"> " + rel.CodeName + @" { get; set; } "
 ) + @"
     } "
 ;
