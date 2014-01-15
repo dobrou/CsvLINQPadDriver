@@ -99,7 +99,7 @@ Configuration Options
   - `c:\x\**.csv` - all files in folder `c:\x` and all sub-directories
 - CSV Separator - character used to separate columns in files. Can be `,`,`\t`, etc. If empty, separator is auto-detected.
 - Detect relations - if checked, driver will try to detect and generate relations between files.
-- Relations as methods - if checked - relations will be generated as Methods. So LINQPad will not follow relations in .Dump(). If unchecked - relations will be generated as Properties.
+- Hide relations from .Dump() - if checked - LINQPad will not show relations content in .Dump(). This prevents loading too many data.
 - Ignore files with invalid format - files with strange content not similar to CSV format will be ignored.
 - Debug info - additional debug information will be available. For example generated Data Context source.
 - Remember this connection - if checked, connection info will be saved and available after LINQPad restart.

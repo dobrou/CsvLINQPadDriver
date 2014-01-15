@@ -1,5 +1,4 @@
-﻿using CsvHelper;
-using CsvLINQPadDriver.CodeGen;
+﻿using CsvLINQPadDriver.CodeGen;
 using CsvLINQPadDriver.DataModel;
 using CsvLINQPadDriver.Helpers;
 using LINQPad.Extensibility.DataContext;
@@ -83,7 +82,7 @@ namespace CsvLINQPadDriver
                 var options = new CompilerParameters(new string[]
                     {
                         typeof(SchemaBuilder).Assembly.Location,
-                        typeof(CsvReader).Assembly.Location,
+                        typeof(CsvHelper.CsvReader).Assembly.Location,
                         "System.dll", "System.Core.dll", "System.Xml.dll", "System.Data.Services.Client.dll",
                     }){
                     IncludeDebugInformation = true, 
