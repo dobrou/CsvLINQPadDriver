@@ -50,6 +50,9 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\Src\Src\Helpers\CodeGenHelper.cs">
+      <Link>CodeGenHelper.cs</Link>
+    </Compile>
     <Compile Include="LINQPadFileOpen.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="..\..\Src\Properties\VersionInfo.cs">

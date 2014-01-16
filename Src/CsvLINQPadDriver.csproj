@@ -71,6 +71,7 @@
     <Compile Include="Src\CodeGen\CsvTableBase.cs" />
     <Compile Include="Src\CsvDataContextDriver.cs" />
     <Compile Include="Src\CsvDataContextDriverProperties.cs" />
+    <Compile Include="Src\Helpers\CodeGenHelper.cs" />
     <Compile Include="Src\Helpers\LazyEnumerable.cs" />
     <Compile Include="Src\Helpers\Logger.cs" />
     <Compile Include="Src\Helpers\StringExtensions.cs" />

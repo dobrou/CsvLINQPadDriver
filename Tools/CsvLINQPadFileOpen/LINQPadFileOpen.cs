@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
+using CsvLINQPadDriver.Helpers;
 
 namespace CsvLINQPadFileOpen
 {
@@ -157,7 +158,7 @@ namespace CsvLINQPadFileOpen
             else if (files.Length == 1 && files[0].EndsWith(".csv") && !Directory.Exists(files[0]))
             {
                 //if one file, try to get whole directory where file is
-                expression = "from x in this." + GetFileNameSafe(files[0]) + "\nwhere Regex.IsMatch( x.ToRowString(), \".*\")\nselect x";
+                expression = "from x in this." + GetFileNameSafe(files[0]) + "\nwhere Regex.IsMatch( x.ToString(), \".*\")\nselect x";
                 files = new[] {Path.GetDirectoryName(files[0])};
             }
 
@@ -172,13 +173,7 @@ namespace CsvLINQPadFileOpen
 
         static string GetFileNameSafe(string fileName)
         {
-            fileName = Path.GetFileNameWithoutExtension(fileName);
-            foreach (var ic in Path.GetInvalidFileNameChars().Concat(new []{' ',',','-','.'}))
-            {
-                fileName = fileName.Replace(ic, '_');
-            }
-            fileName = Regex.Replace(fileName, "_+", "_");
-            return fileName;
+            return CodeGenHelper.GetSafeCodeName(Path.GetFileNameWithoutExtension(fileName));
         }
 
         static string linqConfigCsv =

@@ -129,8 +129,7 @@ However, driver provides few extension methods providing easy conversion from st
 Known Issues / TODO
 --
 - Some strange Unicode chracters in column names may cause errors in generated data context source code.
-- Uniqueness of column names is not checked.
-- Writing changes on objects back to CSV is not directly supported, there is no `.SubmitChanges()` . 
+- Writing changed objects back to CSV is not directly supported, there is no `.SubmitChanges()` . But you can use LINQPad's `Util.WriteCsv`.
 
 Author
 --

@@ -1,11 +1,9 @@
 ﻿using CsvLINQPadDriver.Helpers;
 using System;
-using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 
 namespace CsvLINQPadDriver.DataModel
 {
@@ -46,13 +44,13 @@ namespace CsvLINQPadDriver.DataModel
                     let fileDir = (Path.GetDirectoryName(file.Remove(0, baseDir.Length)+"x")??"").TrimStart(Path.DirectorySeparatorChar)
                     select new CsvTable() {
                         FilePath = file,
-                        CodeName = GetSafeCodeName(Path.GetFileNameWithoutExtension(fileName) + (string.IsNullOrWhiteSpace(fileDir) ? "" : ("_" + fileDir))),
+                        CodeName = CodeGenHelper.GetSafeCodeName(Path.GetFileNameWithoutExtension(fileName) + (string.IsNullOrWhiteSpace(fileDir) ? "" : ("_" + fileDir))),
                         DisplayName = fileName + (string.IsNullOrWhiteSpace(fileDir) ? "" : (" in " + fileDir)) + " " + FileUtils.GetFileSizeInfo(file) + "",
                         CsvSeparator = csvSeparator,
                         Columns = (
                             from col in FileUtils.CsvReadHeader(file, csvSeparator).Select((value,index) => new { value, index })
                             select new CsvColumn() {
-                                CodeName = GetSafeCodeName(col.value),
+                                CodeName = CodeGenHelper.GetSafeCodeName(col.value),
                                 DisplayName = "",
                                 CsvColumnName = col.value ?? "",
                                 CsvColumnIndex = col.index,
@@ -168,7 +166,7 @@ namespace CsvLINQPadDriver.DataModel
             var relations = (
                 from r in
                     (
-                        from r in (new[] { r1 }).SelectMany(r => r)
+                        from r in (new[] { r1 }).SelectMany(r => r).Take(maximumRelationsCount)
                         select new[] { r, new { t1 = r.t2, c1 = r.c2, t2 = r.t1, c2 = r.c1 } } //add reverse direction
                     ).SelectMany(r => r).Distinct()
                 select new CsvRelation()
@@ -183,7 +181,7 @@ namespace CsvLINQPadDriver.DataModel
 
             //add relations to DB structure
             int relationCount = 0;
-            foreach (var relationsGroup in relations.Take(maximumRelationsCount).GroupBy(r => r.SourceTable))
+            foreach (var relationsGroup in relations.GroupBy(r => r.SourceTable))
             {
                 foreach (var relation in relationsGroup)
                 {
@@ -193,34 +191,6 @@ namespace CsvLINQPadDriver.DataModel
             }
 
             Logger.Log("Relations detected {0} {1}", relationCount, relationCount >= maximumRelationsCount ? "Maximum limit reached" : "");
-        }
-
-        private static readonly Regex codeNameInvalidCharacters = new Regex(@"[^\p{Ll}\p{Lu}\p{Lt}\p{Lo}\p{Nd}\p{Nl}\p{Mn}\p{Mc}\p{Cf}\p{Pc}\p{Lm}]", RegexOptions.Compiled);
-        private const string safeChar = "_";
-        private const int maxLength = 128;
-        private static string[] invalidIdentifierNames = new string[] { "System", "ToString", "Equals", "GetHashCode" };
-        private static Lazy<CodeDomProvider> csCodeProvider = new Lazy<CodeDomProvider>(() => Microsoft.CSharp.CSharpCodeProvider.CreateProvider("C#")); 
-        protected static string GetSafeCodeName(string name)
-        {
-            string safeName = name ?? "";
-
-            if (safeName.Length > maxLength)
-                safeName = safeName.Substring(0, maxLength);
-            
-            safeName = codeNameInvalidCharacters.Replace(safeName, safeChar);
-            safeName = Regex.Replace(safeName, safeChar+"+",safeChar);
-            safeName = Regex.Replace(safeName, "^"+safeChar+"+", "");
-
-            if (string.IsNullOrEmpty(safeName))
-                return safeChar + "empty";
-
-            if (!char.IsLetter(safeName, 0))
-                safeName = safeChar + safeName;
-
-            if (!csCodeProvider.Value.IsValidIdentifier(safeName) || invalidIdentifierNames.Contains(safeName))
-                safeName = safeName + safeChar;
-            
-            return safeName;
         }
 
     }
