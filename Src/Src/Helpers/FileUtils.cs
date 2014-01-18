@@ -70,8 +70,7 @@ namespace CsvLINQPadDriver.Helpers
             var csvOptions = GetReadHeaderOptions(csvSeparator);
             try
             {
-                using (var sr = new StreamReader(fileName, true))
-                using (var cp = new CsvParser(sr, csvOptions))
+                using (var cp = new CsvParser(new StreamReader(fileName, true), csvOptions))
                 {
                     return cp.Read();
                 }
@@ -115,8 +114,7 @@ namespace CsvLINQPadDriver.Helpers
                     DetectColumnCountChanges = true,
                 };
 
-                using (var sr = new StreamReader(fileName, true))
-                using (var cr = new CsvReader(sr, csvOptions))
+                using (var cr = new CsvReader(new StreamReader(fileName, true), csvOptions))
                 {
                     if (!cr.Read())
                         return false;
