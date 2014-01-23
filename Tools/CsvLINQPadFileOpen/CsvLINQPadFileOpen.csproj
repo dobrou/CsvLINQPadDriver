@@ -75,6 +75,12 @@
     <EmbeddedResource Include="..\..\Src\bin\Debug\CsvLINQPadDriver.dll">
       <Link>DriverBinaries\CsvLINQPadDriver.dll</Link>
     </EmbeddedResource>
+    <EmbeddedResource Include="..\..\Src\bin\Debug\Connection.png">
+      <Link>DriverBinaries\Connection.png</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\Src\bin\Debug\FailedConnection.png">
+      <Link>DriverBinaries\FailedConnection.png</Link>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Icon.ico" />

@@ -1,4 +1,5 @@
-﻿using CsvLINQPadDriver.DataDisplay;
+﻿using System.IO;
+using CsvLINQPadDriver.DataDisplay;
 using CsvLINQPadDriver.DataModel;
 using CsvLINQPadDriver.Helpers;
 using System;
@@ -45,22 +46,22 @@ namespace " + contextNameSpace + @"
     { "
 + string.Join("", from table in db.Tables select @"
         /// <summary>File: "+ System.Security.SecurityElement.Escape(table.FilePath) +@"</summary>
-        public " + typeof(CsvTableBase<,>).GetCodeTypeClassName(table.GetCodeRowClassName(), contextTypeName) + @" " + table.CodeName + @" { get; private set; }"
+        public " + typeof(CsvTableBase<>).GetCodeTypeClassName(table.GetCodeRowClassName()) + @" " + table.CodeName + @" { get; private set; }"
 ) + @"       
 
         public " + contextTypeName + @"()
         {
             //Init tables data " 
 + string.Join("", from table in db.Tables select @"
-            this." + table.CodeName + @" = new " + typeof(CsvTableBase<,>).GetCodeTypeClassName(table.GetCodeRowClassName(), contextTypeName) + @"( this,
-                '" + table.CsvSeparator + @"', @""" + table.FilePath + @""",
+            this." + table.CodeName + @" = new " + typeof(CsvTableBase<>).GetCodeTypeClassName(table.GetCodeRowClassName()) + @"(
+                " + table.CsvSeparator.GetCodeCharEscaped() + @", " + table.FilePath.GetCodeStringEscaped() + @",
                 new " + typeof(CsvColumnInfoList<>).GetCodeTypeClassName(table.GetCodeRowClassName()) + @"() { "
     + string.Join("", from c in table.Columns select @"
                     { " + c.CsvColumnIndex + @", x => x." + c.CodeName + @" }, ") + @"
                 },
                 r => { "
     + string.Join("", from r in table.Relations select @"
-                    r." + r.CodeName + @" = new " + typeof(LazyEnumerable<>).GetCodeTypeClassName(r.TargetTable.GetCodeRowClassName()) + @"( () => " + r.TargetTable.CodeName + @".WhereIndexed( tr => tr." + r.TargetColumn.CodeName + @" , """ + r.TargetColumn.CodeName + @""", r." + r.SourceColumn.CodeName + @") );") + @"
+                    r." + r.CodeName + @" = new " + typeof(LazyEnumerable<>).GetCodeTypeClassName(r.TargetTable.GetCodeRowClassName()) + @"( () => " + r.TargetTable.CodeName + @".WhereIndexed( tr => tr." + r.TargetColumn.CodeName + @" , " + r.TargetColumn.CodeName.GetCodeStringEscaped() + @", r." + r.SourceColumn.CodeName + @") );") + @"
                 }
             ); "
 ) + @"  
@@ -97,7 +98,7 @@ namespace " + contextNameSpace + @"
 
     internal static class CsvCSharpCodeGeneratorExtensions
     {
-        static internal string GetCodeRowClassName(this CsvTable table)
+        static public string GetCodeRowClassName(this CsvTable table)
         {
             return "T" + table.CodeName;
         }
@@ -105,6 +106,32 @@ namespace " + contextNameSpace + @"
         {
             return type.FullName.Split('`')[0] + (genericParameters.Length == 0 ? "" : "<" + string.Join(",", genericParameters) + ">");
         }
+
+        /// <summary>
+        /// Transorm string into form suitable to be pasted into source code.
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        public static string GetCodeStringEscaped(this string input)
+        {
+            using (var sw = new StringWriter())
+            using (var codeProvider = new Microsoft.CSharp.CSharpCodeProvider())
+            {
+                codeProvider.GenerateCodeFromExpression(new System.CodeDom.CodePrimitiveExpression(input), sw, null);
+                return sw.ToString();
+            }
+        }
+
+        public static string GetCodeCharEscaped(this char input)
+        {
+            using (var sw = new StringWriter())
+            using (var codeProvider = new Microsoft.CSharp.CSharpCodeProvider())
+            {
+                codeProvider.GenerateCodeFromExpression(new System.CodeDom.CodePrimitiveExpression(input), sw, null);
+                return sw.ToString();
+            }
+        }
+
     }
 
 }

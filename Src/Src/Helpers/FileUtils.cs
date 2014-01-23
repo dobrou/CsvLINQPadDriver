@@ -10,37 +10,42 @@ namespace CsvLINQPadDriver.Helpers
 {
     public class FileUtils
     {
-
         public static IList<T> CsvReadRows<T>(string fileName, char csvSeparator, CsvRowMappingBase<T> csvClassMap) where T : CsvRowBase, new()
         {
             Logger.Log("CsvReadRows<{0}> started.", typeof(T).FullName);
-            var items = new List<T>();
-
+            
+            var rows = new List<T>();
             try
             {
-                foreach (var rowRaw in CsvReadRows(fileName, csvSeparator).Skip(1))
+                foreach (var rowRaw in CsvReadRows(fileName, csvSeparator).Skip(1) /*skip csv header*/)
                 {
                     var row = csvClassMap.InitRowObject(rowRaw);
-                    items.Add(row);
+                    rows.Add(row);
                 }
             }
             catch (Exception ex)
             {
                 Logger.Log("CsvReadRows<{0}> failed: {1}", typeof(T).FullName, ex.ToString());
-                //return new T[] { };
                 throw;
             }
 
-            Logger.Log("CsvReadRows<{0}> finished. Loaded {1} items.", typeof(T).FullName, items.Count);
-            return items;
+            Logger.Log("CsvReadRows<{0}> finished. Loaded {1} items.", typeof(T).FullName, rows.Count);
+            return rows;
         }
 
-        public static IEnumerable<string[]> CsvReadRows(string fileName, char csvSeparator)
+        private static IEnumerable<string[]> CsvReadRows(string fileName, char csvSeparator)
         {
-            var csvOptions = GetReadRowsOptions(csvSeparator);
+            var csvOptions = new CsvConfiguration()
+            {
+                Delimiter = csvSeparator.ToString(),
+                HasHeaderRecord = false,
+                DetectColumnCountChanges = false,
+                IgnoreReadingExceptions = true,
+                WillThrowOnMissingField = false,
+                BufferSize = 1024 * 1024 * 5,
+            };
 
-            using (var sr = new StreamReader(fileName, true))
-            using (var cp = new CsvParser(sr, csvOptions))
+            using (var cp = new CsvParser(new StreamReader(fileName, true), csvOptions))
             {
                 string[] row;
                 while ((row = cp.Read()) != null)
@@ -50,24 +55,14 @@ namespace CsvLINQPadDriver.Helpers
             }
         }
 
-        private static CsvConfiguration GetReadRowsOptions(char csvSeparator)
+        public static string[] CsvReadHeader(string fileName, char csvSeparator)
         {
             var csvOptions = new CsvConfiguration()
             {
                 Delimiter = csvSeparator.ToString(),
-                HasHeaderRecord = true,
-                DetectColumnCountChanges = false,
-                IgnoreReadingExceptions = true,
-                WillThrowOnMissingField = false,
-                IgnorePrivateAccessor = true, //this enables writing to private properties
-                BufferSize = 1024 * 1024 * 5,
+                HasHeaderRecord = false,
             };
-            return csvOptions;
-        }
 
-        public static string[] CsvReadHeader(string fileName, char csvSeparator)
-        {
-            var csvOptions = GetReadHeaderOptions(csvSeparator);
             try
             {
                 using (var cp = new CsvParser(new StreamReader(fileName, true), csvOptions))
@@ -80,17 +75,6 @@ namespace CsvLINQPadDriver.Helpers
                 Logger.Log("CsvReadHeader failed: {0}", ex.ToString());
                 return new string[] { "Error: " + ex.ToString() };
             }
-        }
-
-        private static CsvConfiguration GetReadHeaderOptions(char csvSeparator)
-        {
-            var csvOptions = new CsvConfiguration()
-            {
-                Delimiter = csvSeparator.ToString(),
-                HasHeaderRecord = false,
-
-            };
-            return csvOptions;
         }
 
         /// <summary>
@@ -114,19 +98,19 @@ namespace CsvLINQPadDriver.Helpers
                     DetectColumnCountChanges = true,
                 };
 
-                using (var cr = new CsvReader(new StreamReader(fileName, true), csvOptions))
-                {
-                    if (!cr.Read())
+                using (var cr = new CsvParser(new StreamReader(fileName, true), csvOptions))
+                {                    
+                    string[] r1 = cr.Read();
+                    if (r1 == null)
                         return false;
-                    var r1 = cr.CurrentRecord;
 
-                    //0 or 1 column
+                    //0 or 1 columns
                     if (r1.Length <= 1)
                         return false;
 
-                    if (!cr.Read())
+                    string[] r2 = cr.Read();
+                    if (r2 == null)
                         return false;
-                    var r2 = cr.CurrentRecord;
 
                     //different count of columns
                     if (r1.Length != r2.Length)
@@ -254,6 +238,7 @@ namespace CsvLINQPadDriver.Helpers
 
         private static readonly string[] sizeUnits = new string[] { "B", "KB", "MB", "GB", "TB" };
         private const long sizeUnitsStep = 1024;
+
         /// <summary>
         /// Return file size in human readable format with best matching size units. (B,KB...)
         /// </summary>
@@ -271,19 +256,32 @@ namespace CsvLINQPadDriver.Helpers
                 }
                 else
                 {
-                    int sizeUnitRank = Math.Min(sizeUnits.Length - 1, (int)Math.Log(size, sizeUnitsStep));
-                    double sizeInUnit = size / Math.Pow(sizeUnitsStep, sizeUnitRank);
-                    sizeInfo = sizeInUnit.ToString("0.#") + " " + sizeUnits[sizeUnitRank];
+                    sizeInfo = GetSizeInfo(size);
                 }
             }
             catch (Exception ex)
             {
-                if (ex is IOException || ex is FileNotFoundException)
+                if (ex is IOException)
                 {
-                    sizeInfo = "Error";
+                    sizeInfo = "??" + sizeUnits.First();
                 }
-                throw;
+                else
+                {
+                    throw;
+                }
             }
+            return sizeInfo;            
+        }
+        /// <summary>
+        /// Return file size in human readable format with best matching size units. (B,KB...)
+        /// </summary>
+        /// <param name="sizeBytes"></param>
+        /// <returns></returns>
+        public static string GetSizeInfo(long sizeBytes)
+        {
+            int sizeUnitRank = Math.Min(sizeUnits.Length - 1, (int)Math.Log(sizeBytes, sizeUnitsStep));
+            double sizeInUnit = sizeBytes / Math.Pow(sizeUnitsStep, sizeUnitRank);
+            var sizeInfo = sizeInUnit.ToString("0.#") + " " + sizeUnits[sizeUnitRank];
             return sizeInfo;
         }
 

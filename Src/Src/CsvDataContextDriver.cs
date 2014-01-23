@@ -37,11 +37,6 @@ namespace CsvLINQPadDriver
             return CsvRowMemberProvider.GetCsvRowMemberProvider(objectToWrite) ?? base.GetCustomDisplayMemberProvider(objectToWrite);
         }
 
-        public override void DisplayObjectInGrid(object objectToDisplay, GridOptions options)
-        {
-            base.DisplayObjectInGrid(objectToDisplay, options);
-        }
-
         public override Version Version
         {
             get { return Assembly.GetExecutingAssembly().GetName().Version; }

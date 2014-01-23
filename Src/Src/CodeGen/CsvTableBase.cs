@@ -4,36 +4,34 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Linq.Expressions;
 
 namespace CsvLINQPadDriver.CodeGen
 {
-    public class CsvTableBase<TRow,TContext> : IEnumerable<TRow> where TRow : CsvRowBase, new() where TContext : CsvDataContextBase
+
+    public class CsvTableBase<TRow> : IEnumerable<TRow> where TRow : CsvRowBase, new()
     {
         private readonly bool isDataCached;
-        private LazyEnumerable<TRow> dataCache;
-        internal protected TContext dataContext;
+        private readonly LazyEnumerable<TRow> dataCache;
 
         internal readonly ICollection<CsvColumnInfo> PropertiesInfo;
         internal readonly Action<TRow> RelationsInit;
 
-        private readonly char csvSeparator;
-        public string FileName { get; private set; }
+        public char CsvSeparator { get; private set; }
+        public string FilePath { get; private set; }
 
-        public CsvTableBase(TContext dataContext, char csvSeparator, string fileName, ICollection<CsvColumnInfo> propertiesInfo, Action<TRow> relationsInit, bool isDataCached = true)
+        public CsvTableBase(char csvSeparator, string filePath, ICollection<CsvColumnInfo> propertiesInfo, Action<TRow> relationsInit, bool isDataCached = true)
         {
-            this.FileName = fileName;
-            this.csvSeparator = csvSeparator;
-            this.isDataCached = isDataCached;
-            this.dataContext = dataContext;
-            this.dataCache = new LazyEnumerable<TRow>(() => GetDataDirect().ToList() );
+            this.CsvSeparator = csvSeparator;
+            this.FilePath = filePath;
             this.PropertiesInfo = propertiesInfo;
             this.RelationsInit = relationsInit;
+            this.isDataCached = isDataCached;
+            this.dataCache = new LazyEnumerable<TRow>(() => GetDataDirect().ToList());
         }
 
         private IEnumerable<TRow> GetDataDirect()
         {
-            return FileUtils.CsvReadRows(FileName, csvSeparator, new CsvRowMappingBase<TRow>(PropertiesInfo, RelationsInit));                   
+            return FileUtils.CsvReadRows(FilePath, CsvSeparator, new CsvRowMappingBase<TRow>(PropertiesInfo, RelationsInit));                   
         }
 
         private IEnumerable<TRow> GetDataCached()
@@ -54,7 +52,7 @@ namespace CsvLINQPadDriver.CodeGen
 
         public void OpenInNotepad()
         {
-            Process.Start("notepad", this.FileName);
+            Process.Start("notepad", this.FilePath);
         }
 
         /// <summary>

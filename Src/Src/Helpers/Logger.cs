@@ -7,7 +7,7 @@ namespace CsvLINQPadDriver.Helpers
 {
     public class Logger : List<string>
     {
-        public static bool LogEnabled = true;
+        public static bool LogEnabled = false;
         public static readonly Logger Instance = new Logger();
         
         private Stopwatch sw = new Stopwatch();
