@@ -12,7 +12,7 @@ namespace CsvLINQPadDriver
     {
         public override string GetConnectionDescription(IConnectionInfo cxInfo)
         {
-            return "CSV: " + FileUtils.GetLongestCommonPrefixPath(new CsvDataContextDriverProperties(cxInfo).Files.Split('\n'));
+            return FileUtils.GetLongestCommonPrefixPath(new CsvDataContextDriverProperties(cxInfo).Files.Split('\n'));
         }
 
         public override bool ShowConnectionDialog(IConnectionInfo cxInfo, bool isNewConnection)

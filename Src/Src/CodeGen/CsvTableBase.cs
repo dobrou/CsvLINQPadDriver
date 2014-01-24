@@ -1,4 +1,5 @@
-﻿using CsvLINQPadDriver.Helpers;
+﻿using System.Threading;
+using CsvLINQPadDriver.Helpers;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -11,7 +12,7 @@ namespace CsvLINQPadDriver.CodeGen
     public class CsvTableBase<TRow> : IEnumerable<TRow> where TRow : CsvRowBase, new()
     {
         private readonly bool isDataCached;
-        private readonly LazyEnumerable<TRow> dataCache;
+        private readonly Lazy<IEnumerable<TRow>> dataCache; //TODO consider using WeakReference
 
         internal readonly ICollection<CsvColumnInfo> PropertiesInfo;
         internal readonly Action<TRow> RelationsInit;
@@ -26,7 +27,7 @@ namespace CsvLINQPadDriver.CodeGen
             this.PropertiesInfo = propertiesInfo;
             this.RelationsInit = relationsInit;
             this.isDataCached = isDataCached;
-            this.dataCache = new LazyEnumerable<TRow>(() => GetDataDirect().ToList());
+            this.dataCache = new Lazy<IEnumerable<TRow>>(() => GetDataDirect().ToList(), LazyThreadSafetyMode.ExecutionAndPublication);
         }
 
         private IEnumerable<TRow> GetDataDirect()
@@ -36,7 +37,7 @@ namespace CsvLINQPadDriver.CodeGen
 
         private IEnumerable<TRow> GetDataCached()
         {
-            return dataCache;
+            return dataCache.Value;
         }
 
         public IEnumerator<TRow> GetEnumerator()

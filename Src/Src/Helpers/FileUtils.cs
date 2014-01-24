@@ -10,27 +10,14 @@ namespace CsvLINQPadDriver.Helpers
 {
     public class FileUtils
     {
-        public static IList<T> CsvReadRows<T>(string fileName, char csvSeparator, CsvRowMappingBase<T> csvClassMap) where T : CsvRowBase, new()
+        public static IEnumerable<T> CsvReadRows<T>(string fileName, char csvSeparator, CsvRowMappingBase<T> csvClassMap) where T : CsvRowBase, new()
         {
             Logger.Log("CsvReadRows<{0}> started.", typeof(T).FullName);
-            
-            var rows = new List<T>();
-            try
-            {
-                foreach (var rowRaw in CsvReadRows(fileName, csvSeparator).Skip(1) /*skip csv header*/)
-                {
-                    var row = csvClassMap.InitRowObject(rowRaw);
-                    rows.Add(row);
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.Log("CsvReadRows<{0}> failed: {1}", typeof(T).FullName, ex.ToString());
-                throw;
-            }
 
-            Logger.Log("CsvReadRows<{0}> finished. Loaded {1} items.", typeof(T).FullName, rows.Count);
-            return rows;
+            return CsvReadRows(fileName, csvSeparator)
+                .Skip(1) /*skip csv header*/
+                .Select(csvClassMap.InitRowObject)
+            ;
         }
 
         private static IEnumerable<string[]> CsvReadRows(string fileName, char csvSeparator)
@@ -67,7 +54,7 @@ namespace CsvLINQPadDriver.Helpers
             {
                 using (var cp = new CsvParser(new StreamReader(fileName, true), csvOptions))
                 {
-                    return cp.Read();
+                    return cp.Read() ?? new string[0];
                 }
             }
             catch (Exception ex)
@@ -95,7 +82,7 @@ namespace CsvLINQPadDriver.Helpers
                 {
                     Delimiter = csvSeparator.ToString(),
                     HasHeaderRecord = false,
-                    DetectColumnCountChanges = true,
+                    DetectColumnCountChanges = false,
                 };
 
                 using (var cr = new CsvParser(new StreamReader(fileName, true), csvOptions))
