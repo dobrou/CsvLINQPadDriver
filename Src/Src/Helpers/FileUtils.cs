@@ -106,8 +106,8 @@ namespace CsvLINQPadDriver.Helpers
                     //too many strange characters
                     int charsCount = r1.Concat(r2).Sum(s => (s ?? "").Length);
                     int validCharsCount = r1.Concat(r2).Sum(s => Enumerable.Range(0, (s ?? "").Length).Count(i => char.IsLetterOrDigit(s, i)));
-                    const double validCharsMinOKRation = 0.5;
-                    if (validCharsCount < validCharsMinOKRation * charsCount)
+                    const double validCharsMinOKRatio = 0.5;
+                    if (validCharsCount < validCharsMinOKRatio * charsCount)
                         return false;
                 }
                 return true;
@@ -125,9 +125,17 @@ namespace CsvLINQPadDriver.Helpers
 
         public static char CsvDetectSeparator(string fileName, string[] csvData = null)
         {
-            var defaultCsvSeparators = new char[] { ',', ';', '\t' };
-            if (Path.HasExtension(fileName) && Path.GetExtension(fileName) == "tsv")
-                defaultCsvSeparators = new char[] { '\t', ',', ';' };
+            char[] defaultCsvSeparators;
+            switch (Path.GetExtension(fileName))
+            { 
+                case "tsv":
+                    defaultCsvSeparators = new char[] { '\t', ',', ';' };
+                    break;
+                case "csv":
+                default:
+                    defaultCsvSeparators = new char[] { ',', ';', '\t' };
+                    break;
+            }                
 
             if (File.Exists(fileName))
             {
@@ -237,25 +245,11 @@ namespace CsvLINQPadDriver.Helpers
             try
             {
                 var size = new FileInfo(fileName).Length;
-                if (size <= 0)
-                {
-                    sizeInfo = "0" + sizeUnits.First();
-                }
-                else
-                {
-                    sizeInfo = GetSizeInfo(size);
-                }
+                sizeInfo = GetSizeInfo(size);
             }
-            catch (Exception ex)
+            catch (IOException)
             {
-                if (ex is IOException)
-                {
-                    sizeInfo = "??" + sizeUnits.First();
-                }
-                else
-                {
-                    throw;
-                }
+                sizeInfo = "?? " + sizeUnits.First();
             }
             return sizeInfo;            
         }
@@ -266,7 +260,10 @@ namespace CsvLINQPadDriver.Helpers
         /// <returns></returns>
         public static string GetSizeInfo(long sizeBytes)
         {
-            int sizeUnitRank = Math.Min(sizeUnits.Length - 1, (int)Math.Log(sizeBytes, sizeUnitsStep));
+            if(sizeBytes == 0)
+                return "0 " + sizeUnits.First();
+
+            int sizeUnitRank = Math.Min(sizeUnits.Length - 1, (int)Math.Log(Math.Abs((double)sizeBytes), sizeUnitsStep));
             double sizeInUnit = sizeBytes / Math.Pow(sizeUnitsStep, sizeUnitRank);
             var sizeInfo = sizeInUnit.ToString("0.#") + " " + sizeUnits[sizeUnitRank];
             return sizeInfo;

@@ -11,14 +11,32 @@ namespace CsvLINQPadDriver.CodeGen
 
     public class CsvTableBase
     {
-        public static bool IsDataCached = true;
-        public static bool IsDataCachedStatic = false;
+        public enum DataCacheTypeEnum 
+        { 
+            /// <summary>
+            /// No Caching of data read from file. Multiple enumerations of file content results in multiple reads and parsing of file.
+            /// Can be significantly slower for complex queries.
+            /// Significantly reduces memory usage. Useful when reading very large files.
+            /// </summary>
+            Disabled,
+            /// <summary>
+            /// Parsed rows from file are cached during one query run.
+            /// </summary>
+            Enabled,
+            /// <summary>
+            /// Parsed rows from file are cached in static cache.
+            /// This cache survives multiple query runs, even when query is changed.
+            /// Chache is cleared as soon as LINQPad clears Application Domain of query.
+            /// </summary>
+            EnabledStatic,
+        }
+
+        public static DataCacheTypeEnum DataCacheType = DataCacheTypeEnum.Enabled;
     }
 
     public class CsvTableBase<TRow> : CsvTableBase, IEnumerable<TRow> where TRow : CsvRowBase, new()
     {
-        private readonly Lazy<IEnumerable<TRow>> dataCache;
-        private static IEnumerable<TRow> dataCacheStatic = null;
+        private Lazy<IEnumerable<TRow>> dataCache;
 
         internal readonly ICollection<CsvColumnInfo> PropertiesInfo;
         internal readonly Action<TRow> RelationsInit;
@@ -40,22 +58,26 @@ namespace CsvLINQPadDriver.CodeGen
             return FileUtils.CsvReadRows(FilePath, CsvSeparator, new CsvRowMappingBase<TRow>(PropertiesInfo, RelationsInit));                   
         }
 
-        private IEnumerable<TRow> GetDataCached()
-        {
-            if (IsDataCachedStatic)
-            {
-                return dataCacheStatic ?? (dataCacheStatic = dataCache.Value);
-            }
-            else
-            {
-                return dataCache.Value;
-            }
-        }
-
         public IEnumerator<TRow> GetEnumerator()
         {
-            Logger.Log("CsvTableBase<{0}>.GetEnumerator cached:{1}", typeof(TRow).FullName, IsDataCached);
-            return (IsDataCached ? GetDataCached() : GetDataDirect()).GetEnumerator();
+            Logger.Log("CsvTableBase<{0}>.GetEnumerator cache:{1}", typeof(TRow).FullName, DataCacheType.ToString());
+
+            IEnumerable<TRow> data;
+            switch (DataCacheType)
+            {
+                case DataCacheTypeEnum.Disabled:
+                    data = GetDataDirect();
+                    break;
+                case DataCacheTypeEnum.EnabledStatic:
+                    data = LINQPad.Extensions.Cache(GetDataDirect(), typeof(TRow).Name + ":" + FilePath);
+                    break;
+                case DataCacheTypeEnum.Enabled:
+                default:
+                    data = dataCache.Value;
+                    break;
+            }
+
+            return data.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -80,7 +102,11 @@ namespace CsvLINQPadDriver.CodeGen
         {
             CsvLINQPadDriver.Helpers.Logger.Log("{0}.Where({1},{2})", typeof(TRow).Name, propertyName, string.Join(",", values));
 
-            if (IsDataCached)
+            if (DataCacheType == DataCacheTypeEnum.Disabled)
+            {
+                return this.Where(r => values.Contains(getProperty(r), StringComparer.Ordinal));
+            }
+            else
             {
                 ILookup<string, TRow> propertyIndex;
                 if (!indexes.TryGetValue(propertyName, out propertyIndex))
@@ -90,10 +116,6 @@ namespace CsvLINQPadDriver.CodeGen
                 }
                 var result = values.SelectMany(value => propertyIndex[value]);
                 return values.Length > 1 ? result.Distinct() : result;
-            }
-            else
-            {
-                return this.Where(r => values.Contains(getProperty(r), StringComparer.Ordinal));
             }
         }
     }
