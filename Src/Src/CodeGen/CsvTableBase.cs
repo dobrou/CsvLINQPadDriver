@@ -58,10 +58,8 @@ namespace CsvLINQPadDriver.CodeGen
             return FileUtils.CsvReadRows(FilePath, CsvSeparator, new CsvRowMappingBase<TRow>(PropertiesInfo, RelationsInit));                   
         }
 
-        public IEnumerator<TRow> GetEnumerator()
+        private IEnumerable<TRow> GetData()
         {
-            Logger.Log("CsvTableBase<{0}>.GetEnumerator cache:{1}", typeof(TRow).FullName, DataCacheType.ToString());
-
             IEnumerable<TRow> data;
             switch (DataCacheType)
             {
@@ -76,8 +74,25 @@ namespace CsvLINQPadDriver.CodeGen
                     data = dataCache.Value;
                     break;
             }
+            return data;
+        }
 
-            return data.GetEnumerator();
+        public IEnumerator<TRow> GetEnumerator()
+        {
+            Logger.Log("CsvTableBase<{0}>.GetEnumerator cache:{1}", typeof(TRow).FullName, DataCacheType.ToString());
+
+            try
+            {
+                return GetData().GetEnumerator();
+            }
+            catch (OutOfMemoryException oex)
+            {
+                if (DataCacheType == DataCacheTypeEnum.Disabled)
+                {
+                    throw;
+                }
+                throw new OutOfMemoryException("Prevent OOM exceptions by disabling CSV files cache. Add following setting to the query beginning: CsvLINQPadDriver.CodeGen.CsvTableBase.DataCacheType = CsvLINQPadDriver.CodeGen.CsvTableBase.DataCacheTypeEnum.Disabled;", oex);
+            }            
         }
 
         IEnumerator IEnumerable.GetEnumerator()
