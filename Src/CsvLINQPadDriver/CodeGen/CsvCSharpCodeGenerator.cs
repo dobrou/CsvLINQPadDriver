@@ -15,7 +15,7 @@ namespace CsvLINQPadDriver.CodeGen
     {
         public const string DefaultContextTypeName = "CsvDataContext";
 
-        public static string GenerateCode(CsvDatabase db, ref string nameSpace, ref string typeName, CsvDataContextDriverProperties props)
+        public static string GenerateCode(CsvDatabase db, ref string nameSpace, ref string typeName, ICsvDataContextDriverProperties props)
         {
             typeName = DefaultContextTypeName;
             return new CsvCSharpCodeGenerator(nameSpace, DefaultContextTypeName, props).GenerateSrcFile(db);
@@ -23,9 +23,9 @@ namespace CsvLINQPadDriver.CodeGen
 
         private string contextNameSpace;
         private string contextTypeName;
-        private CsvDataContextDriverProperties properties;
+        private ICsvDataContextDriverProperties properties;
       
-        public CsvCSharpCodeGenerator(string contextNameSpace, string contextTypeName, CsvDataContextDriverProperties properties)
+        public CsvCSharpCodeGenerator(string contextNameSpace, string contextTypeName, ICsvDataContextDriverProperties properties)
         {
             this.contextNameSpace = contextNameSpace;
             this.contextTypeName = contextTypeName;

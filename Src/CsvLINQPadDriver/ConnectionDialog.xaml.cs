@@ -12,7 +12,7 @@ namespace CsvLINQPadDriver
 	public partial class ConnectionDialog : Window
 	{
 	
-        public ConnectionDialog(CsvDataContextDriverProperties properties)
+        public ConnectionDialog(ICsvDataContextDriverProperties properties)
 		{
             DataContext = properties;
 			Background = SystemColors.ControlBrush;

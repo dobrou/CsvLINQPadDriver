@@ -15,14 +15,14 @@ namespace CsvLINQPadDriver.DataModel
         /// </summary>
         /// <param name="props"></param>
         /// <returns></returns>
-        public static CsvDatabase CreateModel(CsvDataContextDriverProperties props)
+        public static CsvDatabase CreateModel(ICsvDataContextDriverProperties props)
         {
             return new CsvDataModelGenerator(props).CreateModel();
         }
 
-        protected CsvDataContextDriverProperties Properties;
+        protected ICsvDataContextDriverProperties Properties;
 
-        public CsvDataModelGenerator(CsvDataContextDriverProperties properties)
+        public CsvDataModelGenerator(ICsvDataContextDriverProperties properties)
         {
             this.Properties = properties;
         }

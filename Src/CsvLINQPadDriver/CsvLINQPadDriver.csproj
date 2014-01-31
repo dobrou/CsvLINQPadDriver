@@ -57,6 +57,7 @@
     <None Include="DevDeploy.bat">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <Compile Include="ICsvDataContextDriverProperties.cs" />
     <Compile Include="Properties\VersionInfo.cs" />
     <Compile Include="CodeGen\CsvColumnInfo.cs" />
     <Compile Include="CodeGen\CsvCSharpCodeGenerator.cs" />

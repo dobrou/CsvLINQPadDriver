@@ -15,7 +15,7 @@ namespace CsvLINQPadDriver
     internal class SchemaBuilder
     {
 
-        internal static List<ExplorerItem> GetSchemaAndBuildAssembly(CsvDataContextDriverProperties props, AssemblyName assemblyName, ref string nameSpace, ref string typeName)
+        internal static List<ExplorerItem> GetSchemaAndBuildAssembly(ICsvDataContextDriverProperties props, AssemblyName assemblyName, ref string nameSpace, ref string typeName)
         {
             Logger.LogEnabled = props.DebugInfo;
             Logger.Log("Build started: " + props.Files);
@@ -104,7 +104,7 @@ namespace CsvLINQPadDriver
         /// </summary>
         /// <param name="db"></param>
         /// <returns></returns>
-        private static List<ExplorerItem> GetSchema(CsvDatabase db, CsvDataContextDriverProperties props)
+        private static List<ExplorerItem> GetSchema(CsvDatabase db, ICsvDataContextDriverProperties props)
         {
             var schema = (
                 from table in db.Tables ?? Enumerable.Empty<CsvTable>()

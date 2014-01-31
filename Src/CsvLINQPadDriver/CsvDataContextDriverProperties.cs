@@ -10,7 +10,7 @@ namespace CsvLINQPadDriver
     /// <summary>
     /// Wrapper to expose typed properties over ConnectionInfo.DriverData.
     /// </summary>
-    public class CsvDataContextDriverProperties
+    public class CsvDataContextDriverProperties : ICsvDataContextDriverProperties
     {
         readonly IConnectionInfo cxInfo;
         readonly XElement driverData;
