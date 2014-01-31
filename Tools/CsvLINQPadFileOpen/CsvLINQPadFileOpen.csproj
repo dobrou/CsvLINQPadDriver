@@ -18,7 +18,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>..\..\bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -27,7 +27,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>..\..\bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -40,9 +40,10 @@
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
-    <SignAssembly>false</SignAssembly>
+    <SignAssembly>true</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
+    <AssemblyOriginatorKeyFile>..\..\Src\CsvLINQPadDriver\CsvLINQPadDriver.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -50,12 +51,12 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\Src\Src\Helpers\CodeGenHelper.cs">
+    <Compile Include="..\..\Src\CsvLINQPadDriver\Helpers\CodeGenHelper.cs">
       <Link>CodeGenHelper.cs</Link>
     </Compile>
     <Compile Include="LINQPadFileOpen.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="..\..\Src\Properties\VersionInfo.cs">
+    <Compile Include="..\..\Src\CsvLINQPadDriver\Properties\VersionInfo.cs">
       <Link>Properties\VersionInfo.cs</Link>
     </Compile>
   </ItemGroup>
@@ -69,16 +70,16 @@
     <EmbeddedResource Include="..\..\Deploy\header.xml">
       <Link>DriverBinaries\header.xml</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\Src\bin\Debug\CsvHelper.dll">
+    <EmbeddedResource Include="..\..\bin\Debug\CsvHelper.dll">
       <Link>DriverBinaries\CsvHelper.dll</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\Src\bin\Debug\CsvLINQPadDriver.dll">
+    <EmbeddedResource Include="..\..\bin\Debug\CsvLINQPadDriver.dll">
       <Link>DriverBinaries\CsvLINQPadDriver.dll</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\Src\bin\Debug\Connection.png">
+    <EmbeddedResource Include="..\..\Src\CsvLINQPadDriver\Connection.png">
       <Link>DriverBinaries\Connection.png</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\Src\bin\Debug\FailedConnection.png">
+    <EmbeddedResource Include="..\..\Src\CsvLINQPadDriver\FailedConnection.png">
       <Link>DriverBinaries\FailedConnection.png</Link>
     </EmbeddedResource>
   </ItemGroup>

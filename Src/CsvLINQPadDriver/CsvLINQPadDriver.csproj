@@ -17,7 +17,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>..\..\bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -25,7 +25,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>..\..\bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -38,7 +38,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="CsvHelper">
-      <HintPath>packages\CsvHelper.2.3.0\lib\net40-client\CsvHelper.dll</HintPath>
+      <HintPath>..\..\packages\CsvHelper.2.4.0\lib\net40-client\CsvHelper.dll</HintPath>
     </Reference>
     <Reference Include="LINQPad">
       <HintPath>C:\Program Files (x86)\LINQPad4\LINQPad.exe</HintPath>
@@ -58,37 +58,37 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <Compile Include="Properties\VersionInfo.cs" />
-    <Compile Include="Src\CodeGen\CsvColumnInfo.cs" />
-    <Compile Include="Src\CodeGen\CsvCSharpCodeGenerator.cs" />
-    <Compile Include="Src\CodeGen\CsvDataContextBase.cs" />
-    <Compile Include="Src\CodeGen\CsvRowMappingBase.cs" />
-    <Compile Include="Src\ConnectionDialog.xaml.cs">
+    <Compile Include="CodeGen\CsvColumnInfo.cs" />
+    <Compile Include="CodeGen\CsvCSharpCodeGenerator.cs" />
+    <Compile Include="CodeGen\CsvDataContextBase.cs" />
+    <Compile Include="CodeGen\CsvRowMappingBase.cs" />
+    <Compile Include="ConnectionDialog.xaml.cs">
       <DependentUpon>ConnectionDialog.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Src\DataDisplay\CsvRowMemberProvider.cs" />
-    <Compile Include="Src\DataModel\CsvDataModelGenerator.cs" />
-    <Compile Include="Src\CodeGen\CsvRowBase.cs" />
-    <Compile Include="Src\CodeGen\CsvTableBase.cs" />
-    <Compile Include="Src\CsvDataContextDriver.cs" />
-    <Compile Include="Src\CsvDataContextDriverProperties.cs" />
-    <Compile Include="Src\Helpers\CodeGenHelper.cs" />
-    <Compile Include="Src\Helpers\LazyEnumerable.cs" />
-    <Compile Include="Src\Helpers\Logger.cs" />
-    <Compile Include="Src\Helpers\StringExtensions.cs" />
-    <Compile Include="Src\DataModel\CsvColumn.cs" />
-    <Compile Include="Src\DataModel\CsvDatabase.cs" />
-    <Compile Include="Src\DataModel\CsvRelation.cs" />
-    <Compile Include="Src\DataModel\CsvTable.cs" />
-    <Compile Include="Src\Helpers\FileUtils.cs" />
-    <Compile Include="Src\DataDisplay\HideFromDumpAttribute.cs" />
-    <Compile Include="Src\SchemaBuilder.cs" />
+    <Compile Include="DataDisplay\CsvRowMemberProvider.cs" />
+    <Compile Include="DataModel\CsvDataModelGenerator.cs" />
+    <Compile Include="CodeGen\CsvRowBase.cs" />
+    <Compile Include="CodeGen\CsvTableBase.cs" />
+    <Compile Include="CsvDataContextDriver.cs" />
+    <Compile Include="CsvDataContextDriverProperties.cs" />
+    <Compile Include="Helpers\CodeGenHelper.cs" />
+    <Compile Include="Helpers\LazyEnumerable.cs" />
+    <Compile Include="Helpers\Logger.cs" />
+    <Compile Include="Helpers\StringExtensions.cs" />
+    <Compile Include="DataModel\CsvColumn.cs" />
+    <Compile Include="DataModel\CsvDatabase.cs" />
+    <Compile Include="DataModel\CsvRelation.cs" />
+    <Compile Include="DataModel\CsvTable.cs" />
+    <Compile Include="Helpers\FileUtils.cs" />
+    <Compile Include="DataDisplay\HideFromDumpAttribute.cs" />
+    <Compile Include="SchemaBuilder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="Src\ConnectionDialog.xaml">
+    <Page Include="ConnectionDialog.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
