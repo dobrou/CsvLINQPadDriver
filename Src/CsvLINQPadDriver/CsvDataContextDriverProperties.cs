@@ -99,5 +99,19 @@ namespace CsvLINQPadDriver
             set { driverData.SetElementValue("IgnoreInvalidFiles", value); }
         }
 
+        /// <summary>
+        /// True - Parsed rows from file are cached.
+        /// This cache survives multiple query runs, even when query is changed.
+        /// Cache is cleared as soon as LINQPad clears Application Domain of query.
+        /// False - disable cache. Multiple enumerations of file content results in multiple reads and parsing of file.
+        /// Can be significantly slower for complex queries.
+        /// Significantly reduces memory usage. Useful when reading very large files.
+        /// </summary>
+        public bool IsCacheEnabled
+        {
+            get { return ((string)driverData.Element("IsCacheEnabled")).ToBool() ?? true; }
+            set { driverData.SetElementValue("IsCacheEnabled", value); }
+        }
+
     }
 }

@@ -17,7 +17,36 @@ namespace CsvLINQPadDriverTest
     public class SchemaBuilderTest
     {
         [TestMethod]
-        public void GetSchemaAndBuildAssemblyTest()
+        public void GetSchemaAndBuildAssemblyTest1()
+        {
+            GetSchemaAndBuildAssemblyTest(new PropertiesMock()
+            {
+                Files = Path.Combine(Directory.GetCurrentDirectory(), "*.csv"),
+                DebugInfo = true,
+                DetectRelations = true,
+                IgnoreInvalidFiles = true,
+                IsCacheEnabled = true,
+                HideRelationsFromDump = true,
+                Persist = true,
+            }, "1");
+        }
+
+        [TestMethod]
+        public void GetSchemaAndBuildAssemblyTest2()
+        {
+            GetSchemaAndBuildAssemblyTest(new PropertiesMock()
+            {
+                Files = Path.Combine(Directory.GetCurrentDirectory(), "*.csv"),
+                DebugInfo = true,
+                DetectRelations = true,
+                IgnoreInvalidFiles = false,
+                IsCacheEnabled = false,
+                HideRelationsFromDump = false,
+                Persist = false,
+            }, "2");
+        }
+
+        public void GetSchemaAndBuildAssemblyTest(ICsvDataContextDriverProperties properties, string id)
         {
             File.WriteAllText("TestA.csv",
 @"a,b,c,TestAID
@@ -34,17 +63,11 @@ x");
             string contextTypeName = "TestContextClass";
             var contextAssemblyName = new AssemblyName("TestContextAssembly")
             {   
-                CodeBase = "TestContextAssembly.dll"
+                CodeBase = "TestContextAssembly" + id + ".dll"
             };
                 
             var explorerItems = SchemaBuilder.GetSchemaAndBuildAssembly(
-                new PropertiesMock()
-                {
-                    Files = Path.Combine(Directory.GetCurrentDirectory(), "*.csv"),
-                    DebugInfo = true,
-                    DetectRelations = true,
-                    IgnoreInvalidFiles = true,
-                },
+                properties,
                 contextAssemblyName,
                 ref nameSpace,
                 ref contextTypeName
@@ -54,7 +77,7 @@ x");
             Console.WriteLine(explorerItems[0].DragText);
             Console.WriteLine(explorerItems[1].DragText);
 
-            //check returner explorer tree
+            //check returned explorer tree
             Assert.AreEqual( 3, explorerItems.Count, "explorer items count");
             explorerItems = explorerItems.Where(i => i.Kind == ExplorerItemKind.QueryableObject).ToList();
             Assert.AreEqual( "TestA,TestB", string.Join(",", explorerItems.Select(i => i.DragText)));
@@ -86,6 +109,7 @@ x");
             public bool HideRelationsFromDump { get; set; }
             public bool DebugInfo { get; set; }
             public bool IgnoreInvalidFiles { get; set; }
+            public bool IsCacheEnabled { get; set; }
         }
     }
 }

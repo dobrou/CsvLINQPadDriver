@@ -35,5 +35,15 @@
         /// Beginning of every file will be scanned and suspicious files with format not similar to CSV will be ingored
         /// </summary>
         bool IgnoreInvalidFiles { get; set; }
+
+        /// <summary>
+        /// True - Parsed rows from file are cached.
+        /// This cache survives multiple query runs, even when query is changed.
+        /// Chache is cleared as soon as LINQPad clears Application Domain of query.
+        /// False - disable cache. Multiple enumerations of file content results in multiple reads and parsing of file.
+        /// Can be significantly slower for complex queries.
+        /// Significantly reduces memory usage. Useful when reading very large files.
+        /// </summary>
+        bool IsCacheEnabled { get; set; }
     }
 }

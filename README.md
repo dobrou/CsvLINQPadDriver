@@ -98,6 +98,9 @@ Configuration Options
 - CSV Separator - character used to separate columns in files. Can be `,`,`\t`, etc. If empty, separator is auto-detected.
 - Detect relations - if checked, driver will try to detect and generate relations between files.
 - Hide relations from .Dump() - if checked - LINQPad will not show relations content in .Dump(). This prevents loading too many data.
+- Cache CSV data in memory 
+  - if checked - parsed rows from file are cached in memory. This cache survives multiple query runs, even when query is changed. Cache is cleared as soon as LINQPad clears Application Domain of query.
+  - if unchecked - disable cache. Multiple enumerations of file content results in multiple reads and parsing of file. Can be significantly slower for complex queries. Significantly reduces memory usage. Useful when reading very large files.
 - Ignore files with invalid format - files with strange content not similar to CSV format will be ignored.
 - Debug info - additional debug information will be available. For example generated Data Context source.
 - Remember this connection - if checked, connection info will be saved and available after LINQPad restart.

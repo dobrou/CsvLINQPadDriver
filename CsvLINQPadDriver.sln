@@ -1,16 +1,14 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Express 2013 for Windows Desktop
-VisualStudioVersion = 12.0.30110.0
-MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CsvLINQPadDriver", ".\Src\CsvLINQPadDriver\CsvLINQPadDriver.csproj", "{551CE65D-8945-43E4-B5B3-9EE058971524}"
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CsvLINQPadDriver", "Src\CsvLINQPadDriver\CsvLINQPadDriver.csproj", "{551CE65D-8945-43E4-B5B3-9EE058971524}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CsvLINQPadFileOpen", ".\Tools\CsvLINQPadFileOpen\CsvLINQPadFileOpen.csproj", "{238A7302-9986-4633-BA23-381105C96575}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CsvLINQPadFileOpen", "Tools\CsvLINQPadFileOpen\CsvLINQPadFileOpen.csproj", "{238A7302-9986-4633-BA23-381105C96575}"
 	ProjectSection(ProjectDependencies) = postProject
 		{551CE65D-8945-43E4-B5B3-9EE058971524} = {551CE65D-8945-43E4-B5B3-9EE058971524}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CsvLINQPadDriverTest", ".\Tests\CsvLINQPadDriverTest\CsvLINQPadDriverTest.csproj", "{F9DD2249-D6AE-4320-8510-D26A2CAA2BB5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CsvLINQPadDriverTest", "Tests\CsvLINQPadDriverTest\CsvLINQPadDriverTest.csproj", "{F9DD2249-D6AE-4320-8510-D26A2CAA2BB5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

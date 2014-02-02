@@ -53,8 +53,8 @@ namespace " + contextNameSpace + @"
         {
             //Init tables data " 
 + string.Join("", from table in db.Tables select @"
-            this." + table.CodeName + @" = new " + typeof(CsvTableBase<>).GetCodeTypeClassName(table.GetCodeRowClassName()) + @"(
-                " + table.CsvSeparator.GetCodeCharEscaped() + @", " + table.FilePath.GetCodeStringEscaped() + @",
+            this." + table.CodeName + @" = " + typeof(CsvTableBase).GetCodeTypeClassName() + @".CreateTable<" + table.GetCodeRowClassName() + @">(
+                " + (properties.IsCacheEnabled ? "true" : "false") + @", " + table.CsvSeparator.GetCodeCharEscaped() + @", " + table.FilePath.GetCodeStringEscaped() + @",
                 new " + typeof(CsvColumnInfoList<>).GetCodeTypeClassName(table.GetCodeRowClassName()) + @"() { "
     + string.Join("", from c in table.Columns select @"
                     { " + c.CsvColumnIndex + @", x => x." + c.CodeName + @" }, ") + @"

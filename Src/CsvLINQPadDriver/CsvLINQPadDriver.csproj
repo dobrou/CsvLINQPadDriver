@@ -57,6 +57,9 @@
     <None Include="DevDeploy.bat">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <Compile Include="CodeGen\CsvTableEnumerable.cs" />
+    <Compile Include="CodeGen\CsvTableBase.cs" />
+    <Compile Include="CodeGen\CsvTableList.cs" />
     <Compile Include="ICsvDataContextDriverProperties.cs" />
     <Compile Include="Properties\VersionInfo.cs" />
     <Compile Include="CodeGen\CsvColumnInfo.cs" />
@@ -69,7 +72,6 @@
     <Compile Include="DataDisplay\CsvRowMemberProvider.cs" />
     <Compile Include="DataModel\CsvDataModelGenerator.cs" />
     <Compile Include="CodeGen\CsvRowBase.cs" />
-    <Compile Include="CodeGen\CsvTableBase.cs" />
     <Compile Include="CsvDataContextDriver.cs" />
     <Compile Include="CsvDataContextDriverProperties.cs" />
     <Compile Include="Helpers\CodeGenHelper.cs" />
