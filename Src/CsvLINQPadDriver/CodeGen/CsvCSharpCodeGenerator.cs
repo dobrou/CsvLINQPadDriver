@@ -59,10 +59,7 @@ namespace " + contextNameSpace + @"
     + string.Join("", from c in table.Columns select @"
                     { " + c.CsvColumnIndex + @", x => x." + c.CodeName + @" }, ") + @"
                 },
-                r => { "
-    + string.Join("", from r in table.Relations select @"
-                    r." + r.CodeName + @" = new " + typeof(LazyEnumerable<>).GetCodeTypeClassName(r.TargetTable.GetCodeRowClassName()) + @"( () => " + r.TargetTable.CodeName + @".WhereIndexed( tr => tr." + r.TargetColumn.CodeName + @" , " + r.TargetColumn.CodeName.GetCodeStringEscaped() + @", r." + r.SourceColumn.CodeName + @") );") + @"
-                }
+                r => { r._context = this; }
             ); "
 ) + @"  
         }
@@ -81,13 +78,16 @@ namespace " + contextNameSpace + @"
         {
             var src = @"
     public class " + table.GetCodeRowClassName() + @" : " + typeof(CsvRowBase).GetCodeTypeClassName() + @"
-    {"
+    {
+        internal " + contextTypeName + " _context;"
 + string.Join("", from c in table.Columns select @"
         public string " + c.CodeName + @" { get; set; } "
 ) + string.Join("", from rel in table.Relations select @"
         /// <summary>" + System.Security.SecurityElement.Escape(rel.DisplayName) + @"</summary> " + (hideRelationsFromDump ? @"
         [" + typeof(HideFromDumpAttribute).GetCodeTypeClassName() + "]" : "") + @"
-        public IEnumerable<" + rel.TargetTable.GetCodeRowClassName() + @"> " + rel.CodeName + @" { get; set; } "
+        public IEnumerable<" + rel.TargetTable.GetCodeRowClassName() + @"> " + rel.CodeName + @" { get {
+            return this._context." + rel.TargetTable.CodeName + @".WhereIndexed( tr => tr." + rel.TargetColumn.CodeName + @" , " + rel.TargetColumn.CodeName.GetCodeStringEscaped() + @", this." + rel.SourceColumn.CodeName + @");
+        } } "
 ) + @"
     } "
 ;
@@ -96,6 +96,9 @@ namespace " + contextNameSpace + @"
 
     }
 
+    /// <summary>
+    /// Methods usefull for CSharp source code generator
+    /// </summary>
     internal static class CsvCSharpCodeGeneratorExtensions
     {
         static public string GetCodeRowClassName(this CsvTable table)

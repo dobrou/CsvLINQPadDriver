@@ -10,7 +10,7 @@ namespace CsvLINQPadDriver.Helpers
         private static readonly Regex codeNameInvalidCharacters = new Regex(@"[^\p{Ll}\p{Lu}\p{Lt}\p{Lo}\p{Nd}\p{Nl}\p{Mn}\p{Mc}\p{Cf}\p{Pc}\p{Lm}]", RegexOptions.Compiled);
         private const string safeChar = "_";
         private const int maxLength = 128;
-        private static string[] invalidIdentifierNames = new string[] { "System", "ToString", "Equals", "GetHashCode" };
+        private static string[] invalidIdentifierNames = new string[] { "System", "ToString", "Equals", "GetHashCode, _context" };
         private static Lazy<CodeDomProvider> csCodeProvider = new Lazy<CodeDomProvider>(() => Microsoft.CSharp.CSharpCodeProvider.CreateProvider("C#"));
         public static string GetSafeCodeName(string name)
         {
