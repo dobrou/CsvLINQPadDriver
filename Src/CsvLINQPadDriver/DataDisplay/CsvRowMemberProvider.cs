@@ -19,7 +19,7 @@ namespace CsvLINQPadDriver.DataDisplay
 
         protected static bool IsSupportedType(Type t)
         {
-            return typeof(CsvRowBase).IsAssignableFrom(t);
+            return typeof(ICsvRowBase).IsAssignableFrom(t);
         }
 
         protected static bool IsMemberVisible(MemberInfo member)

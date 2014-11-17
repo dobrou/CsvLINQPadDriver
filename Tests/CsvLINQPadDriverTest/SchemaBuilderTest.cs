@@ -110,6 +110,7 @@ x");
             public bool DebugInfo { get; set; }
             public bool IgnoreInvalidFiles { get; set; }
             public bool IsCacheEnabled { get; set; }
+            public bool IsRowTypeStruct { get; set; }
         }
     }
 }

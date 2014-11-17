@@ -5,9 +5,9 @@ using System.Linq.Expressions;
 
 namespace CsvLINQPadDriver.CodeGen
 {
-    public class CsvRowMappingBase<TRow> where TRow : CsvRowBase, new()
+    public class CsvRowMappingBase<TRow> where TRow : ICsvRowBase, new()
     {
-        private readonly Action<TRow, string[]> propertiesInit;
+        private readonly Func<TRow, string[], TRow> propertiesInit;
         private readonly Action<TRow> relationsInit;
 
         public CsvRowMappingBase(IEnumerable<CsvColumnInfo> propertiesInfo, Action<TRow> relationsInit = null)
@@ -18,17 +18,20 @@ namespace CsvLINQPadDriver.CodeGen
             var paramRow = Expression.Parameter(typeof(TRow));
             var paramValues = Expression.Parameter(typeof(string[]));
             var exprAssignProperties =
-                Expression.Lambda<Action<TRow, string[]>>(
-                    Expression.Block(propertiesInfo.Select(property =>
-                        Expression.Assign(
-                            Expression.PropertyOrField(paramRow, property.PropertyName),
-                            Expression.Condition(
-                                Expression.LessThan(Expression.Constant(property.CsvColumnIndex), Expression.ArrayLength(paramValues)),
-                                Expression.ArrayIndex(paramValues, Expression.Constant(property.CsvColumnIndex)),
-                                Expression.Constant(null, typeof(string))
+                Expression.Lambda<Func<TRow, string[], TRow>>(
+                    Expression.Block(
+                        Expression.Block(propertiesInfo.Select(property =>
+                            Expression.Assign(
+                                Expression.PropertyOrField(paramRow, property.PropertyName),
+                                Expression.Condition(
+                                    Expression.LessThan(Expression.Constant(property.CsvColumnIndex), Expression.ArrayLength(paramValues)),
+                                    Expression.ArrayIndex(paramValues, Expression.Constant(property.CsvColumnIndex)),
+                                    Expression.Constant(null, typeof(string))
+                                )
                             )
-                        )
-                    )),
+                        )),
+                        paramRow
+                    ),
                     paramRow, paramValues
                 );
             propertiesInit = exprAssignProperties.Compile();
@@ -38,7 +41,7 @@ namespace CsvLINQPadDriver.CodeGen
         {
             var row = new TRow();
 
-            propertiesInit(row, data);
+            row = propertiesInit(row, data);
             if (relationsInit != null)
             {
                 relationsInit(row);

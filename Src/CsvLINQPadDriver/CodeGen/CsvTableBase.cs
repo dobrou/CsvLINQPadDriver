@@ -9,7 +9,7 @@ namespace CsvLINQPadDriver.CodeGen
     {
         public static bool IsCacheStatic = true;
 
-        public static CsvTableBase<TRow> CreateTable<TRow>(bool isCacheEnabled, char csvSeparator, string filePath, ICollection<CsvColumnInfo> propertiesInfo, Action<TRow> relationsInit) where TRow : CsvRowBase, new()
+        public static CsvTableBase<TRow> CreateTable<TRow>(bool isCacheEnabled, char csvSeparator, string filePath, ICollection<CsvColumnInfo> propertiesInfo, Action<TRow> relationsInit) where TRow : ICsvRowBase, new()
         {
             return isCacheEnabled
                 ? (CsvTableBase<TRow>)new CsvTableList<TRow>(csvSeparator, filePath, propertiesInfo, relationsInit)
@@ -18,7 +18,7 @@ namespace CsvLINQPadDriver.CodeGen
         }
     }
 
-    public abstract class CsvTableBase<TRow> : CsvTableBase, IEnumerable<TRow> where TRow : CsvRowBase, new()
+    public abstract class CsvTableBase<TRow> : CsvTableBase, IEnumerable<TRow> where TRow : ICsvRowBase, new()
     {
         public char CsvSeparator { get; private set; }
         public string FilePath { get; private set; }

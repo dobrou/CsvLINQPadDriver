@@ -10,7 +10,7 @@ namespace CsvLINQPadDriver.Helpers
 {
     public class FileUtils
     {
-        public static IEnumerable<T> CsvReadRows<T>(string fileName, char csvSeparator, CsvRowMappingBase<T> csvClassMap) where T : CsvRowBase, new()
+        public static IEnumerable<T> CsvReadRows<T>(string fileName, char csvSeparator, CsvRowMappingBase<T> csvClassMap) where T : ICsvRowBase, new()
         {
             Logger.Log("CsvReadRows<{0}> started.", typeof(T).FullName);
 
@@ -19,7 +19,7 @@ namespace CsvLINQPadDriver.Helpers
                 .Select(csvClassMap.InitRowObject)
             ;
         }
-
+        
         private static IEnumerable<string[]> CsvReadRows(string fileName, char csvSeparator)
         {
             var csvOptions = new CsvConfiguration()

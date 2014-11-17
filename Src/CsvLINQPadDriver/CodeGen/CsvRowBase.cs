@@ -2,7 +2,12 @@
 
 namespace CsvLINQPadDriver.CodeGen
 {
-    public class CsvRowBase
+    public interface ICsvRowBase
+    {
+
+    }
+
+    public class CsvRowBasex : ICsvRowBase
     {
         /// <summary>
         /// All string properties in one string, usefull for fulltext search

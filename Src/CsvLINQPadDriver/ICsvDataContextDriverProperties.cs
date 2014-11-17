@@ -45,5 +45,13 @@
         /// Significantly reduces memory usage. Useful when reading very large files.
         /// </summary>
         bool IsCacheEnabled { get; set; }
+
+        /// <summary>
+        /// True - row type is generated as struct - value type
+        /// False - row type is generated as class - reference type
+        /// </summary>
+        /// <returns></returns>
+        bool IsRowTypeStruct { get; set; }
+
     }
 }

@@ -113,5 +113,16 @@ namespace CsvLINQPadDriver
             set { driverData.SetElementValue("IsCacheEnabled", value); }
         }
 
+        /// <summary>
+        /// True - row type is generated as struct - value type
+        /// False - row type is generated as class - reference type
+        /// </summary>
+        /// <returns></returns>
+        public bool IsRowTypeStruct
+        {
+            get { return ((string)driverData.Element("IsRowTypeStruct")).ToBool() ?? false; }
+            set { driverData.SetElementValue("IsRowTypeStruct", value); }
+        }
+
     }
 }

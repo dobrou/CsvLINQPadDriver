@@ -77,7 +77,7 @@ namespace " + contextNameSpace + @"
         internal string GenerateTableRowDataTypeClass(CsvTable table, CsvDatabase db, bool hideRelationsFromDump)
         {
             var src = @"
-    public class " + table.GetCodeRowClassName() + @" : " + typeof(CsvRowBase).GetCodeTypeClassName() + @"
+    public " + (properties.IsRowTypeStruct ? "struct " : "class ") + table.GetCodeRowClassName() + @" : " + typeof(ICsvRowBase).GetCodeTypeClassName() + @"
     {
         internal " + contextTypeName + " _context;"
 + string.Join("", from c in table.Columns select @"

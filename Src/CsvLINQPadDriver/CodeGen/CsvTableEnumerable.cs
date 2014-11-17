@@ -5,7 +5,7 @@ using CsvLINQPadDriver.Helpers;
 
 namespace CsvLINQPadDriver.CodeGen
 {
-    internal class CsvTableEnumerable<TRow> : CsvTableBase<TRow> where TRow : CsvRowBase, new()
+    internal class CsvTableEnumerable<TRow> : CsvTableBase<TRow> where TRow : ICsvRowBase, new()
     {
         public CsvTableEnumerable(char csvSeparator, string filePath, ICollection<CsvColumnInfo> propertiesInfo, Action<TRow> relationsInit)
             : base(csvSeparator, filePath, propertiesInfo, relationsInit)

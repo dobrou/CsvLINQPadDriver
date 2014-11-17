@@ -6,7 +6,7 @@ using CsvLINQPadDriver.Helpers;
 
 namespace CsvLINQPadDriver.CodeGen
 {
-    internal class CsvTableList<TRow> : CsvTableBase<TRow>, IList<TRow> where TRow : CsvRowBase, new()
+    internal class CsvTableList<TRow> : CsvTableBase<TRow>, IList<TRow> where TRow : ICsvRowBase, new()
     {
         private readonly Lazy<IList<TRow>> dataCache;
 
