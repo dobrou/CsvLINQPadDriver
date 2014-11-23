@@ -158,7 +158,13 @@ namespace CsvLINQPadFileOpen
             else if (files.Length == 1 && files[0].EndsWith(".csv") && !Directory.Exists(files[0]))
             {
                 //if one file, try to get whole directory where file is
-                expression = "from x in this." + GetFileNameSafe(files[0]) + "\nwhere Regex.IsMatch( x.ToString(), \".*\")\nselect x";
+                expression = @"(
+from x in this." + GetFileNameSafe(files[0]) + @"
+where Regex.IsMatch( x.ToString(), "".*"")
+select x
+)
+.Dump(1);
+";
                 files = new[] {Path.GetDirectoryName(files[0])};
             }
 
@@ -177,7 +183,7 @@ namespace CsvLINQPadFileOpen
         }
 
         static string linqConfigCsv =
-@"<Query Kind='Expression'>
+@"<Query Kind='Statements'>
   <Output>DataGrids</Output>
   <Connection>
     <Driver Assembly='CsvLINQPadDriver' PublicKeyToken='e2b1b697c284321f'>CsvLINQPadDriver.CsvDataContextDriver</Driver>
