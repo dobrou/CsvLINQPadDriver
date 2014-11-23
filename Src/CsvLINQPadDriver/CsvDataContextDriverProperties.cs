@@ -99,6 +99,12 @@ namespace CsvLINQPadDriver
             set { driverData.SetElementValue("IgnoreInvalidFiles", value); }
         }
 
+        public bool IsStringInternEnabled
+        {
+            get { return ((string)driverData.Element("IsStringInternEnabled")).ToBool() ?? true; }
+            set { driverData.SetElementValue("IsStringInternEnabled", value); }
+        }
+
         /// <summary>
         /// True - Parsed rows from file are cached.
         /// This cache survives multiple query runs, even when query is changed.

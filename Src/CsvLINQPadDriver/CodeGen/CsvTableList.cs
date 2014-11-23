@@ -14,7 +14,7 @@ namespace CsvLINQPadDriver.CodeGen
             : base(csvSeparator, filePath, propertiesInfo, relationsInit)
         {
             this.dataCache = new Lazy<IList<TRow>>(
-                () => ( CsvTableBase.IsCacheStatic
+                () => ( CsvTableFactory.IsCacheStatic
                     ? (IList<TRow>) LINQPad.Extensions.Cache(GetDataDirect(), typeof(TRow).Name + ":" + FilePath)
                     : (IList<TRow>) GetDataDirect().ToList()
                 ), 

@@ -53,13 +53,16 @@ namespace " + contextNameSpace + @"
         {
             //Init tables data " 
 + string.Join("", from table in db.Tables select @"
-            this." + table.CodeName + @" = " + typeof(CsvTableBase).GetCodeTypeClassName() + @".CreateTable<" + table.GetCodeRowClassName() + @">(
-                " + (properties.IsCacheEnabled ? "true" : "false") + @", " + table.CsvSeparator.GetCodeCharEscaped() + @", " + table.FilePath.GetCodeStringEscaped() + @",
+            this." + table.CodeName + @" = " + typeof(CsvTableFactory).GetCodeTypeClassName() + @".CreateTable<" + table.GetCodeRowClassName() + @">(
+                " + (properties.IsStringInternEnabled ? "true" : "false") + @", 
+                " + (properties.IsCacheEnabled ? "true" : "false") + @", 
+                " + table.CsvSeparator.GetCodeCharEscaped() + @", 
+                " + table.FilePath.GetCodeStringEscaped() + @",
                 new " + typeof(CsvColumnInfoList<>).GetCodeTypeClassName(table.GetCodeRowClassName()) + @"() { "
     + string.Join("", from c in table.Columns select @"
                     { " + c.CsvColumnIndex + @", x => x." + c.CodeName + @" }, ") + @"
                 },
-                r => { r._context = this; }
+                r => { r.__context = this; }
             ); "
 ) + @"  
         }
@@ -79,14 +82,14 @@ namespace " + contextNameSpace + @"
             var src = @"
     public class " + table.GetCodeRowClassName() + @" : " + typeof(CsvRowBase).GetCodeTypeClassName() + @"
     {
-        internal " + contextTypeName + " _context;"
+        internal " + contextTypeName + " __context;"
 + string.Join("", from c in table.Columns select @"
         public string " + c.CodeName + @" { get; set; } "
 ) + string.Join("", from rel in table.Relations select @"
         /// <summary>" + System.Security.SecurityElement.Escape(rel.DisplayName) + @"</summary> " + (hideRelationsFromDump ? @"
         [" + typeof(HideFromDumpAttribute).GetCodeTypeClassName() + "]" : "") + @"
         public IEnumerable<" + rel.TargetTable.GetCodeRowClassName() + @"> " + rel.CodeName + @" { get {
-            return this._context." + rel.TargetTable.CodeName + @".WhereIndexed( tr => tr." + rel.TargetColumn.CodeName + @" , " + rel.TargetColumn.CodeName.GetCodeStringEscaped() + @", this." + rel.SourceColumn.CodeName + @");
+            return this.__context." + rel.TargetTable.CodeName + @".WhereIndexed( tr => tr." + rel.TargetColumn.CodeName + @" , " + rel.TargetColumn.CodeName.GetCodeStringEscaped() + @", this." + rel.SourceColumn.CodeName + @");
         } } "
 ) + @"
     } "

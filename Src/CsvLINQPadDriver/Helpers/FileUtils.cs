@@ -10,12 +10,33 @@ namespace CsvLINQPadDriver.Helpers
 {
     public class FileUtils
     {
-        public static IEnumerable<T> CsvReadRows<T>(string fileName, char csvSeparator, CsvRowMappingBase<T> csvClassMap) where T : CsvRowBase, new()
+        public static Dictionary<string, string> stringInternCache = new Dictionary<string, string>();
+        private static string StringIntern(string str)
+        {
+            if (str == null) return str;
+            string intern;
+            return stringInternCache.TryGetValue(str, out intern)
+                ? intern
+                : stringInternCache[str] = str
+            ;
+        }
+
+        public static IEnumerable<T> CsvReadRows<T>(string fileName, char csvSeparator, bool stringIntern, CsvRowMappingBase<T> csvClassMap) where T : CsvRowBase, new()
         {
             Logger.Log("CsvReadRows<{0}> started.", typeof(T).FullName);
 
             return CsvReadRows(fileName, csvSeparator)
                 .Skip(1) /*skip csv header*/
+                .Select(sa => {
+                    if (stringIntern)
+                    {
+                        for (int i = 0; i < sa.Length; i++)
+                        {
+                            sa[i] = StringIntern(sa[i]);
+                        }
+                    }
+                    return sa;
+                })
                 .Select(csvClassMap.InitRowObject)
             ;
         }

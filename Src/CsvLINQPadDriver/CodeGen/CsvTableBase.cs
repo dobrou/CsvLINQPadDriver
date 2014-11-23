@@ -5,17 +5,24 @@ using CsvLINQPadDriver.Helpers;
 
 namespace CsvLINQPadDriver.CodeGen
 {
-    public class CsvTableBase
+    public class CsvTableFactory
     {
         public static bool IsCacheStatic = true;
 
-        public static CsvTableBase<TRow> CreateTable<TRow>(bool isCacheEnabled, char csvSeparator, string filePath, ICollection<CsvColumnInfo> propertiesInfo, Action<TRow> relationsInit) where TRow : CsvRowBase, new()
+        public static CsvTableBase<TRow> CreateTable<TRow>(bool isStringInternEnabled, bool isCacheEnabled, char csvSeparator, string filePath, ICollection<CsvColumnInfo> propertiesInfo, Action<TRow> relationsInit) where TRow : CsvRowBase, new()
         {
-            return isCacheEnabled
+            var table = isCacheEnabled
                 ? (CsvTableBase<TRow>)new CsvTableList<TRow>(csvSeparator, filePath, propertiesInfo, relationsInit)
                 : (CsvTableBase<TRow>)new CsvTableEnumerable<TRow>(csvSeparator, filePath, propertiesInfo, relationsInit)
             ;
+            table.isStringInternEnabled = isStringInternEnabled;
+            return table;
         }
+    }
+
+    public class CsvTableBase
+    {
+        internal bool isStringInternEnabled;
     }
 
     public abstract class CsvTableBase<TRow> : CsvTableBase, IEnumerable<TRow> where TRow : CsvRowBase, new()
@@ -36,7 +43,7 @@ namespace CsvLINQPadDriver.CodeGen
 
         protected IEnumerable<TRow> GetDataDirect()
         {
-            return FileUtils.CsvReadRows(FilePath, CsvSeparator, new CsvRowMappingBase<TRow>(PropertiesInfo, RelationsInit));
+            return FileUtils.CsvReadRows(FilePath, CsvSeparator, isStringInternEnabled, new CsvRowMappingBase<TRow>(PropertiesInfo, RelationsInit));
         }
 
         /// <summary>

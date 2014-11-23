@@ -109,6 +109,7 @@ x");
             public bool HideRelationsFromDump { get; set; }
             public bool DebugInfo { get; set; }
             public bool IgnoreInvalidFiles { get; set; }
+            public bool IsStringInternEnabled { get; set; }
             public bool IsCacheEnabled { get; set; }
         }
     }

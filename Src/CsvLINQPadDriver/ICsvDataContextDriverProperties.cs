@@ -37,6 +37,13 @@
         bool IgnoreInvalidFiles { get; set; }
 
         /// <summary>
+        /// If enabled, all string values are interned. 
+        /// Can significantly reduce memory consuption, when values in CSV are repeated many times. 
+        /// Custom per context interning is used.
+        /// </summary>
+        bool IsStringInternEnabled { get; set; }
+
+        /// <summary>
         /// True - Parsed rows from file are cached.
         /// This cache survives multiple query runs, even when query is changed.
         /// Chache is cleared as soon as LINQPad clears Application Domain of query.
