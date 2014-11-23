@@ -53,6 +53,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="ClassDiagram.cd" />
     <None Include="CsvLINQPadDriver.snk" />
     <None Include="DevDeploy.bat">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
