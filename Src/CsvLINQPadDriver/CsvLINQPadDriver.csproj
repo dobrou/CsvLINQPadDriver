@@ -41,8 +41,7 @@
       <HintPath>..\..\packages\CsvHelper.2.4.0\lib\net40-client\CsvHelper.dll</HintPath>
     </Reference>
     <Reference Include="LINQPad">
-      <HintPath>C:\Program Files (x86)\LINQPad4\LINQPad.exe</HintPath>
-      <Private>False</Private>
+      <HintPath>..\..\packages\LINQPad.4.51.3\lib\net40\LINQPad.exe</HintPath>
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
