@@ -111,7 +111,9 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <!--
   <PropertyGroup>
     <PostBuildEvent>DevDeploy.bat</PostBuildEvent>
   </PropertyGroup>
+  -->
 </Project>

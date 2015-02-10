@@ -5,9 +5,10 @@ using System.Text;
 
 namespace CsvLINQPadDriver
 {
+    //Empty class only for NoWPF build
     public class ConnectionDialog
     {
-        private CsvDataContextDriverProperties properties;
+        public CsvDataContextDriverProperties properties;
 
         public ConnectionDialog(CsvDataContextDriverProperties properties)
         {
@@ -16,7 +17,8 @@ namespace CsvLINQPadDriver
 
         internal bool? ShowDialog()
         {
-            throw new NotImplementedException();
+            return true;
+            //throw new NotImplementedException();
         }
     }
 }
