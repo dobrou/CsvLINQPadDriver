@@ -8,15 +8,15 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using LINQPad.Extensibility.DataContext;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using CsvLINQPadDriver;
+using NUnit.Framework;
 
 namespace CsvLINQPadDriverTest
 {
-    [TestClass]
+    [TestFixture]
     public class SchemaBuilderTest
     {
-        [TestMethod]
+        [Test]
         public void GetSchemaAndBuildAssemblyTest1()
         {
             GetSchemaAndBuildAssemblyTest(new PropertiesMock()
@@ -31,7 +31,7 @@ namespace CsvLINQPadDriverTest
             }, "1");
         }
 
-        [TestMethod]
+        [Test]
         public void GetSchemaAndBuildAssemblyTest2()
         {
             GetSchemaAndBuildAssemblyTest(new PropertiesMock()

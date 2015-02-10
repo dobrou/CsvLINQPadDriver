@@ -70,10 +70,10 @@
     <EmbeddedResource Include="..\..\Deploy\header.xml">
       <Link>DriverBinaries\header.xml</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\bin\Debug\CsvHelper.dll">
+    <EmbeddedResource Include="..\..\bin\$(Configuration)\CsvHelper.dll">
       <Link>DriverBinaries\CsvHelper.dll</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\bin\Debug\CsvLINQPadDriver.dll">
+    <EmbeddedResource Include="..\..\bin\$(Configuration)\CsvLINQPadDriver.dll">
       <Link>DriverBinaries\CsvLINQPadDriver.dll</Link>
     </EmbeddedResource>
     <EmbeddedResource Include="..\..\Src\CsvLINQPadDriver\Connection.png">
