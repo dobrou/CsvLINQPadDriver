@@ -146,3 +146,8 @@ Credits
 License
 --
 [MIT](http://opensource.org/licenses/MIT), see LICENSE file for details.
+
+Build
+--
+[![Build Status](https://travis-ci.org/dobrou/CsvLINQPadDriver.svg?branch=master)](https://travis-ci.org/dobrou/CsvLINQPadDriver)
+ 
