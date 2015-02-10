@@ -1,2 +1,10 @@
 language: csharp
-solution: CsvLINQPadDriver-NoWPF.sln
+solution: CsvLINQPadDriver.sln
+before_install:
+  - sed -i 's/\(<Reference Include="PresentationCore" \/>\)/<!-- \1 -->/' ./Src/CsvLINQPadDriver/CsvLINQPadDriver.csproj
+  - sed -i 's/\(<Reference Include="PresentationFramework" \/>\)/<!-- \1 -->/' ./Src/CsvLINQPadDriver/CsvLINQPadDriver.csproj
+  - sed -i 's/\(<PostBuildEvent>DevDeploy.bat<\/PostBuildEvent>\)/<!-- \1 -->/' ./Src/CsvLINQPadDriver/CsvLINQPadDriver.csproj
+  - sed -i 's/<Compile Include="ConnectionDialog.xaml.cs">/<Compile Include="ConnectionDialog-NoWPF.cs">/' ./Src/CsvLINQPadDriver/CsvLINQPadDriver.csproj 
+  - sed -i 's/<Page/<Resource/' ./Src/CsvLINQPadDriver/CsvLINQPadDriver.csproj
+  - sed -i 's/<\/Page/<\/Resource/' ./Src/CsvLINQPadDriver/CsvLINQPadDriver.csproj
+  - cat ./Src/CsvLINQPadDriver/CsvLINQPadDriver.csproj
