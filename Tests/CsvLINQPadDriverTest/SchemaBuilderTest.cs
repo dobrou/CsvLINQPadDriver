@@ -61,11 +61,14 @@ x");
 
             string nameSpace = "TestContextNamespace";
             string contextTypeName = "TestContextClass";
-            var contextAssemblyName = new AssemblyName("TestContextAssembly")
+            var contextAssemblyName = new AssemblyName("TestContextAssembly" + id)
             {   
                 CodeBase = "TestContextAssembly" + id + ".dll"
             };
-                
+
+            if (File.Exists(contextAssemblyName.CodeBase))
+                File.Delete(contextAssemblyName.CodeBase);
+
             var explorerItems = SchemaBuilder.GetSchemaAndBuildAssembly(
                 properties,
                 contextAssemblyName,
