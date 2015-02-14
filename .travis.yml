@@ -10,8 +10,8 @@ before_install:
   - cat ./Src/CsvLINQPadDriver/CsvLINQPadDriver.csproj
 install:
   - nuget restore CsvLINQPadDriver.sln
-  - nuget install NUnit.Runners -Version 2.6.4 -OutputDirectory testrunner
+  - echo nuget install NUnit.Runners -Version 2.6.4 -OutputDirectory testrunner
 script:
   - xbuild /p:Configuration=Debug CsvLINQPadDriver.sln
-  - mono ./testrunner/NUnit.Runners.2.6.4/tools/nunit-console.exe ./bin/Debug/Tests/CsvLINQPadDriverTest.dll
+  - echo mono ./testrunner/NUnit.Runners.2.6.4/tools/nunit-console.exe ./bin/Debug/Tests/CsvLINQPadDriverTest.dll
   
