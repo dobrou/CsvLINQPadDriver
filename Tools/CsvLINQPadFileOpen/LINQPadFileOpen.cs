@@ -150,9 +150,12 @@ namespace CsvLINQPadFileOpen
         static void OpenCsv(string[] files)
         {
             //get csv files
-            string expression = "this";
+            string expression;
+            string linqFilePath;
             if (files == null || files.Length == 0)
             {
+                expression = "this";
+                linqFilePath = Path.Combine(Directory.GetCurrentDirectory(), "_.linq");
                 files = new [] { Directory.GetCurrentDirectory() };
             }
             else if (files.Length == 1 && files[0].EndsWith(".csv") && !Directory.Exists(files[0]))
@@ -160,19 +163,26 @@ namespace CsvLINQPadFileOpen
                 //if one file, try to get whole directory where file is
                 expression = @"(
 from x in this." + GetFileNameSafe(files[0]) + @"
-where Regex.IsMatch( x.ToString(), "".*"")
+//where Regex.IsMatch( x.ToString(), "".*"")
 select x
 )
 .Dump(1);
 ";
+                linqFilePath = files[0] + ".linq";
                 files = new[] {Path.GetDirectoryName(files[0])};
             }
+            else
+            {
+                linqFilePath = files[0] + ".linq";
+                expression = "this";
+            }
 
-            string linqfile = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName() + ".linq");
+            //string linqfile = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName() + ".linq");
             string linq = linqConfigCsv.Replace("{{FILES}}", string.Join("\n",files)) + expression;
-                
-            File.WriteAllText(linqfile, linq);
-            Process.Start(linqfile);
+
+            if (!File.Exists(linqFilePath)) //do not overwrite anything
+                File.WriteAllText(linqFilePath, linq);
+            Process.Start(linqFilePath);
 
             //TODO lock file for few seconds,so TC won't delete them from temp
         }
@@ -184,7 +194,7 @@ select x
 
         static string linqConfigCsv =
 @"<Query Kind='Statements'>
-  <Output>DataGrids</Output>
+  <!--<Output>DataGrids</Output>-->
   <Connection>
     <Driver Assembly='CsvLINQPadDriver' PublicKeyToken='e2b1b697c284321f'>CsvLINQPadDriver.CsvDataContextDriver</Driver>
     <Persist>false</Persist>
