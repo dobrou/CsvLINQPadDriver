@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/dobrou/CsvLINQPadDriver.svg?branch=master)](https://travis-ci.org/dobrou/CsvLINQPadDriver)
+
 CsvLINQPadDriver
 ==
 
@@ -15,11 +17,11 @@ https://github.com/dobrou/CsvLINQPadDriver
 Download
 --
 - v1.6
-  - **[CsvLINQPadFileOpen.exe](http://goo.gl/fWIVKq)** - It's installer and CSV context loader in one package.
+  - **[CsvLINQPadFileOpen.exe](https://goo.gl/mTvTSK)** - It's installer and CSV context loader in one package.
       - LINQPad **v4** only
       - Automatically installs CSV driver into LINQPad. 
       - Loads new CSV context with files from command-line. You can associate this executable to open CSV files, so they will load directly into LINQPad.
-  - [CsvLINQPadDriver.lpx](http://goo.gl/3Q2JBV) - Manual installation.
+  - [CsvLINQPadDriver.lpx](https://goo.gl/F1wH2h) - Manual installation.
       - LINQPad **v4/v5** compatible
 
 Example
@@ -148,8 +150,4 @@ Credits
 License
 --
 [MIT](http://opensource.org/licenses/MIT), see LICENSE file for details.
-
-Build
---
-[![Build Status](https://travis-ci.org/dobrou/CsvLINQPadDriver.svg?branch=master)](https://travis-ci.org/dobrou/CsvLINQPadDriver)
  
