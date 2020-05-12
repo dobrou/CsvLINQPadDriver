@@ -15,7 +15,7 @@ namespace CsvLINQPadFileOpen
         static void Main(string[] args)
         {
 
-            if(!IsLINQPadOK())
+            if (!IsLINQPadOK())
                 return;
 
             CheckDeployCsvPlugin();
@@ -52,9 +52,9 @@ namespace CsvLINQPadFileOpen
         {
             string linqpadDir = new string[]
             {
-                @"%programfiles%\LINQPad4\LINQPad.exe", 
-                @"%programfiles(x86)%\LINQPad4\LINQPad.exe", 
-                @"%ProgramW6432%\LINQPad4\LINQPad.exe"
+                @"%programfiles%\LINQPad6\LINQPad6.exe", 
+                @"%programfiles(x86)%\LINQPad6\LINQPad6.exe", 
+                @"%ProgramW6432%\LINQPad6\LINQPad6.exe"
             }
                 .Select(Environment.ExpandEnvironmentVariables)
                 .Where(File.Exists)
@@ -63,7 +63,7 @@ namespace CsvLINQPadFileOpen
 
             if (linqpadDir == null)
             {
-                ShowMessage("LINQPad v4 not found.\nPlease install it from http://www.linqpad.net/");
+                ShowMessage("LINQPad v6 not found.\nPlease install it from http://www.linqpad.net/");
                 return false;
             }
             return true;
@@ -182,7 +182,9 @@ select x
 
             if (!File.Exists(linqFilePath)) //do not overwrite anything
                 File.WriteAllText(linqFilePath, linq);
-            Process.Start(linqFilePath);
+
+            var processInfo = new ProcessStartInfo {FileName = linqFilePath, UseShellExecute = true};
+            Process.Start(processInfo);
 
             //TODO lock file for few seconds,so TC won't delete them from temp
         }
