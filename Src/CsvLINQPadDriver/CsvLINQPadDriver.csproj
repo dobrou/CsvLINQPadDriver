@@ -1,101 +1,31 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{551CE65D-8945-43E4-B5B3-9EE058971524}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CsvLINQPadDriver</RootNamespace>
-    <AssemblyName>CsvLINQPadDriver</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <UseWpf>true</UseWpf>
+    <Deterministic>false</Deterministic>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <OutputPath>..\..\bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>..\..\bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
+  
   <PropertyGroup>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <SignAssembly>true</SignAssembly>
-  </PropertyGroup>
-  <PropertyGroup>
     <AssemblyOriginatorKeyFile>CsvLINQPadDriver.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
+  
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <OutputPath>..\..\bin\Release\</OutputPath>
+  </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="CsvHelper">
-      <HintPath>..\..\packages\CsvHelper.2.4.0\lib\net40-client\CsvHelper.dll</HintPath>
-    </Reference>
-    <Reference Include="LINQPad">
-      <HintPath>..\..\packages\LINQPad.4.51.3\lib\net40\LINQPad.exe</HintPath>
-    </Reference>
-    <Reference Include="PresentationCore" />
-    <Reference Include="PresentationFramework" />
-    <Reference Include="System" />
-    <Reference Include="System.Xaml" />
-    <Reference Include="System.XML" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="WindowsBase" />
+    <None Remove="Connection.png" />
+    <None Remove="FailedConnection.png" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="ClassDiagram.cd" />
-    <None Include="CsvLINQPadDriver.snk" />
-    <None Include="DevDeploy.bat">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <Compile Include="CodeGen\CsvTableEnumerable.cs" />
-    <Compile Include="CodeGen\CsvTableBase.cs" />
-    <Compile Include="CodeGen\CsvTableList.cs" />
-    <Compile Include="ICsvDataContextDriverProperties.cs" />
-    <Compile Include="Properties\VersionInfo.cs" />
-    <Compile Include="CodeGen\CsvColumnInfo.cs" />
-    <Compile Include="CodeGen\CsvCSharpCodeGenerator.cs" />
-    <Compile Include="CodeGen\CsvDataContextBase.cs" />
-    <Compile Include="CodeGen\CsvRowMappingBase.cs" />
-    <Compile Include="ConnectionDialog.xaml.cs">
-      <DependentUpon>ConnectionDialog.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="DataDisplay\CsvRowMemberProvider.cs" />
-    <Compile Include="DataModel\CsvDataModelGenerator.cs" />
-    <Compile Include="CodeGen\CsvRowBase.cs" />
-    <Compile Include="CsvDataContextDriver.cs" />
-    <Compile Include="CsvDataContextDriverProperties.cs" />
-    <Compile Include="Helpers\CodeGenHelper.cs" />
-    <Compile Include="Helpers\LazyEnumerable.cs" />
-    <Compile Include="Helpers\Logger.cs" />
-    <Compile Include="Helpers\StringExtensions.cs" />
-    <Compile Include="DataModel\CsvColumn.cs" />
-    <Compile Include="DataModel\CsvDatabase.cs" />
-    <Compile Include="DataModel\CsvRelation.cs" />
-    <Compile Include="DataModel\CsvTable.cs" />
-    <Compile Include="Helpers\FileUtils.cs" />
-    <Compile Include="DataDisplay\HideFromDumpAttribute.cs" />
-    <Compile Include="SchemaBuilder.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Page Include="ConnectionDialog.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-  </ItemGroup>
+
   <ItemGroup>
     <Content Include="Connection.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -104,15 +34,19 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
-  <PropertyGroup>
-    <PostBuildEvent>DevDeploy.bat</PostBuildEvent>
-  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CsvHelper" Version="15.0.1" />
+    <PackageReference Include="LINQPad.Reference" Version="1.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="ConnectionDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </None>
+    <None Update="DevDeploy.bat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

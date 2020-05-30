@@ -15,10 +15,10 @@ namespace CsvLINQPadDriver
             return FileUtils.GetLongestCommonPrefixPath(new CsvDataContextDriverProperties(cxInfo).Files.Split('\n'));
         }
 
-        public override bool ShowConnectionDialog(IConnectionInfo cxInfo, bool isNewConnection)
+        public override bool ShowConnectionDialog(IConnectionInfo cxInfo, ConnectionDialogOptions dialogOptions)
         {
             var properties = new CsvDataContextDriverProperties(cxInfo);
-            if (isNewConnection)
+            if (dialogOptions.IsNewConnection)
             {
                 properties.Files = "#Drag&Drop or type file paths, or directory paths with pattern like *.csv or **.csv (** will recurse subdirectory)\nc:\\*.csv";
             }

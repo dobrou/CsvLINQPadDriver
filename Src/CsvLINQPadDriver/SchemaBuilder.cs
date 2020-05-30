@@ -2,11 +2,8 @@
 using CsvLINQPadDriver.DataModel;
 using CsvLINQPadDriver.Helpers;
 using LINQPad.Extensibility.DataContext;
-using Microsoft.CSharp;
-using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 
@@ -14,7 +11,6 @@ namespace CsvLINQPadDriver
 {
     internal class SchemaBuilder
     {
-
         internal static List<ExplorerItem> GetSchemaAndBuildAssembly(ICsvDataContextDriverProperties props, AssemblyName assemblyName, ref string nameSpace, ref string typeName)
         {
             Logger.LogEnabled = props.DebugInfo;
@@ -75,28 +71,21 @@ namespace CsvLINQPadDriver
         /// <param name="code"></param>
         /// <param name="name"></param>
         /// <returns></returns>
-        private static string[] BuildAssembly(string code, AssemblyName name) 
+        private static string[] BuildAssembly(string code, AssemblyName name)
         {
-            CompilerResults results;
-            using (var codeProvider = new CSharpCodeProvider(new Dictionary<string, string>() { { "CompilerVersion", "v4.0" } })) {
-                var options = new CompilerParameters(new string[]
-                    {
-                        typeof(SchemaBuilder).Assembly.Location,
-                        typeof(CsvHelper.CsvReader).Assembly.Location,
-                        "System.dll", "System.Core.dll", "System.Xml.dll", "System.Data.Services.Client.dll",
-                    }){
-                    IncludeDebugInformation = true, 
-                    OutputAssembly = name.CodeBase,
-                    CompilerOptions = @"/doc:""" + Path.ChangeExtension( name.CodeBase, "xml") + @"""",
-                };
-                results = codeProvider.CompileAssemblyFromSource(options, code);
-            }
+            var referencedAssemblies = DataContextDriver.GetCoreFxReferenceAssemblies().Concat(new []
+            {
+                typeof(SchemaBuilder).Assembly.Location,
+                typeof(CsvHelper.CsvReader).Assembly.Location
+            }).ToArray();
+            var result = DataContextDriver.CompileSource(new CompilationInput()
+            {
+                FilePathsToReference = referencedAssemblies,
+                OutputPath = name.CodeBase,
+                SourceCode = new[] {code}
+            });
 
-            if (!results.Errors.HasErrors)
-                return null;
-
-            return results.Errors.OfType<CompilerError>().Where(e => !e.IsWarning).Select(e => string.Format("{0},{1}: {2}", e.Line, e.Column, e.ErrorText)).ToArray();
-
+            return result.Successful ? null : result.Errors;
         }
 
         /// <summary>

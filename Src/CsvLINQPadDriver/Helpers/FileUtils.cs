@@ -2,6 +2,7 @@
 using CsvHelper.Configuration;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using CsvLINQPadDriver.CodeGen;
@@ -43,13 +44,11 @@ namespace CsvLINQPadDriver.Helpers
 
         private static IEnumerable<string[]> CsvReadRows(string fileName, char csvSeparator)
         {
-            var csvOptions = new CsvConfiguration()
+            var csvOptions = new CsvConfiguration(CultureInfo.InvariantCulture)
             {
                 Delimiter = csvSeparator.ToString(),
                 HasHeaderRecord = false,
                 DetectColumnCountChanges = false,
-                IgnoreReadingExceptions = true,
-                WillThrowOnMissingField = false,
                 BufferSize = 1024 * 1024 * 5,
             };
 
@@ -65,7 +64,7 @@ namespace CsvLINQPadDriver.Helpers
 
         public static string[] CsvReadHeader(string fileName, char csvSeparator)
         {
-            var csvOptions = new CsvConfiguration()
+            var csvOptions = new CsvConfiguration(CultureInfo.InvariantCulture)
             {
                 Delimiter = csvSeparator.ToString(),
                 HasHeaderRecord = false,
@@ -99,7 +98,7 @@ namespace CsvLINQPadDriver.Helpers
 
             try
             {
-                var csvOptions = new CsvConfiguration()
+                var csvOptions = new CsvConfiguration(CultureInfo.InvariantCulture)
                 {
                     Delimiter = csvSeparator.ToString(),
                     HasHeaderRecord = false,
