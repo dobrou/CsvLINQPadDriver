@@ -1,9 +1,9 @@
-[![Build Status](https://travis-ci.org/dobrou/CsvLINQPadDriver.svg?branch=master)](https://travis-ci.org/dobrou/CsvLINQPadDriver)
+![Latest build](https://github.com/i2van/CsvLINQPadDriver/workflows/.NET/badge.svg)
 
-CsvLINQPadDriver
+CsvLINQPadDriver For LINQPad 6
 ==
 
-CsvLINQPadDriver is LINQPad data context dynamic driver for querying CSV files.
+CsvLINQPadDriver is LINQPad 6 data context dynamic driver for querying CSV files.
 
 You can query data in CSV files with LINQ, just like it would be regular database. No need to write custom data model, mappings etc.
 
@@ -12,17 +12,12 @@ Based on column and file names, possible relations between CSV tables are detect
 
 Website
 --
-https://github.com/dobrou/CsvLINQPadDriver
+* [This project](https://github.com/i2van/CsvLINQPadDriver)
+* [Original project](https://github.com/dobrou/CsvLINQPadDriver)
 
 Download
 --
-- v1.6
-  - **[CsvLINQPadFileOpen.exe](https://goo.gl/mTvTSK)** - It's installer and CSV context loader in one package.
-      - LINQPad **v4** only
-      - Automatically installs CSV driver into LINQPad. 
-      - Loads new CSV context with files from command-line. You can associate this executable to open CSV files, so they will load directly into LINQPad.
-  - [CsvLINQPadDriver.lpx](https://goo.gl/k9taJj) - Manual installation.
-      - LINQPad **v4/v5** compatible
+Latest [CsvLINQPadDriver.\*.lpx6](https://github.com/i2van/CsvLINQPadDriver/releases) for LINQPad 6 manual installation.
 
 Example
 --
@@ -68,15 +63,12 @@ select new { lake, fishes = lake.Fishes }
 
 Prerequisites
 --
-- LINQPad 4 
-- .NET Framework 4.0/4.5
+- LINQPad 6
+- .NET Core 3.1
 
 Installation
 --
-- Using CsvLINQPadFileOpen.exe:
-  - Driver will be installed automatically on first run.
-- Or driver can be installed manually:
-  1. Get CsvLINQPadDriver.lpx file
+Get latest [CsvLINQPadDriver.\*.lpx6](https://github.com/i2van/CsvLINQPadDriver/releases) file
   - Open LINQPad
   - Click `Add connection` main window
   - Click button `View more drivers...`
@@ -141,6 +133,7 @@ Known Issues / TODO
 Author
 --
 - Martin Dobroucký (dobrou@gmail.com)
+- Ivan Ivon (ivan.ivon@gmail.com)
 
 Credits
 --
