@@ -2,7 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <UseWpf>false</UseWpf>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -24,6 +23,7 @@
     <PackageReference Include="LINQPad.Reference" Version="1.1.0" />
     <PackageReference Include="LINQPad.Runtime" Version="6.7.5" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.8.3" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="NuGet.Packaging" Version="5.8.1" />
     <PackageReference Include="NuGet.Versioning" Version="5.8.1" />
     <PackageReference Include="NUnit" Version="3.13.1" />
