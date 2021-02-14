@@ -6,7 +6,7 @@ del %output%
 
 set releaseDir=..\bin\Release\netcoreapp3.1
 
-%zip% a -tzip -mx=9 "%output%" header.xml %releaseDir%\CsvLINQPadDriver.dll %releaseDir%\CsvHelper.dll %releaseDir%\Connection.png %releaseDir%\FailedConnection.png ..\README.md %releaseDir%\CsvLINQPadFileOpen.exe
+%zip% a -tzip -mx=9 "%output%" header.xml %releaseDir%\CsvLINQPadDriver.dll %releaseDir%\CsvHelper.dll %releaseDir%\Connection.png %releaseDir%\FailedConnection.png ..\README.md
 
 @echo Package %output% created.
 @pause

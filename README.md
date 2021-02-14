@@ -63,38 +63,35 @@ select new { lake, fishes = lake.Fishes }
 
 Prerequisites
 --
-- LINQPad 6
-- .NET Core 3.1
+- [LINQPad 6](https://www.linqpad.net/LINQPad6.aspx)
+- [.NET Core 3.1](https://dotnet.microsoft.com/download/dotnet-core/3.1)
 
 Installation
 --
 Get latest [CsvLINQPadDriver.\*.lpx6](https://github.com/i2van/CsvLINQPadDriver/releases) file
-  - Open LINQPad.
+  - Open LINQPad 6.
   - Click `Add connection` main window.
   - Click button `View more drivers...`
   - Click button `Install driver from .LPX6 file...` and select downloaded .lpx6 file.
 
 Usage
 --
-- CSV context can be added to LINQPad same way as any other context.
+- CSV context can be added to LINQPad 6 same way as any other context.
   - Click `Add connection`
   - Select `CSV Context Driver` and click `Next`
-  - Enter CSV file names or Drag&Drop files from explorer. 
-    Optionally configure other options. 
+  - Enter CSV file names or Drag&Drop files from explorer.
+    Optionally configure other options.
   - Query your data
-- Or run `CsvLINQPadFileOpen.exe` with CSV files as arguments. 
-  - `CsvLINQPadFileOpen.exe mydata.csv`
-  - New CSV data context will be created and loaded in LINQPad
 
 Configuration Options
 --
-- **CSV Files** - list of CSV files and directories. Type one file/dir per line or Drag&Drop files from explorer. Supports special wildcards: `*` and `**`. 
+- **CSV Files** - list of CSV files and directories. Type one file/dir per line or Drag&Drop files from explorer. Supports special wildcards: `*` and `**`.
   - `c:\x\*.csv` - all files in folder `c:\x`
   - `c:\x\**.csv` - all files in folder `c:\x` and all sub-directories
 - CSV Separator - character used to separate columns in files. Can be `,`,`\t`, etc. If empty, separator is auto-detected.
 - Detect relations - if checked, driver will try to detect and generate relations between files.
 - Hide relations from .Dump() - if checked - LINQPad will not show relations content in .Dump(). This prevents loading too many data.
-- Cache CSV data in memory 
+- Cache CSV data in memory
   - if checked - parsed rows from file are cached in memory. This cache survives multiple query runs, even when query is changed. Cache is cleared as soon as LINQPad clears Application Domain of query.
   - if unchecked - disable cache. Multiple enumerations of file content results in multiple reads and parsing of file. Can be significantly slower for complex queries. Significantly reduces memory usage. Useful when reading very large files.
 - Ignore files with invalid format - files with strange content not similar to CSV format will be ignored.
@@ -103,7 +100,7 @@ Configuration Options
 
 Relations
 --
-There is no definion of relations between CSV files, but we can guess some relations from files and columns names.
+There is no definition of relations between CSV files, but we can guess some relations from files and columns names.
 Relations between `fileName.columnName` are detected in cases similar to following examples:
 - `Fishes.LakeID` <-> `Lakes.ID`
 - `Fishes.LakesID` <-> `Lakes.ID`
@@ -115,9 +112,9 @@ Performance
 When executing LINQ query on CSV context:
 - Only files used in query are loaded from disk.
 - As soon as any record from file is accessed, whole file is loaded into memory.
-- Relations are lazy evaluated and retreived using cached Lookup tables.
+- Relations are lazy evaluated and retrieved using cached Lookup tables.
 
-Don't expect performance comparable with SQL server. But for reasonably sized CSV files there should not be any problem. 
+Don't expect performance comparable with SQL server. But for reasonably sized CSV files there should not be any problem.
 
 Data types
 --
@@ -127,7 +124,7 @@ However, driver provides few extension methods providing easy conversion from st
 
 Known Issues / TODO
 --
-- Some strange Unicode chracters in column names may cause errors in generated data context source code.
+- Some strange Unicode characters in column names may cause errors in generated data context source code.
 - Writing changed objects back to CSV is not directly supported, there is no `.SubmitChanges()` . But you can use LINQPad's `Util.WriteCsv`.
 
 Author
@@ -137,10 +134,9 @@ Author
 
 Credits
 --
-- [LINQPad](http://www.linqpad.net/)
-- [CsvHelper](https://github.com/JoshClose/CsvHelper) - CSV files parsing
+- [LINQPad 6](https://www.linqpad.net/LINQPad6.aspx)
+- [CsvHelper](https://github.com/JoshClose/CsvHelper) - CSV files parsing.
 
 License
 --
 [MIT](http://opensource.org/licenses/MIT), see LICENSE file for details.
- 

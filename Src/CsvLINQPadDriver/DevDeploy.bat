@@ -11,4 +11,4 @@ set driverDir="%LOCALAPPDATA%\LINQPad\Drivers\DataContext\NetCore\CsvLINQPadDriv
 
 mkdir %driverDir%
 
-for %%e in (dll exe png) do xcopy /i/y "*.%%e" %driverDir%
+for %%e in (dll png) do xcopy /i/y "*.%%e" %driverDir%

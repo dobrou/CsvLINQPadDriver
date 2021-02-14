@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <DataContextDriver>
    <MainAssembly>CsvLINQPadDriver.dll</MainAssembly>
-   <SupportUri>https://github.com/dobrou/CsvLINQPadDriver</SupportUri>
+   <SupportUri>https://github.com/i2van/CsvLINQPadDriver</SupportUri>
 </DataContextDriver>
