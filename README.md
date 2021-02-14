@@ -69,10 +69,10 @@ Prerequisites
 Installation
 --
 Get latest [CsvLINQPadDriver.\*.lpx6](https://github.com/i2van/CsvLINQPadDriver/releases) file
-  - Open LINQPad
-  - Click `Add connection` main window
+  - Open LINQPad.
+  - Click `Add connection` main window.
   - Click button `View more drivers...`
-  - Click button `Browse` and select downloaded .lpx file
+  - Click button `Install driver from .LPX6 file...` and select downloaded .lpx6 file.
 
 Usage
 --
