@@ -54,10 +54,9 @@ namespace CsvLINQPadDriver.Helpers
 
             using (var cp = new CsvParser(new StreamReader(fileName, true), csvOptions))
             {
-                string[] row;
-                while ((row = cp.Read()) != null)
+                while (cp.Read())
                 {
-                    yield return row;
+                    yield return cp.Record;
                 }
             }
         }
@@ -74,7 +73,7 @@ namespace CsvLINQPadDriver.Helpers
             {
                 using (var cp = new CsvParser(new StreamReader(fileName, true), csvOptions))
                 {
-                    return cp.Read() ?? new string[0];
+                    return cp.Read() ? cp.Record : new string[0];
                 }
             }
             catch (Exception ex)
@@ -107,17 +106,19 @@ namespace CsvLINQPadDriver.Helpers
 
                 using (var cr = new CsvParser(new StreamReader(fileName, true), csvOptions))
                 {                    
-                    string[] r1 = cr.Read();
-                    if (r1 == null)
+                    if(!cr.Read())
                         return false;
+
+                    string[] r1 = cr.Record;
 
                     //0 or 1 columns
                     if (r1.Length <= 1)
                         return false;
 
-                    string[] r2 = cr.Read();
-                    if (r2 == null)
+                    if (!cr.Read())
                         return false;
+
+                    string[] r2 = cr.Record;
 
                     //different count of columns
                     if (r1.Length != r2.Length)

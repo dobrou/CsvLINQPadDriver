@@ -29,7 +29,7 @@ namespace CsvLINQPadDriver.DataModel
 
         public CsvDatabase CreateModel() 
         {
-            string[] files = FileUtils.EnumFiles(Properties.Files.Split('\n'));
+            string[] files = FileUtils.EnumFiles(Properties.Files.Split('\n')).Select(f => f.Trim()).ToArray();
             string baseDir = FileUtils.GetLongestCommonPrefixPath(files);
 
             //create db structure

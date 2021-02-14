@@ -5,8 +5,10 @@ rem
 rem  It copies the output .DLL (and .PDB) to LINQPad's drivers folder, so that LINQPad
 rem  picks up the drivers immediately (without needing to click 'Add Driver').
 rem
-rem  The final part of the directory is the name of the assembly plus its public key token in brackets.
+rem  The final part of the directory is the name of the assembly.
 
-mkdir "%programdata%\LINQPad\Drivers\DataContext\4.0\CsvLINQPadDriver (e2b1b697c284321f)\"
-xcopy /i/y CsvLINQPadDriver.* "%programdata%\LINQPad\Drivers\DataContext\4.0\CsvLINQPadDriver (e2b1b697c284321f)\"
+set driverDir="%LOCALAPPDATA%\LINQPad\Drivers\DataContext\NetCore\CsvLINQPadDriver"
 
+mkdir %driverDir%
+
+for %%e in (dll exe png) do xcopy /i/y "*.%%e" %driverDir%

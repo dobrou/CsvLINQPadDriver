@@ -72,8 +72,8 @@ namespace CsvLINQPadFileOpen
         static void CheckDeployCsvPlugin()
         {
             const string pluginDllName = "CsvLINQPadDriver.dll";
-            const string pluginSubDir = "CsvLINQPadDriver (e2b1b697c284321f)";
-            string pluginBaseDir = new string[] { @"%programdata%\LINQPad\Drivers\DataContext\4.0\" }
+            const string pluginSubDir = "CsvLINQPadDriver";
+            string pluginBaseDir = new string[] { @"%LOCALAPPDATA%\LINQPad\Drivers\DataContext\NetCore" }
                 .Select(Environment.ExpandEnvironmentVariables)
                 //.Where(Directory.Exists)
                 .FirstOrDefault() ?? ""

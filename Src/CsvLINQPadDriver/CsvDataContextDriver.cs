@@ -4,6 +4,7 @@ using CsvLINQPadDriver.Helpers;
 using LINQPad;
 using LINQPad.Extensibility.DataContext;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 
 namespace CsvLINQPadDriver
@@ -12,7 +13,7 @@ namespace CsvLINQPadDriver
     {
         public override string GetConnectionDescription(IConnectionInfo cxInfo)
         {
-            return FileUtils.GetLongestCommonPrefixPath(new CsvDataContextDriverProperties(cxInfo).Files.Split('\n'));
+            return FileUtils.GetLongestCommonPrefixPath(new CsvDataContextDriverProperties(cxInfo).Files.Split('\n').Select(f => f.Trim()).ToArray());
         }
 
         public override bool ShowConnectionDialog(IConnectionInfo cxInfo, ConnectionDialogOptions dialogOptions)
@@ -20,7 +21,7 @@ namespace CsvLINQPadDriver
             var properties = new CsvDataContextDriverProperties(cxInfo);
             if (dialogOptions.IsNewConnection)
             {
-                properties.Files = "#Drag&Drop or type file paths, or directory paths with pattern like *.csv or **.csv (** will recurse subdirectory)\nc:\\*.csv";
+                properties.Files = "# Drag&drop (use Ctrl to add files)\n# Type file paths, or directory paths with pattern like *.csv or **.csv (** will recurse subdirectory)\nc:\\*.csv";
             }
 
             bool? result = new ConnectionDialog(properties).ShowDialog();
