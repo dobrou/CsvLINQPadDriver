@@ -74,12 +74,13 @@ Installation
   - Open LINQPad 6.
   - Click `Add connection` main window.
   - Click button `View more drivers...`
-  - Click radio button  `Show all drivers` and type `CsvLINQPadDriver`.
+  - Click radio button `Show all drivers` and type `CsvLINQPadDriver`.
   - Install.
 
 ### Manual ###
 
-Get latest [CsvLINQPadDriver.\*.lpx6](https://github.com/i2van/CsvLINQPadDriver/releases) file
+Get latest [CsvLINQPadDriver.\*.lpx6](https://github.com/i2van/CsvLINQPadDriver/releases) file.
+
   - Open LINQPad 6.
   - Click `Add connection` main window.
   - Click button `View more drivers...`
@@ -87,12 +88,13 @@ Get latest [CsvLINQPadDriver.\*.lpx6](https://github.com/i2van/CsvLINQPadDriver/
 
 Usage
 --
-- CSV context can be added to LINQPad 6 same way as any other context.
+CSV context can be added to LINQPad 6 same way as any other context.
+
   - Click `Add connection`
   - Select `CSV Context Driver` and click `Next`
   - Enter CSV file names or Drag&Drop files from explorer.
     Optionally configure other options.
-  - Query your data
+  - Query your data.
 
 Configuration Options
 --
