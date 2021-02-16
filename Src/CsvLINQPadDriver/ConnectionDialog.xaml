@@ -5,7 +5,21 @@
     Icon="Connection.ico"
     Width="640"
     Height="520"
-    WindowStartupLocation="CenterScreen">
+    WindowStartupLocation="CenterScreen"
+    FocusManager.FocusedElement="{Binding ElementName=txtFiles}"
+    Loaded="ConnectionDialog_OnLoaded">
+
+    <Window.CommandBindings>
+        <CommandBinding
+            Command="ApplicationCommands.Paste"
+            Executed="PasteAndGoCommandBinding_OnExecuted"
+            CanExecute="PasteAndGoCommandBinding_OnCanExecute"/>
+    </Window.CommandBindings>
+    <Window.InputBindings>
+        <KeyBinding
+            Command="ApplicationCommands.Paste"
+            Gesture="Ctrl+Shift+V"/>
+    </Window.InputBindings>
 
     <Grid Margin="7">
         <Grid.RowDefinitions>
@@ -15,7 +29,8 @@
 
         <DockPanel Grid.Row="0">
             <Label Padding="0,0,0,3" Focusable="False" Content="CSV files. Drag&amp;drop (use Ctrl to add files) or type one file/directory per line" DockPanel.Dock="Top" />
-            <TextBox 
+            <TextBox
+            Name="txtFiles"
             AcceptsReturn="True" 
             HorizontalScrollBarVisibility="Auto"
             VerticalScrollBarVisibility="Auto"
@@ -33,7 +48,7 @@
             <StackPanel Margin="2" Height="Auto">
                 <DockPanel>
                     <Label Padding="0,0,0,3" Content="CSV separator (autodetect if empty) "/>
-                    <TextBox MaxLength="6" MaxLines="1" Text="{Binding CsvSeparator}" ToolTip="Character used to separate columns in csv file. If empty, separator is autodetected for each file."/>
+                    <TextBox MaxLength="6" MaxLines="1" Text="{Binding CsvSeparator}" ToolTip="Character used to separate columns in csv file. If empty, separator is auto-detected for each file."/>
                 </DockPanel>
                 <CheckBox IsChecked="{Binding IgnoreInvalidFiles}" ToolTip="If checked, files with suspicious format will be ignored. (Only one column, variable count of columns in rows...)">Ignore files with invalid format</CheckBox>
             </StackPanel>
@@ -42,7 +57,7 @@
             <GroupBox Header="Memory">
                 <StackPanel Margin="2" Height="Auto">
                     <CheckBox IsChecked="{Binding IsCacheEnabled}" ToolTip="If checked - Parsed rows from file are cached. This cache survives multiple query runs, even when query is changed. Cache is cleared as soon as LINQPad clears Application Domain of query. If unchecked - disable cache. Multiple enumerations of file content results in multiple reads and parsing of file. Can be significantly slower for complex queries. Significantly reduces memory usage. Useful when reading very large files.">Cache CSV data in memory</CheckBox>
-                    <CheckBox IsChecked="{Binding IsStringInternEnabled}" ToolTip="If checked, all string values are interned. Can significantly reduce memory consuption, when values in CSV are repeated many times.">String interning</CheckBox>
+                    <CheckBox IsChecked="{Binding IsStringInternEnabled}" ToolTip="If checked, all string values are interned. Can significantly reduce memory consumption, when values in CSV are repeated many times.">String interning</CheckBox>
                 </StackPanel>
             </GroupBox>
             <CheckBox IsChecked="{Binding DetectRelations}" ToolTip="If checked, relations between csv files/tables will be detected and created. (Based on files and column names.)">Detect relations</CheckBox>

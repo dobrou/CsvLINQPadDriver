@@ -18,15 +18,15 @@
     <RepositoryType>git</RepositoryType>
     <PackageTags>linqpaddriver csv</PackageTags>
     <PackageProjectUrl>https://github.com/i2van/CsvLINQPadDriver/</PackageProjectUrl>
-    <VersionPrefix>6.0.0</VersionPrefix>
-    <Description>LINQPad 6 CSV files driver.</Description>
+    <Description>LINQPad 6 CSV driver.</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/i2van/CsvLINQPadDriver</RepositoryUrl>
     <PackageIcon>Connection.png</PackageIcon>
-    <PackageReleaseNotes>LINQPad 6 CSV files driver.</PackageReleaseNotes>
+    <PackageReleaseNotes>Connection dialog improvements.</PackageReleaseNotes>
     <Copyright>Copyright © Martin Dobroucký 2013-2014, Ivan Ivon 2021</Copyright>
-    <AssemblyVersion>6.0.0.0</AssemblyVersion>
-    <FileVersion>6.0.0.0</FileVersion>
+    <AssemblyVersion>6.1.0.0</AssemblyVersion>
+    <FileVersion>6.1.0.0</FileVersion>
+    <Version>6.1.0</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">

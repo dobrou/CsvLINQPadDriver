@@ -2,8 +2,8 @@
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using LINQPad.Extensibility.DataContext;
 using CsvLINQPadDriver;
+using LINQPad.Extensibility.DataContext;
 using NUnit.Framework;
 
 namespace CsvLINQPadDriverTest
@@ -14,7 +14,7 @@ namespace CsvLINQPadDriverTest
         [Test]
         public void GetSchemaAndBuildAssemblyTest1()
         {
-            GetSchemaAndBuildAssemblyTest(new PropertiesMock()
+            GetSchemaAndBuildAssemblyTest(new PropertiesMock
             {
                 Files = Path.Combine(Directory.GetCurrentDirectory(), "*.csv"),
                 DebugInfo = true,
@@ -29,7 +29,7 @@ namespace CsvLINQPadDriverTest
         [Test]
         public void GetSchemaAndBuildAssemblyTest2()
         {
-            GetSchemaAndBuildAssemblyTest(new PropertiesMock()
+            GetSchemaAndBuildAssemblyTest(new PropertiesMock
             {
                 Files = Path.Combine(Directory.GetCurrentDirectory(), "*.csv"),
                 DebugInfo = true,
@@ -89,7 +89,7 @@ x");
             Assert.IsNotNull(contextType, "ContextType in assembly");
 
             //check generated context runtime
-            dynamic contextInstance = contextType.GetConstructor(new Type[] {}).Invoke(new object[] {});
+            dynamic contextInstance = contextType!.GetConstructor(new Type[] {})!.Invoke(new object[] {});
             Assert.IsNotNull(contextInstance, "context created");
 
             dynamic dataFirst = Enumerable.ToArray(contextInstance.TestA)[0];
@@ -102,7 +102,7 @@ x");
             public bool Persist { get; set; }
             public string Files { get; set; }
             public string CsvSeparator { get; set; }
-            public char? CsvSeparatorChar { get; internal set; }
+            public char? CsvSeparatorChar { get; set; }
             public bool DetectRelations { get; set; }
             public bool HideRelationsFromDump { get; set; }
             public bool DebugInfo { get; set; }

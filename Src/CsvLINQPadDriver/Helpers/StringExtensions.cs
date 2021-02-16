@@ -10,37 +10,32 @@ namespace CsvLINQPadDriver.Helpers
     {
         public static int? ToInt(this string s) 
         {
-            int v;
-            return int.TryParse(s, out v) ? v : (int?)null;
+            return int.TryParse(s, out var v) ? v : (int?)null;
         }
 
-        public static long? ToLong(this string s) {
-            long v;
-            return long.TryParse(s, out v) ? v : (long?)null;
+        public static long? ToLong(this string s)
+        {
+            return long.TryParse(s, out var v) ? v : (long?)null;
         }
 
         public static double? ToDouble(this string s) 
         {
-            double v;
-            return double.TryParse(s, out v) ? v : (double?)null;
+            return double.TryParse(s, out var v) ? v : (double?)null;
         }
 
         public static decimal? ToDecimal(this string s)
         {
-            decimal v;
-            return decimal.TryParse(s, out v) ? v : (decimal?)null;
+            return decimal.TryParse(s, out var v) ? v : (decimal?)null;
         }
 
-        public static DateTime? ToDateTime(this string s) 
+        public static DateTime? ToDateTime(this string s)
         {
-            DateTime v;
-            return DateTime.TryParse(s, out v) ? v : (DateTime?) null;
+            return DateTime.TryParse(s, out var v) ? v : (DateTime?) null;
         }
 
         public static TimeSpan? ToTimeSpan(this string s)
         {
-            TimeSpan v;
-            return TimeSpan.TryParse(s, out v) ? v : (TimeSpan?)null;
+            return TimeSpan.TryParse(s, out var v) ? v : (TimeSpan?)null;
         }
 
         public static bool? ToBool(this string s)
@@ -49,8 +44,7 @@ namespace CsvLINQPadDriver.Helpers
             if (toLong.HasValue)
                 return toLong.Value != 0;
 
-            bool v;
-            return bool.TryParse(s, out v) ? v : (bool?) null;
+            return bool.TryParse(s, out var v) ? v : (bool?) null;
         }
     }
 }

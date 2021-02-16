@@ -26,13 +26,13 @@ namespace CsvLINQPadDriver.DataDisplay
         {
             return
                 (MemberTypes.Field | MemberTypes.Property).HasFlag(member.MemberType)
-                && (member.GetCustomAttributes(typeof(HideFromDumpAttribute), true).Length == 0)
+                && member.GetCustomAttributes(typeof(HideFromDumpAttribute), true).Length == 0
             ;
         }
 
         protected static ProviderData GetProviderData(Type objectType)
         {
-            var data = new ProviderData()
+            var data = new ProviderData
             {
                 properties = objectType.GetProperties().Where(IsMemberVisible).ToList(),
                 fields = objectType.GetFields().Where(IsMemberVisible).ToList(),
@@ -41,9 +41,8 @@ namespace CsvLINQPadDriver.DataDisplay
             var param = Expression.Parameter(typeof(object));
             data.valuesGet = Expression.Lambda<Func<object,object[]>>(
                 Expression.NewArrayInit( typeof(object),
-                    Enumerable.Concat(
-                        data.properties.Select(pi => Expression.Property( Expression.TypeAs(param, objectType), pi)),
-                        data.fields.Select(fi => Expression.Field( Expression.TypeAs(param, objectType), fi))
+                    data.properties.Select(pi => Expression.Property(Expression.TypeAs(param, objectType), pi))
+                        .Concat(data.fields.Select(fi => Expression.Field(Expression.TypeAs(param, objectType), fi))
                     )
                 )            
             , param).Compile();
@@ -59,8 +58,7 @@ namespace CsvLINQPadDriver.DataDisplay
             if (!IsSupportedType(objectType))
                 return null;
 
-            ProviderData providerData;
-            if (!ProvidersDataCache.TryGetValue(objectType, out providerData))
+            if (!ProvidersDataCache.TryGetValue(objectType, out var providerData))
             {
                 providerData = GetProviderData(objectType);
                 ProvidersDataCache.Add(objectType, providerData);
@@ -69,8 +67,8 @@ namespace CsvLINQPadDriver.DataDisplay
 
         }
 
-        private object objectToDisplay;
-        private ProviderData providerData;
+        private readonly object objectToDisplay;
+        private readonly ProviderData providerData;
 
         protected CsvRowMemberProvider(object objectToDisplay, ProviderData providerData)
         {
@@ -80,18 +78,14 @@ namespace CsvLINQPadDriver.DataDisplay
 
         public IEnumerable<string> GetNames()
         {
-            return Enumerable.Concat(
-                providerData.properties.Select(p => p.Name),
-                providerData.fields.Select(p => p.Name)
-            );
+            return providerData.properties.Select(p => p.Name)
+                .Concat(providerData.fields.Select(p => p.Name));
         }
 
         public IEnumerable<Type> GetTypes()
         {
-            return Enumerable.Concat(
-                providerData.properties.Select(p => p.PropertyType),
-                providerData.fields.Select(p => p.FieldType)
-            );
+            return providerData.properties.Select(p => p.PropertyType)
+                .Concat(providerData.fields.Select(p => p.FieldType));
         }
 
         public IEnumerable<object> GetValues()

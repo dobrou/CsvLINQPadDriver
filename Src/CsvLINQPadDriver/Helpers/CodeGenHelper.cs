@@ -1,17 +1,20 @@
 ﻿using System;
-using System.Linq;
 using System.CodeDom.Compiler;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace CsvLINQPadDriver.Helpers
 {
     internal class CodeGenHelper
     {
-        private static readonly Regex codeNameInvalidCharacters = new Regex(@"[^\p{Ll}\p{Lu}\p{Lt}\p{Lo}\p{Nd}\p{Nl}\p{Mn}\p{Mc}\p{Cf}\p{Pc}\p{Lm}]", RegexOptions.Compiled);
         private const string safeChar = "_";
         private const int maxLength = 128;
-        private static string[] invalidIdentifierNames = new string[] { "System", "ToString", "Equals", "GetHashCode" };
-        private static Lazy<CodeDomProvider> csCodeProvider = new Lazy<CodeDomProvider>(() => Microsoft.CSharp.CSharpCodeProvider.CreateProvider("C#"));
+
+        private static readonly Regex codeNameInvalidCharacters = new Regex(@"[^\p{Ll}\p{Lu}\p{Lt}\p{Lo}\p{Nd}\p{Nl}\p{Mn}\p{Mc}\p{Cf}\p{Pc}\p{Lm}]", RegexOptions.Compiled);
+
+        private static readonly string[] invalidIdentifierNames = { "System", "ToString", "Equals", "GetHashCode" };
+        private static readonly Lazy<CodeDomProvider> csCodeProvider = new Lazy<CodeDomProvider>(() => CodeDomProvider.CreateProvider("C#"));
+
         public static string GetSafeCodeName(string name)
         {
             string safeName = name ?? "";
@@ -30,7 +33,7 @@ namespace CsvLINQPadDriver.Helpers
                 safeName = safeChar + safeName;
 
             if (!csCodeProvider.Value.IsValidIdentifier(safeName) || invalidIdentifierNames.Contains(safeName))
-                safeName = safeName + safeChar;
+                safeName += safeChar;
 
             return safeName;
         }

@@ -14,7 +14,7 @@ namespace CsvLINQPadDriver.CodeGen
 
         public override IEnumerator<TRow> GetEnumerator()
         {
-            Logger.Log("{0}.GetEnumerator", this.GetType().FullName);
+            Logger.Log("{0}.GetEnumerator", GetType().FullName);
             return GetDataDirect().GetEnumerator();
         }
 
@@ -27,7 +27,7 @@ namespace CsvLINQPadDriver.CodeGen
         /// <returns></returns>
         public override IEnumerable<TRow> WhereIndexed(Func<TRow, string> getProperty, string propertyName, params string[] values)
         {
-            CsvLINQPadDriver.Helpers.Logger.Log("{0}.Where({1},{2})", typeof(TRow).Name, propertyName, string.Join(",", values));
+            Logger.Log("{0}.Where({1},{2})", typeof(TRow).Name, propertyName, string.Join(",", values));
             return this.Where(r => values.Contains(getProperty(r), StringComparer.Ordinal));
         }
 

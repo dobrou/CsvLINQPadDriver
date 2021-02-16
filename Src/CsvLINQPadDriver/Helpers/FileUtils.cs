@@ -1,10 +1,10 @@
-﻿using CsvHelper;
-using CsvHelper.Configuration;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using CsvHelper;
+using CsvHelper.Configuration;
 using CsvLINQPadDriver.CodeGen;
 
 namespace CsvLINQPadDriver.Helpers
@@ -14,9 +14,9 @@ namespace CsvLINQPadDriver.Helpers
         public static Dictionary<string, string> stringInternCache = new Dictionary<string, string>();
         private static string StringIntern(string str)
         {
-            if (str == null) return str;
-            string intern;
-            return stringInternCache.TryGetValue(str, out intern)
+            if (str == null) return null;
+
+            return stringInternCache.TryGetValue(str, out var intern)
                 ? intern
                 : stringInternCache[str] = str
             ;
@@ -52,12 +52,11 @@ namespace CsvLINQPadDriver.Helpers
                 BufferSize = 1024 * 1024 * 5,
             };
 
-            using (var cp = new CsvParser(new StreamReader(fileName, true), csvOptions))
+            using var cp = new CsvParser(new StreamReader(fileName, true), csvOptions);
+
+            while (cp.Read())
             {
-                while (cp.Read())
-                {
-                    yield return cp.Record;
-                }
+                yield return cp.Record;
             }
         }
 
@@ -71,15 +70,14 @@ namespace CsvLINQPadDriver.Helpers
 
             try
             {
-                using (var cp = new CsvParser(new StreamReader(fileName, true), csvOptions))
-                {
-                    return cp.Read() ? cp.Record : new string[0];
-                }
+                using var cp = new CsvParser(new StreamReader(fileName, true), csvOptions);
+
+                return cp.Read() ? cp.Record : new string[0];
             }
             catch (Exception ex)
             {
                 Logger.Log("CsvReadHeader failed: {0}", ex.ToString());
-                return new string[] { "Error: " + ex.ToString() };
+                return new[] { "Error: " + ex };
             }
         }
 
@@ -104,33 +102,32 @@ namespace CsvLINQPadDriver.Helpers
                     DetectColumnCountChanges = false,
                 };
 
-                using (var cr = new CsvParser(new StreamReader(fileName, true), csvOptions))
-                {                    
-                    if(!cr.Read())
-                        return false;
+                using var cr = new CsvParser(new StreamReader(fileName, true), csvOptions);
 
-                    string[] r1 = cr.Record;
+                if(!cr.Read())
+                    return false;
 
-                    //0 or 1 columns
-                    if (r1.Length <= 1)
-                        return false;
+                string[] r1 = cr.Record;
 
-                    if (!cr.Read())
-                        return false;
+                //0 or 1 columns
+                if (r1.Length <= 1)
+                    return false;
 
-                    string[] r2 = cr.Record;
+                if (!cr.Read())
+                    return false;
 
-                    //different count of columns
-                    if (r1.Length != r2.Length)
-                        return false;
+                string[] r2 = cr.Record;
 
-                    //too many strange characters
-                    int charsCount = r1.Concat(r2).Sum(s => (s ?? "").Length);
-                    int validCharsCount = r1.Concat(r2).Sum(s => Enumerable.Range(0, (s ?? "").Length).Count(i => char.IsLetterOrDigit(s, i)));
-                    const double validCharsMinOKRatio = 0.5;
-                    if (validCharsCount < validCharsMinOKRatio * charsCount)
-                        return false;
-                }
+                //different count of columns
+                if (r1.Length != r2.Length)
+                    return false;
+
+                //too many strange characters
+                int charsCount = r1.Concat(r2).Sum(s => (s ?? "").Length);
+                int validCharsCount = r1.Concat(r2).Sum(s => Enumerable.Range(0, (s ?? "").Length).Count(i => char.IsLetterOrDigit(s!, i)));
+                const double validCharsMinOKRatio = 0.5;
+                if (validCharsCount < validCharsMinOKRatio * charsCount)
+                    return false;
                 return true;
             }
             catch (Exception ex)
@@ -147,14 +144,13 @@ namespace CsvLINQPadDriver.Helpers
         public static char CsvDetectSeparator(string fileName, string[] csvData = null)
         {
             char[] defaultCsvSeparators;
-            switch (Path.GetExtension(fileName))
+            switch (Path.GetExtension(fileName).ToLowerInvariant())
             { 
                 case "tsv":
-                    defaultCsvSeparators = new char[] { '\t', ',', ';' };
+                    defaultCsvSeparators = new[] { '\t', ',', ';' };
                     break;
-                case "csv":
-                default:
-                    defaultCsvSeparators = new char[] { ',', ';', '\t' };
+                default: // csv
+                    defaultCsvSeparators = new[] { ',', ';', '\t' };
                     break;
             }                
 
@@ -213,7 +209,7 @@ namespace CsvLINQPadDriver.Helpers
         {
             try
             {
-                path = path ?? "";
+                path ??= "";
 
                 //directly one file            
                 if (File.Exists(path))
@@ -252,7 +248,7 @@ namespace CsvLINQPadDriver.Helpers
         }
 
 
-        private static readonly string[] sizeUnits = new string[] { "B", "KB", "MB", "GB", "TB" };
+        private static readonly string[] sizeUnits = { "B", "KB", "MB", "GB", "TB" };
         private const long sizeUnitsStep = 1024;
 
         /// <summary>

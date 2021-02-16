@@ -1,13 +1,15 @@
-﻿using System.IO;
+﻿using System;
+using System.CodeDom;
+using System.IO;
+using System.Linq;
+using System.Security;
 using CsvLINQPadDriver.DataDisplay;
 using CsvLINQPadDriver.DataModel;
 using CsvLINQPadDriver.Helpers;
-using System;
-using System.Linq;
+using Microsoft.CSharp;
 
 namespace CsvLINQPadDriver.CodeGen
 {
-
     /// <summary>
     /// Generates data context and classes source code from data model.
     /// </summary>
@@ -17,14 +19,16 @@ namespace CsvLINQPadDriver.CodeGen
 
         public static string GenerateCode(CsvDatabase db, ref string nameSpace, ref string typeName, ICsvDataContextDriverProperties props)
         {
+            if (typeName == null) throw new ArgumentNullException(nameof(typeName));
+
             typeName = DefaultContextTypeName;
             return new CsvCSharpCodeGenerator(nameSpace, DefaultContextTypeName, props).GenerateSrcFile(db);
         }
 
-        private string contextNameSpace;
-        private string contextTypeName;
-        private ICsvDataContextDriverProperties properties;
-      
+        private readonly string contextNameSpace;
+        private readonly string contextTypeName;
+        private readonly ICsvDataContextDriverProperties properties;
+
         public CsvCSharpCodeGenerator(string contextNameSpace, string contextTypeName, ICsvDataContextDriverProperties properties)
         {
             this.contextNameSpace = contextNameSpace;
@@ -45,7 +49,7 @@ namespace " + contextNameSpace + @"
     public class " + contextTypeName + @" : " + typeof(CsvDataContextBase).GetCodeTypeClassName() + @" 
     { "
 + string.Join("", from table in db.Tables select @"
-        /// <summary>File: "+ System.Security.SecurityElement.Escape(table.FilePath) +@"</summary>
+        /// <summary>File: "+ SecurityElement.Escape(table.FilePath) +@"</summary>
         public " + typeof(CsvTableBase<>).GetCodeTypeClassName(table.GetCodeRowClassName()) + @" " + table.CodeName + @" { get; private set; }"
 ) + @"       
 
@@ -88,7 +92,7 @@ namespace " + contextNameSpace + @"
 + string.Join("", from c in table.Columns select @"
         public string " + c.CodeName + @" { get; set; } "
 ) + string.Join("", from rel in table.Relations select @"
-        /// <summary>" + System.Security.SecurityElement.Escape(rel.DisplayName) + @"</summary> " + (hideRelationsFromDump ? @"
+        /// <summary>" + SecurityElement.Escape(rel.DisplayName) + @"</summary> " + (hideRelationsFromDump ? @"
         [" + typeof(HideFromDumpAttribute).GetCodeTypeClassName() + "]" : "") + @"
         public IEnumerable<" + rel.TargetTable.GetCodeRowClassName() + @"> " + rel.CodeName + @" { get; set; } "
 ) + @"
@@ -100,44 +104,40 @@ namespace " + contextNameSpace + @"
     }
 
     /// <summary>
-    /// Methods usefull for CSharp source code generator
+    /// Methods useful for CSharp source code generator
     /// </summary>
     internal static class CsvCSharpCodeGeneratorExtensions
     {
-        static public string GetCodeRowClassName(this CsvTable table)
+        public static string GetCodeRowClassName(this CsvTable table)
         {
             return "T" + table.CodeName;
         }
-        static internal string GetCodeTypeClassName(this Type type, params string[] genericParameters)
+        internal static string GetCodeTypeClassName(this Type type, params string[] genericParameters)
         {
-            return type.FullName.Split('`')[0] + (genericParameters.Length == 0 ? "" : "<" + string.Join(",", genericParameters) + ">");
+            return type!.FullName!.Split('`')[0] + (genericParameters.Length == 0 ? "" : "<" + string.Join(",", genericParameters) + ">");
         }
 
         /// <summary>
-        /// Transorm string into form suitable to be pasted into source code.
+        /// Transform string into form suitable to be pasted into source code.
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
         public static string GetCodeStringEscaped(this string input)
         {
-            using (var sw = new StringWriter())
-            using (var codeProvider = new Microsoft.CSharp.CSharpCodeProvider())
-            {
-                codeProvider.GenerateCodeFromExpression(new System.CodeDom.CodePrimitiveExpression(input), sw, null);
-                return sw.ToString();
-            }
+            using var sw = new StringWriter();
+            using var codeProvider = new CSharpCodeProvider();
+
+            codeProvider.GenerateCodeFromExpression(new CodePrimitiveExpression(input), sw, null);
+            return sw.ToString();
         }
 
         public static string GetCodeCharEscaped(this char input)
         {
-            using (var sw = new StringWriter())
-            using (var codeProvider = new Microsoft.CSharp.CSharpCodeProvider())
-            {
-                codeProvider.GenerateCodeFromExpression(new System.CodeDom.CodePrimitiveExpression(input), sw, null);
-                return sw.ToString();
-            }
+            using var sw = new StringWriter();
+            using var codeProvider = new CSharpCodeProvider();
+
+            codeProvider.GenerateCodeFromExpression(new CodePrimitiveExpression(input), sw, null);
+            return sw.ToString();
         }
-
     }
-
 }

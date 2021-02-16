@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using CsvLINQPadDriver.Helpers;
+using LINQPad;
 
 namespace CsvLINQPadDriver.CodeGen
 {
@@ -13,17 +14,16 @@ namespace CsvLINQPadDriver.CodeGen
         public CsvTableList(char csvSeparator, string filePath, ICollection<CsvColumnInfo> propertiesInfo, Action<TRow> relationsInit)
             : base(csvSeparator, filePath, propertiesInfo, relationsInit)
         {
-            this.dataCache = new Lazy<IList<TRow>>(
-                () => ( CsvTableFactory.IsCacheStatic
-                    ? (IList<TRow>) LINQPad.Extensions.Cache(GetDataDirect(), typeof(TRow).Name + ":" + FilePath)
-                    : (IList<TRow>) GetDataDirect().ToList()
-                ), 
+            dataCache = new Lazy<IList<TRow>>(
+                () => CsvTableFactory.IsCacheStatic
+                    ? (IList<TRow>) GetDataDirect().Cache(typeof(TRow).Name + ":" + FilePath)
+                    : GetDataDirect().ToList(), 
                 LazyThreadSafetyMode.ExecutionAndPublication 
             );
         }
 
         /// <summary>
-        /// Load data into cache on first access and retun cached data.
+        /// Load data into cache on first access and return cached data.
         /// </summary>
         /// <returns></returns>
         protected IList<TRow> GetDataCached()
@@ -38,9 +38,9 @@ namespace CsvLINQPadDriver.CodeGen
             }
         }
 
-        override public IEnumerator<TRow> GetEnumerator()
+        public override IEnumerator<TRow> GetEnumerator()
         {
-            Logger.Log("{0}.GetEnumerator", this.GetType().FullName);
+            Logger.Log("{0}.GetEnumerator", GetType().FullName);
             return GetDataCached().GetEnumerator();
         }
 
@@ -57,12 +57,11 @@ namespace CsvLINQPadDriver.CodeGen
         /// <param name="propertyName"></param>
         /// <param name="values"></param>
         /// <returns></returns>
-        override public IEnumerable<TRow> WhereIndexed(Func<TRow, string> getProperty, string propertyName, params string[] values)
+        public override IEnumerable<TRow> WhereIndexed(Func<TRow, string> getProperty, string propertyName, params string[] values)
         {
-            CsvLINQPadDriver.Helpers.Logger.Log("{0}.Where({1},{2})", typeof(TRow).Name, propertyName, string.Join(",", values));
+            Logger.Log("{0}.Where({1},{2})", typeof(TRow).Name, propertyName, string.Join(",", values));
 
-            ILookup<string, TRow> propertyIndex;
-            if (!indexes.TryGetValue(propertyName, out propertyIndex))
+            if (!indexes.TryGetValue(propertyName, out var propertyIndex))
             {
                 propertyIndex = this.ToLookup(getProperty, StringComparer.Ordinal);
                 indexes.Add(propertyName, propertyIndex);
@@ -96,12 +95,10 @@ namespace CsvLINQPadDriver.CodeGen
             return GetDataCached().Remove(item);
         }
 
-        public int Count {
-            get { return GetDataCached().Count; }
-        }
-        public bool IsReadOnly {
-            get { return GetDataCached().IsReadOnly; }
-        }
+        public int Count => GetDataCached().Count;
+
+        public bool IsReadOnly => GetDataCached().IsReadOnly;
+
         public int IndexOf(TRow item)
         {
             return GetDataCached().IndexOf(item);
@@ -119,8 +116,8 @@ namespace CsvLINQPadDriver.CodeGen
 
         public TRow this[int index]
         {
-            get { return GetDataCached()[index]; }
-            set { GetDataCached()[index] = value; }
+            get => GetDataCached()[index];
+            set => GetDataCached()[index] = value;
         }
     }
 }

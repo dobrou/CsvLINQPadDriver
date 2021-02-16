@@ -1,9 +1,9 @@
-﻿using CsvLINQPadDriver.Helpers;
-using LINQPad.Extensibility.DataContext;
-using System;
+﻿using System;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
+using CsvLINQPadDriver.Helpers;
+using LINQPad.Extensibility.DataContext;
 
 namespace CsvLINQPadDriver
 {
@@ -23,8 +23,8 @@ namespace CsvLINQPadDriver
 
         public bool Persist
         {
-            get { return cxInfo.Persist; }
-            set { cxInfo.Persist = value; }
+            get => cxInfo.Persist;
+            set => cxInfo.Persist = value;
         }
 
         /// <summary>
@@ -32,17 +32,17 @@ namespace CsvLINQPadDriver
         /// </summary>
         public string Files
         {
-            get { return (string)driverData.Element ("Files") ?? ""; }
-            set { driverData.SetElementValue ("Files", value); }
+            get => (string)driverData.Element ("Files") ?? "";
+            set => driverData.SetElementValue ("Files", value);
         }
 
         /// <summary>
-        /// Default csv separator. If empty or null, separator will be autodetected
+        /// Default csv separator. If empty or null, separator will be auto-detected
         /// </summary>
         public string CsvSeparator 
         {
-            get { return (string)driverData.Element("CsvSeparator") ?? ""; }
-            set { driverData.SetElementValue("CsvSeparator", value); }
+            get => (string)driverData.Element("CsvSeparator") ?? "";
+            set => driverData.SetElementValue("CsvSeparator", value);
         }
 
         public char? CsvSeparatorChar
@@ -68,8 +68,8 @@ namespace CsvLINQPadDriver
         /// </summary>
         public bool DetectRelations
         {
-            get { return ((string)driverData.Element("DetectRelations")).ToBool() ?? true; }
-            set { driverData.SetElementValue("DetectRelations", value); }
+            get => ((string)driverData.Element("DetectRelations")).ToBool() ?? true;
+            set => driverData.SetElementValue("DetectRelations", value);
         }
 
         /// <summary>
@@ -77,8 +77,8 @@ namespace CsvLINQPadDriver
         /// </summary>
         public bool HideRelationsFromDump
         {
-            get { return ((string)driverData.Element("HideRelationsFromDump")).ToBool() ?? true; }
-            set { driverData.SetElementValue("HideRelationsFromDump", value); }
+            get => ((string)driverData.Element("HideRelationsFromDump")).ToBool() ?? true;
+            set => driverData.SetElementValue("HideRelationsFromDump", value);
         }
 
         /// <summary>
@@ -86,23 +86,23 @@ namespace CsvLINQPadDriver
         /// </summary>
         public bool DebugInfo
         {
-            get { return ((string)driverData.Element("DebugInfo")).ToBool() ?? false; }
-            set { driverData.SetElementValue("DebugInfo", value); }
+            get => ((string)driverData.Element("DebugInfo")).ToBool() ?? false;
+            set => driverData.SetElementValue("DebugInfo", value);
         }
 
         /// <summary>
-        /// Beginning of every file will be scanned and suspicious files with format not similar to CSV will be ingored
+        /// Beginning of every file will be scanned and suspicious files with format not similar to CSV will be ignored
         /// </summary>
         public bool IgnoreInvalidFiles
         {
-            get { return ((string)driverData.Element("IgnoreInvalidFiles")).ToBool() ?? false; }
-            set { driverData.SetElementValue("IgnoreInvalidFiles", value); }
+            get => ((string)driverData.Element("IgnoreInvalidFiles")).ToBool() ?? false;
+            set => driverData.SetElementValue("IgnoreInvalidFiles", value);
         }
 
         public bool IsStringInternEnabled
         {
-            get { return ((string)driverData.Element("IsStringInternEnabled")).ToBool() ?? true; }
-            set { driverData.SetElementValue("IsStringInternEnabled", value); }
+            get => ((string)driverData.Element("IsStringInternEnabled")).ToBool() ?? true;
+            set => driverData.SetElementValue("IsStringInternEnabled", value);
         }
 
         /// <summary>
@@ -115,8 +115,8 @@ namespace CsvLINQPadDriver
         /// </summary>
         public bool IsCacheEnabled
         {
-            get { return ((string)driverData.Element("IsCacheEnabled")).ToBool() ?? true; }
-            set { driverData.SetElementValue("IsCacheEnabled", value); }
+            get => ((string)driverData.Element("IsCacheEnabled")).ToBool() ?? true;
+            set => driverData.SetElementValue("IsCacheEnabled", value);
         }
 
     }

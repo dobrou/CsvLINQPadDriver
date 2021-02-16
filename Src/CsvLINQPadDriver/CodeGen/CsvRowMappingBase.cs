@@ -39,10 +39,7 @@ namespace CsvLINQPadDriver.CodeGen
             var row = new TRow();
 
             propertiesInit(row, data);
-            if (relationsInit != null)
-            {
-                relationsInit(row);
-            }
+            relationsInit?.Invoke(row);
 
             return row;
         }

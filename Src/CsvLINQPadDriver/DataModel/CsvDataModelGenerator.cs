@@ -1,9 +1,9 @@
-﻿using CsvLINQPadDriver.Helpers;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using CsvLINQPadDriver.Helpers;
 
 namespace CsvLINQPadDriver.DataModel
 {
@@ -24,7 +24,7 @@ namespace CsvLINQPadDriver.DataModel
 
         public CsvDataModelGenerator(ICsvDataContextDriverProperties properties)
         {
-            this.Properties = properties;
+            Properties = properties;
         }
 
         public CsvDatabase CreateModel() 
@@ -33,7 +33,8 @@ namespace CsvLINQPadDriver.DataModel
             string baseDir = FileUtils.GetLongestCommonPrefixPath(files);
 
             //create db structure
-            var db = new CsvDatabase() {
+            var db = new CsvDatabase
+            {
                 Name = baseDir,
                 Tables = (
                     from file in files
@@ -42,14 +43,16 @@ namespace CsvLINQPadDriver.DataModel
                     where !Properties.IgnoreInvalidFiles || FileUtils.CsvIsFormatValid(file, csvSeparator)
                     let fileName = Path.GetFileName(file)
                     let fileDir = (Path.GetDirectoryName(file.Remove(0, baseDir.Length)+"x")??"").TrimStart(Path.DirectorySeparatorChar)
-                    select new CsvTable() {
+                    select new CsvTable
+                    {
                         FilePath = file,
-                        CodeName = CodeGenHelper.GetSafeCodeName(Path.GetFileNameWithoutExtension(fileName) + (string.IsNullOrWhiteSpace(fileDir) ? "" : ("_" + fileDir))),
-                        DisplayName = fileName + (string.IsNullOrWhiteSpace(fileDir) ? "" : (" in " + fileDir)) + " " + FileUtils.GetFileSizeInfo(file) + "",
+                        CodeName = CodeGenHelper.GetSafeCodeName(Path.GetFileNameWithoutExtension(fileName) + (string.IsNullOrWhiteSpace(fileDir) ? "" : "_" + fileDir)),
+                        DisplayName = fileName + (string.IsNullOrWhiteSpace(fileDir) ? "" : " in " + fileDir) + " " + FileUtils.GetFileSizeInfo(file) + "",
                         CsvSeparator = csvSeparator,
                         Columns = (
                             from col in FileUtils.CsvReadHeader(file, csvSeparator).Select((value,index) => new { value, index })
-                            select new CsvColumn() {
+                            select new CsvColumn
+                            {
                                 CodeName = CodeGenHelper.GetSafeCodeName(col.value),
                                 DisplayName = "",
                                 CsvColumnName = col.value ?? "",
@@ -78,7 +81,7 @@ namespace CsvLINQPadDriver.DataModel
 
             }
 
-            //adjust displaynames
+            //adjust display names
             foreach (var x in db.Tables)                                x.DisplayName = x.CodeName + (string.IsNullOrWhiteSpace(x.DisplayName) ? "" : " (" + x.DisplayName + ")");
             foreach (var x in db.Tables.SelectMany(t => t.Columns))     x.DisplayName = x.CodeName + (string.IsNullOrWhiteSpace(x.DisplayName) ? "" : " (" + x.DisplayName + ")");
             foreach (var x in db.Tables.SelectMany(t => t.Relations))   x.DisplayName = x.CodeName + (string.IsNullOrWhiteSpace(x.DisplayName) ? "" : " (" + x.DisplayName + ")");
@@ -107,7 +110,7 @@ namespace CsvLINQPadDriver.DataModel
                     name = Enumerable.Range(1, int.MaxValue)
                             .Select(i => i.ToString(CultureInfo.InvariantCulture))
                             .Select(s => name + s) //1,2,3,4...
-                            .First(nname => !names.Contains(nname));
+                            .First(firstName => !names.Contains(firstName));
                     nameSet(item, name);
                 }
                 names.Add(name);
@@ -150,8 +153,7 @@ namespace CsvLINQPadDriver.DataModel
             // t1.nameID -> names.nameID
             // t1.fishID -> fishes.fishID
             // t1.fishID -> fishes.ID
-            var r1 = (
-                from t1 in db.Tables
+            var r1 = from t1 in db.Tables
                 let keyNamesForeign = GetTableForeignKeyPossibleNames(t1)
                 let keyNames = keyNamesForeign.Concat(new []{"id"})
                 from c1 in t1.Columns
@@ -159,25 +161,22 @@ namespace CsvLINQPadDriver.DataModel
 
                 from tc2 in keyNamesForeign.SelectMany(k => tcl[k])
                 where tc2.tab != t1
-                select new { t1, c1, t2 = tc2.tab, c2 = tc2.col }
-            );
+                select new { t1, c1, t2 = tc2.tab, c2 = tc2.col };
 
             //translate to relations            
-            var relations = (
-                from r in
-                    (
-                        from r in (new[] { r1 }).SelectMany(r => r).Take(maximumRelationsCount)
-                        select new[] { r, new { t1 = r.t2, c1 = r.c2, t2 = r.t1, c2 = r.c1 } } //add reverse direction
-                    ).SelectMany(r => r).Distinct()
-                select new CsvRelation()
+            var relations = from r in
+                (
+                    from r in new[] { r1 }.SelectMany(r => r).Take(maximumRelationsCount)
+                    select new[] { r, new { t1 = r.t2, c1 = r.c2, t2 = r.t1, c2 = r.c1 } } //add reverse direction
+                ).SelectMany(r => r).Distinct()
+                select new CsvRelation
                 {
                     CodeName = r.t2.CodeName,
                     SourceTable = r.t1,
                     SourceColumn = r.c1,
                     TargetTable = r.t2,
                     TargetColumn = r.c2,
-                }
-            );
+                };
 
             //add relations to DB structure
             int relationCount = 0;

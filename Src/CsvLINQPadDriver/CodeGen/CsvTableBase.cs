@@ -13,7 +13,7 @@ namespace CsvLINQPadDriver.CodeGen
         {
             var table = isCacheEnabled
                 ? (CsvTableBase<TRow>)new CsvTableList<TRow>(csvSeparator, filePath, propertiesInfo, relationsInit)
-                : (CsvTableBase<TRow>)new CsvTableEnumerable<TRow>(csvSeparator, filePath, propertiesInfo, relationsInit)
+                : new CsvTableEnumerable<TRow>(csvSeparator, filePath, propertiesInfo, relationsInit)
             ;
             table.isStringInternEnabled = isStringInternEnabled;
             return table;
@@ -27,18 +27,18 @@ namespace CsvLINQPadDriver.CodeGen
 
     public abstract class CsvTableBase<TRow> : CsvTableBase, IEnumerable<TRow> where TRow : CsvRowBase, new()
     {
-        public char CsvSeparator { get; private set; }
-        public string FilePath { get; private set; }
-        
+        public char CsvSeparator { get; }
+        public string FilePath { get; }
+
         internal ICollection<CsvColumnInfo> PropertiesInfo;
         internal Action<TRow> RelationsInit;
-        
+
         protected CsvTableBase(char csvSeparator, string filePath, ICollection<CsvColumnInfo> propertiesInfo, Action<TRow> relationsInit)
         {
-            this.CsvSeparator = csvSeparator;
-            this.FilePath = filePath;
-            this.PropertiesInfo = propertiesInfo;
-            this.RelationsInit = relationsInit;
+            CsvSeparator = csvSeparator;
+            FilePath = filePath;
+            PropertiesInfo = propertiesInfo;
+            RelationsInit = relationsInit;
         }
 
         protected IEnumerable<TRow> GetDataDirect()
@@ -53,9 +53,9 @@ namespace CsvLINQPadDriver.CodeGen
         /// <param name="propertyName"></param>
         /// <param name="values"></param>
         /// <returns></returns>
-        abstract public IEnumerable<TRow> WhereIndexed(Func<TRow, string> getProperty, string propertyName, params string[] values);
+        public abstract IEnumerable<TRow> WhereIndexed(Func<TRow, string> getProperty, string propertyName, params string[] values);
 
-        abstract public IEnumerator<TRow> GetEnumerator();
+        public abstract IEnumerator<TRow> GetEnumerator();
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();

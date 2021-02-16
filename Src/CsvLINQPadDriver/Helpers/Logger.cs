@@ -10,7 +10,7 @@ namespace CsvLINQPadDriver.Helpers
         public static bool LogEnabled = false;
         public static readonly Logger Instance = new Logger();
         
-        private Stopwatch sw = new Stopwatch();
+        private readonly Stopwatch sw = new Stopwatch();
 
         public static void Log(string str, params object[] parameters)
         {
@@ -23,7 +23,7 @@ namespace CsvLINQPadDriver.Helpers
         {
             if (!LogEnabled)
                 return;
-            this.Add(string.Format(DateTime.Now.ToString("HH:mm:ss.fff") + ": (" + sw.ElapsedMilliseconds + "ms) " + str, parameters));
+            Add(string.Format(DateTime.Now.ToString("HH:mm:ss.fff") + ": (" + sw.ElapsedMilliseconds + "ms) " + str, parameters));
             sw.Restart();
         }
 

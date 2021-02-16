@@ -16,14 +16,14 @@ namespace CsvLINQPadDriver.CodeGen
         /// 
         /// </summary>
         /// <param name="csvColumnIndex"></param>
-        /// <param name="property">Propertu selector. Must be simple lambda like x => x.Property</param>
+        /// <param name="property">Property selector. Must be simple lambda like x => x.Property</param>
         public void Add(int csvColumnIndex, Expression<Func<TRow,string>> property)
         {
             var member = property.Body as MemberExpression;
-            if (member == null) throw new ArgumentException("'property' must be only property access", "property");
+            if (member == null) throw new ArgumentException($"{nameof(property)} must be only property access", nameof(property));
             string propertyName = member.Member.Name; //it's PropertyInfo or FieldInfo
 
-            this.Add(new CsvColumnInfo()
+            Add(new CsvColumnInfo
             {
                 CsvColumnIndex = csvColumnIndex,
                 PropertyName = propertyName,

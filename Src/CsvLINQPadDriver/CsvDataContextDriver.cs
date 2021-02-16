@@ -1,11 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using CsvLINQPadDriver.DataDisplay;
 using CsvLINQPadDriver.Helpers;
 using LINQPad;
 using LINQPad.Extensibility.DataContext;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
 
 namespace CsvLINQPadDriver
 {
@@ -21,7 +21,11 @@ namespace CsvLINQPadDriver
             var properties = new CsvDataContextDriverProperties(cxInfo);
             if (dialogOptions.IsNewConnection)
             {
-                properties.Files = "# Drag&drop (use Ctrl to add files)\n# Type file paths, or directory paths with pattern like *.csv or **.csv (** will recurse subdirectory)\nc:\\*.csv";
+                properties.Files = string.Join(Environment.NewLine,
+                    "# Drag&drop (use Ctrl to add files)",
+                    "# Type file paths, or directory paths with pattern like *.csv or **.csv (** will recurse subdirectories)",
+                    "# Press Ctrl+Shift+V to insert from clipboard and proceed",
+                    @"c:\*.csv");
             }
 
             bool? result = new ConnectionDialog(properties).ShowDialog();
@@ -38,10 +42,7 @@ namespace CsvLINQPadDriver
             return CsvRowMemberProvider.GetCsvRowMemberProvider(objectToWrite) ?? base.GetCustomDisplayMemberProvider(objectToWrite);
         }
 
-        public override Version Version
-        {
-            get { return Assembly.GetExecutingAssembly().GetName().Version; }
-        }
+        public override Version Version => Assembly.GetExecutingAssembly().GetName().Version;
 
         public override IEnumerable<string> GetAssembliesToAdd(IConnectionInfo cxInfo)
         {
@@ -53,13 +54,9 @@ namespace CsvLINQPadDriver
             return new[] {typeof (StringExtensions).Namespace};
         }
 
-        public override string Name {
-            get { return "CSV Context Driver"; }
-        }
+        public override string Name => "CSV Context Driver";
 
-        public override string Author {
-            get { return "Martin Dobroucký (dobrou@gmail.com)"; }
-        }
+        public override string Author => "Martin Dobroucký (dobrou@gmail.com), Ivan Ivon (ivan.ivon@gmail.com)";
 
         public override List<ExplorerItem> GetSchemaAndBuildAssembly(IConnectionInfo cxInfo, AssemblyName assemblyToBuild, ref string nameSpace, ref string typeName)
         {

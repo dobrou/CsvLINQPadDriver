@@ -1,11 +1,12 @@
-﻿using CsvLINQPadDriver.CodeGen;
-using CsvLINQPadDriver.DataModel;
-using CsvLINQPadDriver.Helpers;
-using LINQPad.Extensibility.DataContext;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using CsvHelper;
+using CsvLINQPadDriver.CodeGen;
+using CsvLINQPadDriver.DataModel;
+using CsvLINQPadDriver.Helpers;
+using LINQPad.Extensibility.DataContext;
 
 namespace CsvLINQPadDriver
 {
@@ -57,7 +58,7 @@ namespace CsvLINQPadDriver
                 schema.Insert(0, new ExplorerItem("No files found.", ExplorerItemKind.Schema, ExplorerIcon.Box));
             }
 
-            Logger.Log("Tables: {0} Columns: {1} Relations: {2}", db.Tables.Count(), db.Tables.Sum(t => t.Columns.Count()), db.Tables.Sum(t => t.Relations.Count()) );
+            Logger.Log("Tables: {0} Columns: {1} Relations: {2}", db.Tables.Count, db.Tables.Sum(t => t.Columns.Count), db.Tables.Sum(t => t.Relations.Count) );
             Logger.Log("Build finished. ({0} ms)", sw.ElapsedMilliseconds);
 
             Logger.Log( string.Join("\n", db.Tables.SelectMany(t => t.Relations.Select( r => r.CodeName) )));
@@ -76,9 +77,9 @@ namespace CsvLINQPadDriver
             var referencedAssemblies = DataContextDriver.GetCoreFxReferenceAssemblies().Concat(new []
             {
                 typeof(SchemaBuilder).Assembly.Location,
-                typeof(CsvHelper.CsvReader).Assembly.Location
+                typeof(CsvReader).Assembly.Location
             }).ToArray();
-            var result = DataContextDriver.CompileSource(new CompilationInput()
+            var result = DataContextDriver.CompileSource(new CompilationInput
             {
                 FilePathsToReference = referencedAssemblies,
                 OutputPath = name.CodeBase,
@@ -92,6 +93,7 @@ namespace CsvLINQPadDriver
         /// Get LINQPad Schema from CSV data model
         /// </summary>
         /// <param name="db"></param>
+        /// <param name="props"></param>
         /// <returns></returns>
         private static List<ExplorerItem> GetSchema(CsvDatabase db, ICsvDataContextDriverProperties props)
         {
@@ -106,16 +108,16 @@ namespace CsvLINQPadDriver
                         select new ExplorerItem(c.DisplayName, ExplorerItemKind.Property, ExplorerIcon.Column) 
                         {
                             DragText = c.CodeName,
-                            ToolTipText = (c.CsvColumnIndex + 1) + ":" + c.CsvColumnName,
+                            ToolTipText = c.CsvColumnIndex + 1 + ":" + c.CsvColumnName,
                         }
                     ).Concat(
                         from r in table.Relations
                         select new ExplorerItem(r.DisplayName, ExplorerItemKind.CollectionLink, ExplorerIcon.ManyToMany)
                         {
                             DragText = r.CodeName,
-                            ToolTipText = string.Format("Relation to {0} where {1}.{2} == {3}.{4}", r.TargetTable.CodeName, r.SourceTable.CodeName, r.SourceColumn.CodeName, r.TargetTable.CodeName, r.TargetColumn.CodeName ),
+                            ToolTipText = $"Relation to {r.TargetTable.CodeName} where {r.SourceTable.CodeName}.{r.SourceColumn.CodeName} == {r.TargetTable.CodeName}.{r.TargetColumn.CodeName}",
                         }
-                    ).ToList(),                    
+                    ).ToList(),
                 }
             ).ToList();
 

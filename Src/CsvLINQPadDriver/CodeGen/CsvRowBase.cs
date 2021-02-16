@@ -5,13 +5,13 @@ namespace CsvLINQPadDriver.CodeGen
     public class CsvRowBase
     {
         /// <summary>
-        /// All string properties in one string, usefull for fulltext search
+        /// All string properties in one string, useful for fulltext search
         /// </summary>
         /// <returns></returns>
         public override string ToString()
         {
             //get all public string properties
-            var data = this.GetType()
+            var data = GetType()
                 .GetProperties()
                 .Where(p => p.PropertyType == typeof(string))
                 .Select(p => p.GetGetMethod())
