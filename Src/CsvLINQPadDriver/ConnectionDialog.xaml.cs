@@ -11,21 +11,22 @@ namespace CsvLINQPadDriver
 {
     public partial class ConnectionDialog
     {
-        public ConnectionDialog(ICsvDataContextDriverProperties properties)
+        public ConnectionDialog(ICsvDataContextDriverProperties csvDataContextDriverProperties)
         {
-            DataContext = properties;
             Background = SystemColors.ControlBrush;
-            InitializeComponent ();
+
+            DataContext = csvDataContextDriverProperties;
+
+            InitializeComponent();
         }
 
-        void btnOK_Click (object sender, RoutedEventArgs e)
-        {
+        private void OkButton_Click(object sender, RoutedEventArgs e) =>
             DialogResult = true;
-        }
 
-        private void TextBox_DragEnter(object sender, DragEventArgs e)
+        private void FilesTextBox_DragEnter(object sender, DragEventArgs e)
         {
             e.Handled = true;
+
             e.Effects = e.Data.GetDataPresent(DataFormats.FileDrop)
                 ? e.KeyStates.HasFlag(DragDropKeyStates.ControlKey)
                     ? DragDropEffects.Copy
@@ -33,48 +34,49 @@ namespace CsvLINQPadDriver
                 : DragDropEffects.None;
         }
 
-        private void TextBox_DragDrop(object sender, DragEventArgs e)
+        private void FilesTextBox_DragDrop(object sender, DragEventArgs e)
         {
-            TextBox textBox = sender as TextBox;
-            IEnumerable<string> files = e.Data.GetData(DataFormats.FileDrop, true) as string[];
+            var textBox = (TextBox)sender;
 
-            if (textBox != null && files != null)
+            if (!(e.Data.GetData(DataFormats.FileDrop, true) is IEnumerable<string> files))
             {
-                //add *.csv mask to dirs
-                files = files.Select(f => Directory.Exists(f) ? Path.Combine(f, "*.csv") : f);
-
-                //if ctrl, add files to text box, instead of replacing whole text
-                if (e.KeyStates.HasFlag(DragDropKeyStates.ControlKey))
-                    files = new[] {textBox.Text}.Concat(files);
-                    
-                textBox.Text = string.Join("\n", files);
-                
-                var binding = textBox.GetBindingExpression(TextBox.TextProperty);
-                binding?.UpdateSource();
+                return;
             }
+
+            // Add *.csv mask to dirs.
+            files = files.Select(path => Directory.Exists(path) ? Path.Combine(path, "*.csv") : path);
+
+            // If Ctrl is pressed then add files to text box instead of replacing whole text.
+            if (e.KeyStates.HasFlag(DragDropKeyStates.ControlKey))
+            {
+                files = new[] { textBox.Text }.Concat(files);
+            }
+
+            textBox.Text = string.Join(Environment.NewLine, files);
+
+            textBox.GetBindingExpression(TextBox.TextProperty)?.UpdateSource();
         }
 
         private void ConnectionDialog_OnLoaded(object sender, RoutedEventArgs e)
         {
-            var maskIndex = txtFiles.Text.IndexOf(@"c:\", StringComparison.InvariantCultureIgnoreCase);
+            var maskIndex = FilesTextBox.Text.IndexOf(@"c:\", StringComparison.InvariantCultureIgnoreCase);
             if (maskIndex >= 0)
             {
-                txtFiles.SelectionStart = maskIndex;
-                txtFiles.SelectionLength = txtFiles.Text.Length - maskIndex;
+                FilesTextBox.SelectionStart = maskIndex;
+                FilesTextBox.SelectionLength = FilesTextBox.Text.Length - maskIndex;
             }
         }
 
         private void PasteAndGoCommandBinding_OnExecuted(object sender, ExecutedRoutedEventArgs e)
         {
-            txtFiles.SelectAll();
-            txtFiles.Paste();
+            FilesTextBox.SelectAll();
+            FilesTextBox.Paste();
 
-            btnOK.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
+            OkButton.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
         }
 
-        private void PasteAndGoCommandBinding_OnCanExecute(object sender, CanExecuteRoutedEventArgs e)
-        {
-            e.CanExecute = Clipboard.ContainsText(TextDataFormat.Text) || Clipboard.ContainsText(TextDataFormat.UnicodeText);
-        }
+        private void PasteAndGoCommandBinding_OnCanExecute(object sender, CanExecuteRoutedEventArgs e) =>
+            e.CanExecute = Clipboard.ContainsText(TextDataFormat.Text) ||
+                           Clipboard.ContainsText(TextDataFormat.UnicodeText);
     }
 }

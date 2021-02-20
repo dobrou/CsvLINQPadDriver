@@ -1,123 +1,123 @@
 ﻿using System;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
+
 using CsvLINQPadDriver.Helpers;
+
 using LINQPad.Extensibility.DataContext;
 
 namespace CsvLINQPadDriver
 {
-    /// <summary>
-    /// Wrapper to expose typed properties over ConnectionInfo.DriverData.
-    /// </summary>
     public class CsvDataContextDriverProperties : ICsvDataContextDriverProperties
     {
-        readonly IConnectionInfo cxInfo;
-        readonly XElement driverData;
+        private readonly IConnectionInfo _connectionInfo;
+        private readonly XElement _driverData;
 
-        public CsvDataContextDriverProperties(IConnectionInfo cxInfo)
+        public CsvDataContextDriverProperties(IConnectionInfo connectionInfo)
         {
-            this.cxInfo = cxInfo;
-            driverData = cxInfo.DriverData;
+            _connectionInfo = connectionInfo;
+            _driverData = connectionInfo.DriverData;
         }
 
         public bool Persist
         {
-            get => cxInfo.Persist;
-            set => cxInfo.Persist = value;
+            get => _connectionInfo.Persist;
+            set => _connectionInfo.Persist = value;
         }
 
-        /// <summary>
-        /// Path to directory with csv files or directly to csv file
-        /// </summary>
         public string Files
         {
-            get => (string)driverData.Element ("Files") ?? "";
-            set => driverData.SetElementValue ("Files", value);
+            get => GetValue(string.Empty);
+            set => SetValue(value);
         }
 
-        /// <summary>
-        /// Default csv separator. If empty or null, separator will be auto-detected
-        /// </summary>
-        public string CsvSeparator 
+        public string[] ParsedFiles =>
+            Regex.Split(Files, @"[\r\n]+")
+                .Select(fileName => fileName.Trim())
+                .Where(fileName => !string.IsNullOrEmpty(fileName))
+                .Distinct(StringComparer.InvariantCultureIgnoreCase)
+                .ToArray();
+
+        public string CsvSeparator
         {
-            get => (string)driverData.Element("CsvSeparator") ?? "";
-            set => driverData.SetElementValue("CsvSeparator", value);
+            get => GetValue(string.Empty);
+            set => SetValue(value);
         }
 
         public char? CsvSeparatorChar
         {
             get
             {
-                string separator = CsvSeparator;
-                if (string.IsNullOrEmpty(separator))
+                var csvSeparator = CsvSeparator;
+
+                if (string.IsNullOrEmpty(csvSeparator))
+                {
                     return null;
+                }
+
                 try
                 {
-                    return Regex.Unescape(separator).FirstOrDefault();
+                    return Regex.Unescape(csvSeparator).FirstOrDefault();
                 }
-                catch (ArgumentException)
+                catch (Exception exception)
                 {
-                    return separator.First();
+                    var fallbackCsvSeparator = csvSeparator.First();
+
+                    CsvDataContextDriver.WriteToLog($"Falling back to CSV separator {fallbackCsvSeparator}", exception);
+
+                    return fallbackCsvSeparator;
                 }
             }
         }
 
-        /// <summary>
-        /// If True - relations between csv files/tables will be detected and created. (based on files and column names)
-        /// </summary>
         public bool DetectRelations
         {
-            get => ((string)driverData.Element("DetectRelations")).ToBool() ?? true;
-            set => driverData.SetElementValue("DetectRelations", value);
+            get => GetValue(true);
+            set => SetValue(value);
         }
 
-        /// <summary>
-        /// If True - LINQPad will not show relations content in .Dump(). This prevents loading too many data.
-        /// </summary>
         public bool HideRelationsFromDump
         {
-            get => ((string)driverData.Element("HideRelationsFromDump")).ToBool() ?? true;
-            set => driverData.SetElementValue("HideRelationsFromDump", value);
+            get => GetValue(true);
+            set => SetValue(value);
         }
 
-        /// <summary>
-        /// If True - some additional debug info is accessible
-        /// </summary>
         public bool DebugInfo
         {
-            get => ((string)driverData.Element("DebugInfo")).ToBool() ?? false;
-            set => driverData.SetElementValue("DebugInfo", value);
+            get => GetValue(false);
+            set => SetValue(value);
         }
 
-        /// <summary>
-        /// Beginning of every file will be scanned and suspicious files with format not similar to CSV will be ignored
-        /// </summary>
         public bool IgnoreInvalidFiles
         {
-            get => ((string)driverData.Element("IgnoreInvalidFiles")).ToBool() ?? false;
-            set => driverData.SetElementValue("IgnoreInvalidFiles", value);
+            get => GetValue(false);
+            set => SetValue(value);
         }
 
         public bool IsStringInternEnabled
         {
-            get => ((string)driverData.Element("IsStringInternEnabled")).ToBool() ?? true;
-            set => driverData.SetElementValue("IsStringInternEnabled", value);
+            get => GetValue(true);
+            set => SetValue(value);
         }
 
-        /// <summary>
-        /// True - Parsed rows from file are cached.
-        /// This cache survives multiple query runs, even when query is changed.
-        /// Cache is cleared as soon as LINQPad clears Application Domain of query.
-        /// False - disable cache. Multiple enumerations of file content results in multiple reads and parsing of file.
-        /// Can be significantly slower for complex queries.
-        /// Significantly reduces memory usage. Useful when reading very large files.
-        /// </summary>
         public bool IsCacheEnabled
         {
-            get => ((string)driverData.Element("IsCacheEnabled")).ToBool() ?? true;
-            set => driverData.SetElementValue("IsCacheEnabled", value);
+            get => GetValue(true);
+            set => SetValue(value);
         }
 
+        private T GetValue<T>(Func<string, T> convert, T defaultValue, [CallerMemberName] string callerMemberName = default) =>
+            convert(_driverData.Element(callerMemberName)?.Value) ?? defaultValue;
+
+        private bool GetValue(bool defaultValue, [CallerMemberName] string callerMemberName = default) =>
+            GetValue(v => v.ToBool(), defaultValue, callerMemberName)!.Value;
+
+        private string GetValue(string defaultValue, [CallerMemberName] string callerMemberName = default) =>
+            GetValue(v => v, defaultValue, callerMemberName);
+
+        private void SetValue<T>(T value, [CallerMemberName] string callerMemberName = default) =>
+            _driverData.SetElementValue(callerMemberName!, value);
     }
 }

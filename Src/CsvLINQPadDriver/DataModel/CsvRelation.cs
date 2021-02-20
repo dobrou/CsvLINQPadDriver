@@ -1,6 +1,6 @@
 ﻿namespace CsvLINQPadDriver.DataModel
 {
-    public class CsvRelation
+    public class CsvRelation : ICsvNames
     {
         public string CodeName { get; set; }
         public string DisplayName { get; set; }
@@ -10,6 +10,5 @@
 
         public CsvColumn SourceColumn { get; set; }
         public CsvColumn TargetColumn { get; set; }
-
     }
 }

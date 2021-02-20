@@ -133,9 +133,20 @@ Data types
 --
 Everything is string. Because there is no data type info in CSV files, this is best we can do.
 However, driver provides few extension methods providing easy conversion from string to nullable of common types:
-`"123".ToInt()` , `"123".ToDouble()`, etc.
 
-Known Issues / TODO
+```csharp
+int? ToInt(CultureInfo cultureInfo = null);
+long? ToLong(CultureInfo cultureInfo = null);
+double? ToDouble(CultureInfo cultureInfo = null);
+decimal? ToDecimal(CultureInfo cultureInfo = null);
+DateTime? ToDateTime(DateTimeStyles dateTimeStyles = DateTimeStyles.None, CultureInfo cultureInfo = null);
+DateTime? ToDateTime(string format, DateTimeStyles dateTimeStyles = DateTimeStyles.None, CultureInfo cultureInfo = null);
+DateTime? ToDateTime(string[] formats, DateTimeStyles dateTimeStyles = DateTimeStyles.None, CultureInfo cultureInfo = null);
+TimeSpan? ToTimeSpan(CultureInfo cultureInfo = null);
+bool? ToBool(CultureInfo cultureInfo = null);
+```
+
+Known Issues
 --
 - Some strange Unicode characters in column names may cause errors in generated data context source code.
 - Writing changed objects back to CSV is not directly supported, there is no `.SubmitChanges()` . But you can use LINQPad's `Util.WriteCsv`.

@@ -2,7 +2,7 @@
 
 namespace CsvLINQPadDriver.DataModel
 {
-    public class CsvTable
+    public class CsvTable : ICsvNames
     {
         public string CodeName { get; set; }
         public string DisplayName { get; set; }
@@ -10,13 +10,7 @@ namespace CsvLINQPadDriver.DataModel
         public string FilePath { get; set; }
         public char CsvSeparator { get; set; }
 
-        public IList<CsvColumn> Columns { get; set; }
-        public IList<CsvRelation> Relations { get; set; } 
-
-        public CsvTable()
-        {
-            Columns = new List<CsvColumn>();
-            Relations = new List<CsvRelation>();
-        }
+        public IList<CsvColumn> Columns { get; set; } = new List<CsvColumn>();
+        public IList<CsvRelation> Relations { get; set; } = new List<CsvRelation>();
     }
 }

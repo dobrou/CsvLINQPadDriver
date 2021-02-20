@@ -1,9 +1,16 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+
 using CsvLINQPadDriver;
+
+using FluentAssertions;
+
 using LINQPad.Extensibility.DataContext;
+
 using NUnit.Framework;
 
 namespace CsvLINQPadDriverTest
@@ -12,37 +19,11 @@ namespace CsvLINQPadDriverTest
     public class SchemaBuilderTest
     {
         [Test]
-        public void GetSchemaAndBuildAssemblyTest1()
+        [TestCaseSource(nameof(CsvDataContextDriverProperties))]
+        public void GetSchemaAndBuildAssembly_CreatedAssembly_AsExpected((ICsvDataContextDriverProperties, string) testData)
         {
-            GetSchemaAndBuildAssemblyTest(new PropertiesMock
-            {
-                Files = Path.Combine(Directory.GetCurrentDirectory(), "*.csv"),
-                DebugInfo = true,
-                DetectRelations = true,
-                IgnoreInvalidFiles = true,
-                IsCacheEnabled = true,
-                HideRelationsFromDump = true,
-                Persist = true,
-            }, "1");
-        }
+            var (properties, id) = testData;
 
-        [Test]
-        public void GetSchemaAndBuildAssemblyTest2()
-        {
-            GetSchemaAndBuildAssemblyTest(new PropertiesMock
-            {
-                Files = Path.Combine(Directory.GetCurrentDirectory(), "*.csv"),
-                DebugInfo = true,
-                DetectRelations = true,
-                IgnoreInvalidFiles = false,
-                IsCacheEnabled = false,
-                HideRelationsFromDump = false,
-                Persist = false,
-            }, "2");
-        }
-
-        public void GetSchemaAndBuildAssemblyTest(ICsvDataContextDriverProperties properties, string id)
-        {
             File.WriteAllText("TestA.csv",
 @"a,b,c,TestAID
 1,2,3,1
@@ -54,55 +35,105 @@ x");
 1,2,3,2
 x");
 
-            string nameSpace = "TestContextNamespace";
-            string contextTypeName = "TestContextClass";
-            var contextAssemblyName = new AssemblyName("TestContextAssembly" + id)
-            {   
-                CodeBase = "TestContextAssembly" + id + ".dll"
+            var nameSpace = "TestContextNamespace";
+            var contextTypeName = "TestContextClass";
+            var contextAssemblyName = new AssemblyName($"TestContextAssembly{id}")
+            {
+                CodeBase = $"TestContextAssembly{id}.dll"
             };
 
             if (File.Exists(contextAssemblyName.CodeBase))
+            {
                 File.Delete(contextAssemblyName.CodeBase);
+            }
 
             var explorerItems = SchemaBuilder.GetSchemaAndBuildAssembly(
                 properties,
                 contextAssemblyName,
                 ref nameSpace,
                 ref contextTypeName
-            );
+            ).ToList();
 
-            //debug info to console
-            Console.WriteLine(explorerItems[0].DragText);
-            Console.WriteLine(explorerItems[1].DragText);
+            // Debug info to console.
+            explorerItems.ForEach(item => Console.WriteLine(item.DragText));
 
-            //check returned explorer tree
-            Assert.AreEqual( 3, explorerItems.Count, "explorer items count");
+            // Check returned explorer tree.
+            explorerItems.Should().HaveCount(3);
+
             explorerItems = explorerItems.Where(i => i.Kind == ExplorerItemKind.QueryableObject).ToList();
-            Assert.AreEqual( "TestA,TestB", string.Join(",", explorerItems.Select(i => i.DragText)));
-            Assert.AreEqual( "a,b,c,TestAID,TestB,c,d,e,TestAID,TestA", string.Join(",", explorerItems.SelectMany(i => i.Children.Select(c => c.DragText))));
 
-            //check compiled assembly
+            explorerItems.Select(i => i.DragText)
+                .Should()
+                .BeEquivalentTo(Split("TestA,TestB"));
+
+            explorerItems.SelectMany(i => i.Children.Select(c => c.DragText))
+                .Should()
+                .BeEquivalentTo(Split("a,b,c,TestAID,TestB,c,d,e,TestAID,TestA"));
+
+            // Check compiled assembly.
             var contextAssembly = Assembly.Load(contextAssemblyName);
-            Assert.AreEqual("CsvDataContext,TTestA,TTestB", string.Join(",", contextAssembly.GetExportedTypes().Select(t => t.Name)));
+            contextAssembly.GetExportedTypes().Select(type => type.Name)
+                .Should()
+                .BeEquivalentTo(Split("CsvDataContext,TTestA,TTestB"));
 
-            var contextType = contextAssembly.GetType(nameSpace + "." + contextTypeName);
-            Assert.IsNotNull(contextType, "ContextType in assembly");
+            var contextType = contextAssembly.GetType($"{nameSpace}.{contextTypeName}");
+            contextType.Should().NotBeNull("ContextType in assembly");
 
-            //check generated context runtime
-            dynamic contextInstance = contextType!.GetConstructor(new Type[] {})!.Invoke(new object[] {});
-            Assert.IsNotNull(contextInstance, "context created");
+            // Check generated context runtime.
+            var contextInstance = contextType!.GetConstructor(new Type[] {})!
+                .Should()
+                .NotBeNull()
+                .And
+                .Subject.Invoke(new object[] {});
 
-            dynamic dataFirst = Enumerable.ToArray(contextInstance.TestA)[0];
-            Assert.AreEqual("3", dataFirst.c);
-            Assert.AreEqual(1, Enumerable.Count(dataFirst.TestB));
+            contextInstance.Should().NotBeNull("context created");
+
+            dynamic dataFirst = Enumerable.ToArray(((dynamic)contextInstance).TestA)[0];
+
+            ((string)dataFirst.c).Should().Be("3");
+            ((IEnumerable)dataFirst.TestB).Should().HaveCount(1);
+
+            static IEnumerable<string> Split(string str) =>
+                str.Split(",");
         }
 
-        class PropertiesMock : ICsvDataContextDriverProperties
+        private static IEnumerable<(ICsvDataContextDriverProperties, string)> CsvDataContextDriverProperties()
+        {
+            var files = Path.Combine(Directory.GetCurrentDirectory(), "*.csv");
+            var parsedFiles = new[] { files };
+
+            yield return (new PropertiesMock
+            {
+                Files = files,
+                ParsedFiles = parsedFiles,
+                DebugInfo = true,
+                DetectRelations = true,
+                IgnoreInvalidFiles = true,
+                IsCacheEnabled = true,
+                HideRelationsFromDump = true,
+                Persist = true
+            }, "1");
+
+            yield return (new PropertiesMock
+            {
+                Files = files,
+                ParsedFiles = parsedFiles,
+                DebugInfo = true,
+                DetectRelations = true,
+                IgnoreInvalidFiles = false,
+                IsCacheEnabled = false,
+                HideRelationsFromDump = false,
+                Persist = false
+            }, "2");
+        }
+
+        private class PropertiesMock : ICsvDataContextDriverProperties
         {
             public bool Persist { get; set; }
             public string Files { get; set; }
+            public string[] ParsedFiles { get; set; }
             public string CsvSeparator { get; set; }
-            public char? CsvSeparatorChar { get; set; }
+            public char? CsvSeparatorChar { get; } = null;
             public bool DetectRelations { get; set; }
             public bool HideRelationsFromDump { get; set; }
             public bool DebugInfo { get; set; }

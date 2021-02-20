@@ -1,127 +1,98 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+
 using CsvHelper;
+
 using CsvLINQPadDriver.CodeGen;
 using CsvLINQPadDriver.DataModel;
-using CsvLINQPadDriver.Helpers;
+
 using LINQPad.Extensibility.DataContext;
 
 namespace CsvLINQPadDriver
 {
     internal class SchemaBuilder
     {
-        internal static List<ExplorerItem> GetSchemaAndBuildAssembly(ICsvDataContextDriverProperties props, AssemblyName assemblyName, ref string nameSpace, ref string typeName)
+        internal static List<ExplorerItem> GetSchemaAndBuildAssembly(ICsvDataContextDriverProperties csvDataContextDriverProperties, AssemblyName assemblyToBuild, ref string nameSpace, ref string typeName)
         {
-            Logger.LogEnabled = props.DebugInfo;
-            Logger.Log("Build started: " + props.Files);
-            var sw = Stopwatch.StartNew();
-            var sw2 = Stopwatch.StartNew();
+            var csvDatabase = CsvDataModelGenerator.CreateModel(csvDataContextDriverProperties);
 
-            CsvDatabase db = CsvDataModelGenerator.CreateModel(props);
+            var code = CsvCSharpCodeGenerator.GenerateCode(csvDatabase, ref nameSpace, ref typeName, csvDataContextDriverProperties);
 
-            Logger.Log("Model created. ({0} ms)", sw2.ElapsedMilliseconds); sw2.Restart();
+            var compileErrors = BuildAssembly(code, assemblyToBuild);
 
-            string code = CsvCSharpCodeGenerator.GenerateCode(db, ref nameSpace, ref typeName, props);
+            var schema = GetSchema(csvDatabase, csvDataContextDriverProperties);
 
-            Logger.Log("Code generated. ({0} ms)", sw2.ElapsedMilliseconds); sw2.Restart();
+            var hasCompileErrors = compileErrors?.Any() == true;
 
-            string[] compileErrors = BuildAssembly(code, assemblyName);
-
-            Logger.Log("Assembly compiled. ({0} ms)", sw2.ElapsedMilliseconds); sw2.Restart();
-
-            List<ExplorerItem> schema = GetSchema(db, props);
-
-            Logger.Log("Schema tree created. ({0} ms)", sw2.ElapsedMilliseconds); sw2.Restart();
-
-            bool anyCompileError = compileErrors != null && compileErrors.Any();
-            if (anyCompileError || props.DebugInfo)
+            if (hasCompileErrors || csvDataContextDriverProperties.DebugInfo)
             {
                 schema.Insert(0, new ExplorerItem("Context Source Code", ExplorerItemKind.Schema, ExplorerIcon.Schema)
                 {
                     ToolTipText = "Data Context source code. Drag&drop to text window.",
-                    DragText = code,
+                    DragText = code
                 });
             }
-            if (anyCompileError)
+
+            if (hasCompileErrors)
             {
-                Logger.Log("Errors: {0}", compileErrors.Length);
                 schema.Insert(0, new ExplorerItem("Context Compile ERROR", ExplorerItemKind.Schema, ExplorerIcon.Box)
                 {
-                    ToolTipText = "Data context compile failed. Drag&Drop error messages to text window to see them.",
-                    DragText = string.Join("\n", compileErrors),
+                    ToolTipText = "Data context compile failed. Drag&Drop error messages to text window to see them",
+                    DragText = string.Join(Environment.NewLine, compileErrors)
                 });
             }
-            if (db.Tables.Count == 0)
+
+            if (!csvDatabase.Tables.Any())
             {
-                schema.Insert(0, new ExplorerItem("No files found.", ExplorerItemKind.Schema, ExplorerIcon.Box));
+                schema.Insert(0, new ExplorerItem("No files found", ExplorerItemKind.Schema, ExplorerIcon.Box));
             }
-
-            Logger.Log("Tables: {0} Columns: {1} Relations: {2}", db.Tables.Count, db.Tables.Sum(t => t.Columns.Count), db.Tables.Sum(t => t.Relations.Count) );
-            Logger.Log("Build finished. ({0} ms)", sw.ElapsedMilliseconds);
-
-            Logger.Log( string.Join("\n", db.Tables.SelectMany(t => t.Relations.Select( r => r.CodeName) )));
 
             return schema;
         }
 
-        /// <summary>
-        /// Compile generated code into assembly
-        /// </summary>
-        /// <param name="code"></param>
-        /// <param name="name"></param>
-        /// <returns></returns>
         private static string[] BuildAssembly(string code, AssemblyName name)
         {
             var referencedAssemblies = DataContextDriver.GetCoreFxReferenceAssemblies().Concat(new []
             {
                 typeof(SchemaBuilder).Assembly.Location,
                 typeof(CsvReader).Assembly.Location
-            }).ToArray();
+            });
+
             var result = DataContextDriver.CompileSource(new CompilationInput
             {
-                FilePathsToReference = referencedAssemblies,
+                FilePathsToReference = referencedAssemblies.ToArray(),
                 OutputPath = name.CodeBase,
-                SourceCode = new[] {code}
+                SourceCode = new[] { code }
             });
 
             return result.Successful ? null : result.Errors;
         }
 
-        /// <summary>
-        /// Get LINQPad Schema from CSV data model
-        /// </summary>
-        /// <param name="db"></param>
-        /// <param name="props"></param>
-        /// <returns></returns>
-        private static List<ExplorerItem> GetSchema(CsvDatabase db, ICsvDataContextDriverProperties props)
-        {
-            var schema = (
-                from table in db.Tables ?? Enumerable.Empty<CsvTable>()
-                select new ExplorerItem(table.DisplayName, ExplorerItemKind.QueryableObject, ExplorerIcon.Table) {
+        private static List<ExplorerItem> GetSchema(CsvDatabase db, ICsvDataContextDriverProperties _) =>
+            (db.Tables ?? Enumerable.Empty<CsvTable>()).Select(table =>
+                new ExplorerItem(table.DisplayName, ExplorerItemKind.QueryableObject, ExplorerIcon.Table)
+                {
                     DragText = table.CodeName,
-                    IsEnumerable = true,        
+                    IsEnumerable = true,
                     ToolTipText = table.FilePath,
-                    Children = (
-                        from c in table.Columns ?? Enumerable.Empty<CsvColumn>()
-                        select new ExplorerItem(c.DisplayName, ExplorerItemKind.Property, ExplorerIcon.Column) 
-                        {
-                            DragText = c.CodeName,
-                            ToolTipText = c.CsvColumnIndex + 1 + ":" + c.CsvColumnName,
-                        }
-                    ).Concat(
-                        from r in table.Relations
-                        select new ExplorerItem(r.DisplayName, ExplorerItemKind.CollectionLink, ExplorerIcon.ManyToMany)
-                        {
-                            DragText = r.CodeName,
-                            ToolTipText = $"Relation to {r.TargetTable.CodeName} where {r.SourceTable.CodeName}.{r.SourceColumn.CodeName} == {r.TargetTable.CodeName}.{r.TargetColumn.CodeName}",
-                        }
-                    ).ToList(),
-                }
-            ).ToList();
-
-            return schema;
-        }
+                    Children =
+                        (table.Columns ?? Enumerable.Empty<CsvColumn>())
+                            .Select(column =>
+                                new ExplorerItem(column.DisplayName, ExplorerItemKind.Property, ExplorerIcon.Column)
+                                {
+                                    DragText = column.CodeName,
+                                    ToolTipText = $"{column.CsvColumnIndex + 1}:{column.CsvColumnName}"
+                                }
+                            ).Concat(
+                                table.Relations.Select(relation =>
+                                    new ExplorerItem(relation.DisplayName, ExplorerItemKind.CollectionLink, ExplorerIcon.ManyToMany)
+                                    {
+                                        DragText = relation.CodeName,
+                                        ToolTipText = $"Relation to {relation.TargetTable.CodeName} where {relation.SourceTable.CodeName}.{relation.SourceColumn.CodeName} == {relation.TargetTable.CodeName}.{relation.TargetColumn.CodeName}"
+                                    })
+                            ).ToList()
+                }).ToList();
     }
 }

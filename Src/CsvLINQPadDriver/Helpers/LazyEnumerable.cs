@@ -7,21 +7,15 @@ namespace CsvLINQPadDriver.Helpers
 {
     public class LazyEnumerable<T> : IEnumerable<T>
     {
-        private readonly Lazy<IEnumerable<T>> data;
+        private readonly Lazy<IEnumerable<T>> _data;
 
-        public LazyEnumerable(Func<IEnumerable<T>> dataSource)
-        {
-            data = new Lazy<IEnumerable<T>>(dataSource, LazyThreadSafetyMode.ExecutionAndPublication);
-        }
+        public LazyEnumerable(Func<IEnumerable<T>> dataSource) =>
+            _data = new Lazy<IEnumerable<T>>(dataSource, LazyThreadSafetyMode.ExecutionAndPublication);
 
-        public IEnumerator<T> GetEnumerator()
-        {
-            return data.Value.GetEnumerator();
-        }
+        public IEnumerator<T> GetEnumerator() =>
+            _data.Value.GetEnumerator();
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
+        IEnumerator IEnumerable.GetEnumerator() =>
+            GetEnumerator();
     }
 }

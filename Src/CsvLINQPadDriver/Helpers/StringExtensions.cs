@@ -1,50 +1,52 @@
 ﻿using System;
+using System.Globalization;
+using System.Runtime.CompilerServices;
 
 namespace CsvLINQPadDriver.Helpers
 {
-
-    /// <summary>
-    /// Provides easy conversion from string to basic types.
-    /// </summary>
     public static class StringExtensions
     {
-        public static int? ToInt(this string s) 
+        private static readonly CultureInfo DefaultCultureInfo = CultureInfo.InvariantCulture;
+
+        public static int? ToInt(this string str, CultureInfo cultureInfo = null) =>
+            GetValueOrNull(int.TryParse(str, NumberStyles.Integer, SelectCulture(cultureInfo), out var parsedValue), parsedValue);
+
+        public static long? ToLong(this string str, CultureInfo cultureInfo = null) =>
+            GetValueOrNull(long.TryParse(str, NumberStyles.Integer, SelectCulture(cultureInfo), out var parsedValue), parsedValue);
+
+        public static double? ToDouble(this string str, CultureInfo cultureInfo = null) =>
+            GetValueOrNull(double.TryParse(str, NumberStyles.Float | NumberStyles.AllowThousands, SelectCulture(cultureInfo), out var parsedValue), parsedValue);
+
+        public static decimal? ToDecimal(this string str, CultureInfo cultureInfo = null) =>
+            GetValueOrNull(decimal.TryParse(str, NumberStyles.Number, SelectCulture(cultureInfo), out var parsedValue), parsedValue);
+
+        public static DateTime? ToDateTime(this string str, DateTimeStyles dateTimeStyles = DateTimeStyles.None, CultureInfo cultureInfo = null) =>
+            GetValueOrNull(DateTime.TryParse(str, SelectCulture(cultureInfo), dateTimeStyles, out var parsedValue), parsedValue);
+
+        public static DateTime? ToDateTime(this string str, string format, DateTimeStyles dateTimeStyles = DateTimeStyles.None, CultureInfo cultureInfo = null) =>
+            GetValueOrNull(DateTime.TryParseExact(str, format, SelectCulture(cultureInfo), dateTimeStyles, out var parsedValue), parsedValue);
+
+        public static DateTime? ToDateTime(this string str, string[] formats, DateTimeStyles dateTimeStyles = DateTimeStyles.None, CultureInfo cultureInfo = null) =>
+            GetValueOrNull(DateTime.TryParseExact(str, formats, SelectCulture(cultureInfo), dateTimeStyles, out var parsedValue), parsedValue);
+
+        public static TimeSpan? ToTimeSpan(this string str, CultureInfo cultureInfo = null) =>
+            GetValueOrNull(TimeSpan.TryParse(str, SelectCulture(cultureInfo), out var parsedValue), parsedValue);
+
+        public static bool? ToBool(this string str, CultureInfo cultureInfo = null)
         {
-            return int.TryParse(s, out var v) ? v : (int?)null;
+            var longValue = str.ToLong(cultureInfo);
+
+            return longValue.HasValue
+                ? longValue.Value != 0
+                : GetValueOrNull(bool.TryParse(str, out var parsedValue), parsedValue); 
         }
 
-        public static long? ToLong(this string s)
-        {
-            return long.TryParse(s, out var v) ? v : (long?)null;
-        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static CultureInfo SelectCulture(CultureInfo cultureInfo) =>
+            cultureInfo ?? DefaultCultureInfo;
 
-        public static double? ToDouble(this string s) 
-        {
-            return double.TryParse(s, out var v) ? v : (double?)null;
-        }
-
-        public static decimal? ToDecimal(this string s)
-        {
-            return decimal.TryParse(s, out var v) ? v : (decimal?)null;
-        }
-
-        public static DateTime? ToDateTime(this string s)
-        {
-            return DateTime.TryParse(s, out var v) ? v : (DateTime?) null;
-        }
-
-        public static TimeSpan? ToTimeSpan(this string s)
-        {
-            return TimeSpan.TryParse(s, out var v) ? v : (TimeSpan?)null;
-        }
-
-        public static bool? ToBool(this string s)
-        {
-            var toLong = s.ToLong();
-            if (toLong.HasValue)
-                return toLong.Value != 0;
-
-            return bool.TryParse(s, out var v) ? v : (bool?) null;
-        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static T? GetValueOrNull<T>(bool converted, T value) where T: struct =>
+            converted ? value : (T?)null;
     }
 }

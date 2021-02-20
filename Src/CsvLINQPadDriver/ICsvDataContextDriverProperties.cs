@@ -5,29 +5,31 @@
         bool Persist { get; set; }
 
         /// <summary>
-        /// Path to directory with csv files or directly to csv file
+        /// Path to directory with CSV files or directly to CSV file.
         /// </summary>
         string Files { get; set; }
 
+        public string[] ParsedFiles { get; }
+
         /// <summary>
-        /// Default csv separator. If empty or null, separator will be auto-detected
+        /// Default CSV separator. If empty or null, separator will be auto-detected.
         /// </summary>
         string CsvSeparator { get; set; }
 
         char? CsvSeparatorChar { get; }
 
         /// <summary>
-        /// If True - relations between csv files/tables will be detected and created. (based on files and column names)
+        /// If <c>true</c> - relations between CSV files/tables will be detected and created. (based on files and column names)
         /// </summary>
         bool DetectRelations { get; set; }
 
         /// <summary>
-        /// If True - LINQPad will not show relations content in .Dump(). This prevents loading too many data.
+        /// If <c>true</c> - LINQPad will not show relations content in .Dump(). This prevents loading too many data.
         /// </summary>
         bool HideRelationsFromDump { get; set; }
 
         /// <summary>
-        /// If True - some additional debug info is accessible
+        /// If <c>true</c> - some additional debug info is accessible
         /// </summary>
         bool DebugInfo { get; set; }
 
@@ -44,7 +46,7 @@
         bool IsStringInternEnabled { get; set; }
 
         /// <summary>
-        /// True - Parsed rows from file are cached.
+        /// <c>true</c> - Parsed rows from file are cached.
         /// This cache survives multiple query runs, even when query is changed.
         /// Cache is cleared as soon as LINQPad clears Application Domain of query.
         /// False - disable cache. Multiple enumerations of file content results in multiple reads and parsing of file.

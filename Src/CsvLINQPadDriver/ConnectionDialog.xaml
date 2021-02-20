@@ -6,7 +6,7 @@
     Width="640"
     Height="520"
     WindowStartupLocation="CenterScreen"
-    FocusManager.FocusedElement="{Binding ElementName=txtFiles}"
+    FocusManager.FocusedElement="{Binding ElementName=FilesTextBox}"
     Loaded="ConnectionDialog_OnLoaded">
 
     <Window.CommandBindings>
@@ -30,16 +30,16 @@
         <DockPanel Grid.Row="0">
             <Label Padding="0,0,0,3" Focusable="False" Content="CSV files. Drag&amp;drop (use Ctrl to add files) or type one file/directory per line" DockPanel.Dock="Top" />
             <TextBox
-            Name="txtFiles"
+            Name="FilesTextBox"
             AcceptsReturn="True" 
             HorizontalScrollBarVisibility="Auto"
             VerticalScrollBarVisibility="Auto"
             Text="{Binding Files, UpdateSourceTrigger=PropertyChanged}" 
             ToolTip="CSV files. Drag&amp;drop (use Ctrl to add files) or type one file per line. Supports mask '*.csv' or recursive '**.csv'."
             AllowDrop="True"
-            PreviewDragEnter="TextBox_DragEnter" 
-            PreviewDragOver="TextBox_DragEnter" 
-            PreviewDrop="TextBox_DragDrop" 
+            PreviewDragEnter="FilesTextBox_DragEnter"
+            PreviewDragOver="FilesTextBox_DragEnter"
+            PreviewDrop="FilesTextBox_DragDrop"
             />
         </DockPanel>
 
@@ -66,8 +66,8 @@
             <Separator/>
             <CheckBox IsChecked="{Binding Persist}">Remember this connection</CheckBox>
             <StackPanel Margin="0,8,0,0" Orientation="Horizontal" HorizontalAlignment="Right">
-                <Button Name="btnOK" Content="OK" Margin="5,0,0,0" Padding="8,3" Width="85" IsDefault="True" Click="btnOK_Click" />
-                <Button Name="btnCancel" Content="Cancel" Margin="5,0,0,0" Padding="8,3" Width="85" IsCancel="True" />
+                <Button Name="OkButton" Content="OK" Margin="5,0,0,0" Padding="8,3" Width="85" IsDefault="True" Click="OkButton_Click" />
+                <Button Content="Cancel" Margin="5,0,0,0" Padding="8,3" Width="85" IsCancel="True" />
             </StackPanel>
         </StackPanel>
     </Grid>

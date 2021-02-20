@@ -3,43 +3,50 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+
 using CsvHelper;
 using CsvHelper.Configuration;
+
 using CsvLINQPadDriver.CodeGen;
 
 namespace CsvLINQPadDriver.Helpers
 {
-    public class FileUtils
+    public static class FileUtils
     {
-        public static Dictionary<string, string> stringInternCache = new Dictionary<string, string>();
-        private static string StringIntern(string str)
+        private const long SizeUnitsStep = 1024;
+
+        private static readonly string[] SizeUnits = { "B", "KB", "MB", "GB", "TB" };
+
+        private static readonly Dictionary<string, string> StringInternCache = new Dictionary<string, string>();
+
+        private static string StringIntern(string str) =>
+            str switch
+            {
+                null => null,
+                _ => StringInternCache.TryGetValue(str, out var intern)
+                        ? intern
+                        : StringInternCache[str] = str
+            };
+
+        public static IEnumerable<T> CsvReadRows<T>(string fileName, char csvSeparator, bool internString, CsvRowMappingBase<T> csvClassMap)
+            where T : CsvRowBase, new()
         {
-            if (str == null) return null;
-
-            return stringInternCache.TryGetValue(str, out var intern)
-                ? intern
-                : stringInternCache[str] = str
-            ;
-        }
-
-        public static IEnumerable<T> CsvReadRows<T>(string fileName, char csvSeparator, bool stringIntern, CsvRowMappingBase<T> csvClassMap) where T : CsvRowBase, new()
-        {
-            Logger.Log("CsvReadRows<{0}> started.", typeof(T).FullName);
-
             return CsvReadRows(fileName, csvSeparator)
-                .Skip(1) /*skip csv header*/
-                .Select(sa => {
-                    if (stringIntern)
+                .Skip(1) // Skip header.
+                .Select(GetRecord);
+
+            T GetRecord(string[] rowColumns)
+            {
+                if (internString)
+                {
+                    for (var i = 0; i < rowColumns.Length; i++)
                     {
-                        for (int i = 0; i < sa.Length; i++)
-                        {
-                            sa[i] = StringIntern(sa[i]);
-                        }
+                        rowColumns[i] = StringIntern(rowColumns[i]);
                     }
-                    return sa;
-                })
-                .Select(csvClassMap.InitRowObject)
-            ;
+                }
+
+                return csvClassMap.InitRowObject(rowColumns);
+            }
         }
 
         private static IEnumerable<string[]> CsvReadRows(string fileName, char csvSeparator)
@@ -49,7 +56,7 @@ namespace CsvLINQPadDriver.Helpers
                 Delimiter = csvSeparator.ToString(),
                 HasHeaderRecord = false,
                 DetectColumnCountChanges = false,
-                BufferSize = 1024 * 1024 * 5,
+                BufferSize = 4096 * 20
             };
 
             using var cp = new CsvParser(new StreamReader(fileName, true), csvOptions);
@@ -65,227 +72,224 @@ namespace CsvLINQPadDriver.Helpers
             var csvOptions = new CsvConfiguration(CultureInfo.InvariantCulture)
             {
                 Delimiter = csvSeparator.ToString(),
-                HasHeaderRecord = false,
+                HasHeaderRecord = false
             };
 
-            try
-            {
-                using var cp = new CsvParser(new StreamReader(fileName, true), csvOptions);
+            using var cp = new CsvParser(new StreamReader(fileName, true), csvOptions);
 
-                return cp.Read() ? cp.Record : new string[0];
-            }
-            catch (Exception ex)
-            {
-                Logger.Log("CsvReadHeader failed: {0}", ex.ToString());
-                return new[] { "Error: " + ex };
-            }
+            return cp.Read() ? cp.Record : new string[0];
         }
 
-        /// <summary>
-        /// Detects if file is in CSV column format.
-        /// </summary>
-        /// <param name="fileName"></param>
-        /// <param name="csvSeparator"></param>
-        /// <returns>True if file contains reasonable csv data. False if file does not look like CSV formatted data.</returns>
-        public static bool CsvIsFormatValid(string fileName, char csvSeparator)
+        public static bool IsCsvFormatValid(string fileName, char csvSeparator)
         {
-            Logger.Log("CsvIsFormatValid<{0}> started.", fileName);
+            var header = $"{fileName} is not valid CSV file:";
+
             if (!File.Exists(fileName))
+            {
+                CsvDataContextDriver.WriteToLog($"{header} file does not exist");
+
                 return false;
+            }
 
             try
             {
-                var csvOptions = new CsvConfiguration(CultureInfo.InvariantCulture)
+                var csvConfiguration = new CsvConfiguration(CultureInfo.InvariantCulture)
                 {
                     Delimiter = csvSeparator.ToString(),
                     HasHeaderRecord = false,
-                    DetectColumnCountChanges = false,
+                    DetectColumnCountChanges = false
                 };
 
-                using var cr = new CsvParser(new StreamReader(fileName, true), csvOptions);
+                using var csvParser = new CsvParser(new StreamReader(fileName, true), csvConfiguration);
 
-                if(!cr.Read())
+                if(!csvParser.Read())
+                {
+                    CsvDataContextDriver.WriteToLog($"{header} could not get CSV header");
+
                     return false;
+                }
 
-                string[] r1 = cr.Record;
+                var headerRow = csvParser.Record;
 
-                //0 or 1 columns
-                if (r1.Length <= 1)
+                // 0 or 1 column.
+                if (headerRow.Length <= 1)
+                {
+                    CsvDataContextDriver.WriteToLog($"{header} CSV header had no columns");
+
                     return false;
+                }
 
-                if (!cr.Read())
+                if (!csvParser.Read())
+                {
+                    CsvDataContextDriver.WriteToLog($"{header} CSV has header but has no data");
+
                     return false;
+                }
 
-                string[] r2 = cr.Record;
+                var dataRow = csvParser.Record;
 
-                //different count of columns
-                if (r1.Length != r2.Length)
+                // Column count differs.
+                if (headerRow.Length != dataRow.Length)
+                {
+                    CsvDataContextDriver.WriteToLog($"{header} CSV header column count does not match data column count");
+
                     return false;
+                }
 
-                //too many strange characters
-                int charsCount = r1.Concat(r2).Sum(s => (s ?? "").Length);
-                int validCharsCount = r1.Concat(r2).Sum(s => Enumerable.Range(0, (s ?? "").Length).Count(i => char.IsLetterOrDigit(s!, i)));
-                const double validCharsMinOKRatio = 0.5;
-                if (validCharsCount < validCharsMinOKRatio * charsCount)
-                    return false;
-                return true;
+                // Too many strange characters.
+                var charsCount = headerRow
+                    .Concat(dataRow)
+                    .Sum(s => s?.Length ?? 0);
+
+                var validCharsCount = headerRow
+                    .Concat(dataRow)
+                    .Sum(s => Enumerable.Range(0, s?.Length ?? 0).Count(i => char.IsLetterOrDigit(s!, i)));
+
+                const double validCharsMinOkRatio = 0.5;
+
+                return validCharsCount >= validCharsMinOkRatio * charsCount;
             }
-            catch (Exception ex)
+            catch(Exception exception)
             {
-                Logger.Log("Format detection failed: {0}", ex.ToString());
+                CsvDataContextDriver.WriteToLog($"{header} failed with exception", exception);
+
                 return false;
-            }
-            finally
-            {
-                Logger.Log("CsvIsFormatValid<{0}> finished.", fileName);
             }
         }
 
         public static char CsvDetectSeparator(string fileName, string[] csvData = null)
         {
-            char[] defaultCsvSeparators;
-            switch (Path.GetExtension(fileName).ToLowerInvariant())
-            { 
-                case "tsv":
-                    defaultCsvSeparators = new[] { '\t', ',', ';' };
-                    break;
-                default: // csv
-                    defaultCsvSeparators = new[] { ',', ';', '\t' };
-                    break;
-            }                
-
-            if (File.Exists(fileName))
+            var defaultCsvSeparators = Path.GetExtension(fileName).ToLowerInvariant() switch
             {
-                try
-                {
-                    //get most used char from separators as separator
-                    var bestSeparators = (csvData ?? File.ReadLines(fileName).Take(1).ToArray())
-                        .SelectMany(l => l.ToCharArray())
-                        .Where(defaultCsvSeparators.Contains)
-                        .GroupBy(c => c)
-                        .OrderByDescending(cg => cg.Count())
-                        .Select(sg => sg.Key)
-                        .ToArray()
-                        ;
-                    if (bestSeparators.Any())
-                        return bestSeparators.First();
-                }
-                catch (Exception ex)
-                {
-                    Logger.Log("Separator detection failed: {0}", ex.ToString());
-                }
+                "tsv" => new[] { '\t', ',', ';' },
+                _ => new[] { ',', ';', '\t' }
+            };
+
+            var result = defaultCsvSeparators.First();
+
+            if (!File.Exists(fileName))
+            {
+                return result;
             }
 
-            return defaultCsvSeparators.First();
+            try
+            {
+                // Get most used char from separators as separator.
+                var bestSeparators = (csvData ?? File.ReadLines(fileName).Take(1).ToArray())
+                    .SelectMany(l => l.ToCharArray())
+                    .Where(defaultCsvSeparators.Contains)
+                    .GroupBy(ch => ch)
+                    .OrderByDescending(chGroup => chGroup.Count())
+                    .Select(chGroup => chGroup.Key)
+                    .ToArray();
+
+                if (bestSeparators.Any())
+                {
+                    result = bestSeparators.First();
+                }
+            }
+            catch(Exception exception)
+            {
+                CsvDataContextDriver.WriteToLog($"CSV separator detection failed for {fileName}", exception);
+            }
+
+            CsvDataContextDriver.WriteToLog($"Using CSV separator '{result}' for {fileName}");
+
+            return result;
         }
 
         public static string GetLongestCommonPrefixPath(string[] paths)
         {
-            string[] pathsValid =
-                paths
-                .Where(p => !p.StartsWith("#"))
-                .Where(p => !string.IsNullOrWhiteSpace(p))
-                .ToArray();
-            //get longest common path prefix
-            var file1Path = (pathsValid.FirstOrDefault() ?? "").Split(Path.DirectorySeparatorChar);
-            var prefixes = Enumerable.Range(1, file1Path.Length).Select(c => string.Join(Path.DirectorySeparatorChar.ToString(), file1Path.Take(c).ToArray()));
-            string baseDir = prefixes.LastOrDefault(prefix => pathsValid.All(path => path.StartsWith(prefix, StringComparison.Ordinal))) ?? "";
-            return baseDir;
+            var pathsValid = GetFiles(paths).ToArray();
+
+            // Get longest common path prefix.
+            var filePaths = pathsValid.FirstOrDefault()?.Split(Path.DirectorySeparatorChar) ?? new string[0];
+
+            return Enumerable.Range(1, filePaths.Length)
+                .Select(i => string.Join(Path.DirectorySeparatorChar, filePaths.Take(i).ToArray()))
+                .LastOrDefault(prefix => pathsValid.All(path => path.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))) ?? string.Empty;
         }
 
-        public static string[] EnumFiles(IEnumerable<string> paths)
-        {
-            string[] files =
-                paths
-                .Where(p => !p.StartsWith("#"))
-                .Where(p => !string.IsNullOrWhiteSpace(p))
+        public static string[] EnumFiles(IEnumerable<string> paths) =>
+            GetFiles(paths)
                 .SelectMany(EnumFiles)
                 .Distinct(StringComparer.Ordinal)
                 .ToArray();
-            return files;
-        }
+
+        private static IEnumerable<string> GetFiles(IEnumerable<string> paths) =>
+            paths
+                .Where(p => !p.StartsWith("#"))
+                .Where(p => !string.IsNullOrWhiteSpace(p));
 
         private static string[] EnumFiles(string path)
         {
             try
             {
-                path ??= "";
+                path ??= string.Empty;
 
-                //directly one file            
+                // Single file.
                 if (File.Exists(path))
                 {
                     return new[] { path };
                 }
 
                 var file = Path.GetFileName(path);
+
                 string baseDir;
 
-                bool isPathOnlyDir = string.IsNullOrEmpty(file) || Directory.Exists(path);
+                var isPathOnlyDir = string.IsNullOrEmpty(file) || Directory.Exists(path);
                 if (isPathOnlyDir)
                 {
-                    //default pattern in given dir
-                    const string defaultFilePattern = "*.csv";
-                    file = defaultFilePattern;
+                    file = "*.csv";
                     baseDir = path;
                 }
                 else
                 {
-                    //files in dir by given pattern
-                    baseDir = Path.GetDirectoryName(path) ?? "";
+                    baseDir = Path.GetDirectoryName(path) ?? string.Empty;
                 }
 
                 if (!Directory.Exists(baseDir))
-                    return new string[] { };
+                {
+                    return new string[0];
+                }
 
-                var files = Directory.EnumerateFiles(baseDir, file, file.Contains("**") ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly).ToArray();
-                return files;
+                return Directory
+                    .EnumerateFiles(baseDir, file, file.Contains("**") ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly)
+                    .ToArray();
             }
-            catch (Exception ex)
+            catch(Exception exception)
             {
-                Logger.Log("Path resolve error: {0}", ex.ToString());
-                return new string[] { };
+                CsvDataContextDriver.WriteToLog($"File enumeration failed for {path}", exception);
+
+                return new string[0];
             }
         }
 
-
-        private static readonly string[] sizeUnits = { "B", "KB", "MB", "GB", "TB" };
-        private const long sizeUnitsStep = 1024;
-
-        /// <summary>
-        /// Return file size in human readable format with best matching size units. (B,KB...)
-        /// </summary>
-        /// <param name="fileName"></param>
-        /// <returns></returns>
-        public static string GetFileSizeInfo(string fileName)
+        public static string GetHumanReadableFileSize(string fileName)
         {
-            string sizeInfo;
             try
             {
-                var size = new FileInfo(fileName).Length;
-                sizeInfo = GetSizeInfo(size);
+                return GetBestFitHumanReadableFileSize(new FileInfo(fileName).Length);
             }
-            catch (IOException)
+            catch (Exception exception)
             {
-                sizeInfo = "?? " + sizeUnits.First();
+                CsvDataContextDriver.WriteToLog($"Failed to get {fileName} size", exception);
+
+                return $"??{SizeUnits.First()}";
             }
-            return sizeInfo;            
         }
-        /// <summary>
-        /// Return file size in human readable format with best matching size units. (B,KB...)
-        /// </summary>
-        /// <param name="sizeBytes"></param>
-        /// <returns></returns>
-        public static string GetSizeInfo(long sizeBytes)
+
+        public static string GetBestFitHumanReadableFileSize(long sizeBytes)
         {
             if(sizeBytes == 0)
-                return "0 " + sizeUnits.First();
+            {
+                return $"0{SizeUnits.First()}";
+            }
 
-            int sizeUnitRank = Math.Min(sizeUnits.Length - 1, (int)Math.Log(Math.Abs((double)sizeBytes), sizeUnitsStep));
-            double sizeInUnit = sizeBytes / Math.Pow(sizeUnitsStep, sizeUnitRank);
-            var sizeInfo = sizeInUnit.ToString("0.#") + " " + sizeUnits[sizeUnitRank];
-            return sizeInfo;
+            var sizeUnitRank = Math.Min(SizeUnits.Length - 1, (int)Math.Log(Math.Abs((double)sizeBytes), SizeUnitsStep));
+            var sizeInUnit = sizeBytes / Math.Pow(SizeUnitsStep, sizeUnitRank);
+
+            return $"{sizeInUnit:0.#}{SizeUnits[sizeUnitRank]}";
         }
-
     }
-
 }

@@ -7,33 +7,41 @@ namespace CsvLINQPadDriver.Helpers
 {
     internal class CodeGenHelper
     {
-        private const string safeChar = "_";
-        private const int maxLength = 128;
+        private const string SafeChar = "_";
+        private const int MaxLength = 128;
 
-        private static readonly Regex codeNameInvalidCharacters = new Regex(@"[^\p{Ll}\p{Lu}\p{Lt}\p{Lo}\p{Nd}\p{Nl}\p{Mn}\p{Mc}\p{Cf}\p{Pc}\p{Lm}]", RegexOptions.Compiled);
+        private static readonly Lazy<CodeDomProvider> CodeDomProvider = new Lazy<CodeDomProvider>(() => System.CodeDom.Compiler.CodeDomProvider.CreateProvider("C#"));
+        private static readonly Regex CodeNameInvalidCharacters = new Regex(@"[^\p{Ll}\p{Lu}\p{Lt}\p{Lo}\p{Nd}\p{Nl}\p{Mn}\p{Mc}\p{Cf}\p{Pc}\p{Lm}]");
 
-        private static readonly string[] invalidIdentifierNames = { "System", "ToString", "Equals", "GetHashCode" };
-        private static readonly Lazy<CodeDomProvider> csCodeProvider = new Lazy<CodeDomProvider>(() => CodeDomProvider.CreateProvider("C#"));
+        private static readonly string[] InvalidIdentifierNames = { "System", nameof(ToString), nameof(Equals), nameof(GetHashCode) };
 
         public static string GetSafeCodeName(string name)
         {
-            string safeName = name ?? "";
+            var safeName = name ?? string.Empty;
 
-            if (safeName.Length > maxLength)
-                safeName = safeName.Substring(0, maxLength);
+            if (safeName.Length > MaxLength)
+            {
+                safeName = safeName.Substring(0, MaxLength);
+            }
 
-            safeName = codeNameInvalidCharacters.Replace(safeName, safeChar);
-            safeName = Regex.Replace(safeName, safeChar + "+", safeChar);
-            safeName = Regex.Replace(safeName, "^" + safeChar + "+", "");
+            safeName = CodeNameInvalidCharacters.Replace(safeName, SafeChar);
+            safeName = Regex.Replace(safeName, $"{SafeChar}+", SafeChar);
+            safeName = Regex.Replace(safeName, $"^{SafeChar}+", string.Empty);
 
             if (string.IsNullOrEmpty(safeName))
-                return safeChar + "empty";
+            {
+                return $"{SafeChar}empty";
+            }
 
             if (!char.IsLetter(safeName, 0))
-                safeName = safeChar + safeName;
+            {
+                safeName = SafeChar + safeName;
+            }
 
-            if (!csCodeProvider.Value.IsValidIdentifier(safeName) || invalidIdentifierNames.Contains(safeName))
-                safeName += safeChar;
+            if (!CodeDomProvider.Value.IsValidIdentifier(safeName) || InvalidIdentifierNames.Contains(safeName))
+            {
+                safeName += SafeChar;
+            }
 
             return safeName;
         }

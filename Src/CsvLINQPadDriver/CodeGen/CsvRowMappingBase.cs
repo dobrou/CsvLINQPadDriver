@@ -1,48 +1,47 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
+
+using static System.Linq.Expressions.Expression;
 
 namespace CsvLINQPadDriver.CodeGen
 {
-    public class CsvRowMappingBase<TRow> where TRow : CsvRowBase, new()
+    public class CsvRowMappingBase<TRow>
+        where TRow : CsvRowBase, new()
     {
-        private readonly Action<TRow, string[]> propertiesInit;
-        private readonly Action<TRow> relationsInit;
+        private readonly Action<TRow, string[]> _propertiesInit;
+        private readonly Action<TRow> _relationsInit;
 
         public CsvRowMappingBase(IEnumerable<CsvColumnInfo> propertiesInfo, Action<TRow> relationsInit = null)
         {
-            this.relationsInit = relationsInit;
+            _relationsInit = relationsInit;
 
-            //assign all properties in one expression
-            var paramRow = Expression.Parameter(typeof(TRow));
-            var paramValues = Expression.Parameter(typeof(string[]));
-            var exprAssignProperties =
-                Expression.Lambda<Action<TRow, string[]>>(
-                    Expression.Block(propertiesInfo.Select(property =>
-                        Expression.Assign(
-                            Expression.PropertyOrField(paramRow, property.PropertyName),
-                            Expression.Condition(
-                                Expression.LessThan(Expression.Constant(property.CsvColumnIndex), Expression.ArrayLength(paramValues)),
-                                Expression.ArrayIndex(paramValues, Expression.Constant(property.CsvColumnIndex)),
-                                Expression.Constant(null, typeof(string))
+            var paramRow = Parameter(typeof(TRow));
+            var paramValues = Parameter(typeof(string[]));
+            _propertiesInit =
+                Lambda<Action<TRow, string[]>>(
+                    Block(propertiesInfo.Select(property =>
+                        Assign(
+                        PropertyOrField(paramRow, property.PropertyName),
+                        Condition(
+                            LessThan(Constant(property.CsvColumnIndex), ArrayLength(paramValues)),
+                            ArrayIndex(paramValues, Constant(property.CsvColumnIndex)),
+                            Constant(null, typeof(string))
                             )
                         )
                     )),
                     paramRow, paramValues
-                );
-            propertiesInit = exprAssignProperties.Compile();
+                ).Compile();
         }
 
         public TRow InitRowObject(string[] data)
         {
             var row = new TRow();
 
-            propertiesInit(row, data);
-            relationsInit?.Invoke(row);
+            _propertiesInit(row, data);
+            _relationsInit?.Invoke(row);
 
             return row;
         }
-
     }
 }

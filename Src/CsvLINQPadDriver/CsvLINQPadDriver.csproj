@@ -21,12 +21,12 @@
     <Description>LINQPad 6 CSV driver.</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/i2van/CsvLINQPadDriver</RepositoryUrl>
-    <PackageIcon>Connection.png</PackageIcon>
-    <PackageReleaseNotes>Connection dialog improvements.</PackageReleaseNotes>
+    <PackageIcon>NuGetIcon.png</PackageIcon>
+    <PackageReleaseNotes>Code cleanup.</PackageReleaseNotes>
     <Copyright>Copyright © Martin Dobroucký 2013-2014, Ivan Ivon 2021</Copyright>
-    <AssemblyVersion>6.1.0.0</AssemblyVersion>
-    <FileVersion>6.1.0.0</FileVersion>
-    <Version>6.1.0</Version>
+    <AssemblyVersion>6.2.0.0</AssemblyVersion>
+    <FileVersion>6.2.0.0</FileVersion>
+    <Version>6.2.0</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -37,9 +37,11 @@
     <None Remove="Connection.ico" />
     <None Remove="Connection.png" />
     <None Remove="FailedConnection.png" />
-    <None Include="Connection.png">
+    <None Remove="NuGetIcon.png" />
+    <None Include="NuGetIcon.png">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 
