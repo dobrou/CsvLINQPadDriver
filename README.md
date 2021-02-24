@@ -1,4 +1,4 @@
-![Latest build](https://github.com/i2van/CsvLINQPadDriver/workflows/.NET/badge.svg)
+[![Latest build](https://github.com/i2van/CsvLINQPadDriver/workflows/.NET/badge.svg)](https://github.com/i2van/CsvLINQPadDriver/actions) [![NuGet](https://img.shields.io/nuget/v/CsvLINQPadDriver.svg)](https://www.nuget.org/packages/CsvLINQPadDriver/)
 
 CsvLINQPadDriver For LINQPad 6
 ==
@@ -69,7 +69,7 @@ Prerequisites
 Installation
 --
 
-### NuGet ###
+### NuGet [![NuGet](https://img.shields.io/nuget/v/CsvLINQPadDriver.svg)](https://www.nuget.org/packages/CsvLINQPadDriver/) ###
 
   - Open LINQPad 6.
   - Click `Add connection` main window.
