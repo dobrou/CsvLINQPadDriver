@@ -1,4 +1,6 @@
-[![Latest build](https://github.com/i2van/CsvLINQPadDriver/workflows/.NET/badge.svg)](https://github.com/i2van/CsvLINQPadDriver/actions) [![NuGet](https://img.shields.io/nuget/v/CsvLINQPadDriver.svg)](https://www.nuget.org/packages/CsvLINQPadDriver/)
+[![Latest build](https://github.com/i2van/CsvLINQPadDriver/workflows/.NET/badge.svg)](https://github.com/i2van/CsvLINQPadDriver/actions)
+[![NuGet](https://img.shields.io/nuget/v/CsvLINQPadDriver.svg)](https://www.nuget.org/packages/CsvLINQPadDriver/)
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 CsvLINQPadDriver For LINQPad 6
 ==
@@ -163,4 +165,4 @@ Credits
 
 License
 --
-[MIT](http://opensource.org/licenses/MIT), see LICENSE file for details.
+[MIT](https://opensource.org/licenses/MIT), see [LICENSE](LICENSE) file for details.
