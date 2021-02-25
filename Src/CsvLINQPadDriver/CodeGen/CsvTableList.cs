@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 
 using LINQPad;
 
@@ -18,8 +17,7 @@ namespace CsvLINQPadDriver.CodeGen
             _dataCache = new Lazy<IList<TRow>>(
                 () => CsvTableFactory.IsCacheStatic
                     ? (IList<TRow>) ReadData().Cache($"{typeof(TRow).Name}:{FilePath}")
-                    : ReadData().ToList(), 
-                LazyThreadSafetyMode.ExecutionAndPublication 
+                    : ReadData().ToList()
             );
 
         protected IList<TRow> DataCache =>

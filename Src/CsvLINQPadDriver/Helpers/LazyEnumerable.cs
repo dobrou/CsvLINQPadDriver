@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Threading;
 
 namespace CsvLINQPadDriver.Helpers
 {
@@ -9,8 +8,8 @@ namespace CsvLINQPadDriver.Helpers
     {
         private readonly Lazy<IEnumerable<T>> _data;
 
-        public LazyEnumerable(Func<IEnumerable<T>> dataSource) =>
-            _data = new Lazy<IEnumerable<T>>(dataSource, LazyThreadSafetyMode.ExecutionAndPublication);
+        public LazyEnumerable(Func<IEnumerable<T>> data) =>
+            _data = new Lazy<IEnumerable<T>>(data);
 
         public IEnumerator<T> GetEnumerator() =>
             _data.Value.GetEnumerator();
