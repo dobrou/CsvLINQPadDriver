@@ -64,8 +64,8 @@ namespace CsvLINQPadDriver.DataDisplay
             };
 
             static bool IsMemberVisible(MemberInfo member) =>
-                 (MemberTypes.Field | MemberTypes.Property).HasFlag(member.MemberType) &&
-                 !member.GetCustomAttributes(typeof(HideFromDumpAttribute), true).Any();
+                 (member.MemberType & (MemberTypes.Field | MemberTypes.Property)) != 0 &&
+                 member.GetCustomAttributes(typeof(HideFromDumpAttribute), true).Length == 0;
         }
         
         public static ICustomMemberProvider GetCsvRowMemberProvider(object objectToDisplay)
@@ -85,7 +85,7 @@ namespace CsvLINQPadDriver.DataDisplay
             return new CsvRowMemberProvider(objectToDisplay, providerData);
 
             static bool IsSupportedType(Type objectType) =>
-                typeof(CsvRowBase).IsAssignableFrom(objectType);
+                typeof(ICsvRowBase).IsAssignableFrom(objectType);
         }
     }
 }

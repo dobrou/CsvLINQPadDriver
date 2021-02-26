@@ -72,7 +72,7 @@ namespace {_contextNameSpace}
 
         private static string GenerateTableRowDataTypeClass(CsvTable table, bool hideRelationsFromDump) =>
             $@"
-    public class {table.GetCodeRowClassName()} : {typeof(CsvRowBase).GetCodeTypeClassName()}
+    public class {table.GetCodeRowClassName()} : {typeof(ICsvRowBase).GetCodeTypeClassName()}
     {{{string.Join(string.Empty, table.Columns.Select(c => $@"
         public string {c.CodeName} {{ get; set; }} ")
             )}{string.Join(string.Empty, table.Relations.Select(csvRelation => $@"

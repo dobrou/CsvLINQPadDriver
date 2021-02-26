@@ -7,7 +7,7 @@ using static System.Linq.Expressions.Expression;
 namespace CsvLINQPadDriver.CodeGen
 {
     public class CsvRowMappingBase<TRow>
-        where TRow : CsvRowBase, new()
+        where TRow : ICsvRowBase, new()
     {
         private readonly Action<TRow, string[]> _propertiesInit;
         private readonly Action<TRow> _relationsInit;
@@ -18,6 +18,7 @@ namespace CsvLINQPadDriver.CodeGen
 
             var paramRow = Parameter(typeof(TRow));
             var paramValues = Parameter(typeof(string[]));
+
             _propertiesInit =
                 Lambda<Action<TRow, string[]>>(
                     Block(propertiesInfo.Select(property =>

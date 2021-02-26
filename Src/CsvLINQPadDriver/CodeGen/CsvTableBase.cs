@@ -17,26 +17,26 @@ namespace CsvLINQPadDriver.CodeGen
     }
 
     public abstract class CsvTableBase<TRow> : CsvTableBase, IEnumerable<TRow>
-        where TRow : CsvRowBase, new()
+        where TRow : ICsvRowBase, new()
     {
+        private static CsvRowMappingBase<TRow> _cachedCsvRowMappingBase;
+
         public char CsvSeparator { get; }
         public string FilePath { get; }
-
-        internal ICollection<CsvColumnInfo> PropertiesInfo;
-        internal Action<TRow> RelationsInit;
 
         protected CsvTableBase(bool isStringInternEnabled, char csvSeparator, string filePath, ICollection<CsvColumnInfo> propertiesInfo, Action<TRow> relationsInit)
             : base(isStringInternEnabled)
         {
             CsvSeparator = csvSeparator;
             FilePath = filePath;
-            PropertiesInfo = propertiesInfo;
-            RelationsInit = relationsInit;
+
+            _cachedCsvRowMappingBase ??= new CsvRowMappingBase<TRow>(propertiesInfo, relationsInit);
         }
 
         protected IEnumerable<TRow> ReadData() =>
-            FileUtils.CsvReadRows(FilePath, CsvSeparator, IsStringInternEnabled, new CsvRowMappingBase<TRow>(PropertiesInfo, RelationsInit));
+            FileUtils.CsvReadRows(FilePath, CsvSeparator, IsStringInternEnabled, _cachedCsvRowMappingBase);
 
+        // ReSharper disable once UnusedMember.Global
         public abstract IEnumerable<TRow> WhereIndexed(Func<TRow, string> getProperty, string propertyName, params string[] values);
 
         public abstract IEnumerator<TRow> GetEnumerator();

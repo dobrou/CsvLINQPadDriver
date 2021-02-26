@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 
 using CsvLINQPadDriver.DataDisplay;
@@ -18,6 +19,7 @@ namespace CsvLINQPadDriver
         public override Version Version =>
             Assembly.GetExecutingAssembly().GetName().Version;
 
+        [SuppressMessage("ReSharper", "StringLiteralTypo")]
         public override string Author =>
             "Martin Dobroucký (dobrou@gmail.com), Ivan Ivon (ivan.ivon@gmail.com)";
 
@@ -67,7 +69,7 @@ namespace CsvLINQPadDriver
 
             if (exception is null)
             {
-                WriteToLog(logFileName, additionalInfo);
+                WriteToLog(additionalInfo, logFileName);
             }
             else
             {

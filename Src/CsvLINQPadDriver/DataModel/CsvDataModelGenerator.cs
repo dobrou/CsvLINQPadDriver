@@ -79,10 +79,19 @@ namespace CsvLINQPadDriver.DataModel
                     {
                         FilePath = file,
                         CodeName = CodeGenHelper.GetSafeCodeName(Path.GetFileNameWithoutExtension(fileName) + (string.IsNullOrWhiteSpace(fileDir) ? string.Empty : $"_{fileDir}")),
-                        DisplayName = $"{fileName}{(string.IsNullOrWhiteSpace(fileDir) ? string.Empty : $" in {fileDir}")} {FileUtils.GetHumanReadableFileSize(file)}",
+                        DisplayName = $"{fileName}{(string.IsNullOrWhiteSpace(fileDir) ? string.Empty : $" in {fileDir}")} {FileUtils.GetHumanizedFileSize(file)}",
                         CsvSeparator = csvSeparator,
                         Columns = (from col in FileUtils.CsvReadHeader(file, csvSeparator).Select((value, index) => new { value, index }) select new CsvColumn { CodeName = CodeGenHelper.GetSafeCodeName(col.value), DisplayName = string.Empty, CsvColumnName = col.value ?? string.Empty, CsvColumnIndex = col.index }).ToList()
                     };
+                }
+            }
+
+            static void UpdateDisplayNames<TItem>(IEnumerable<TItem> items)
+                where TItem : class, ICsvNames
+            {
+                foreach (var item in items)
+                {
+                    item.DisplayName = $"{item.CodeName}{(string.IsNullOrWhiteSpace(item.DisplayName) ? string.Empty : $" ({item.DisplayName})")}";
                 }
             }
         }
@@ -105,15 +114,6 @@ namespace CsvLINQPadDriver.DataModel
                     item.CodeName = name;
                 }
                 names.Add(name);
-            }
-        }
-
-        private static void UpdateDisplayNames<TItem>(IEnumerable<TItem> items)
-            where TItem : class, ICsvNames
-        {
-            foreach (var item in items)
-            {
-                item.DisplayName = $"{item.CodeName}{(string.IsNullOrWhiteSpace(item.DisplayName) ? string.Empty : $" ({item.DisplayName})")}";
             }
         }
 
@@ -154,12 +154,12 @@ namespace CsvLINQPadDriver.DataModel
             }
         }
 
-        private void DetectRelations(CsvDatabase csvDatabase)
+        private static void DetectRelations(CsvDatabase csvDatabase)
         {
             // Limit maximum relations count.
             var maximumRelationsCount = csvDatabase.Tables.Count * csvDatabase.Tables.Count;
 
-            var tcl = (
+            var stringToCsvTableColumnLookup = (
                 from csvTable in csvDatabase.Tables 
                 from csvColumn in csvTable.Columns 
                 where csvColumn.CsvColumnName.EndsWith("id", IdsComparison)
@@ -178,17 +178,17 @@ namespace CsvLINQPadDriver.DataModel
                 from csvColumn in csvTable.Columns
                 where keyNames.Contains(csvColumn.CsvColumnName, IdsComparer)
 
-                from csvTableColumn in keyNamesForeign.SelectMany(k => tcl[k])
+                from csvTableColumn in keyNamesForeign.SelectMany(k => stringToCsvTableColumnLookup[k])
                 where csvTableColumn.csvTable != csvTable
                 select (csvTable1: csvTable, csvColumn1: csvColumn, csvTable2: csvTableColumn.csvTable, csvColumn2: csvTableColumn.csvColumn);
 
             // Translate to relations.
             var relations = from relation in
                 (
-                    from csvTableColumn in new[] { csvTableColumns }.SelectMany(_ => _).Take(maximumRelationsCount)
+                    from csvTableColumn in csvTableColumns.Take(maximumRelationsCount)
                     // Add reverse direction.
                     select new[] { csvTableColumn, (csvTable1: csvTableColumn.csvTable2, csvColumn1: csvTableColumn.csvColumn2, csvTable2: csvTableColumn.csvTable1, csvColumn2: csvTableColumn.csvColumn1) }
-                ).SelectMany(r => r).Distinct()
+                ).SelectMany(relation => relation).Distinct()
                 select new CsvRelation
                 {
                     CodeName = relation.csvTable2.CodeName,

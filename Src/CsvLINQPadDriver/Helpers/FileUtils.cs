@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Text;
+
+using Humanizer;
 
 using CsvHelper;
 using CsvHelper.Configuration;
@@ -13,10 +16,6 @@ namespace CsvLINQPadDriver.Helpers
 {
     public static class FileUtils
     {
-        private const long SizeUnitsStep = 1024;
-
-        private static readonly string[] SizeUnits = { "B", "KB", "MB", "GB", "TB" };
-
         private static readonly Dictionary<string, string> StringInternCache = new Dictionary<string, string>();
 
         private static string StringIntern(string str) =>
@@ -29,7 +28,7 @@ namespace CsvLINQPadDriver.Helpers
             };
 
         public static IEnumerable<T> CsvReadRows<T>(string fileName, char csvSeparator, bool internString, CsvRowMappingBase<T> csvClassMap)
-            where T : CsvRowBase, new()
+            where T : ICsvRowBase, new()
         {
             return CsvReadRows(fileName, csvSeparator)
                 .Skip(1) // Skip header.
@@ -51,33 +50,19 @@ namespace CsvLINQPadDriver.Helpers
 
         private static IEnumerable<string[]> CsvReadRows(string fileName, char csvSeparator)
         {
-            var csvOptions = new CsvConfiguration(CultureInfo.InvariantCulture)
-            {
-                Delimiter = csvSeparator.ToString(),
-                HasHeaderRecord = false,
-                DetectColumnCountChanges = false,
-                BufferSize = 4096 * 20
-            };
+            using var csvParser = CreateCsvParser(fileName, csvSeparator);
 
-            using var cp = new CsvParser(new StreamReader(fileName, true), csvOptions);
-
-            while (cp.Read())
+            while (csvParser.Read())
             {
-                yield return cp.Record;
+                yield return csvParser.Record;
             }
         }
 
         public static string[] CsvReadHeader(string fileName, char csvSeparator)
         {
-            var csvOptions = new CsvConfiguration(CultureInfo.InvariantCulture)
-            {
-                Delimiter = csvSeparator.ToString(),
-                HasHeaderRecord = false
-            };
+            using var csvParser = CreateCsvParser(fileName, csvSeparator);
 
-            using var cp = new CsvParser(new StreamReader(fileName, true), csvOptions);
-
-            return cp.Read() ? cp.Record : new string[0];
+            return csvParser.Read() ? csvParser.Record : new string[0];
         }
 
         public static bool IsCsvFormatValid(string fileName, char csvSeparator)
@@ -93,16 +78,9 @@ namespace CsvLINQPadDriver.Helpers
 
             try
             {
-                var csvConfiguration = new CsvConfiguration(CultureInfo.InvariantCulture)
-                {
-                    Delimiter = csvSeparator.ToString(),
-                    HasHeaderRecord = false,
-                    DetectColumnCountChanges = false
-                };
+                using var csvParser = CreateCsvParser(fileName, csvSeparator);
 
-                using var csvParser = new CsvParser(new StreamReader(fileName, true), csvConfiguration);
-
-                if(!csvParser.Read())
+                if (!csvParser.Read())
                 {
                     CsvDataContextDriver.WriteToLog($"{header} could not get CSV header");
 
@@ -143,7 +121,7 @@ namespace CsvLINQPadDriver.Helpers
 
                 var validCharsCount = headerRow
                     .Concat(dataRow)
-                    .Sum(s => Enumerable.Range(0, s?.Length ?? 0).Count(i => char.IsLetterOrDigit(s!, i)));
+                    .Sum(s => Enumerable.Range(0, s?.Length ?? 0).Count(i => char.IsLetterOrDigit(s ?? string.Empty, i)));
 
                 const double validCharsMinOkRatio = 0.5;
 
@@ -216,6 +194,33 @@ namespace CsvLINQPadDriver.Helpers
                 .Distinct(StringComparer.Ordinal)
                 .ToArray();
 
+        public static string GetHumanizedFileSize(string fileName)
+        {
+            try
+            {
+                return new FileInfo(fileName).Length.Bytes().Humanize("0.#");
+            }
+            catch (Exception exception)
+            {
+                CsvDataContextDriver.WriteToLog($"Failed to get {fileName} size", exception);
+
+                return exception.Message;
+            }
+        }
+
+        private static CsvParser CreateCsvParser(string fileName, char csvSeparator)
+        {
+            var csvConfiguration = new CsvConfiguration(CultureInfo.InvariantCulture)
+            {
+                Delimiter = csvSeparator.ToString(),
+                HasHeaderRecord = false,
+                DetectColumnCountChanges = false,
+                BufferSize = 4096 * 20
+            };
+
+            return new CsvParser(new StreamReader(fileName, Encoding.Default, true, csvConfiguration.BufferSize / sizeof(char)), csvConfiguration);
+        }
+
         private static IEnumerable<string> GetFiles(IEnumerable<string> paths) =>
             paths
                 .Where(p => !p.StartsWith("#"))
@@ -263,33 +268,6 @@ namespace CsvLINQPadDriver.Helpers
 
                 return new string[0];
             }
-        }
-
-        public static string GetHumanReadableFileSize(string fileName)
-        {
-            try
-            {
-                return GetBestFitHumanReadableFileSize(new FileInfo(fileName).Length);
-            }
-            catch (Exception exception)
-            {
-                CsvDataContextDriver.WriteToLog($"Failed to get {fileName} size", exception);
-
-                return $"??{SizeUnits.First()}";
-            }
-        }
-
-        public static string GetBestFitHumanReadableFileSize(long sizeBytes)
-        {
-            if(sizeBytes == 0)
-            {
-                return $"0{SizeUnits.First()}";
-            }
-
-            var sizeUnitRank = Math.Min(SizeUnits.Length - 1, (int)Math.Log(Math.Abs((double)sizeBytes), SizeUnitsStep));
-            var sizeInUnit = sizeBytes / Math.Pow(SizeUnitsStep, sizeUnitRank);
-
-            return $"{sizeInUnit:0.#}{SizeUnits[sizeUnitRank]}";
         }
     }
 }

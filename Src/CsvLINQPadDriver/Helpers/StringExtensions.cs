@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 
 namespace CsvLINQPadDriver.Helpers
 {
+    [SuppressMessage("ReSharper", "UnusedMember.Global")]
+    [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
     public static class StringExtensions
     {
         private static readonly CultureInfo DefaultCultureInfo = CultureInfo.InvariantCulture;

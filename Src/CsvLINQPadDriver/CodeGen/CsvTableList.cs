@@ -7,18 +7,14 @@ using LINQPad;
 namespace CsvLINQPadDriver.CodeGen
 {
     internal class CsvTableList<TRow> : CsvTableBase<TRow>, IList<TRow>
-        where TRow : CsvRowBase, new()
+        where TRow : ICsvRowBase, new()
     {
         private readonly IDictionary<string, ILookup<string, TRow>> _indices = new Dictionary<string, ILookup<string, TRow>>();
         private readonly Lazy<IList<TRow>> _dataCache;
 
         public CsvTableList(bool isStringInternEnabled, char csvSeparator, string filePath, ICollection<CsvColumnInfo> propertiesInfo, Action<TRow> relationsInit)
             : base(isStringInternEnabled, csvSeparator, filePath, propertiesInfo, relationsInit) =>
-            _dataCache = new Lazy<IList<TRow>>(
-                () => CsvTableFactory.IsCacheStatic
-                    ? (IList<TRow>) ReadData().Cache($"{typeof(TRow).Name}:{FilePath}")
-                    : ReadData().ToList()
-            );
+            _dataCache = new Lazy<IList<TRow>>(() => ReadData().Cache($"{typeof(TRow).Name}:{FilePath}"));
 
         protected IList<TRow> DataCache =>
             _dataCache.Value;

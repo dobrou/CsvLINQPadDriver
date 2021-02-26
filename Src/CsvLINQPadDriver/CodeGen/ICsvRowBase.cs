@@ -2,9 +2,10 @@
 
 namespace CsvLINQPadDriver.CodeGen
 {
-    public class CsvRowBase
+    public interface ICsvRowBase
     {
-        public override string ToString() =>
+        // ReSharper disable once UnusedMember.Global
+        public string ToString() =>
             string.Join(",", GetType()
                 .GetProperties()
                 .Where(propertyInfo => propertyInfo.PropertyType == typeof(string))

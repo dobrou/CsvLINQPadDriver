@@ -1,5 +1,9 @@
-﻿namespace CsvLINQPadDriver
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace CsvLINQPadDriver
 {
+    [SuppressMessage("ReSharper", "UnusedMemberInSuper.Global")]
+    [SuppressMessage("ReSharper", "UnusedMember.Global")]
     public interface ICsvDataContextDriverProperties
     {
         bool Persist { get; set; }

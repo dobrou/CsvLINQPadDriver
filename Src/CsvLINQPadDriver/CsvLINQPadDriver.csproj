@@ -24,9 +24,10 @@
     <PackageIcon>NuGetIcon.png</PackageIcon>
     <PackageReleaseNotes>Code cleanup.</PackageReleaseNotes>
     <Copyright>Copyright © Martin Dobroucký 2013-2014, Ivan Ivon 2021</Copyright>
-    <AssemblyVersion>6.2.0.0</AssemblyVersion>
-    <FileVersion>6.2.0.0</FileVersion>
-    <Version>6.2.0</Version>
+    <AssemblyVersion>6.3.0.0</AssemblyVersion>
+    <FileVersion>6.3.0.0</FileVersion>
+    <Version>6.3.0</Version>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -56,6 +57,7 @@
 
   <ItemGroup>
     <PackageReference Include="CsvHelper" Version="23.0.0" />
+    <PackageReference Include="Humanizer.Core" Version="2.8.26" />
     <PackageReference Include="LINQPad.Reference" Version="1.1.0" />
   </ItemGroup>
 
