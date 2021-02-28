@@ -143,37 +143,38 @@ namespace CsvLINQPadDriver.Helpers
                 _ => new[] { ',', ';', '\t' }
             };
 
-            var result = defaultCsvSeparators.First();
+            var csvSeparator = defaultCsvSeparators.First();
 
             if (!File.Exists(fileName))
             {
-                return result;
+                return csvSeparator;
             }
+
+            var defaultCsvSeparator = csvSeparator;
 
             try
             {
                 // Get most used char from separators as separator.
-                var bestSeparators = (csvData ?? File.ReadLines(fileName).Take(1).ToArray())
-                    .SelectMany(l => l.ToCharArray())
+                csvSeparator = (csvData ?? File.ReadLines(fileName).Take(1))
+                    .SelectMany(line => line.ToCharArray())
                     .Where(defaultCsvSeparators.Contains)
                     .GroupBy(ch => ch)
                     .OrderByDescending(chGroup => chGroup.Count())
                     .Select(chGroup => chGroup.Key)
-                    .ToArray();
-
-                if (bestSeparators.Any())
-                {
-                    result = bestSeparators.First();
-                }
+                    .DefaultIfEmpty(csvSeparator)
+                    .First();
             }
             catch(Exception exception)
             {
                 CsvDataContextDriver.WriteToLog($"CSV separator detection failed for {fileName}", exception);
             }
 
-            CsvDataContextDriver.WriteToLog($"Using CSV separator '{result}' for {fileName}");
+            if(csvSeparator != defaultCsvSeparator)
+            {
+                CsvDataContextDriver.WriteToLog($"Using CSV separator '{csvSeparator}' for {fileName}");
+            }
 
-            return result;
+            return csvSeparator;
         }
 
         public static string GetLongestCommonPrefixPath(string[] paths)

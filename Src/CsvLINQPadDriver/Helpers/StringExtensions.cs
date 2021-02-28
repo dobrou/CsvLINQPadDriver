@@ -35,6 +35,12 @@ namespace CsvLINQPadDriver.Helpers
         public static TimeSpan? ToTimeSpan(this string str, CultureInfo cultureInfo = null) =>
             GetValueOrNull(TimeSpan.TryParse(str, SelectCulture(cultureInfo), out var parsedValue), parsedValue);
 
+        public static TimeSpan? ToTimeSpan(this string str, string format, TimeSpanStyles timeSpanStyles = TimeSpanStyles.None, CultureInfo cultureInfo = null) =>
+            GetValueOrNull(TimeSpan.TryParseExact(str, format, SelectCulture(cultureInfo), timeSpanStyles, out var parsedValue), parsedValue);
+
+        public static TimeSpan? ToTimeSpan(this string str, string[] formats, TimeSpanStyles timeSpanStyles = TimeSpanStyles.None, CultureInfo cultureInfo = null) =>
+            GetValueOrNull(TimeSpan.TryParseExact(str, formats, SelectCulture(cultureInfo), timeSpanStyles, out var parsedValue), parsedValue);
+
         public static bool? ToBool(this string str, CultureInfo cultureInfo = null)
         {
             var longValue = str.ToLong(cultureInfo);

@@ -145,6 +145,8 @@ DateTime? ToDateTime(DateTimeStyles dateTimeStyles = DateTimeStyles.None, Cultur
 DateTime? ToDateTime(string format, DateTimeStyles dateTimeStyles = DateTimeStyles.None, CultureInfo cultureInfo = null);
 DateTime? ToDateTime(string[] formats, DateTimeStyles dateTimeStyles = DateTimeStyles.None, CultureInfo cultureInfo = null);
 TimeSpan? ToTimeSpan(CultureInfo cultureInfo = null);
+TimeSpan? ToTimeSpan(string format, TimeSpanStyles timeSpanStyles = TimeSpanStyles.None, CultureInfo cultureInfo = null);
+TimeSpan? ToTimeSpan(string[] formats, TimeSpanStyles timeSpanStyles = TimeSpanStyles.None, CultureInfo cultureInfo = null);
 bool? ToBool(CultureInfo cultureInfo = null);
 ```
 

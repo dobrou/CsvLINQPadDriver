@@ -22,11 +22,12 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/i2van/CsvLINQPadDriver</RepositoryUrl>
     <PackageIcon>NuGetIcon.png</PackageIcon>
-    <PackageReleaseNotes>Code cleanup.</PackageReleaseNotes>
+    <PackageReleaseNotes>Added more TimeSpan extension methods.
+Reduced logging.</PackageReleaseNotes>
     <Copyright>Copyright © Martin Dobroucký 2013-2014, Ivan Ivon 2021</Copyright>
-    <AssemblyVersion>6.3.0.0</AssemblyVersion>
-    <FileVersion>6.3.0.0</FileVersion>
-    <Version>6.3.0</Version>
+    <AssemblyVersion>6.4.0.0</AssemblyVersion>
+    <FileVersion>6.4.0.0</FileVersion>
+    <Version>6.4.0</Version>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
   </PropertyGroup>
 
