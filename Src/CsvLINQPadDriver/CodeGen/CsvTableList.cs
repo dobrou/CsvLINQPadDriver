@@ -12,11 +12,11 @@ namespace CsvLINQPadDriver.CodeGen
         private readonly IDictionary<string, ILookup<string, TRow>> _indices = new Dictionary<string, ILookup<string, TRow>>();
         private readonly Lazy<IList<TRow>> _dataCache;
 
-        public CsvTableList(bool isStringInternEnabled, char csvSeparator, string filePath, ICollection<CsvColumnInfo> propertiesInfo, Action<TRow> relationsInit)
+        public CsvTableList(bool isStringInternEnabled, char csvSeparator, string filePath, IEnumerable<CsvColumnInfo> propertiesInfo, Action<TRow> relationsInit)
             : base(isStringInternEnabled, csvSeparator, filePath, propertiesInfo, relationsInit) =>
             _dataCache = new Lazy<IList<TRow>>(() => ReadData().Cache($"{typeof(TRow).Name}:{FilePath}"));
 
-        protected IList<TRow> DataCache =>
+        private IList<TRow> DataCache =>
             _dataCache.Value;
 
         public override IEnumerator<TRow> GetEnumerator() =>

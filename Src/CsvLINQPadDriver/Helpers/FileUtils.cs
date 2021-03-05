@@ -16,9 +16,9 @@ namespace CsvLINQPadDriver.Helpers
 {
     public static class FileUtils
     {
-        private static readonly Dictionary<string, string> StringInternCache = new Dictionary<string, string>();
+        private static readonly Dictionary<string, string> StringInternCache = new();
 
-        private static string StringIntern(string str) =>
+        private static string? StringIntern(string? str) =>
             str switch
             {
                 null => null,
@@ -34,7 +34,7 @@ namespace CsvLINQPadDriver.Helpers
                 .Skip(1) // Skip header.
                 .Select(GetRecord);
 
-            T GetRecord(string[] rowColumns)
+            T GetRecord(string?[] rowColumns)
             {
                 if (internString)
                 {
@@ -58,7 +58,7 @@ namespace CsvLINQPadDriver.Helpers
             }
         }
 
-        public static string[] CsvReadHeader(string fileName, char csvSeparator)
+        public static IEnumerable<string> CsvReadHeader(string fileName, char csvSeparator)
         {
             using var csvParser = CreateCsvParser(fileName, csvSeparator);
 
@@ -135,7 +135,7 @@ namespace CsvLINQPadDriver.Helpers
             }
         }
 
-        public static char CsvDetectSeparator(string fileName, string[] csvData = null)
+        public static char CsvDetectSeparator(string fileName, string[]? csvData = null)
         {
             var defaultCsvSeparators = Path.GetExtension(fileName).ToLowerInvariant() switch
             {
@@ -177,7 +177,7 @@ namespace CsvLINQPadDriver.Helpers
             return csvSeparator;
         }
 
-        public static string GetLongestCommonPrefixPath(string[] paths)
+        public static string GetLongestCommonPrefixPath(IEnumerable<string> paths)
         {
             var pathsValid = GetFiles(paths).ToArray();
 
@@ -189,11 +189,10 @@ namespace CsvLINQPadDriver.Helpers
                 .LastOrDefault(prefix => pathsValid.All(path => path.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))) ?? string.Empty;
         }
 
-        public static string[] EnumFiles(IEnumerable<string> paths) =>
+        public static IEnumerable<string> EnumFiles(IEnumerable<string> paths) =>
             GetFiles(paths)
                 .SelectMany(EnumFiles)
-                .Distinct(StringComparer.Ordinal)
-                .ToArray();
+                .Distinct(StringComparer.Ordinal);
 
         public static string GetHumanizedFileSize(string fileName)
         {
@@ -231,8 +230,6 @@ namespace CsvLINQPadDriver.Helpers
         {
             try
             {
-                path ??= string.Empty;
-
                 // Single file.
                 if (File.Exists(path))
                 {

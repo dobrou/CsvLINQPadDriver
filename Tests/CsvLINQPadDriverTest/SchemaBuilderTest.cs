@@ -26,13 +26,13 @@ namespace CsvLINQPadDriverTest
 
             File.WriteAllText("TestA.csv",
 @"a,b,c,TestAID
-1,2,3,1
-1,2,3,2
+1,2,3,11
+1,2,3,12
 x");
             File.WriteAllText("TestB.csv",
 @"c,d,e,TestAID
-1,2,3,1
-1,2,3,2
+1,2,3,11
+1,2,3,12
 x");
 
             var nameSpace = "TestContextNamespace";
@@ -130,9 +130,9 @@ x");
         private class PropertiesMock : ICsvDataContextDriverProperties
         {
             public bool Persist { get; set; }
-            public string Files { get; set; }
-            public string[] ParsedFiles { get; set; }
-            public string CsvSeparator { get; set; }
+            public string Files { get; set; } = null!;
+            public IEnumerable<string> ParsedFiles { get; init; } = null!;
+            public string CsvSeparator { get; set; } = null!;
             public char? CsvSeparatorChar { get; } = null;
             public bool DetectRelations { get; set; }
             public bool HideRelationsFromDump { get; set; }

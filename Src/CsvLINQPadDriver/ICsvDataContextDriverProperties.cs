@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace CsvLINQPadDriver
 {
@@ -13,7 +14,7 @@ namespace CsvLINQPadDriver
         /// </summary>
         string Files { get; set; }
 
-        public string[] ParsedFiles { get; }
+        public IEnumerable<string> ParsedFiles { get; }
 
         /// <summary>
         /// Default CSV separator. If empty or null, separator will be auto-detected.

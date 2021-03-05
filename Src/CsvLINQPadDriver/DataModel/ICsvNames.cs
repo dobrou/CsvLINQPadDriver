@@ -2,7 +2,7 @@
 {
     public interface ICsvNames
     {
-        string CodeName { get; set; }
-        string DisplayName { get; set; }
+        string? CodeName { get; set; }
+        string? DisplayName { get; set; }
     }
 }

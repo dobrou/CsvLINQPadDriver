@@ -10,8 +10,8 @@ namespace CsvLINQPadDriver.CodeGen
                 .GetProperties()
                 .Where(propertyInfo => propertyInfo.PropertyType == typeof(string))
                 .Select(propertyInfo => propertyInfo.GetGetMethod())
-                .Where(methodInfo => methodInfo != null)
-                .Select(methodInfo => methodInfo.Invoke(this, null))
+                .Where(methodInfo => methodInfo is not null)
+                .Select(methodInfo => methodInfo!.Invoke(this, null))
                 .OfType<string>());
     }
 }

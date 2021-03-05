@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
@@ -29,20 +30,19 @@ namespace CsvLINQPadDriver
 
         public string Files
         {
-            get => GetValue(string.Empty);
+            get => GetValue(string.Empty)!;
             set => SetValue(value);
         }
 
-        public string[] ParsedFiles =>
+        public IEnumerable<string> ParsedFiles =>
             Regex.Split(Files, @"[\r\n]+")
                 .Select(fileName => fileName.Trim())
                 .Where(fileName => !string.IsNullOrEmpty(fileName))
-                .Distinct(StringComparer.InvariantCultureIgnoreCase)
-                .ToArray();
+                .Distinct(StringComparer.InvariantCultureIgnoreCase);
 
         public string CsvSeparator
         {
-            get => GetValue(string.Empty);
+            get => GetValue(string.Empty)!;
             set => SetValue(value);
         }
 
@@ -108,16 +108,16 @@ namespace CsvLINQPadDriver
             set => SetValue(value);
         }
 
-        private T GetValue<T>(Func<string, T> convert, T defaultValue, [CallerMemberName] string callerMemberName = default) =>
+        private T GetValue<T>(Func<string?, T> convert, T defaultValue, [CallerMemberName] string callerMemberName = "") =>
             convert(_driverData.Element(callerMemberName)?.Value) ?? defaultValue;
 
-        private bool GetValue(bool defaultValue, [CallerMemberName] string callerMemberName = default) =>
+        private bool GetValue(bool defaultValue, [CallerMemberName] string callerMemberName = "") =>
             GetValue(v => v.ToBool(), defaultValue, callerMemberName)!.Value;
 
-        private string GetValue(string defaultValue, [CallerMemberName] string callerMemberName = default) =>
+        private string? GetValue(string defaultValue, [CallerMemberName] string callerMemberName = "") =>
             GetValue(v => v, defaultValue, callerMemberName);
 
-        private void SetValue<T>(T value, [CallerMemberName] string callerMemberName = default) =>
-            _driverData.SetElementValue(callerMemberName!, value);
+        private void SetValue<T>(T value, [CallerMemberName] string callerMemberName = "") =>
+            _driverData.SetElementValue(callerMemberName, value);
     }
 }

@@ -22,9 +22,9 @@ namespace CsvLINQPadDriver
 
             var compileErrors = BuildAssembly(code, assemblyToBuild);
 
-            var schema = GetSchema(csvDatabase, csvDataContextDriverProperties);
+            var schema = GetSchema(csvDatabase);
 
-            var hasCompileErrors = compileErrors?.Any() == true;
+            var hasCompileErrors = compileErrors.Any();
 
             if (hasCompileErrors || csvDataContextDriverProperties.DebugInfo)
             {
@@ -67,18 +67,18 @@ namespace CsvLINQPadDriver
                 SourceCode = new[] { code }
             });
 
-            return result.Successful ? null : result.Errors;
+            return result.Successful ? new string[0] : result.Errors;
         }
 
-        private static List<ExplorerItem> GetSchema(CsvDatabase db, ICsvDataContextDriverProperties _) =>
-            (db.Tables ?? Enumerable.Empty<CsvTable>()).Select(table =>
+        private static List<ExplorerItem> GetSchema(CsvDatabase db) =>
+            db.Tables.Select(table =>
                 new ExplorerItem(table.DisplayName, ExplorerItemKind.QueryableObject, ExplorerIcon.Table)
                 {
                     DragText = table.CodeName,
                     IsEnumerable = true,
                     ToolTipText = table.FilePath,
                     Children =
-                        (table.Columns ?? Enumerable.Empty<CsvColumn>())
+                        table.Columns
                             .Select(column =>
                                 new ExplorerItem(column.DisplayName, ExplorerItemKind.Property, ExplorerIcon.Column)
                                 {

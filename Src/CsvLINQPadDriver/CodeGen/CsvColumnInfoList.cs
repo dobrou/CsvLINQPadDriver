@@ -12,13 +12,7 @@ namespace CsvLINQPadDriver.CodeGen
             var memberExpression = propertyExpression.Body as MemberExpression ?? 
                 throw new ArgumentException($"{nameof(propertyExpression)} expression must be only property access", nameof(propertyExpression));
 
-            var propertyName = memberExpression.Member.Name;
-
-            Add(new CsvColumnInfo
-            {
-                CsvColumnIndex = csvColumnIndex,
-                PropertyName = propertyName
-            });
+            Add(new CsvColumnInfo(csvColumnIndex, memberExpression.Member.Name));
         }
     }
 }

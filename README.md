@@ -137,17 +137,17 @@ Everything is string. Because there is no data type info in CSV files, this is b
 However, driver provides few extension methods providing easy conversion from string to nullable of common types:
 
 ```csharp
-int? ToInt(CultureInfo cultureInfo = null);
-long? ToLong(CultureInfo cultureInfo = null);
-double? ToDouble(CultureInfo cultureInfo = null);
-decimal? ToDecimal(CultureInfo cultureInfo = null);
-DateTime? ToDateTime(DateTimeStyles dateTimeStyles = DateTimeStyles.None, CultureInfo cultureInfo = null);
-DateTime? ToDateTime(string format, DateTimeStyles dateTimeStyles = DateTimeStyles.None, CultureInfo cultureInfo = null);
-DateTime? ToDateTime(string[] formats, DateTimeStyles dateTimeStyles = DateTimeStyles.None, CultureInfo cultureInfo = null);
-TimeSpan? ToTimeSpan(CultureInfo cultureInfo = null);
-TimeSpan? ToTimeSpan(string format, TimeSpanStyles timeSpanStyles = TimeSpanStyles.None, CultureInfo cultureInfo = null);
-TimeSpan? ToTimeSpan(string[] formats, TimeSpanStyles timeSpanStyles = TimeSpanStyles.None, CultureInfo cultureInfo = null);
-bool? ToBool(CultureInfo cultureInfo = null);
+int? ToInt(CultureInfo? cultureInfo = null);
+long? ToLong(CultureInfo? cultureInfo = null);
+double? ToDouble(CultureInfo? cultureInfo = null);
+decimal? ToDecimal(CultureInfo? cultureInfo = null);
+DateTime? ToDateTime(DateTimeStyles dateTimeStyles = DateTimeStyles.None, CultureInfo? cultureInfo = null);
+DateTime? ToDateTime(string format, DateTimeStyles dateTimeStyles = DateTimeStyles.None, CultureInfo? cultureInfo = null);
+DateTime? ToDateTime(string[] formats, DateTimeStyles dateTimeStyles = DateTimeStyles.None, CultureInfo? cultureInfo = null);
+TimeSpan? ToTimeSpan(CultureInfo? cultureInfo = null);
+TimeSpan? ToTimeSpan(string format, TimeSpanStyles timeSpanStyles = TimeSpanStyles.None, CultureInfo? cultureInfo = null);
+TimeSpan? ToTimeSpan(string[] formats, TimeSpanStyles timeSpanStyles = TimeSpanStyles.None, CultureInfo? cultureInfo = null);
+bool? ToBool(CultureInfo? cultureInfo = null);
 ```
 
 Known Issues

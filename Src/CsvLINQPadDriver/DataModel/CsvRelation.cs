@@ -1,14 +1,13 @@
 ﻿namespace CsvLINQPadDriver.DataModel
 {
-    public class CsvRelation : ICsvNames
+    public record CsvRelation(
+        CsvTable SourceTable,
+        CsvTable TargetTable,
+        CsvColumn SourceColumn,
+        CsvColumn TargetColumn
+    ) : ICsvNames
     {
-        public string CodeName { get; set; }
-        public string DisplayName { get; set; }
-
-        public CsvTable SourceTable { get; set; }
-        public CsvTable TargetTable { get; set; }
-
-        public CsvColumn SourceColumn { get; set; }
-        public CsvColumn TargetColumn { get; set; }
+        public string? CodeName { get; set; }
+        public string? DisplayName { get; set; }
     }
 }

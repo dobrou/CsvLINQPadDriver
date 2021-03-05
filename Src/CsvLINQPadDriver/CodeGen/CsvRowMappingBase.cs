@@ -9,10 +9,10 @@ namespace CsvLINQPadDriver.CodeGen
     public class CsvRowMappingBase<TRow>
         where TRow : ICsvRowBase, new()
     {
-        private readonly Action<TRow, string[]> _propertiesInit;
-        private readonly Action<TRow> _relationsInit;
+        private readonly Action<TRow, string?[]> _propertiesInit;
+        private readonly Action<TRow>? _relationsInit;
 
-        public CsvRowMappingBase(IEnumerable<CsvColumnInfo> propertiesInfo, Action<TRow> relationsInit = null)
+        public CsvRowMappingBase(IEnumerable<CsvColumnInfo> propertiesInfo, Action<TRow>? relationsInit = null)
         {
             _relationsInit = relationsInit;
 
@@ -20,7 +20,7 @@ namespace CsvLINQPadDriver.CodeGen
             var paramValues = Parameter(typeof(string[]));
 
             _propertiesInit =
-                Lambda<Action<TRow, string[]>>(
+                Lambda<Action<TRow, string?[]>>(
                     Block(propertiesInfo.Select(property =>
                         Assign(
                         PropertyOrField(paramRow, property.PropertyName),
@@ -35,7 +35,7 @@ namespace CsvLINQPadDriver.CodeGen
                 ).Compile();
         }
 
-        public TRow InitRowObject(string[] data)
+        public TRow InitRowObject(string?[] data)
         {
             var row = new TRow();
 

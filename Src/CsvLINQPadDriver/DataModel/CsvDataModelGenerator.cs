@@ -32,11 +32,7 @@ namespace CsvLINQPadDriver.DataModel
 
             var baseDir = FileUtils.GetLongestCommonPrefixPath(files);
 
-            var csvDatabase = new CsvDatabase
-            {
-                Name = baseDir,
-                Tables = CreateTables().ToList()
-            };
+            var csvDatabase = new CsvDatabase(baseDir, CreateTables().ToList());
 
             MakeCodeNamesUnique(csvDatabase.Tables);
 
@@ -51,7 +47,7 @@ namespace CsvLINQPadDriver.DataModel
 
                 foreach (var table in csvDatabase.Tables)
                 {
-                    MakeCodeNamesUnique(table.Relations, table.Columns.Select(c => c.CodeName));
+                    MakeCodeNamesUnique(table.Relations, table.Columns.Select(c => c.CodeName!));
                 }
             }
 
@@ -76,12 +72,22 @@ namespace CsvLINQPadDriver.DataModel
                     var fileDir = (Path.GetDirectoryName($"{file.Remove(0, baseDir.Length)}x") ?? string.Empty).TrimStart(Path.DirectorySeparatorChar);
 
                     yield return new CsvTable
+                    (
+                        file,
+                        csvSeparator,
+                        FileUtils.CsvReadHeader(file, csvSeparator)
+                            .Select((value, index) => (value, index))
+                            .Select(col => new CsvColumn(col.value ?? string.Empty, col.index)
+                                    {
+                                        CodeName = CodeGenHelper.GetSafeCodeName(col.value),
+                                        DisplayName = string.Empty
+                                    }
+                            ).ToList(),
+                        new List<CsvRelation>()
+                    )
                     {
-                        FilePath = file,
-                        CodeName = CodeGenHelper.GetSafeCodeName(Path.GetFileNameWithoutExtension(fileName) + (string.IsNullOrWhiteSpace(fileDir) ? string.Empty : $"_{fileDir}")),
-                        DisplayName = $"{fileName}{(string.IsNullOrWhiteSpace(fileDir) ? string.Empty : $" in {fileDir}")} {FileUtils.GetHumanizedFileSize(file)}",
-                        CsvSeparator = csvSeparator,
-                        Columns = (from col in FileUtils.CsvReadHeader(file, csvSeparator).Select((value, index) => new { value, index }) select new CsvColumn { CodeName = CodeGenHelper.GetSafeCodeName(col.value), DisplayName = string.Empty, CsvColumnName = col.value ?? string.Empty, CsvColumnIndex = col.index }).ToList()
+                        CodeName    = CodeGenHelper.GetSafeCodeName(Path.GetFileNameWithoutExtension(fileName) + (string.IsNullOrWhiteSpace(fileDir) ? string.Empty : $"_{fileDir}")),
+                        DisplayName = $"{fileName}{(string.IsNullOrWhiteSpace(fileDir) ? string.Empty : $" in {fileDir}")} {FileUtils.GetHumanizedFileSize(file)}"
                     };
                 }
             }
@@ -96,14 +102,14 @@ namespace CsvLINQPadDriver.DataModel
             }
         }
 
-        private static void MakeCodeNamesUnique<TItem>(IEnumerable<TItem> items, IEnumerable<string> reservedNames = null)
+        private static void MakeCodeNamesUnique<TItem>(IEnumerable<TItem> items, IEnumerable<string>? reservedNames = null)
             where TItem: class, ICsvNames
         {
             var names = new HashSet<string>(reservedNames ?? Enumerable.Empty<string>(), CsvTableBase.StringComparer);
 
             foreach (var item in items)
             {
-                var name = item.CodeName;
+                var name = item.CodeName!;
                 if (names.Contains(name))
                 {
                     // Get first unique name.
@@ -131,16 +137,16 @@ namespace CsvLINQPadDriver.DataModel
             // items -> itemID
             if (GetIdName("s", out var idsName))
             {
-                yield return idsName;
+                yield return idsName!;
             }
 
             // fishes -> fishID
             if (GetIdName("es", out var idesName))
             {
-                yield return idesName;
+                yield return idesName!;
             }
 
-            bool GetIdName(string postfix, out string idName)
+            bool GetIdName(string postfix, out string? idName)
             {
                 if (fileName.EndsWith(postfix, IdsComparison))
                 {
@@ -157,10 +163,11 @@ namespace CsvLINQPadDriver.DataModel
         private static void DetectRelations(CsvDatabase csvDatabase)
         {
             // Limit maximum relations count.
-            var maximumRelationsCount = csvDatabase.Tables.Count * csvDatabase.Tables.Count;
+            var (_, csvTables) = csvDatabase;
+            var maximumRelationsCount = csvTables.Count * csvTables.Count;
 
             var stringToCsvTableColumnLookup = (
-                from csvTable in csvDatabase.Tables 
+                from csvTable in csvTables 
                 from csvColumn in csvTable.Columns 
                 where csvColumn.CsvColumnName.EndsWith("id", IdsComparison)
                 select (csvTable, csvColumn)
@@ -172,7 +179,7 @@ namespace CsvLINQPadDriver.DataModel
             // t1.nameID -> names.nameID
             // t1.fishID -> fishes.fishID
             // t1.fishID -> fishes.ID
-            var csvTableColumns = from csvTable in csvDatabase.Tables
+            var csvTableColumns = from csvTable in csvTables
                 let keyNamesForeign = GetTableForeignKeyPossibleNames(csvTable)
                 let keyNames = keyNamesForeign.Concat(new []{ "id" })
                 from csvColumn in csvTable.Columns
@@ -189,13 +196,9 @@ namespace CsvLINQPadDriver.DataModel
                     // Add reverse direction.
                     select new[] { csvTableColumn, (csvTable1: csvTableColumn.csvTable2, csvColumn1: csvTableColumn.csvColumn2, csvTable2: csvTableColumn.csvTable1, csvColumn2: csvTableColumn.csvColumn1) }
                 ).SelectMany(relation => relation).Distinct()
-                select new CsvRelation
+                select new CsvRelation(relation.csvTable1, relation.csvTable2, relation.csvColumn1, relation.csvColumn2)
                 {
-                    CodeName = relation.csvTable2.CodeName,
-                    SourceTable = relation.csvTable1,
-                    SourceColumn = relation.csvColumn1,
-                    TargetTable = relation.csvTable2,
-                    TargetColumn = relation.csvColumn2
+                    CodeName = relation.csvTable2.CodeName
                 };
 
             // Add relations to DB structure.

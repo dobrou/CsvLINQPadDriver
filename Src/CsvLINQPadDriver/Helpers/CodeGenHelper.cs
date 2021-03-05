@@ -5,17 +5,17 @@ using System.Text.RegularExpressions;
 
 namespace CsvLINQPadDriver.Helpers
 {
-    internal class CodeGenHelper
+    internal static class CodeGenHelper
     {
         private const string SafeChar = "_";
         private const int MaxLength = 128;
 
-        private static readonly Lazy<CodeDomProvider> CodeDomProvider = new Lazy<CodeDomProvider>(() => System.CodeDom.Compiler.CodeDomProvider.CreateProvider("C#"));
-        private static readonly Regex CodeNameInvalidCharacters = new Regex(@"[^\p{Ll}\p{Lu}\p{Lt}\p{Lo}\p{Nd}\p{Nl}\p{Mn}\p{Mc}\p{Cf}\p{Pc}\p{Lm}]");
+        private static readonly Lazy<CodeDomProvider> CodeDomProvider = new(() => System.CodeDom.Compiler.CodeDomProvider.CreateProvider("C#"));
+        private static readonly Regex CodeNameInvalidCharacters = new(@"[^\p{Ll}\p{Lu}\p{Lt}\p{Lo}\p{Nd}\p{Nl}\p{Mn}\p{Mc}\p{Cf}\p{Pc}\p{Lm}]");
 
-        private static readonly string[] InvalidIdentifierNames = { "System", nameof(ToString), nameof(Equals), nameof(GetHashCode) };
+        private static readonly string[] InvalidIdentifierNames = { nameof(System), nameof(ToString), nameof(Equals), nameof(GetHashCode) };
 
-        public static string GetSafeCodeName(string name)
+        public static string GetSafeCodeName(string? name)
         {
             var safeName = name ?? string.Empty;
 

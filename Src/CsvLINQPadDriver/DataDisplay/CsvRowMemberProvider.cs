@@ -13,7 +13,7 @@ namespace CsvLINQPadDriver.DataDisplay
 {
     internal class CsvRowMemberProvider : ICustomMemberProvider
     {
-        private static readonly Dictionary<Type, ProviderData> ProvidersDataCache = new Dictionary<Type, ProviderData>();
+        private static readonly Dictionary<Type, ProviderData> ProvidersDataCache = new();
 
         private readonly object _objectToDisplay;
         private readonly ProviderData _providerData;
@@ -37,12 +37,7 @@ namespace CsvLINQPadDriver.DataDisplay
         public IEnumerable<object> GetValues() =>
             _providerData.ValuesGetter(_objectToDisplay);
 
-        protected class ProviderData
-        {
-            public IList<PropertyInfo> Properties;
-            public IList<FieldInfo> Fields;
-            public Func<object, object[]> ValuesGetter;
-        }
+        protected record ProviderData(IList<PropertyInfo> Properties, IList<FieldInfo> Fields, Func<object, object[]> ValuesGetter);
 
         protected static ProviderData GetProviderData(Type objectType)
         {
@@ -50,25 +45,24 @@ namespace CsvLINQPadDriver.DataDisplay
             var properties = objectType.GetProperties().Where(IsMemberVisible).ToList();
             var fields = objectType.GetFields().Where(IsMemberVisible).ToList();
 
-            return new ProviderData
-            {
-                Properties = properties,
-                Fields = fields,
-                ValuesGetter = Lambda<Func<object, object[]>>(
+            return new ProviderData(
+                properties,
+                fields,
+                Lambda<Func<object, object[]>>(
                     NewArrayInit(typeof(object),
                         properties
                             .Select(propertyInfo => Property(TypeAs(param, objectType), propertyInfo))
                             .Concat(fields.Select(fieldInfo => Field(TypeAs(param, objectType), fieldInfo)))),
                     param)
                     .Compile()
-            };
+            );
 
             static bool IsMemberVisible(MemberInfo member) =>
                  (member.MemberType & (MemberTypes.Field | MemberTypes.Property)) != 0 &&
                  member.GetCustomAttributes(typeof(HideFromDumpAttribute), true).Length == 0;
         }
         
-        public static ICustomMemberProvider GetCsvRowMemberProvider(object objectToDisplay)
+        public static ICustomMemberProvider? GetCsvRowMemberProvider(object objectToDisplay)
         {
             var objectType = objectToDisplay.GetType();
             if (!IsSupportedType(objectType))

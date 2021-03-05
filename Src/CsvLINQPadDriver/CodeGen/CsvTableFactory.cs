@@ -11,7 +11,7 @@ namespace CsvLINQPadDriver.CodeGen
             bool isCacheEnabled,
             char csvSeparator,
             string filePath,
-            ICollection<CsvColumnInfo> propertiesInfo,
+            IEnumerable<CsvColumnInfo> propertiesInfo,
             Action<TRow> relationsInit)
             where TRow : ICsvRowBase, new() =>
             isCacheEnabled

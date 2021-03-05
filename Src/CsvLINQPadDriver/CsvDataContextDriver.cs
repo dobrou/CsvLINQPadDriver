@@ -11,13 +11,14 @@ using LINQPad.Extensibility.DataContext;
 
 namespace CsvLINQPadDriver
 {
+    // ReSharper disable once ClassNeverInstantiated.Global
     public class CsvDataContextDriver : DynamicDataContextDriver
     {
         public override string Name =>
             "CSV Context Driver";
 
         public override Version Version =>
-            Assembly.GetExecutingAssembly().GetName().Version;
+            Assembly.GetExecutingAssembly().GetName().Version!;
 
         [SuppressMessage("ReSharper", "StringLiteralTypo")]
         public override string Author =>
@@ -53,8 +54,10 @@ namespace CsvLINQPadDriver
             CsvRowMemberProvider.GetCsvRowMemberProvider(objectToWrite) ??
             base.GetCustomDisplayMemberProvider(objectToWrite);
 
-        public override IEnumerable<string> GetNamespacesToAdd(IConnectionInfo cxInfo) =>
-            new [] { typeof(StringExtensions).Namespace };
+        public override IEnumerable<string> GetNamespacesToAdd(IConnectionInfo cxInfo)
+        {
+            yield return typeof(StringExtensions).Namespace!;
+        }
 
         public override List<ExplorerItem> GetSchemaAndBuildAssembly(IConnectionInfo cxInfo, AssemblyName assemblyToBuild, ref string nameSpace, ref string typeName) =>
             SchemaBuilder.GetSchemaAndBuildAssembly(
@@ -63,7 +66,7 @@ namespace CsvLINQPadDriver
                 ref nameSpace,
                 ref typeName);
 
-        internal static void WriteToLog(string additionalInfo, Exception exception = null)
+        internal static void WriteToLog(string additionalInfo, Exception? exception = null)
         {
             const string logFileName = nameof(CsvLINQPadDriver) + ".txt";
 

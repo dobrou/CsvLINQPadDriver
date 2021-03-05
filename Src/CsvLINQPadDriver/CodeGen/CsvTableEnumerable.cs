@@ -7,7 +7,7 @@ namespace CsvLINQPadDriver.CodeGen
     internal class CsvTableEnumerable<TRow> : CsvTableBase<TRow>
         where TRow : ICsvRowBase, new()
     {
-        public CsvTableEnumerable(bool isStringInternEnabled, char csvSeparator, string filePath, ICollection<CsvColumnInfo> propertiesInfo, Action<TRow> relationsInit)
+        public CsvTableEnumerable(bool isStringInternEnabled, char csvSeparator, string filePath, IEnumerable<CsvColumnInfo> propertiesInfo, Action<TRow> relationsInit)
             : base(isStringInternEnabled, csvSeparator, filePath, propertiesInfo, relationsInit)
         {
         }

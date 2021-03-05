@@ -21,7 +21,7 @@ namespace CsvLINQPadDriver.CodeGen
         private readonly string _contextNameSpace;
         private readonly string _contextTypeName;
 
-        public CsvCSharpCodeGenerator(string contextNameSpace, string contextTypeName, ICsvDataContextDriverProperties properties)
+        private CsvCSharpCodeGenerator(string contextNameSpace, string contextTypeName, ICsvDataContextDriverProperties properties)
         {
             _contextNameSpace = contextNameSpace;
             _contextTypeName = contextTypeName;
@@ -40,7 +40,7 @@ using System.Collections.Generic;
 namespace {_contextNameSpace}
 {{
     /// <summary>CSV Data Context</summary>
-    public class {_contextTypeName} : {typeof(CsvDataContextBase).GetCodeTypeClassName()} 
+    public class {_contextTypeName} : {typeof(CsvDataContextBase).GetCodeTypeClassName()}
     {{ {string.Join(string.Empty, csvDatabase.Tables.Select(table => $@"
         /// <summary>File: {SecurityElement.Escape(table.FilePath)}</summary>
         public {typeof(CsvTableBase<>).GetCodeTypeClassName(table.GetCodeRowClassName())} {table.CodeName} {{ get; private set; }}")
@@ -50,11 +50,11 @@ namespace {_contextNameSpace}
         {{
             //Init tables data {string.Join(string.Empty, csvDatabase.Tables.Select(table => $@"
             this.{table.CodeName} = {typeof(CsvTableFactory).GetCodeTypeClassName()}.CreateTable<{table.GetCodeRowClassName()}>(
-                {(_properties.IsStringInternEnabled ? "true" : "false")}, 
-                {(_properties.IsCacheEnabled ? "true" : "false")}, 
-                {table.CsvSeparator.AsValidCSharpCode()}, 
+                {(_properties.IsStringInternEnabled ? "true" : "false")},
+                {(_properties.IsCacheEnabled ? "true" : "false")},
+                {table.CsvSeparator.AsValidCSharpCode()},
                 {table.FilePath.AsValidCSharpCode()},
-                new {typeof(CsvColumnInfoList<>).GetCodeTypeClassName(table.GetCodeRowClassName())}() {{ 
+                new {typeof(CsvColumnInfoList<>).GetCodeTypeClassName(table.GetCodeRowClassName())}() {{
                     {string.Join(string.Empty, table.Columns.Select(c => $@"{{ {c.CsvColumnIndex}, x => x.{c.CodeName} }}, "))}
                 }},
                 r => {{ {string.Join(string.Empty, table.Relations.Select(csvRelation => $@"
@@ -66,7 +66,7 @@ namespace {_contextNameSpace}
         }}
     }}//context class
 
-    //Data types {string.Join(string.Empty, csvDatabase.Tables.Select(table => GenerateTableRowDataTypeClass(table, _properties.HideRelationsFromDump)))}       
+    //Data types {string.Join(string.Empty, csvDatabase.Tables.Select(table => GenerateTableRowDataTypeClass(table, _properties.HideRelationsFromDump)))}
 }}//namespace
 ";
 
