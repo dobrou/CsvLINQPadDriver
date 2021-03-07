@@ -1,5 +1,6 @@
 ﻿using System;
 using System.CodeDom;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security;
@@ -29,11 +30,21 @@ namespace CsvLINQPadDriver.CodeGen
         }
 
         // ReSharper disable once RedundantAssignment
-        public static string GenerateCode(CsvDatabase db, ref string nameSpace, ref string typeName, ICsvDataContextDriverProperties props) =>
+        public static (string Code, IReadOnlyCollection<IGrouping<string, (string Type, string Code, string CodeName)>> CodeGroups)
+            GenerateCode(CsvDatabase db, ref string nameSpace, ref string typeName, ICsvDataContextDriverProperties props) =>
             new CsvCSharpCodeGenerator(nameSpace, typeName = DefaultContextTypeName, props).GenerateSrcFile(db);
 
-        private string GenerateSrcFile(CsvDatabase csvDatabase) =>
-                $@"using System;
+        private (string, IReadOnlyCollection<IGrouping<string, (string Type, string Code, string CodeName)>>) GenerateSrcFile(CsvDatabase csvDatabase)
+        {
+            var (_, csvTables) = csvDatabase;
+
+            var groups = csvTables
+                    .Select(table => GenerateTableRowDataTypeClass(table, _properties.HideRelationsFromDump))
+                    .GroupBy(typeCode => typeCode.Type)
+                    .ToList();
+
+            return ($@"
+using System;
 using System.Linq;
 using System.Collections.Generic;
 
@@ -41,17 +52,17 @@ namespace {_contextNameSpace}
 {{
     /// <summary>CSV Data Context</summary>
     public class {_contextTypeName} : {typeof(CsvDataContextBase).GetCodeTypeClassName()}
-    {{ {string.Join(string.Empty, csvDatabase.Tables.Select(table => $@"
+    {{ {string.Join(string.Empty, csvTables.Select(table => $@"
         /// <summary>File: {SecurityElement.Escape(table.FilePath)}</summary>
         public {typeof(CsvTableBase<>).GetCodeTypeClassName(table.GetCodeRowClassName())} {table.CodeName} {{ get; private set; }}")
                 )}
 
         public {_contextTypeName}()
         {{
-            //Init tables data {string.Join(string.Empty, csvDatabase.Tables.Select(table => $@"
+            //Init tables data {string.Join(string.Empty, csvTables.Select(table => $@"
             this.{table.CodeName} = {typeof(CsvTableFactory).GetCodeTypeClassName()}.CreateTable<{table.GetCodeRowClassName()}>(
-                {(_properties.IsStringInternEnabled ? "true" : "false")},
-                {(_properties.IsCacheEnabled ? "true" : "false")},
+                {GetBoolConst(_properties.IsStringInternEnabled)},
+                {GetBoolConst(_properties.IsCacheEnabled)},
                 {table.CsvSeparator.AsValidCSharpCode()},
                 {table.FilePath.AsValidCSharpCode()},
                 new {typeof(CsvColumnInfoList<>).GetCodeTypeClassName(table.GetCodeRowClassName())}() {{
@@ -66,12 +77,16 @@ namespace {_contextNameSpace}
         }}
     }}//context class
 
-    //Data types {string.Join(string.Empty, csvDatabase.Tables.Select(table => GenerateTableRowDataTypeClass(table, _properties.HideRelationsFromDump)))}
+    //Data types {string.Join(string.Empty, groups.Select(grouping => grouping.First().Code))}
 }}//namespace
-";
+", groups);
 
-        private static string GenerateTableRowDataTypeClass(CsvTable table, bool hideRelationsFromDump) =>
-            $@"
+            static string GetBoolConst(bool val) =>
+                val ? "true" : "false";
+        }
+
+        private static (string Type, string Code, string CodeName) GenerateTableRowDataTypeClass(CsvTable table, bool hideRelationsFromDump) =>
+            (table.GetCodeRowClassName(), $@"
     public class {table.GetCodeRowClassName()} : {typeof(ICsvRowBase).GetCodeTypeClassName()}
     {{{string.Join(string.Empty, table.Columns.Select(c => $@"
         public string {c.CodeName} {{ get; set; }} ")
@@ -80,16 +95,23 @@ namespace {_contextNameSpace}
         [{typeof(HideFromDumpAttribute).GetCodeTypeClassName()}]" : string.Empty)}
         public IEnumerable<{csvRelation.TargetTable.GetCodeRowClassName()}> {csvRelation.CodeName} {{ get; set; }} ")
             )}
-    }} ";
+    }} ", table.CodeName!);
     }
 
     internal static class CsvCSharpCodeGeneratorExtensions
     {
-        public static string GetCodeRowClassName(this CsvTable table) =>
-            $"T{table.CodeName}";
+        public static string GetCodeRowClassName(this CsvTable table)
+        {
+            return ToClassName(table.ClassName);
+
+            static string ToClassName(string? name) =>
+                string.IsNullOrEmpty(name)
+                    ? throw new ArgumentNullException(nameof(name), "Name is null or empty")
+                    : $"T{name}";
+        }
 
         public static string GetCodeTypeClassName(this Type type, params string[] genericParameters) =>
-            type!.FullName!.Split('`')[0] + (genericParameters.Any() ? $"<{string.Join(",", genericParameters)}>" : string.Empty);
+            type.FullName!.Split('`').First() + (genericParameters.Any() ? $"<{string.Join(",", genericParameters)}>" : string.Empty);
 
         public static string AsValidCSharpCode<T>(this T input)
         {

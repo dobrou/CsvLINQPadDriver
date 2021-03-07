@@ -59,6 +59,8 @@ namespace CsvLINQPadDriver.DataModel
 
             IEnumerable<CsvTable> CreateTables()
             {
+                var tableCodeNames = new Dictionary<string, string>();
+
                 foreach (var file in files.Where(File.Exists))
                 {
                     var csvSeparator = _csvDataContextDriverProperties.CsvSeparatorChar ?? FileUtils.CsvDetectSeparator(file);
@@ -70,25 +72,41 @@ namespace CsvLINQPadDriver.DataModel
 
                     var fileName = Path.GetFileName(file);
                     var fileDir = (Path.GetDirectoryName($"{file.Remove(0, baseDir.Length)}x") ?? string.Empty).TrimStart(Path.DirectorySeparatorChar);
+                    var codeName = CodeGenHelper.GetSafeCodeName(Path.GetFileNameWithoutExtension(fileName) + (string.IsNullOrWhiteSpace(fileDir) ? string.Empty : $"_{fileDir}"));
 
-                    yield return new CsvTable
-                    (
-                        file,
-                        csvSeparator,
-                        FileUtils.CsvReadHeader(file, csvSeparator)
-                            .Select((value, index) => (value, index))
-                            .Select(col => new CsvColumn(col.value ?? string.Empty, col.index)
-                                    {
-                                        CodeName = CodeGenHelper.GetSafeCodeName(col.value),
-                                        DisplayName = string.Empty
-                                    }
-                            ).ToList(),
-                        new List<CsvRelation>()
-                    )
+                    var columns = FileUtils.CsvReadHeader(file, csvSeparator)
+                        .Select((value, index) => (value, index))
+                        .Select(col => new CsvColumn(col.value ?? string.Empty, col.index)
+                        {
+                            CodeName = CodeGenHelper.GetSafeCodeName(col.value),
+                            DisplayName = string.Empty
+                        })
+                        .ToList();
+
+                    yield return new CsvTable(file, csvSeparator, columns, new List<CsvRelation>())
                     {
-                        CodeName    = CodeGenHelper.GetSafeCodeName(Path.GetFileNameWithoutExtension(fileName) + (string.IsNullOrWhiteSpace(fileDir) ? string.Empty : $"_{fileDir}")),
+                        CodeName    = codeName,
+                        ClassName   = GetClassName(),
                         DisplayName = $"{fileName}{(string.IsNullOrWhiteSpace(fileDir) ? string.Empty : $" in {fileDir}")} {FileUtils.GetHumanizedFileSize(file)}"
                     };
+
+                    string? GetClassName()
+                    {
+                        if (!_csvDataContextDriverProperties.UseSingleClassForSameFiles)
+                        {
+                            return null;
+                        }
+
+                        var key = string.Join(string.Empty, columns.Select(c => $"{c.CsvColumnName}\t{c.CsvColumnIndex}\n"));
+
+                        if (!tableCodeNames.TryGetValue(key, out var className))
+                        {
+                            className = codeName;
+                            tableCodeNames.Add(key, className);
+                        }
+
+                        return className;
+                    }
                 }
             }
 

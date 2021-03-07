@@ -24,7 +24,12 @@ namespace CsvLINQPadDriver
         char? CsvSeparatorChar { get; }
 
         /// <summary>
-        /// If <c>true</c> - relations between CSV files/tables will be detected and created. (based on files and column names)
+        /// If <c>true</c> - generates single class for similar CSV files.
+        /// </summary>
+        bool UseSingleClassForSameFiles { get; set; }
+
+        /// <summary>
+        /// If <c>true</c> - relations between CSV files/tables will be detected and created. (based on files and column names).
         /// </summary>
         bool DetectRelations { get; set; }
 

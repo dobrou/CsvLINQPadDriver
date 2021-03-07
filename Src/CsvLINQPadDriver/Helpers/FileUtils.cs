@@ -89,8 +89,8 @@ namespace CsvLINQPadDriver.Helpers
 
                 var headerRow = csvParser.Record;
 
-                // 0 or 1 column.
-                if (headerRow.Length <= 1)
+                // No columns.
+                if (!headerRow.Any())
                 {
                     CsvDataContextDriver.WriteToLog($"{header} CSV header had no columns");
 

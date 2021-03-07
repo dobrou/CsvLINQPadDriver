@@ -7,10 +7,10 @@ CsvLINQPadDriver For LINQPad 6
 
 CsvLINQPadDriver is LINQPad 6 data context dynamic driver for querying CSV files.
 
-You can query data in CSV files with LINQ, just like it would be regular database. No need to write custom data model, mappings etc.
-
-Driver automatically generates new data types for every CSV file with corresponding properties and mappings for all columns.
-Based on column and file names, possible relations between CSV tables are detected and generated.
+- You can query data in CSV files with LINQ, just like it would be regular database. No need to write custom data model, mappings, etc.
+- Driver automatically generates new data types for every CSV file with corresponding properties and mappings for all columns.
+- Based on column and file names, possible relations between CSV tables are detected and generated.
+- Single class generation allows to join similar files and query over them. Might not work well for files with relations.
 
 Website
 --
@@ -154,6 +154,7 @@ Known Issues
 --
 - Some strange Unicode characters in column names may cause errors in generated data context source code.
 - Writing changed objects back to CSV is not directly supported, there is no `.SubmitChanges()` . But you can use LINQPad's `Util.WriteCsv`.
+- Similar files single class generation might not work well for files with relations.
 
 Author
 --

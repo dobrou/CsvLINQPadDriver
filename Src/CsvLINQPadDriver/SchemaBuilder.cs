@@ -18,30 +18,51 @@ namespace CsvLINQPadDriver
         {
             var csvDatabase = CsvDataModelGenerator.CreateModel(csvDataContextDriverProperties);
 
-            var code = CsvCSharpCodeGenerator.GenerateCode(csvDatabase, ref nameSpace, ref typeName, csvDataContextDriverProperties);
+            var (code, tableCodeGroups) = CsvCSharpCodeGenerator.GenerateCode(csvDatabase, ref nameSpace, ref typeName, csvDataContextDriverProperties);
 
             var compileErrors = BuildAssembly(code, assemblyToBuild);
 
             var schema = GetSchema(csvDatabase);
 
-            var hasCompileErrors = compileErrors.Any();
+            var hasCompilationErrors = compileErrors.Any();
 
-            if (hasCompileErrors || csvDataContextDriverProperties.DebugInfo)
+            var index = 0;
+
+            if (hasCompilationErrors || csvDataContextDriverProperties.DebugInfo)
             {
-                schema.Insert(0, new ExplorerItem("Context Source Code", ExplorerItemKind.Schema, ExplorerIcon.Schema)
+                schema.Insert(index++, new ExplorerItem("Data context source code", ExplorerItemKind.Schema, ExplorerIcon.Schema)
                 {
-                    ToolTipText = "Data Context source code. Drag&drop to text window.",
+                    ToolTipText = "Drag&drop context source code to text window",
                     DragText = code
                 });
             }
 
-            if (hasCompileErrors)
+            if (hasCompilationErrors)
             {
-                schema.Insert(0, new ExplorerItem("Context Compile ERROR", ExplorerItemKind.Schema, ExplorerIcon.Box)
+                schema.Insert(0, new ExplorerItem("Data context compilation failed", ExplorerItemKind.Schema, ExplorerIcon.Box)
                 {
-                    ToolTipText = "Data context compile failed. Drag&Drop error messages to text window to see them",
+                    ToolTipText = "Drag&drop data context compilation errors to text window",
                     DragText = string.Join(Environment.NewLine, compileErrors)
                 });
+            }
+            else
+            {
+                foreach (var tableCodeGroup in tableCodeGroups.Where(codeGroup => codeGroup.Count() > 1))
+                {
+                    var codeNames = tableCodeGroup.Select(g => g.CodeName).ToList();
+
+                    var total = $"({codeNames.Count} total)";
+
+                    schema.Insert(index++, new ExplorerItem($"{codeNames.First()} similar files {total} joined data", ExplorerItemKind.Schema, ExplorerIcon.View)
+                    {
+                        ToolTipText = $"Drag&drop similar files {total} joined data to text window{Environment.NewLine}{Environment.NewLine}" +
+                                      $"{string.Join(Environment.NewLine, codeNames.Count <= 3 ? codeNames : codeNames.Take(2).Concat(new []{ "..." }).Concat(codeNames.Skip(codeNames.Count-1)))}",
+                        DragText = $@"new []
+{{
+{string.Join(Environment.NewLine, codeNames.Select(n => $"\t{n},"))}
+}}.SelectMany(_ => _)"
+                    });
+                }
             }
 
             if (!csvDatabase.Tables.Any())

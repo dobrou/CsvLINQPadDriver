@@ -35,7 +35,7 @@
             HorizontalScrollBarVisibility="Auto"
             VerticalScrollBarVisibility="Auto"
             Text="{Binding Files, UpdateSourceTrigger=PropertyChanged}" 
-            ToolTip="CSV files. Drag&amp;drop (use Ctrl to add files) or type one file per line. Supports mask '*.csv' or recursive '**.csv'."
+            ToolTip="CSV files. Drag&amp;drop (use Ctrl to add files) or type one file per line. Supports mask '*.csv' or recursive '**.csv'"
             AllowDrop="True"
             PreviewDragEnter="FilesTextBox_DragEnter"
             PreviewDragOver="FilesTextBox_DragEnter"
@@ -48,23 +48,24 @@
             <StackPanel Margin="2" Height="Auto">
                 <DockPanel>
                     <Label Padding="0,0,0,3" Content="CSV separator (autodetect if empty) "/>
-                    <TextBox MaxLength="6" MaxLines="1" Text="{Binding CsvSeparator}" ToolTip="Character used to separate columns in csv file. If empty, separator is auto-detected for each file."/>
+                    <TextBox MaxLength="6" MaxLines="1" Text="{Binding CsvSeparator}" ToolTip="Character used to separate columns in CSV file. If empty, separator is auto-detected for each file"/>
                 </DockPanel>
-                <CheckBox IsChecked="{Binding IgnoreInvalidFiles}" ToolTip="If checked, files with suspicious format will be ignored. (Only one column, variable count of columns in rows...)">Ignore files with invalid format</CheckBox>
+                <CheckBox IsChecked="{Binding IgnoreInvalidFiles}" ToolTip="Ignore files with invalid format">Ignore files with invalid format</CheckBox>
             </StackPanel>
             </GroupBox>
 
             <GroupBox Header="Memory">
                 <StackPanel Margin="2" Height="Auto">
-                    <CheckBox IsChecked="{Binding IsCacheEnabled}" ToolTip="If checked - Parsed rows from file are cached. This cache survives multiple query runs, even when query is changed. Cache is cleared as soon as LINQPad clears Application Domain of query. If unchecked - disable cache. Multiple enumerations of file content results in multiple reads and parsing of file. Can be significantly slower for complex queries. Significantly reduces memory usage. Useful when reading very large files.">Cache CSV data in memory</CheckBox>
-                    <CheckBox IsChecked="{Binding IsStringInternEnabled}" ToolTip="If checked, all string values are interned. Can significantly reduce memory consumption, when values in CSV are repeated many times.">String interning</CheckBox>
+                    <CheckBox IsChecked="{Binding IsCacheEnabled}" ToolTip="Cache parsed rows. This cache survives multiple query runs, even when query is changed">Cache CSV data in memory</CheckBox>
+                    <CheckBox IsChecked="{Binding IsStringInternEnabled}" ToolTip="Intern strings. Significantly reduce memory consumption when CSV contains repeatable values">Intern CSV strings</CheckBox>
                 </StackPanel>
             </GroupBox>
-            <CheckBox IsChecked="{Binding DetectRelations}" ToolTip="If checked, relations between csv files/tables will be detected and created. (Based on files and column names.)">Detect relations</CheckBox>
-            <CheckBox IsChecked="{Binding HideRelationsFromDump}"  IsEnabled="{Binding DetectRelations}" ToolTip="If checked - LINQPad will not show relations content in .Dump(). This prevents loading too many data." Margin="16,0,0,0">Hide relations from .Dump()</CheckBox>
-            <CheckBox IsChecked="{Binding DebugInfo}" ToolTip="Show/hide additional driver debug info.">Debug info</CheckBox>
+            <CheckBox IsChecked="{Binding UseSingleClassForSameFiles}" ToolTip="Single class generation allows to join similar files and query over them. Might not work well for files with relations">Generate single class for similar files</CheckBox>
+            <CheckBox IsChecked="{Binding DetectRelations}" ToolTip="Detect relations between CSV files/tables (based on files and column names)">Detect relations</CheckBox>
+            <CheckBox IsChecked="{Binding HideRelationsFromDump}" IsEnabled="{Binding DetectRelations}" ToolTip="LINQPad will not show relations content in .Dump(). This prevents from loading too many data" Margin="16,0,0,0">Hide relations from .Dump()</CheckBox>
+            <CheckBox IsChecked="{Binding DebugInfo}" ToolTip="Show additional driver debug info">Debug info</CheckBox>
             <Separator/>
-            <CheckBox IsChecked="{Binding Persist}">Remember this connection</CheckBox>
+            <CheckBox IsChecked="{Binding Persist}" ToolTip="Persist connection">Remember this connection</CheckBox>
             <StackPanel Margin="0,8,0,0" Orientation="Horizontal" HorizontalAlignment="Right">
                 <Button Name="OkButton" Content="OK" Margin="5,0,0,0" Padding="8,3" Width="85" IsDefault="True" Click="OkButton_Click" />
                 <Button Content="Cancel" Margin="5,0,0,0" Padding="8,3" Width="85" IsCancel="True" />

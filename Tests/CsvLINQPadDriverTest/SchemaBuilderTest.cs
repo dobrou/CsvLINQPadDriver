@@ -20,7 +20,7 @@ namespace CsvLINQPadDriverTest
     {
         [Test]
         [TestCaseSource(nameof(CsvDataContextDriverProperties))]
-        public void GetSchemaAndBuildAssembly_CreatedAssembly_AsExpected((ICsvDataContextDriverProperties, string) testData)
+        public void GetSchemaAndBuildAssembly_CreatedAssembly_AsExpected((ICsvDataContextDriverProperties, int) testData)
         {
             var (properties, id) = testData;
 
@@ -80,7 +80,7 @@ x");
             contextType.Should().NotBeNull("ContextType in assembly");
 
             // Check generated context runtime.
-            var contextInstance = contextType!.GetConstructor(new Type[] {})!
+            var contextInstance = contextType!.GetConstructor(new Type[] {})
                 .Should()
                 .NotBeNull()
                 .And
@@ -97,7 +97,7 @@ x");
                 str.Split(",");
         }
 
-        private static IEnumerable<(ICsvDataContextDriverProperties, string)> CsvDataContextDriverProperties()
+        private static IEnumerable<(ICsvDataContextDriverProperties, int)> CsvDataContextDriverProperties()
         {
             var files = Path.Combine(Directory.GetCurrentDirectory(), "*.csv");
             var parsedFiles = new[] { files };
@@ -107,24 +107,26 @@ x");
                 Files = files,
                 ParsedFiles = parsedFiles,
                 DebugInfo = true,
+                UseSingleClassForSameFiles = true,
                 DetectRelations = true,
                 IgnoreInvalidFiles = true,
                 IsCacheEnabled = true,
                 HideRelationsFromDump = true,
                 Persist = true
-            }, "1");
+            }, 1);
 
             yield return (new PropertiesMock
             {
                 Files = files,
                 ParsedFiles = parsedFiles,
                 DebugInfo = true,
+                UseSingleClassForSameFiles = true,
                 DetectRelations = true,
                 IgnoreInvalidFiles = false,
                 IsCacheEnabled = false,
                 HideRelationsFromDump = false,
                 Persist = false
-            }, "2");
+            }, 2);
         }
 
         private class PropertiesMock : ICsvDataContextDriverProperties
@@ -134,6 +136,7 @@ x");
             public IEnumerable<string> ParsedFiles { get; init; } = null!;
             public string CsvSeparator { get; set; } = null!;
             public char? CsvSeparatorChar { get; } = null;
+            public bool UseSingleClassForSameFiles { get; set; }
             public bool DetectRelations { get; set; }
             public bool HideRelationsFromDump { get; set; }
             public bool DebugInfo { get; set; }

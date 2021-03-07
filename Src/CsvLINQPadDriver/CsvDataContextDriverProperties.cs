@@ -72,6 +72,12 @@ namespace CsvLINQPadDriver
             }
         }
 
+        public bool UseSingleClassForSameFiles
+        {
+            get => GetValue(true);
+            set => SetValue(value);
+        }
+
         public bool DetectRelations
         {
             get => GetValue(true);
