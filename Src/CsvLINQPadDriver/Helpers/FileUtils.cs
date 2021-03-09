@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -179,18 +180,18 @@ namespace CsvLINQPadDriver.Helpers
 
         public static string GetLongestCommonPrefixPath(IEnumerable<string> paths)
         {
-            var pathsValid = GetFiles(paths).ToArray();
+            var pathsValid = paths.GetFilesOnly().ToImmutableList();
 
             // Get longest common path prefix.
             var filePaths = pathsValid.FirstOrDefault()?.Split(Path.DirectorySeparatorChar) ?? new string[0];
 
             return Enumerable.Range(1, filePaths.Length)
-                .Select(i => string.Join(Path.DirectorySeparatorChar, filePaths.Take(i).ToArray()))
+                .Select(i => string.Join(Path.DirectorySeparatorChar, filePaths.Take(i).ToImmutableList()))
                 .LastOrDefault(prefix => pathsValid.All(path => path.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))) ?? string.Empty;
         }
 
         public static IEnumerable<string> EnumFiles(IEnumerable<string> paths) =>
-            GetFiles(paths)
+            GetFilesOnly(paths)
                 .SelectMany(EnumFiles)
                 .Distinct(StringComparer.Ordinal);
 
@@ -221,12 +222,13 @@ namespace CsvLINQPadDriver.Helpers
             return new CsvParser(new StreamReader(fileName, Encoding.Default, true, csvConfiguration.BufferSize / sizeof(char)), csvConfiguration);
         }
 
-        private static IEnumerable<string> GetFiles(IEnumerable<string> paths) =>
+        public static IEnumerable<string> GetFilesOnly(this IEnumerable<string> paths) =>
             paths
+                .Select(p => p.Trim())
                 .Where(p => !p.StartsWith("#"))
                 .Where(p => !string.IsNullOrWhiteSpace(p));
 
-        private static string[] EnumFiles(string path)
+        private static IEnumerable<string> EnumFiles(string path)
         {
             try
             {
@@ -253,18 +255,18 @@ namespace CsvLINQPadDriver.Helpers
 
                 if (!Directory.Exists(baseDir))
                 {
-                    return new string[0];
+                    return Enumerable.Empty<string>();
                 }
 
                 return Directory
                     .EnumerateFiles(baseDir, file, file.Contains("**") ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly)
-                    .ToArray();
+                    .ToImmutableList();
             }
             catch(Exception exception)
             {
                 CsvDataContextDriver.WriteToLog($"File enumeration failed for {path}", exception);
 
-                return new string[0];
+                return Enumerable.Empty<string>();
             }
         }
     }

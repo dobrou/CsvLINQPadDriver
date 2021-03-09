@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Reflection;
 
@@ -42,8 +43,8 @@ namespace CsvLINQPadDriver.DataDisplay
         protected static ProviderData GetProviderData(Type objectType)
         {
             var param = Parameter(typeof(object));
-            var properties = objectType.GetProperties().Where(IsMemberVisible).ToList();
-            var fields = objectType.GetFields().Where(IsMemberVisible).ToList();
+            var properties = objectType.GetProperties().Where(IsMemberVisible).ToImmutableList();
+            var fields = objectType.GetFields().Where(IsMemberVisible).ToImmutableList();
 
             return new ProviderData(
                 properties,
@@ -61,7 +62,7 @@ namespace CsvLINQPadDriver.DataDisplay
                  (member.MemberType & (MemberTypes.Field | MemberTypes.Property)) != 0 &&
                  member.GetCustomAttributes(typeof(HideFromDumpAttribute), true).Length == 0;
         }
-        
+
         public static ICustomMemberProvider? GetCsvRowMemberProvider(object objectToDisplay)
         {
             var objectType = objectToDisplay.GetType();

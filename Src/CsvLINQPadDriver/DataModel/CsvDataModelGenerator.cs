@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -27,12 +28,11 @@ namespace CsvLINQPadDriver.DataModel
         {
             var files = FileUtils
                 .EnumFiles(_csvDataContextDriverProperties.ParsedFiles)
-                .Select(f => f.Trim())
-                .ToArray();
+                .ToImmutableList();
 
             var baseDir = FileUtils.GetLongestCommonPrefixPath(files);
 
-            var csvDatabase = new CsvDatabase(baseDir, CreateTables().ToList());
+            var csvDatabase = new CsvDatabase(baseDir, CreateTables().ToImmutableList());
 
             MakeCodeNamesUnique(csvDatabase.Tables);
 
@@ -81,7 +81,7 @@ namespace CsvLINQPadDriver.DataModel
                             CodeName = CodeGenHelper.GetSafeCodeName(col.value),
                             DisplayName = string.Empty
                         })
-                        .ToList();
+                        .ToImmutableList();
 
                     yield return new CsvTable(file, csvSeparator, columns, new List<CsvRelation>())
                     {

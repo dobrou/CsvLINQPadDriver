@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Reflection;
 
@@ -49,9 +50,9 @@ namespace CsvLINQPadDriver
             {
                 foreach (var tableCodeGroup in tableCodeGroups.Where(codeGroup => codeGroup.Count() > 1))
                 {
-                    var codeNames = tableCodeGroup.Select(g => g.CodeName).ToList();
+                    var codeNames = tableCodeGroup.Select(g => g.CodeName).ToImmutableList();
 
-                    var total = $"({codeNames.Count} total)";
+                    var total = $"({codeNames.Count} of {csvDataContextDriverProperties.ParsedFiles.Count()})";
 
                     schema.Insert(index++, new ExplorerItem($"{codeNames.First()} similar files {total} joined data", ExplorerItemKind.Schema, ExplorerIcon.View)
                     {

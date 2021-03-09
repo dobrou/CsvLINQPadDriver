@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -52,7 +53,7 @@ x");
                 contextAssemblyName,
                 ref nameSpace,
                 ref contextTypeName
-            ).ToList();
+            ).ToImmutableList();
 
             // Debug info to console.
             explorerItems.ForEach(item => Console.WriteLine(item.DragText));
@@ -60,7 +61,7 @@ x");
             // Check returned explorer tree.
             explorerItems.Should().HaveCount(3);
 
-            explorerItems = explorerItems.Where(i => i.Kind == ExplorerItemKind.QueryableObject).ToList();
+            explorerItems = explorerItems.Where(i => i.Kind == ExplorerItemKind.QueryableObject).ToImmutableList();
 
             explorerItems.Select(i => i.DragText)
                 .Should()

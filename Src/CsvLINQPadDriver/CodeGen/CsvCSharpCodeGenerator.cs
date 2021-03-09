@@ -1,6 +1,7 @@
 ﻿using System;
 using System.CodeDom;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Security;
@@ -41,7 +42,7 @@ namespace CsvLINQPadDriver.CodeGen
             var groups = csvTables
                     .Select(table => GenerateTableRowDataTypeClass(table, _properties.HideRelationsFromDump))
                     .GroupBy(typeCode => typeCode.Type)
-                    .ToList();
+                    .ToImmutableList();
 
             return ($@"
 using System;

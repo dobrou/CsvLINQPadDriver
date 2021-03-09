@@ -1,13 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 
-using CsvLINQPadDriver.DataDisplay;
-using CsvLINQPadDriver.Helpers;
+using Humanizer;
 
 using LINQPad;
 using LINQPad.Extensibility.DataContext;
+
+using CsvLINQPadDriver.DataDisplay;
+using CsvLINQPadDriver.Helpers;
 
 namespace CsvLINQPadDriver
 {
@@ -24,8 +27,12 @@ namespace CsvLINQPadDriver
         public override string Author =>
             "Martin Dobroucký (dobrou@gmail.com), Ivan Ivon (ivan.ivon@gmail.com)";
 
-        public override string GetConnectionDescription(IConnectionInfo cxInfo) =>
-            FileUtils.GetLongestCommonPrefixPath(new CsvDataContextDriverProperties(cxInfo).ParsedFiles);
+        public override string GetConnectionDescription(IConnectionInfo cxInfo)
+        {
+            var parsedFiles = new CsvDataContextDriverProperties(cxInfo).ParsedFiles.ToImmutableList();
+            var parsedFilesCount = parsedFiles.Count;
+            return $"{FileUtils.GetLongestCommonPrefixPath(parsedFiles)}{(parsedFilesCount > 1 ? $" ({"file".ToQuantity(parsedFilesCount)})" : string.Empty)}";
+        }
 
         public override bool ShowConnectionDialog(IConnectionInfo cxInfo, ConnectionDialogOptions connectionDialogOptions)
         {
@@ -56,7 +63,7 @@ namespace CsvLINQPadDriver
 
         public override IEnumerable<string> GetNamespacesToAdd(IConnectionInfo cxInfo)
         {
-            yield return typeof(StringExtensions).Namespace!;
+            yield return typeof(Helpers.StringExtensions).Namespace!;
         }
 
         public override List<ExplorerItem> GetSchemaAndBuildAssembly(IConnectionInfo cxInfo, AssemblyName assemblyToBuild, ref string nameSpace, ref string typeName) =>
