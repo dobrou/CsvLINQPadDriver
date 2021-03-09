@@ -36,7 +36,6 @@ namespace CsvLINQPadDriver
 
         public IEnumerable<string> ParsedFiles =>
             Regex.Split(Files, @"[\r\n]+")
-                .Select(fileName => fileName.Trim())
                 .GetFilesOnly()
                 .Distinct(StringComparer.InvariantCultureIgnoreCase);
 

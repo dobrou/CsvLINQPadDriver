@@ -224,9 +224,9 @@ namespace CsvLINQPadDriver.Helpers
 
         public static IEnumerable<string> GetFilesOnly(this IEnumerable<string> paths) =>
             paths
-                .Select(p => p.Trim())
-                .Where(p => !p.StartsWith("#"))
-                .Where(p => !string.IsNullOrWhiteSpace(p));
+                .Select(path => path.Trim())
+                .Where(path => !path.StartsWith("#"))
+                .Where(path => !string.IsNullOrWhiteSpace(path));
 
         private static IEnumerable<string> EnumFiles(string path)
         {

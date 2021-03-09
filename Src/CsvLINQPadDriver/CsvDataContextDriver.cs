@@ -31,7 +31,16 @@ namespace CsvLINQPadDriver
         {
             var parsedFiles = new CsvDataContextDriverProperties(cxInfo).ParsedFiles.ToImmutableList();
             var parsedFilesCount = parsedFiles.Count;
-            return $"{FileUtils.GetLongestCommonPrefixPath(parsedFiles)}{(parsedFilesCount > 1 ? $" ({"file".ToQuantity(parsedFilesCount)})" : string.Empty)}";
+
+            return $"{FileUtils.GetLongestCommonPrefixPath(parsedFiles)}{GetFilesCountString()}";
+
+            string GetFilesCountString() =>
+                parsedFilesCount switch
+                {
+                    0 => "(no files)",
+                    1 => string.Empty,
+                    _ => $" ({"file".ToQuantity(parsedFilesCount)})"
+                };
         }
 
         public override bool ShowConnectionDialog(IConnectionInfo cxInfo, ConnectionDialogOptions connectionDialogOptions)

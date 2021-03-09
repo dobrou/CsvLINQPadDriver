@@ -24,11 +24,11 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/i2van/CsvLINQPadDriver</RepositoryUrl>
     <PackageIcon>NuGetIcon.png</PackageIcon>
-    <PackageReleaseNotes>Display number of files loaded.</PackageReleaseNotes>
+    <PackageReleaseNotes>Display no files text when no files loaded.</PackageReleaseNotes>
     <Copyright>Copyright © Martin Dobroucký 2013-2014, Ivan Ivon 2021</Copyright>
-    <AssemblyVersion>6.5.1.0</AssemblyVersion>
-    <FileVersion>6.5.1.0</FileVersion>
-    <Version>6.5.1</Version>
+    <AssemblyVersion>6.5.2.0</AssemblyVersion>
+    <FileVersion>6.5.2.0</FileVersion>
+    <Version>6.5.2</Version>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <ApplicationIcon>Connection.ico</ApplicationIcon>
   </PropertyGroup>
