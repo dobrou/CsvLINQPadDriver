@@ -52,7 +52,7 @@ namespace CsvLINQPadDriver
                 {
                     var codeNames = tableCodeGroup.Select(g => g.CodeName).ToImmutableList();
 
-                    var total = $"({codeNames.Count} of {csvDataContextDriverProperties.ParsedFiles.Count()})";
+                    var total = $"({codeNames.Count} of {csvDatabase.Files.Count})";
 
                     schema.Insert(index++, new ExplorerItem($"{codeNames.First()} similar files {total} joined data", ExplorerItemKind.Schema, ExplorerIcon.View)
                     {

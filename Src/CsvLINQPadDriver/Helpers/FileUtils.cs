@@ -193,6 +193,7 @@ namespace CsvLINQPadDriver.Helpers
         public static IEnumerable<string> EnumFiles(IEnumerable<string> paths) =>
             GetFilesOnly(paths)
                 .SelectMany(EnumFiles)
+                .ToImmutableList()
                 .Distinct(StringComparer.Ordinal);
 
         public static string GetHumanizedFileSize(string fileName)
@@ -259,8 +260,7 @@ namespace CsvLINQPadDriver.Helpers
                 }
 
                 return Directory
-                    .EnumerateFiles(baseDir, file, file.Contains("**") ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly)
-                    .ToImmutableList();
+                    .EnumerateFiles(baseDir, file, file.Contains("**") ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
             }
             catch(Exception exception)
             {

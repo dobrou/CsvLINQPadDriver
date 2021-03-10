@@ -37,7 +37,7 @@ namespace CsvLINQPadDriver.CodeGen
 
         private (string, IReadOnlyCollection<IGrouping<string, (string Type, string Code, string CodeName)>>) GenerateSrcFile(CsvDatabase csvDatabase)
         {
-            var (_, csvTables) = csvDatabase;
+            var csvTables = csvDatabase.Tables;
 
             var groups = csvTables
                     .Select(table => GenerateTableRowDataTypeClass(table, _properties.HideRelationsFromDump))

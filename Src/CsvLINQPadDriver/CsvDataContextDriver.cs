@@ -29,7 +29,7 @@ namespace CsvLINQPadDriver
 
         public override string GetConnectionDescription(IConnectionInfo cxInfo)
         {
-            var parsedFiles = new CsvDataContextDriverProperties(cxInfo).ParsedFiles.ToImmutableList();
+            var parsedFiles = FileUtils.EnumFiles(new CsvDataContextDriverProperties(cxInfo).ParsedFiles).ToImmutableList();
             var parsedFilesCount = parsedFiles.Count;
 
             return $"{FileUtils.GetLongestCommonPrefixPath(parsedFiles)}{GetFilesCountString()}";

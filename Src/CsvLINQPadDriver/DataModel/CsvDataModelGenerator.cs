@@ -32,7 +32,7 @@ namespace CsvLINQPadDriver.DataModel
 
             var baseDir = FileUtils.GetLongestCommonPrefixPath(files);
 
-            var csvDatabase = new CsvDatabase(baseDir, CreateTables().ToImmutableList());
+            var csvDatabase = new CsvDatabase(baseDir, CreateTables().ToImmutableList(), files);
 
             MakeCodeNamesUnique(csvDatabase.Tables);
 
@@ -181,7 +181,7 @@ namespace CsvLINQPadDriver.DataModel
         private static void DetectRelations(CsvDatabase csvDatabase)
         {
             // Limit maximum relations count.
-            var (_, csvTables) = csvDatabase;
+            var csvTables = csvDatabase.Tables;
             var maximumRelationsCount = csvTables.Count * csvTables.Count;
 
             var stringToCsvTableColumnLookup = (
