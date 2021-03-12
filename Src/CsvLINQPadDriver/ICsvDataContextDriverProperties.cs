@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
 namespace CsvLINQPadDriver
@@ -27,6 +28,11 @@ namespace CsvLINQPadDriver
         /// If <c>true</c> - generates single class for similar CSV files.
         /// </summary>
         bool UseSingleClassForSameFiles { get; set; }
+
+        /// <summary>
+        /// Generated class methods string comparison.
+        /// </summary>
+        StringComparison StringComparison { get; set; }
 
         /// <summary>
         /// If <c>true</c> - relations between CSV files/tables will be detected and created. (based on files and column names).

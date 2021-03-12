@@ -105,7 +105,7 @@ namespace CsvLINQPadDriver
                                 new ExplorerItem(column.DisplayName, ExplorerItemKind.Property, ExplorerIcon.Column)
                                 {
                                     DragText = column.CodeName,
-                                    ToolTipText = $"{column.CsvColumnIndex + 1}:{column.CsvColumnName}"
+                                    ToolTipText = $"{column.Index}:{column.Name}"
                                 }
                             ).Concat(
                                 table.Relations.Select(relation =>

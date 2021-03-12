@@ -52,6 +52,7 @@ namespace CsvLINQPadDriver.DataDisplay
                 Lambda<Func<object, object[]>>(
                     NewArrayInit(typeof(object),
                         properties
+                            .Where(propertyInfo => propertyInfo.GetIndexParameters().Length == 0)
                             .Select(propertyInfo => Property(TypeAs(param, objectType), propertyInfo))
                             .Concat(fields.Select(fieldInfo => Field(TypeAs(param, objectType), fieldInfo)))),
                     param)

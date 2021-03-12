@@ -59,6 +59,9 @@ namespace CsvLINQPadDriver.Helpers
             }
         }
 
+        public static string GetDefaultDrive() =>
+            Path.GetPathRoot(Environment.SystemDirectory)!.ToLower();
+
         public static IEnumerable<string> CsvReadHeader(string fileName, char csvSeparator)
         {
             using var csvParser = CreateCsvParser(fileName, csvSeparator);
@@ -193,8 +196,8 @@ namespace CsvLINQPadDriver.Helpers
         public static IEnumerable<string> EnumFiles(IEnumerable<string> paths) =>
             GetFilesOnly(paths)
                 .SelectMany(EnumFiles)
-                .ToImmutableList()
-                .Distinct(StringComparer.Ordinal);
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToImmutableList();
 
         public static string GetHumanizedFileSize(string fileName)
         {

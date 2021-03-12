@@ -1,6 +1,7 @@
 ﻿<Window x:Class="CsvLINQPadDriver.ConnectionDialog"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:system="clr-namespace:System;assembly=System.Runtime"
     Title="CSV Files Connection"
     Icon="Connection.ico"
     Width="640"
@@ -14,6 +15,10 @@
             Command="ApplicationCommands.Paste"
             Executed="PasteAndGoCommandBinding_OnExecuted"
             CanExecute="PasteAndGoCommandBinding_OnCanExecute"/>
+        <CommandBinding
+            Command="ApplicationCommands.Help" 
+            Executed="Help_OnExecuted"
+            CanExecute="Help_OnCanExecute"/>
     </Window.CommandBindings>
     <Window.InputBindings>
         <KeyBinding
@@ -28,7 +33,7 @@
         </Grid.RowDefinitions>
 
         <DockPanel Grid.Row="0">
-            <Label Padding="0,0,0,3" Focusable="False" Content="CSV files. Drag&amp;drop (use Ctrl to add files) or type one file/directory per line" DockPanel.Dock="Top" />
+            <Label Padding="0,0,0,3" Focusable="False" Content="CSV _files. Drag&amp;drop (use Ctrl to add files) or type one file/directory per line" DockPanel.Dock="Top" Target="{Binding ElementName=FilesTextBox}" />
             <TextBox
             Name="FilesTextBox"
             AcceptsReturn="True" 
@@ -39,34 +44,69 @@
             AllowDrop="True"
             PreviewDragEnter="FilesTextBox_DragEnter"
             PreviewDragOver="FilesTextBox_DragEnter"
-            PreviewDrop="FilesTextBox_DragDrop"
-            />
+            PreviewDrop="FilesTextBox_DragDrop"/>
         </DockPanel>
 
         <StackPanel Grid.Row="1">
             <GroupBox Header="File format">
             <StackPanel Margin="2" Height="Auto">
-                <DockPanel>
-                    <Label Padding="0,0,0,3" Content="CSV separator (autodetect if empty) "/>
+                <DockPanel VerticalAlignment="Center">
+                    <Label Padding="0 0 4 0" Content="CSV _separator (autodetect if empty)"/>
                     <TextBox MaxLength="6" MaxLines="1" Text="{Binding CsvSeparator}" ToolTip="Character used to separate columns in CSV file. If empty, separator is auto-detected for each file"/>
                 </DockPanel>
-                <CheckBox IsChecked="{Binding IgnoreInvalidFiles}" ToolTip="Ignore files with invalid format">Ignore files with invalid format</CheckBox>
+                <CheckBox IsChecked="{Binding IgnoreInvalidFiles}" Content="Ignore files _with invalid format" ToolTip="_Ignore files with invalid format"/>
             </StackPanel>
             </GroupBox>
-
             <GroupBox Header="Memory">
                 <StackPanel Margin="2" Height="Auto">
-                    <CheckBox IsChecked="{Binding IsCacheEnabled}" ToolTip="Cache parsed rows. This cache survives multiple query runs, even when query is changed">Cache CSV data in memory</CheckBox>
-                    <CheckBox IsChecked="{Binding IsStringInternEnabled}" ToolTip="Intern strings. Significantly reduce memory consumption when CSV contains repeatable values">Intern CSV strings</CheckBox>
+                    <CheckBox IsChecked="{Binding IsCacheEnabled}" Content="_Cache CSV data in memory" ToolTip="Cache parsed rows. This cache survives multiple query runs, even when query is changed"/>
+                    <!-- ReSharper disable once MarkupAttributeTypo -->
+                    <CheckBox IsChecked="{Binding IsStringInternEnabled}" Content="I_ntern CSV strings" ToolTip="Intern strings. Significantly reduce memory consumption when CSV contains repeatable values"/>
                 </StackPanel>
             </GroupBox>
-            <CheckBox IsChecked="{Binding UseSingleClassForSameFiles}" ToolTip="Single class generation allows to join similar files and query over them. Might not work well for files with relations">Generate single class for similar files</CheckBox>
-            <CheckBox IsChecked="{Binding DetectRelations}" ToolTip="Detect relations between CSV files/tables (based on files and column names)">Detect relations</CheckBox>
-            <CheckBox IsChecked="{Binding HideRelationsFromDump}" IsEnabled="{Binding DetectRelations}" ToolTip="LINQPad will not show relations content in .Dump(). This prevents from loading too many data" Margin="16,0,0,0">Hide relations from .Dump()</CheckBox>
-            <CheckBox IsChecked="{Binding DebugInfo}" ToolTip="Show additional driver debug info">Debug info</CheckBox>
-            <Separator/>
-            <CheckBox IsChecked="{Binding Persist}" ToolTip="Persist connection">Remember this connection</CheckBox>
-            <StackPanel Margin="0,8,0,0" Orientation="Horizontal" HorizontalAlignment="Right">
+            <GroupBox Header="Generation">
+                <StackPanel Margin="2" Height="Auto">
+                    <!-- ReSharper disable once MarkupAttributeTypo -->
+                    <CheckBox IsChecked="{Binding UseSingleClassForSameFiles}" Content="G_enerate single class for similar files" ToolTip="Single class generation allows to join similar files and query over them. Might not work well for files with relations"/>
+                    <DockPanel VerticalAlignment="Center" LastChildFill="True" KeyboardNavigation.TabNavigation="Local">
+                        <!-- ReSharper disable once MarkupAttributeTypo -->
+                        <Label Padding="0 3 4 0" Content="S_tring comparison" DockPanel.Dock="Left" Target="{Binding ElementName=StringComparisonComboBox}"/>
+                        <TextBlock DockPanel.Dock="Right" Padding="5 3 0 0" KeyboardNavigation.TabIndex="2">
+                            <Hyperlink TextDecorations="" NavigateUri="https://docs.microsoft.com/en-us/dotnet/api/system.stringcomparison" Command="ApplicationCommands.Help">
+                                <TextBlock Text="?"/>  
+                            </Hyperlink>
+                        </TextBlock>
+                        <ComboBox Name="StringComparisonComboBox"
+                                  SelectedValue="{Binding Path=StringComparison}"
+                                  ToolTip="String comparison for Equals and GetHashCode methods"
+                                  KeyboardNavigation.TabIndex="1">
+                            <ComboBox.ItemsSource>
+                                <x:Array Type="{x:Type system:StringComparison}">
+                                    <system:StringComparison>CurrentCulture</system:StringComparison>
+                                    <system:StringComparison>CurrentCultureIgnoreCase</system:StringComparison>
+                                    <system:StringComparison>InvariantCulture</system:StringComparison>
+                                    <system:StringComparison>InvariantCultureIgnoreCase</system:StringComparison>
+                                    <system:StringComparison>Ordinal</system:StringComparison>
+                                    <system:StringComparison>OrdinalIgnoreCase</system:StringComparison>
+                                </x:Array>
+                            </ComboBox.ItemsSource>
+                        </ComboBox>
+                    </DockPanel>
+                </StackPanel>
+            </GroupBox>
+            <GroupBox Header="Relations">
+                <StackPanel Margin="2" Height="Auto">
+                    <CheckBox IsChecked="{Binding DetectRelations}" Content="Detect _relations" ToolTip="Detect relations between CSV files/tables (based on files and column names)"/>
+                    <CheckBox IsChecked="{Binding HideRelationsFromDump}" IsEnabled="{Binding DetectRelations}" Content="_Hide relations from .Dump()" ToolTip="LINQPad will not show relations content in .Dump(). This prevents from loading too many data" Margin="16,0,0,0"/>
+                </StackPanel>
+            </GroupBox>
+            <StackPanel Margin="0,4,0,0">
+                <CheckBox IsChecked="{Binding DebugInfo}" ToolTip="Show additional driver debug info" Content="_Debug info"/>
+                <Separator/>
+                <!-- ReSharper disable once MarkupAttributeTypo -->
+                <CheckBox IsChecked="{Binding Persist}" ToolTip="Persist connection" Content="Remember this c_onnection"/>
+            </StackPanel>
+            <StackPanel Margin="0,6,0,0" Orientation="Horizontal" HorizontalAlignment="Right">
                 <Button Name="OkButton" Content="OK" Margin="5,0,0,0" Padding="8,3" Width="85" IsDefault="True" Click="OkButton_Click" />
                 <Button Content="Cancel" Margin="5,0,0,0" Padding="8,3" Width="85" IsCancel="True" />
             </StackPanel>

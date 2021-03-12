@@ -4,20 +4,21 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
-
-using CsvLINQPadDriver;
-
-using FluentAssertions;
 
 using LINQPad.Extensibility.DataContext;
 
+using FluentAssertions;
+using Moq;
 using NUnit.Framework;
+
+using CsvLINQPadDriver;
 
 namespace CsvLINQPadDriverTest
 {
     [TestFixture]
-    public class SchemaBuilderTest
+    public class SchemaBuilderTests
     {
         [Test]
         [TestCaseSource(nameof(CsvDataContextDriverProperties))]
@@ -103,47 +104,38 @@ x");
             var files = Path.Combine(Directory.GetCurrentDirectory(), "*.csv");
             var parsedFiles = new[] { files };
 
-            yield return (new PropertiesMock
-            {
-                Files = files,
-                ParsedFiles = parsedFiles,
-                DebugInfo = true,
-                UseSingleClassForSameFiles = true,
-                DetectRelations = true,
-                IgnoreInvalidFiles = true,
-                IsCacheEnabled = true,
-                HideRelationsFromDump = true,
-                Persist = true
-            }, 1);
+            yield return (GetCsvDataContextDriverProperties(csvDataContextDriverProperties =>
+                csvDataContextDriverProperties.Files == files &&
+                csvDataContextDriverProperties.ParsedFiles == parsedFiles &&
+                csvDataContextDriverProperties.CsvSeparatorChar == ',' &&
+                csvDataContextDriverProperties.DebugInfo &&
+                csvDataContextDriverProperties.DetectRelations &&
+                csvDataContextDriverProperties.UseSingleClassForSameFiles &&
+                csvDataContextDriverProperties.StringComparison == StringComparison.InvariantCulture &&
+                csvDataContextDriverProperties.IsStringInternEnabled &&
+                csvDataContextDriverProperties.IgnoreInvalidFiles &&
+                csvDataContextDriverProperties.IsCacheEnabled &&
+                csvDataContextDriverProperties.HideRelationsFromDump &&
+                csvDataContextDriverProperties.Persist
+            ), 1);
 
-            yield return (new PropertiesMock
-            {
-                Files = files,
-                ParsedFiles = parsedFiles,
-                DebugInfo = true,
-                UseSingleClassForSameFiles = true,
-                DetectRelations = true,
-                IgnoreInvalidFiles = false,
-                IsCacheEnabled = false,
-                HideRelationsFromDump = false,
-                Persist = false
-            }, 2);
-        }
+            yield return (GetCsvDataContextDriverProperties(csvDataContextDriverProperties =>
+                csvDataContextDriverProperties.Files == files &&
+                csvDataContextDriverProperties.ParsedFiles == parsedFiles &&
+                csvDataContextDriverProperties.CsvSeparatorChar == ',' &&
+                csvDataContextDriverProperties.DebugInfo &&
+                csvDataContextDriverProperties.DetectRelations &&
+                csvDataContextDriverProperties.UseSingleClassForSameFiles == false &&
+                csvDataContextDriverProperties.StringComparison == StringComparison.InvariantCulture &&
+                csvDataContextDriverProperties.IsStringInternEnabled == false &&
+                csvDataContextDriverProperties.IgnoreInvalidFiles == false &&
+                csvDataContextDriverProperties.IsCacheEnabled == false &&
+                csvDataContextDriverProperties.HideRelationsFromDump == false &&
+                csvDataContextDriverProperties.Persist == false
+            ), 2);
 
-        private class PropertiesMock : ICsvDataContextDriverProperties
-        {
-            public bool Persist { get; set; }
-            public string Files { get; set; } = null!;
-            public IEnumerable<string> ParsedFiles { get; init; } = null!;
-            public string CsvSeparator { get; set; } = null!;
-            public char? CsvSeparatorChar { get; } = null;
-            public bool UseSingleClassForSameFiles { get; set; }
-            public bool DetectRelations { get; set; }
-            public bool HideRelationsFromDump { get; set; }
-            public bool DebugInfo { get; set; }
-            public bool IgnoreInvalidFiles { get; set; }
-            public bool IsStringInternEnabled { get; set; }
-            public bool IsCacheEnabled { get; set; }
+            static ICsvDataContextDriverProperties GetCsvDataContextDriverProperties(Expression<Func<ICsvDataContextDriverProperties, bool>> predicate) =>
+                Mock.Of(predicate, MockBehavior.Strict);
         }
     }
 }

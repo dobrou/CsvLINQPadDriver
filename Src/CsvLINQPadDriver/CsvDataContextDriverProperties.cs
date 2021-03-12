@@ -77,6 +77,12 @@ namespace CsvLINQPadDriver
             set => SetValue(value);
         }
 
+        public StringComparison StringComparison
+        {
+            get => GetValue(StringComparison.InvariantCulture);
+            set => SetValue(value);
+        }
+
         public bool DetectRelations
         {
             get => GetValue(true);
@@ -121,6 +127,10 @@ namespace CsvLINQPadDriver
 
         private string? GetValue(string defaultValue, [CallerMemberName] string callerMemberName = "") =>
             GetValue(v => v, defaultValue, callerMemberName);
+
+        private T GetValue<T>(T defaultValue, [CallerMemberName] string callerMemberName = "")
+            where T: Enum =>
+            (T)GetValue(v => Enum.TryParse(typeof(T), v, out var val) ? val : defaultValue, defaultValue, callerMemberName)!;
 
         private void SetValue<T>(T value, [CallerMemberName] string callerMemberName = "") =>
             _driverData.SetElementValue(callerMemberName, value);

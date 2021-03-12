@@ -53,7 +53,7 @@ namespace CsvLINQPadDriver
                     "# Drag&drop (use Ctrl to add files)",
                     "# Type file paths, or directory paths with pattern like *.csv or **.csv (** will recurse subdirectories)",
                     "# Press Ctrl+Shift+V to insert from clipboard and proceed",
-                    @"c:\*.csv");
+                    $"{FileUtils.GetDefaultDrive()}*.csv");
             }
 
             if (new ConnectionDialog(properties).ShowDialog() != true)

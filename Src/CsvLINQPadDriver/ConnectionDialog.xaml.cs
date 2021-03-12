@@ -1,11 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Windows.Documents;
 using System.Windows.Input;
+
+using CsvLINQPadDriver.Helpers;
 
 namespace CsvLINQPadDriver
 {
@@ -59,7 +63,7 @@ namespace CsvLINQPadDriver
 
         private void ConnectionDialog_OnLoaded(object sender, RoutedEventArgs e)
         {
-            var maskIndex = FilesTextBox.Text.IndexOf(@"c:\", StringComparison.InvariantCultureIgnoreCase);
+            var maskIndex = FilesTextBox.Text.IndexOf(FileUtils.GetDefaultDrive(), StringComparison.InvariantCultureIgnoreCase);
             if (maskIndex >= 0)
             {
                 FilesTextBox.SelectionStart = maskIndex;
@@ -78,5 +82,11 @@ namespace CsvLINQPadDriver
         private void PasteAndGoCommandBinding_OnCanExecute(object sender, CanExecuteRoutedEventArgs e) =>
             e.CanExecute = Clipboard.ContainsText(TextDataFormat.Text) ||
                            Clipboard.ContainsText(TextDataFormat.UnicodeText);
+
+        private void Help_OnExecuted(object sender, ExecutedRoutedEventArgs e) =>
+            Process.Start(new ProcessStartInfo(((Hyperlink)e.OriginalSource).NavigateUri.OriginalString){ UseShellExecute = true });
+
+        private void Help_OnCanExecute(object sender, CanExecuteRoutedEventArgs e) =>
+            e.CanExecute = true;
     }
 }

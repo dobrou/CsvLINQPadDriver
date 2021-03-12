@@ -97,7 +97,7 @@ namespace CsvLINQPadDriver.DataModel
                             return null;
                         }
 
-                        var key = string.Join(string.Empty, columns.Select(c => $"{c.CsvColumnName}\t{c.CsvColumnIndex}\n"));
+                        var key = string.Join(string.Empty, columns.Select(c => $"{c.Name}\t{c.Index}\n"));
 
                         if (!tableCodeNames.TryGetValue(key, out var className))
                         {
@@ -187,9 +187,9 @@ namespace CsvLINQPadDriver.DataModel
             var stringToCsvTableColumnLookup = (
                 from csvTable in csvTables 
                 from csvColumn in csvTable.Columns 
-                where csvColumn.CsvColumnName.EndsWith("id", IdsComparison)
+                where csvColumn.Name.EndsWith("id", IdsComparison)
                 select (csvTable, csvColumn)
-            ).ToLookup(csvTableColumn => csvTableColumn.csvColumn.CsvColumnName, tableColumn => tableColumn, IdsComparer);
+            ).ToLookup(csvTableColumn => csvTableColumn.csvColumn.Name, tableColumn => tableColumn, IdsComparer);
 
             // t1.nameID -> name.ID
             // t1.nameID -> names.ID
@@ -201,8 +201,7 @@ namespace CsvLINQPadDriver.DataModel
                 let keyNamesForeign = GetTableForeignKeyPossibleNames(csvTable)
                 let keyNames = keyNamesForeign.Concat(new []{ "id" })
                 from csvColumn in csvTable.Columns
-                where keyNames.Contains(csvColumn.CsvColumnName, IdsComparer)
-
+                where keyNames.Contains(csvColumn.Name, IdsComparer)
                 from csvTableColumn in keyNamesForeign.SelectMany(k => stringToCsvTableColumnLookup[k])
                 where csvTableColumn.csvTable != csvTable
                 select (csvTable1: csvTable, csvColumn1: csvColumn, csvTable2: csvTableColumn.csvTable, csvColumn2: csvTableColumn.csvColumn);

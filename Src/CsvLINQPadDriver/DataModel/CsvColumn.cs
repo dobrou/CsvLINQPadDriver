@@ -2,8 +2,8 @@
 {
     public record CsvColumn
     (
-        string CsvColumnName,
-        int CsvColumnIndex
+        string Name,
+        int Index
     ) : ICsvNames
     {
         public string? CodeName { get; set; }

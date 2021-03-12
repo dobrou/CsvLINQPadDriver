@@ -24,11 +24,12 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/i2van/CsvLINQPadDriver</RepositoryUrl>
     <PackageIcon>NuGetIcon.png</PackageIcon>
-    <PackageReleaseNotes>Fixed files number display.</PackageReleaseNotes>
+    <PackageReleaseNotes>Added properties access via indexers.
+Added generated data object methods.</PackageReleaseNotes>
     <Copyright>Copyright © Martin Dobroucký 2013-2014, Ivan Ivon 2021</Copyright>
-    <AssemblyVersion>6.5.3.0</AssemblyVersion>
-    <FileVersion>6.5.3.0</FileVersion>
-    <Version>6.5.3</Version>
+    <AssemblyVersion>6.6.0.0</AssemblyVersion>
+    <FileVersion>6.6.0.0</FileVersion>
+    <Version>6.6.0</Version>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <ApplicationIcon>Connection.ico</ApplicationIcon>
   </PropertyGroup>
@@ -59,7 +60,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="CsvHelper" Version="25.0.0" />
+    <PackageReference Include="CsvHelper" Version="26.0.1" />
     <PackageReference Include="Humanizer.Core" Version="2.8.26" />
     <PackageReference Include="LINQPad.Reference" Version="1.1.0" />
   </ItemGroup>
