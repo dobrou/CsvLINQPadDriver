@@ -96,7 +96,7 @@ Get latest [CsvLINQPadDriver.\*.lpx6](https://github.com/i2van/CsvLINQPadDriver/
   - Open LINQPad 6.
   - Click `Add connection` main window.
   - Click button `View more drivers...`
-  - Click button `Install driver from .LPX6 file...` and select downloaded .lpx6 file.
+  - Click button `Install driver from .LPX6 file...` and select downloaded `lpx6` file.
 
 ## Usage ##
 
@@ -111,17 +111,36 @@ CSV context can be added to LINQPad 6 same way as any other context.
 
 ## Configuration Options ##
 
-- **CSV Files** - list of CSV files and directories. Type one file/dir per line or Drag&Drop files from explorer. Supports special wildcards: `*` and `**`.
+### General ###
+
+- **CSV files** - list of CSV files and directories. Type one file/dir per line or Drag&Drop files from explorer. Supports special wildcards: `*` and `**`.
   - `c:\x\*.csv` - all files in folder `c:\x`
   - `c:\x\**.csv` - all files in folder `c:\x` and all sub-directories
-- CSV Separator - character used to separate columns in files. Can be `,`,`\t`, etc. If empty, separator is auto-detected.
-- Generate single class for similar files - single class will be generated for similar files which allows to query them as single one. Might not work well for files with relations.
-- Detect relations - driver will try to detect and generate relations between files.
-- Hide relations from .Dump() - LINQPad will not show relations content in .Dump(). This prevents loading too many data.
+
+### File Format ###
+
+- CSV separator - character used to separate columns in files. Can be `,`,`\t`, etc. If empty, separator is auto-detected.
+- Ignore files with invalid format - files with strange content not similar to CSV format will be ignored.
+
+### Memory ###
+
 - Cache CSV data in memory
   - if checked: parsed rows from file are cached in memory. This cache survives multiple query runs, even when query is changed. Cache is cleared as soon as LINQPad clears query data.
   - if unchecked: disable cache. Multiple enumerations of file content results in multiple reads and parsing of file. Can be significantly slower for complex queries. Significantly reduces memory usage. Useful when reading very large files.
-- Ignore files with invalid format - files with strange content not similar to CSV format will be ignored.
+- Intern CSV strings - intern strings. Significantly reduce memory consumption when CSV contains repeatable values.
+
+### Generation ###
+
+- Generate single class for similar files - single class will be generated for similar files which allows to query them as single one. Might not work well for files with relations.
+- String comparison - string comparison for `Equals` and `GetHashCode` methods.
+
+### Relations ###
+
+- Detect relations - driver will try to detect and generate relations between files.
+  - Hide relations from `.Dump()` - LINQPad will not show relations content in `.Dump()`. This prevents loading too many data.
+
+### Misc ##
+
 - Debug info - additional debug information will be available. For example generated Data Context source.
 - Remember this connection - connection info will be saved and available after LINQPad restart.
 
