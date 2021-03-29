@@ -31,15 +31,16 @@ namespace CsvLINQPadDriver
         {
             var parsedFiles = FileUtils.EnumFiles(new CsvDataContextDriverProperties(cxInfo).ParsedFiles).ToImmutableList();
             var parsedFilesCount = parsedFiles.Count;
+            var dateTime = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss}";
 
             return $"{FileUtils.GetLongestCommonPrefixPath(parsedFiles)}{GetFilesCountString()}";
 
             string GetFilesCountString() =>
                 parsedFilesCount switch
                 {
-                    0 => "(no files)",
-                    1 => string.Empty,
-                    _ => $" ({"file".ToQuantity(parsedFilesCount)})"
+                    0 => $"(no files, {dateTime})",
+                    1 => $" ({dateTime})",
+                    _ => $" ({"file".ToQuantity(parsedFilesCount)}, {dateTime})"
                 };
         }
 

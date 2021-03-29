@@ -246,7 +246,7 @@ namespace CsvLINQPadDriver.Helpers
 
                 string baseDir;
 
-                var isPathOnlyDir = string.IsNullOrEmpty(file) || Directory.Exists(path);
+                var isPathOnlyDir = string.IsNullOrWhiteSpace(file) || Directory.Exists(path);
                 if (isPathOnlyDir)
                 {
                     file = "*.csv";

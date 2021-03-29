@@ -157,3 +157,5 @@ $RECYCLE.BIN/
 .DS_Store
 *.ide
 *.lpx6
+
+!Tests/CsvLINQPadDriverTest/LPRun/Bin

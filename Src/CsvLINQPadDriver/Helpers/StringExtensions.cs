@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
+using System.Linq;
 using System.Runtime.CompilerServices;
 
 namespace CsvLINQPadDriver.Helpers
@@ -40,6 +41,18 @@ namespace CsvLINQPadDriver.Helpers
 
         public static TimeSpan? ToTimeSpan(this string? str, string[] formats, TimeSpanStyles timeSpanStyles = TimeSpanStyles.None, CultureInfo? cultureInfo = null) =>
             GetValueOrNull(TimeSpan.TryParseExact(str, formats, SelectCulture(cultureInfo), timeSpanStyles, out var parsedValue), parsedValue);
+
+        public static Guid? ToGuid(this string? str) =>
+            GetValueOrNull(Guid.TryParse(str, out var parsedValue), parsedValue);
+
+        public static Guid? ToGuid(this string? str, string format) =>
+            GetValueOrNull(Guid.TryParseExact(str, format, out var parsedValue), parsedValue);
+
+        // ReSharper disable once ParameterTypeCanBeEnumerable.Global
+        public static Guid? ToGuid(this string? str, string[] formats) =>
+            formats
+                .Select(format => GetValueOrNull(Guid.TryParseExact(str, format, out var parsedValue), parsedValue))
+                .FirstOrDefault(guid => guid is not null);
 
         public static bool? ToBool(this string? str, CultureInfo? cultureInfo = null)
         {

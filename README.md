@@ -4,6 +4,44 @@
 
 # CsvLINQPadDriver for LINQPad 6 #
 
+## Table of Contents ##
+
+* [Description](#description)
+* [Website](#website)
+* [Download](#download)
+* [Example](#example)
+* [Prerequisites](#prerequisites)
+* [Installation](#installation)
+  * [NuGet](#nuget-)
+  * [Manual](#manual)
+* [Usage](#usage)
+* [Configuration Options](#configuration-options)
+  * [General](#general)
+  * [Format](#format)
+  * [Memory](#memory)
+  * [Generation](#generation)
+  * [Relations](#relations)
+  * [Misc](#misc)
+* [Relations](#relations-1)
+* [Performance](#performance)
+* [Data Types](#data-types)
+* [Generated Data Object](#generated-data-object)
+  * [Methods](#methods)
+     * [ToString](#tostring)
+     * [GetHashCode](#gethashcode)
+     * [Equals](#equals)
+     * [Indexers](#indexers)
+  * [Properties Access](#properties-access)
+  * [Extension Methods](#extension-methods)
+* [Known Issues](#known-issues)
+* [Authors](#authors)
+* [Credits](#credits)
+  * [Tools](#tools)
+  * [NuGet](#nuget)
+* [License](#license)
+
+## Description ##
+
 CsvLINQPadDriver is LINQPad 6 data context dynamic driver for querying CSV files.
 
 - You can query data in CSV files with LINQ, just like it would be regular database. No need to write custom data model, mappings, etc.
@@ -23,55 +61,58 @@ Latest [CsvLINQPadDriver.\*.lpx6](https://github.com/i2van/CsvLINQPadDriver/rele
 ## Example ##
 
 Let's have 2 CSV files:
-```
-Lakes.csv:
-LakeName,ID
-lake1,1
-etc.
 
-Fishes.csv:
-FishName,FishID,LakeID
-xyz,1,1
-etc.
+`Authors.csv`
+
+```
+Id,Name
+1,Author 1
+2,Author 2
+3,Author 3
 ```
 
-CsvLINQPadDriver will generate data context similar to:
+`Books.csv`
+
+```
+Id,Title,AuthorId
+11,Author 1 Book 1,1
+12,Author 1 Book 2,1
+21,Author 2 Book 1,2
+```
+
+CsvLINQPadDriver will generate data context similar to (simplified):
 
 ```csharp
 public class CsvDataContext
 {
-    public IEnumerable<Lakes> Lakes { get; set; }
-    public IEnumerable<Fishes> Fishes { get; set; }
+    public CsvTableBase<RAuthor> Authors { get; private set; }
+    public CsvTableBase<RBook> Books { get; private set; }
 }
 
-public class Lakes
+public sealed record RAuthor
 {
-    public string LakeName { get; set; }
-    public string ID { get; set; }
+    public string Id { get; set; }
+    public string Name { get; set; }
 
-    // All Fishes where Lakes.ID == Fishes.LakeID
-    public IEnumerable<Fishes> Fishes { get; set; }
+    public IEnumerable<RBook> Books { get; set; }
 }
 
-public class Fishes
+public sealed record RBook
 {
-    public string FishName { get; set; }
-    public string FishID { get; set; }
-    public string LakeID { get; set; }
+    public string Id { get; set; }
+    public string Title { get; set; }
+    public string AuthorId { get; set; }
 
-    // All Lakes where Lakes.ID == Fishes.LakeID
-    public IEnumerable<Lakes> Lakes { get; set; }
+    public IEnumerable<RAuthor> Authors { get; set; }
 }
-
-/// and mappings etc.
 ```
 
 And you can query data with LINQ like:
 
 ```csharp
-from lake in Lakes
-where lake.LakeName.StartsWith("S") && lake.Fishes.Any()
-select new { lake, fishes = lake.Fishes }
+from book in Books
+join author in Authors on book.AuthorId equals author.Id
+select new { author.Name, book.Title }
 ```
 
 ## Prerequisites ##
@@ -85,7 +126,7 @@ select new { lake, fishes = lake.Fishes }
 
   - Open LINQPad 6.
   - Click `Add connection` main window.
-  - Click button `View more drivers...`
+  - Click button `View more drivers...`.
   - Click radio button `Show all drivers` and type `CsvLINQPadDriver`.
   - Install.
 
@@ -95,38 +136,36 @@ Get latest [CsvLINQPadDriver.\*.lpx6](https://github.com/i2van/CsvLINQPadDriver/
 
   - Open LINQPad 6.
   - Click `Add connection` main window.
-  - Click button `View more drivers...`
+  - Click button `View more drivers...`.
   - Click button `Install driver from .LPX6 file...` and select downloaded `lpx6` file.
 
 ## Usage ##
 
 CSV context can be added to LINQPad 6 same way as any other context.
 
-- Click `Add connection`
-- Select `CSV Context Driver` and click `Next`
-- Enter CSV file names or Drag&Drop files from explorer.
-  Optionally configure other options.
-  Optionally configure other options.
+- Click `Add connection`.
+- Select `CSV Context Driver` and click `Next`.
+- Enter CSV file names or Drag&Drop (Ctrl adds files) from Explorer. Optionally configure other options.
 - Query your data.
 
 ## Configuration Options ##
 
 ### General ###
 
-- **CSV files** - list of CSV files and directories. Type one file/dir per line or Drag&Drop files from explorer. Supports special wildcards: `*` and `**`.
-  - `c:\x\*.csv` - all files in folder `c:\x`
-  - `c:\x\**.csv` - all files in folder `c:\x` and all sub-directories
+- **CSV files** - list of CSV files and directories. Type one file/dir per line or Drag&Drop (Ctrl adds files) from explorer. Supports special wildcards: `*` and `**`.
+  - `c:\x\*.csv` - all files in folder `c:\x`.
+  - `c:\x\**.csv` - all files in folder `c:\x` and all sub-directories.
 
-### File Format ###
+### Format ###
 
-- CSV separator - character used to separate columns in files. Can be `,`,`\t`, etc. If empty, separator is auto-detected.
+- CSV separator - character used to separate columns in files. Can be `,`, `\t`, etc. Auto-detected if empty.
 - Ignore files with invalid format - files with strange content not similar to CSV format will be ignored.
 
 ### Memory ###
 
 - Cache CSV data in memory
   - if checked: parsed rows from file are cached in memory. This cache survives multiple query runs, even when query is changed. Cache is cleared as soon as LINQPad clears query data.
-  - if unchecked: disable cache. Multiple enumerations of file content results in multiple reads and parsing of file. Can be significantly slower for complex queries. Significantly reduces memory usage. Useful when reading very large files.
+  - if unchecked: disable cache. Multiple enumerations of file content results in multiple reads and parsing of file. Can be significantly slower for complex queries. Significantly reduces memory usage.  Useful when reading very large files.
 - Intern CSV strings - intern strings. Significantly reduce memory consumption when CSV contains repeatable values.
 
 ### Generation ###
@@ -137,7 +176,7 @@ CSV context can be added to LINQPad 6 same way as any other context.
 ### Relations ###
 
 - Detect relations - driver will try to detect and generate relations between files.
-  - Hide relations from `.Dump()` - LINQPad will not show relations content in `.Dump()`. This prevents loading too many data.
+  - Hide relations from `Dump()` - LINQPad will not show relations content when `Dump()`ed. This prevents loading too many data.
 
 ### Misc ##
 
@@ -148,10 +187,12 @@ CSV context can be added to LINQPad 6 same way as any other context.
 
 There is no definition of relations between CSV files, but we can guess some relations from files and columns names.
 Relations between `fileName.columnName` are detected in cases similar to following examples:
-- `Fishes.LakeID` <-> `Lakes.ID`
-- `Fishes.LakesID` <-> `Lakes.ID`
-- `Fishes.LakeID` <-> `Lakes.LakeID`
-- `Fishes.ID` <-> `Lakes.FishID`
+```
+Books.AuthorId  <-> Authors.Id
+Books.AuthorsId <-> Authors.Id
+Books.AuthorId  <-> Authors.AuthorId
+Books.Id        <-> Authors.BookId
+```
 
 ## Performance ##
 
@@ -167,6 +208,8 @@ Don't expect performance comparable with SQL server. But for reasonably sized CS
 Everything is string. Because there is no data type info in CSV files, this is best we can do.
 
 ## Generated Data Object ##
+
+Generated data object is sealed mutable [record](https://docs.microsoft.com/en-us/dotnet/csharp/whats-new/tutorials/records). You can create record's shallow copy using [with](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/operators/with-expression) expression.
 
 ### Methods ##
 
@@ -190,15 +233,17 @@ string ToString();
 
 Formats object the way PowerShell [Format-List](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/format-list) does.
 
+> Relations are not participated.
+
 #### GetHashCode ####
 
 ```csharp
 int GetHashCode();
 ```
 
-Returns object hash code. Hash code is not cached and recalculated each time method is called. Depends on string comparison driver setting.
+Returns object hash code. Hash code is not cached and recalculated each time method is called. Also note that each time driver is reloaded hash codes will be [different](https://andrewlock.net/why-is-string-gethashcode-different-each-time-i-run-my-program-in-net-core/).
 
-Also note that each time driver is reloaded hash codes will be [different](https://andrewlock.net/why-is-string-gethashcode-different-each-time-i-run-my-program-in-net-core/).
+> Depends on string comparison driver setting. Relations are not participated.
 
 #### Equals ####
 
@@ -207,7 +252,7 @@ bool Equals(T obj);
 bool Equals(object obj);
 ```
 
-Depend on string comparison driver setting.
+> Depends on string comparison driver setting. Relations are not participated.
 
 #### Indexers ####
 
@@ -218,53 +263,99 @@ string this[string index] { get; set; }
 
 See below.
 
+> Relations are not participated.
+
 ### Properties Access ###
 
 - Generated data objects are mutable, however saving changes is not supported.
 - Generated data object properties can be accessed either by name or via indexer.
 - Index can be integer (zero-based property index) or string (property name). If there is no index `IndexOutOfRangeException` will be thrown.
+- Relations can not be accessed via indexers.
 
 ```csharp
-// Property. Preferable.
-var val = table.First().prop0;
+var author = Authors.First()
+
+// Property (preferable).
+var name = author.Name;
+author.Name = name;
 
 // Integer indexer.
-var val = table.First()[0];
+var name = author[0];
+author[0] = name;
 
 // String indexer.
-var val = table.First()["prop0"];
+var name = author["Name"];
+author["Name"] = name;
 ```
 
 Property index can be found by hovering over property name at the connection pane or by using code below:
 
 ```csharp
-// Prepend your table name.
-.First().GetType().GetProperties().Where(p => !p.GetCustomAttributes().Any()).Select((p, i) => new { Index = i, p.Name })
+Authors.First()
+    .GetType().GetProperties()
+    .Where(p => !p.GetCustomAttributes().Any())
+    .Select((p, i) => new { Index = i, p.Name })
 ```
 
 ### Extension Methods ###
 
-Driver provides few extension methods providing easy conversion from string to nullable of common types:
+Driver provides extension methods for converting string to nullable types:
 
 ```csharp
-int? ToInt(CultureInfo? cultureInfo = null);
-long? ToLong(CultureInfo? cultureInfo = null);
-double? ToDouble(CultureInfo? cultureInfo = null);
-decimal? ToDecimal(CultureInfo? cultureInfo = null);
-DateTime? ToDateTime(DateTimeStyles dateTimeStyles = DateTimeStyles.None, CultureInfo? cultureInfo = null);
-DateTime? ToDateTime(string format, DateTimeStyles dateTimeStyles = DateTimeStyles.None, CultureInfo? cultureInfo = null);
-DateTime? ToDateTime(string[] formats, DateTimeStyles dateTimeStyles = DateTimeStyles.None, CultureInfo? cultureInfo = null);
-TimeSpan? ToTimeSpan(CultureInfo? cultureInfo = null);
-TimeSpan? ToTimeSpan(string format, TimeSpanStyles timeSpanStyles = TimeSpanStyles.None, CultureInfo? cultureInfo = null);
-TimeSpan? ToTimeSpan(string[] formats, TimeSpanStyles timeSpanStyles = TimeSpanStyles.None, CultureInfo? cultureInfo = null);
+// Bool.
 bool? ToBool(CultureInfo? cultureInfo = null);
+
+// Int.
+int? ToInt(CultureInfo? cultureInfo = null);
+
+// Long.
+long? ToLong(CultureInfo? cultureInfo = null);
+
+// Double.
+double? ToDouble(CultureInfo? cultureInfo = null);
+
+// Decimal.
+decimal? ToDecimal(CultureInfo? cultureInfo = null);
+
+// Guid.
+Guid? ToGuid();
+Guid? ToGuid(string format);
+Guid? ToGuid(string[] formats);
+
+// DateTime.
+DateTime? ToDateTime(
+    DateTimeStyles dateTimeStyles = DateTimeStyles.None,
+    CultureInfo? cultureInfo = null);
+
+DateTime? ToDateTime(
+    string format,
+    DateTimeStyles dateTimeStyles = DateTimeStyles.None,
+    CultureInfo? cultureInfo = null);
+
+DateTime? ToDateTime(
+    string[] formats,
+    DateTimeStyles dateTimeStyles = DateTimeStyles.None,
+    CultureInfo? cultureInfo = null);
+
+// TimeSpan.
+TimeSpan? ToTimeSpan(CultureInfo? cultureInfo = null);
+
+TimeSpan? ToTimeSpan(
+    string format,
+    TimeSpanStyles timeSpanStyles = TimeSpanStyles.None,
+    CultureInfo? cultureInfo = null);
+
+TimeSpan? ToTimeSpan(
+    string[] formats,
+    TimeSpanStyles timeSpanStyles = TimeSpanStyles.None,
+    CultureInfo? cultureInfo = null);
 ```
 
 ## Known Issues ##
 
 - Some strange Unicode characters in column names may cause errors in generated data context source code.
-- Writing changed objects back to CSV is not directly supported, there is no `.SubmitChanges()` . But you can use LINQPad's `Util.WriteCsv`.
-- Similar files single class generation might not work well for files with relations.
+- Writing changed objects back to CSV is not directly supported, there is no `SubmitChanges()` . But you can use LINQPad's `Util.WriteCsv`.
+- Similar files single class generation does not detect relations correctly. However, you can query over related multiple files.
 
 ## Authors ##
 
@@ -276,6 +367,7 @@ bool? ToBool(CultureInfo? cultureInfo = null);
 ### Tools ###
 
 - [LINQPad 6](https://www.linqpad.net/LINQPad6.aspx)
+- [LINQPad Command-Line and Scripting](https://www.linqpad.net/lprun.aspx)
 
 ### NuGet ###
 

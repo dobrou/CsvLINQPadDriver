@@ -9,25 +9,78 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <OutputPath>..\..\bin\Debug\Tests\</OutputPath>
   </PropertyGroup>
-  
+
   <PropertyGroup>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
-  
+
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <OutputPath>..\..\bin\Release\Tests\</OutputPath>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CsvHelper" Version="26.0.1" />
+    <None Remove="Fishes3.linq" />
+    <None Remove="LPRun\CSV\Authors.csv" />
+    <None Remove="LPRun\CSV\Authors2.csv" />
+    <None Remove="LPRun\CSV\Books.csv" />
+    <None Remove="LPRun\CSV\Books2.csv" />
+    <None Remove="LPRun\LINQPad.Runtime.dll" />
+    <None Remove="LPRun\LINQPad.Runtime.runtimeconfig.json" />
+    <None Remove="LPRun\LPRun6-x86.exe" />
+    <None Remove="LPRun\LPRun6.exe" />
+    <None Remove="LPRun\Templates\Extensions.linq" />
+    <None Remove="LPRun\Templates\Generation.linq" />
+    <None Remove="LPRun\Templates\Relations.linq" />
+    <None Remove="LPRun\Templates\SimilarFilesRelations.linq" />
+    <None Remove="LPRun\Templates\StringComparison.linq" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="LPRun\CSV\Authors2.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="LPRun\CSV\Books.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="LPRun\CSV\Authors.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="LPRun\Bin\LINQPad.Runtime.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="LPRun\Bin\LINQPad.Runtime.runtimeconfig.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="LPRun\Bin\LPRun6-x86.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="LPRun\Bin\LPRun6.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="LPRun\CSV\Books2.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="LPRun\Templates\StringComparison.linq">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="LPRun\Templates\SimilarFilesRelations.linq">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="LPRun\Templates\Extensions.linq">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="LPRun\Templates\Generation.linq">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="LPRun\Templates\Relations.linq">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="FluentAssertions" Version="5.10.3" />
-    <PackageReference Include="LINQPad.Reference" Version="1.1.0" />
-    <PackageReference Include="LINQPad.Runtime" Version="6.7.5" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.9.1" />
     <PackageReference Include="Moq" Version="4.16.1" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-    <PackageReference Include="NuGet.Packaging" Version="5.9.0" />
-    <PackageReference Include="NuGet.Versioning" Version="5.9.0" />
     <PackageReference Include="NUnit" Version="3.13.1" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.17.0">
       <PrivateAssets>all</PrivateAssets>

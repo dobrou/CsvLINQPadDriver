@@ -1,4 +1,4 @@
-@set version=6.6.0
+@set version=6.7.0
 @set zip="%ProgramFiles%\7-Zip\7z.exe"
 @set output="CsvLINQPadDriver.%version%.lpx6"
 

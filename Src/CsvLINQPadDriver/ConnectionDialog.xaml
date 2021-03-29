@@ -4,6 +4,7 @@
     xmlns:system="clr-namespace:System;assembly=System.Runtime"
     Title="CSV Files Connection"
     Icon="Connection.ico"
+    Background="{x:Static SystemColors.ControlBrush}"
     Width="640"
     Height="520"
     WindowStartupLocation="CenterScreen"
@@ -33,14 +34,14 @@
         </Grid.RowDefinitions>
 
         <DockPanel Grid.Row="0">
-            <Label Padding="0,0,0,3" Focusable="False" Content="CSV _files. Drag&amp;drop (use Ctrl to add files) or type one file/directory per line" DockPanel.Dock="Top" Target="{Binding ElementName=FilesTextBox}" />
+            <Label Padding="0,0,0,3" Focusable="False" Content="CSV _files. Drag&amp;Drop (Ctrl adds files) or type one file/directory per line" DockPanel.Dock="Top" Target="{Binding ElementName=FilesTextBox}" />
             <TextBox
             Name="FilesTextBox"
             AcceptsReturn="True" 
             HorizontalScrollBarVisibility="Auto"
             VerticalScrollBarVisibility="Auto"
             Text="{Binding Files, UpdateSourceTrigger=PropertyChanged}" 
-            ToolTip="CSV files. Drag&amp;drop (use Ctrl to add files) or type one file per line. Supports mask '*.csv' or recursive '**.csv'"
+            ToolTip="CSV files. Drag&amp;Drop (Ctrl adds files) or type one file per line. Supports mask '*.csv' or recursive '**.csv'"
             AllowDrop="True"
             PreviewDragEnter="FilesTextBox_DragEnter"
             PreviewDragOver="FilesTextBox_DragEnter"
@@ -48,13 +49,13 @@
         </DockPanel>
 
         <StackPanel Grid.Row="1">
-            <GroupBox Header="File format">
+            <GroupBox Header="Format">
             <StackPanel Margin="2" Height="Auto">
                 <DockPanel VerticalAlignment="Center">
-                    <Label Padding="0 0 4 0" Content="CSV _separator (autodetect if empty)"/>
-                    <TextBox MaxLength="6" MaxLines="1" Text="{Binding CsvSeparator}" ToolTip="Character used to separate columns in CSV file. If empty, separator is auto-detected for each file"/>
+                    <Label Padding="0 0 4 0" Content="CSV _separator (\t for tab). Auto-detected if empty"/>
+                    <TextBox MaxLength="6" MaxLines="1" Text="{Binding CsvSeparator}" ToolTip="Character used to separate columns in CSV file. Separator is auto-detected for each file if empty"/>
                 </DockPanel>
-                <CheckBox IsChecked="{Binding IgnoreInvalidFiles}" Content="Ignore files _with invalid format" ToolTip="_Ignore files with invalid format"/>
+                <CheckBox IsChecked="{Binding IgnoreInvalidFiles}" Content="Ignore files _with invalid format" ToolTip="Ignore files with invalid format"/>
             </StackPanel>
             </GroupBox>
             <GroupBox Header="Memory">
@@ -97,7 +98,7 @@
             <GroupBox Header="Relations">
                 <StackPanel Margin="2" Height="Auto">
                     <CheckBox IsChecked="{Binding DetectRelations}" Content="Detect _relations" ToolTip="Detect relations between CSV files/tables (based on files and column names)"/>
-                    <CheckBox IsChecked="{Binding HideRelationsFromDump}" IsEnabled="{Binding DetectRelations}" Content="_Hide relations from .Dump()" ToolTip="LINQPad will not show relations content in .Dump(). This prevents from loading too many data" Margin="16,0,0,0"/>
+                    <CheckBox IsChecked="{Binding HideRelationsFromDump}" IsEnabled="{Binding DetectRelations}" Content="_Hide relations from Dump()" ToolTip="LINQPad will not show relations content when Dump()ed. This prevents from loading too many data" Margin="16,0,0,0"/>
                 </StackPanel>
             </GroupBox>
             <StackPanel Margin="0,4,0,0">

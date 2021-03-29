@@ -28,7 +28,7 @@ namespace CsvLINQPadDriver.Helpers
             safeName = Regex.Replace(safeName, $"{SafeChar}+", SafeChar);
             safeName = Regex.Replace(safeName, $"^{SafeChar}+", string.Empty);
 
-            if (string.IsNullOrEmpty(safeName))
+            if (string.IsNullOrWhiteSpace(safeName))
             {
                 return $"{SafeChar}empty";
             }

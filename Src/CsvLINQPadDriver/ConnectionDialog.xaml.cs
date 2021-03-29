@@ -17,8 +17,6 @@ namespace CsvLINQPadDriver
     {
         public ConnectionDialog(ICsvDataContextDriverProperties csvDataContextDriverProperties)
         {
-            Background = SystemColors.ControlBrush;
-
             DataContext = csvDataContextDriverProperties;
 
             InitializeComponent();
