@@ -273,7 +273,7 @@ See below.
 - Relations can not be accessed via indexers.
 
 ```csharp
-var author = Authors.First()
+var author = Authors.First();
 
 // Property (preferable).
 var name = author.Name;
