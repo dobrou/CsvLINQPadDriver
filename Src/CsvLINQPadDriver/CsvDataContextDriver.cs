@@ -40,7 +40,7 @@ namespace CsvLINQPadDriver
                 parsedFilesCount switch
                 {
                     0 => $"({dateTime}, no files)",
-                    1 => $" ({totalFilesSize}, {dateTime})",
+                    1 => $" ({dateTime}, {totalFilesSize})",
                     _ => $" ({dateTime}, {"file".ToQuantity(parsedFilesCount)}, {totalFilesSize})"
                 };
         }
