@@ -9,7 +9,7 @@ namespace CsvLINQPadDriverTest.LPRun
 {
     internal static class ConnectionHeader
     {
-        public static string Get<T>(string driverAssemblyName, string driverNamespace, T driverConfig)
+        public static string Get<T>(string driverAssemblyName, string driverNamespace, T driverConfig, params string[] additionalNamespaces)
             where T : notnull =>
             $@"<Query Kind=""Statements"">
   <Connection>
@@ -19,7 +19,7 @@ namespace CsvLINQPadDriverTest.LPRun
     </DriverData>
   </Connection>
   <NuGetReference>FluentAssertions</NuGetReference>
-  <Namespace>FluentAssertions</Namespace>
+{string.Join(Environment.NewLine, new[] { "FluentAssertions" }.Concat(additionalNamespaces).Select(additionalNamespace => $"  <Namespace>{additionalNamespace}</Namespace>"))}
 </Query>";
 
         private static IEnumerable<(string Key, string Value)> GetKeyValues<T>(T driverConfig)

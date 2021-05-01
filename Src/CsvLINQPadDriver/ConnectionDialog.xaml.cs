@@ -81,8 +81,10 @@ namespace CsvLINQPadDriver
             e.CanExecute = Clipboard.ContainsText(TextDataFormat.Text) ||
                            Clipboard.ContainsText(TextDataFormat.UnicodeText);
 
-        private void Help_OnExecuted(object sender, ExecutedRoutedEventArgs e) =>
-            Process.Start(new ProcessStartInfo(((Hyperlink)e.OriginalSource).NavigateUri.OriginalString){ UseShellExecute = true });
+        private void Help_OnExecuted(object sender, ExecutedRoutedEventArgs e)
+        {
+            using var process = Process.Start(new ProcessStartInfo(((Hyperlink) e.OriginalSource).NavigateUri.OriginalString) { UseShellExecute = true });
+        }
 
         private void Help_OnCanExecute(object sender, CanExecuteRoutedEventArgs e) =>
             e.CanExecute = true;

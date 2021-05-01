@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 
 using Humanizer;
@@ -17,7 +18,38 @@ namespace CsvLINQPadDriver.Helpers
 {
     public static class FileUtils
     {
+        private const StringComparison FileNameComparison = StringComparison.OrdinalIgnoreCase;
+
+        private static readonly StringComparer FileNameComparer = StringComparer.OrdinalIgnoreCase;
         private static readonly Dictionary<string, string> StringInternCache = new();
+
+        private static readonly Lazy<IReadOnlyDictionary<NoBomEncoding, Encoding>> NoBomEncodings = new(CalculateNoBomEncodings);
+
+        [DllImport("kernel32.dll")]
+        private static extern int GetSystemDefaultLCID();
+
+        [DllImport("kernel32.dll")]
+        private static extern int GetUserDefaultLCID();
+
+        private static IReadOnlyDictionary<NoBomEncoding, Encoding> CalculateNoBomEncodings()
+        {
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+
+            return new Dictionary<NoBomEncoding, Encoding>
+            {
+                [NoBomEncoding.UTF8]             = Encoding.UTF8,
+                [NoBomEncoding.Unicode]          = Encoding.Unicode,
+                [NoBomEncoding.BigEndianUnicode] = Encoding.BigEndianUnicode,
+                [NoBomEncoding.UTF32]            = Encoding.UTF32,
+                [NoBomEncoding.BigEndianUTF32]   = new UTF32Encoding(true, true),
+                [NoBomEncoding.ASCII]            = Encoding.ASCII,
+                [NoBomEncoding.SystemCodePage]   = GetCodePageEncoding(false),
+                [NoBomEncoding.UserCodePage]     = GetCodePageEncoding(true)
+            };
+
+            static Encoding GetCodePageEncoding(bool user) =>
+                Encoding.GetEncoding(CultureInfo.GetCultureInfo(user ? GetUserDefaultLCID() : GetSystemDefaultLCID()).TextInfo.ANSICodePage);
+        }
 
         private static string? StringIntern(string? str) =>
             str switch
@@ -28,10 +60,10 @@ namespace CsvLINQPadDriver.Helpers
                         : StringInternCache[str] = str
             };
 
-        public static IEnumerable<T> CsvReadRows<T>(string fileName, char csvSeparator, bool internString, CsvRowMappingBase<T> csvClassMap)
+        public static IEnumerable<T> CsvReadRows<T>(string fileName, char csvSeparator, bool internString, NoBomEncoding noBomEncoding, bool allowComments, CsvRowMappingBase<T> csvClassMap)
             where T : ICsvRowBase, new()
         {
-            return CsvReadRows(fileName, csvSeparator)
+            return CsvReadRows(fileName, csvSeparator, noBomEncoding, allowComments)
                 .Skip(1) // Skip header.
                 .Select(GetRecord);
 
@@ -49,9 +81,9 @@ namespace CsvLINQPadDriver.Helpers
             }
         }
 
-        private static IEnumerable<string[]> CsvReadRows(string fileName, char csvSeparator)
+        private static IEnumerable<string[]> CsvReadRows(string fileName, char csvSeparator, NoBomEncoding noBomEncoding, bool allowComments)
         {
-            using var csvParser = CreateCsvParser(fileName, csvSeparator);
+            using var csvParser = CreateCsvParser(fileName, csvSeparator, noBomEncoding, allowComments);
 
             while (csvParser.Read())
             {
@@ -62,14 +94,14 @@ namespace CsvLINQPadDriver.Helpers
         public static string GetDefaultDrive() =>
             Path.GetPathRoot(Environment.SystemDirectory)!.ToLower();
 
-        public static IEnumerable<string> CsvReadHeader(string fileName, char csvSeparator)
+        public static IEnumerable<string> CsvReadHeader(string fileName, char csvSeparator, NoBomEncoding noBomEncoding, bool allowComments)
         {
-            using var csvParser = CreateCsvParser(fileName, csvSeparator);
+            using var csvParser = CreateCsvParser(fileName, csvSeparator, noBomEncoding, allowComments);
 
             return csvParser.Read() ? csvParser.Record : new string[0];
         }
 
-        public static bool IsCsvFormatValid(string fileName, char csvSeparator)
+        public static bool IsCsvFormatValid(string fileName, char csvSeparator, NoBomEncoding noBomEncoding, bool allowComments)
         {
             var header = $"{fileName} is not valid CSV file:";
 
@@ -82,7 +114,7 @@ namespace CsvLINQPadDriver.Helpers
 
             try
             {
-                using var csvParser = CreateCsvParser(fileName, csvSeparator);
+                using var csvParser = CreateCsvParser(fileName, csvSeparator, noBomEncoding, allowComments);
 
                 if (!csvParser.Read())
                 {
@@ -190,47 +222,84 @@ namespace CsvLINQPadDriver.Helpers
 
             return Enumerable.Range(1, filePaths.Length)
                 .Select(i => string.Join(Path.DirectorySeparatorChar, filePaths.Take(i).ToImmutableList()))
-                .LastOrDefault(prefix => pathsValid.All(path => path.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))) ?? string.Empty;
+                .LastOrDefault(prefix => pathsValid.All(path => path.StartsWith(prefix, FileNameComparison))) ?? string.Empty;
         }
 
         public static IEnumerable<string> EnumFiles(IEnumerable<string> paths) =>
             GetFilesOnly(paths)
                 .SelectMany(EnumFiles)
-                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .Distinct(FileNameComparer)
                 .ToImmutableList();
 
-        public static string GetHumanizedFileSize(string fileName)
+        public static string GetHumanizedFileSize(this string fileName) =>
+            GetHumanizedFileSize(GetFileSize(fileName));
+
+        public static string GetHumanizedFileSize(this IEnumerable<string> files) =>
+            GetHumanizedFileSize(files.Select(file => file).Sum(GetFileSize));
+
+        private static long GetFileSize(string fileName)
         {
             try
             {
-                return new FileInfo(fileName).Length.Bytes().Humanize("0.#");
+                return new FileInfo(fileName).Length;
             }
             catch (Exception exception)
             {
                 CsvDataContextDriver.WriteToLog($"Failed to get {fileName} size", exception);
-
-                return exception.Message;
+                return 0;
             }
         }
 
-        private static CsvParser CreateCsvParser(string fileName, char csvSeparator)
+        private static string GetHumanizedFileSize(long size) =>
+            size.Bytes().Humanize("0.#");
+
+        private static CsvParser CreateCsvParser(string fileName, char csvSeparator, NoBomEncoding noBomEncoding, bool allowComments)
         {
+            const int bufferSize = 4096 * 20;
+
             var csvConfiguration = new CsvConfiguration(CultureInfo.InvariantCulture)
             {
                 Delimiter = csvSeparator.ToString(),
+                AllowComments = allowComments,
                 HasHeaderRecord = false,
                 DetectColumnCountChanges = false,
-                BufferSize = 4096 * 20
+                BufferSize = bufferSize,
+                ProcessFieldBufferSize = bufferSize
             };
 
-            return new CsvParser(new StreamReader(fileName, Encoding.Default, true, csvConfiguration.BufferSize / sizeof(char)), csvConfiguration);
+            return new CsvParser(new StreamReader(fileName, NoBomEncodings.Value[noBomEncoding], true, bufferSize / sizeof(char)), csvConfiguration);
         }
 
         public static IEnumerable<string> GetFilesOnly(this IEnumerable<string> paths) =>
             paths
                 .Select(path => path.Trim())
                 .Where(path => !path.StartsWith("#"))
-                .Where(path => !string.IsNullOrWhiteSpace(path));
+                .Where(path => !string.IsNullOrWhiteSpace(path))
+                .Distinct(FileNameComparer);
+
+        public static IEnumerable<string> OrderFiles(this IEnumerable<string> files, FilesOrderBy filesOrderBy)
+        {
+            if (filesOrderBy == FilesOrderBy.None)
+            {
+                return files;
+            }
+
+            var fileInfos = files.Select(file => new FileInfo(file));
+
+            // ReSharper disable once SwitchExpressionHandlesSomeKnownEnumValuesWithExceptionInDefault
+            fileInfos = filesOrderBy switch
+            {
+                FilesOrderBy.NameAsc => fileInfos.OrderBy(fileInfo => fileInfo.Name, FileNameComparer),
+                FilesOrderBy.NameDesc => fileInfos.OrderByDescending(fileInfo => fileInfo.Name, FileNameComparer),
+                FilesOrderBy.SizeAsc => fileInfos.OrderBy(fileInfo => fileInfo.Length),
+                FilesOrderBy.SizeDesc => fileInfos.OrderByDescending(fileInfo => fileInfo.Length),
+                FilesOrderBy.LastWriteTimeAsc => fileInfos.OrderBy(fileInfo => fileInfo.LastWriteTimeUtc),
+                FilesOrderBy.LastWriteTimeDesc => fileInfos.OrderByDescending(fileInfo => fileInfo.LastWriteTimeUtc),
+                _ => throw new ArgumentOutOfRangeException(nameof(filesOrderBy), filesOrderBy, $"Unknown {filesOrderBy}")
+            };
+
+            return fileInfos.Select(fileInfo => fileInfo.FullName);
+        }
 
         private static IEnumerable<string> EnumFiles(string path)
         {

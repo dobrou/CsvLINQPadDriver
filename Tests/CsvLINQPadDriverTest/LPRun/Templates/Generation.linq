@@ -62,4 +62,7 @@ new Action(() => copy[3] = "")
 	.WithMessage("There is no property *3*", Reason());
 
 // Generate single class for similar files.
-Authors.First().GetType().Equals(Authors2.First().GetType()).Should().Be(context.UseSingleClassForSameFiles, Reason());
+Authors.First().GetType()
+	.Equals(Authors2.First().GetType())
+	.Should()
+	.Be(context.UseSingleClassForSameFiles, Reason());

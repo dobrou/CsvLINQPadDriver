@@ -8,7 +8,7 @@ namespace CsvLINQPadDriverTest.LPRun
     {
         public static void Install(string driverDir, params string[] files)
         {
-            string driverPath = Path.Combine(Context.GetExeFullPath(@"drivers\DataContext\NetCore"), driverDir);
+            var driverPath = Path.Combine(Context.GetExeFullPath(@"drivers\DataContext\NetCore"), driverDir);
 
             Directory.CreateDirectory(driverPath);
 

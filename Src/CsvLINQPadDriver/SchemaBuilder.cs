@@ -8,6 +8,7 @@ using CsvHelper;
 
 using CsvLINQPadDriver.CodeGen;
 using CsvLINQPadDriver.DataModel;
+using CsvLINQPadDriver.Helpers;
 
 using LINQPad.Extensibility.DataContext;
 
@@ -50,11 +51,12 @@ namespace CsvLINQPadDriver
             {
                 foreach (var tableCodeGroup in tableCodeGroups.Where(codeGroup => codeGroup.Count() > 1))
                 {
-                    var codeNames = tableCodeGroup.Select(g => g.CodeName).ToImmutableList();
+                    var codeNames = tableCodeGroup.Select(typeCodeResult => typeCodeResult.CodeName).ToImmutableList();
+                    var similarFilesSize = tableCodeGroup.Select(typeCodeResult => typeCodeResult.FilePath).GetHumanizedFileSize();
 
                     var total = $"({codeNames.Count} of {csvDatabase.Files.Count})";
 
-                    schema.Insert(index++, new ExplorerItem($"{codeNames.First()} similar files {total} joined data", ExplorerItemKind.Schema, ExplorerIcon.View)
+                    schema.Insert(index++, new ExplorerItem($"{codeNames.First()} similar files {total} joined data ({similarFilesSize})", ExplorerItemKind.Schema, ExplorerIcon.View)
                     {
                         ToolTipText = $"Drag&drop similar files {total} joined data to text window{Environment.NewLine}{Environment.NewLine}" +
                                       $"{string.Join(Environment.NewLine, codeNames.Count <= 3 ? codeNames : codeNames.Take(2).Concat(new []{ "..." }).Concat(codeNames.Skip(codeNames.Count-1)))}",

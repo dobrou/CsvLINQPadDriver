@@ -34,10 +34,26 @@ namespace CsvLINQPadDriver
             set => SetValue(value);
         }
 
+        public FilesOrderBy FilesOrderBy
+        {
+            get => GetValue(FilesOrderBy.None);
+            set => SetValue(value);
+        }
+
+        public NoBomEncoding NoBomEncoding
+        {
+            get => GetValue(NoBomEncoding.UTF8);
+            set => SetValue(value);
+        }
+
+        public bool AllowComments
+        {
+            get => GetValue(false);
+            set => SetValue(value);
+        }
+
         public IEnumerable<string> ParsedFiles =>
-            Regex.Split(Files, @"[\r\n]+")
-                .GetFilesOnly()
-                .Distinct(StringComparer.InvariantCultureIgnoreCase);
+            Regex.Split(Files, @"[\r\n]+").GetFilesOnly();
 
         public string CsvSeparator
         {

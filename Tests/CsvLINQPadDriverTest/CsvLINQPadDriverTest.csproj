@@ -24,10 +24,14 @@
     <None Remove="LPRun\CSV\Authors2.csv" />
     <None Remove="LPRun\CSV\Books.csv" />
     <None Remove="LPRun\CSV\Books2.csv" />
+    <None Remove="LPRun\CSV\Comments.csv" />
+    <None Remove="LPRun\CSV\Encoding\Utf8Cp65001.csv" />
     <None Remove="LPRun\LINQPad.Runtime.dll" />
     <None Remove="LPRun\LINQPad.Runtime.runtimeconfig.json" />
     <None Remove="LPRun\LPRun6-x86.exe" />
     <None Remove="LPRun\LPRun6.exe" />
+    <None Remove="LPRun\Templates\Comments.linq" />
+    <None Remove="LPRun\Templates\Encoding.linq" />
     <None Remove="LPRun\Templates\Extensions.linq" />
     <None Remove="LPRun\Templates\Generation.linq" />
     <None Remove="LPRun\Templates\Relations.linq" />
@@ -60,6 +64,18 @@
     <Content Include="LPRun\CSV\Books2.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="LPRun\CSV\Comments.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="LPRun\CSV\Encoding\Utf8Cp65001.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="LPRun\Templates\Encoding.linq">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="LPRun\Templates\Comments.linq">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="LPRun\Templates\StringComparison.linq">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -79,9 +95,9 @@
 
   <ItemGroup>
     <PackageReference Include="FluentAssertions" Version="5.10.3" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.9.1" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.9.4" />
     <PackageReference Include="Moq" Version="4.16.1" />
-    <PackageReference Include="NUnit" Version="3.13.1" />
+    <PackageReference Include="NUnit" Version="3.13.2" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.17.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

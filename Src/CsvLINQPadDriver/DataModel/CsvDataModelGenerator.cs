@@ -28,6 +28,7 @@ namespace CsvLINQPadDriver.DataModel
         {
             var files = FileUtils
                 .EnumFiles(_csvDataContextDriverProperties.ParsedFiles)
+                .OrderFiles(_csvDataContextDriverProperties.FilesOrderBy)
                 .ToImmutableList();
 
             var baseDir = FileUtils.GetLongestCommonPrefixPath(files);
@@ -64,8 +65,11 @@ namespace CsvLINQPadDriver.DataModel
                 foreach (var file in files.Where(File.Exists))
                 {
                     var csvSeparator = _csvDataContextDriverProperties.CsvSeparatorChar ?? FileUtils.CsvDetectSeparator(file);
+                    var noBomEncoding = _csvDataContextDriverProperties.NoBomEncoding;
+                    var allowComments = _csvDataContextDriverProperties.AllowComments;
 
-                    if (_csvDataContextDriverProperties.IgnoreInvalidFiles && !FileUtils.IsCsvFormatValid(file, csvSeparator))
+                    if (_csvDataContextDriverProperties.IgnoreInvalidFiles &&
+                        !FileUtils.IsCsvFormatValid(file, csvSeparator, noBomEncoding, allowComments))
                     {
                         continue;
                     }
@@ -74,7 +78,7 @@ namespace CsvLINQPadDriver.DataModel
                     var fileDir = (Path.GetDirectoryName($"{file.Remove(0, baseDir.Length)}x") ?? string.Empty).TrimStart(Path.DirectorySeparatorChar);
                     var codeName = CodeGenHelper.GetSafeCodeName(Path.GetFileNameWithoutExtension(fileName) + (string.IsNullOrWhiteSpace(fileDir) ? string.Empty : $"_{fileDir}"));
 
-                    var columns = FileUtils.CsvReadHeader(file, csvSeparator)
+                    var columns = FileUtils.CsvReadHeader(file, csvSeparator, noBomEncoding, allowComments)
                         .Select((value, index) => (value, index))
                         .Select(col => new CsvColumn(col.value ?? string.Empty, col.index)
                         {
@@ -87,7 +91,7 @@ namespace CsvLINQPadDriver.DataModel
                     {
                         CodeName    = codeName,
                         ClassName   = GetClassName(),
-                        DisplayName = $"{fileName}{(string.IsNullOrWhiteSpace(fileDir) ? string.Empty : $" in {fileDir}")} {FileUtils.GetHumanizedFileSize(file)}"
+                        DisplayName = $"{fileName}{(string.IsNullOrWhiteSpace(fileDir) ? string.Empty : $" in {fileDir}")} {file.GetHumanizedFileSize()}"
                     };
 
                     string? GetClassName()
@@ -195,8 +199,8 @@ namespace CsvLINQPadDriver.DataModel
             // t1.nameID -> names.ID
             // t1.nameID -> name.nameID
             // t1.nameID -> names.nameID
-            // t1.fishID -> fishes.fishID
-            // t1.fishID -> fishes.ID
+            // t1.bookID -> books.authorID
+            // t1.bookID -> books.ID
             var csvTableColumns = from csvTable in csvTables
                 let keyNamesForeign = GetTableForeignKeyPossibleNames(csvTable)
                 let keyNames = keyNamesForeign.Concat(new []{ "id" })

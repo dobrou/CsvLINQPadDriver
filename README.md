@@ -17,6 +17,7 @@
 * [Usage](#usage)
 * [Configuration Options](#configuration-options)
   * [General](#general)
+  * [Files](#files)
   * [Format](#format)
   * [Memory](#memory)
   * [Generation](#generation)
@@ -145,21 +146,28 @@ CSV context can be added to LINQPad 6 same way as any other context.
 
 - Click `Add connection`.
 - Select `CSV Context Driver` and click `Next`.
-- Enter CSV file names or Drag&Drop (Ctrl adds files) from Explorer. Optionally configure other options.
+- Enter CSV file names or Drag&Drop (`Ctrl` adds files) from Explorer. Optionally configure other options.
 - Query your data.
 
 ## Configuration Options ##
 
 ### General ###
 
-- **CSV files** - list of CSV files and directories. Type one file/dir per line or Drag&Drop (Ctrl adds files) from explorer. Supports special wildcards: `*` and `**`.
+- **CSV files** - list of CSV files and directories. Type one file/dir per line or Drag&Drop (`Ctrl` adds files) from explorer. Supports special wildcards: `*` and `**`.
   - `c:\x\*.csv` - all files in folder `c:\x`.
   - `c:\x\**.csv` - all files in folder `c:\x` and all sub-directories.
+
+- No BOM encoding - specifies encoding for files without [BOM](https://en.wikipedia.org/wiki/Byte_order_mark). `UTF-8` is default.
+
+### Files ###
+
+- Order by - specifies files sort order. Affects similar files order.
 
 ### Format ###
 
 - CSV separator - character used to separate columns in files. Can be `,`, `\t`, etc. Auto-detected if empty.
 - Ignore files with invalid format - files with strange content not similar to CSV format will be ignored.
+- Allow comments - lines starting with `#` will be ignored.
 
 ### Memory ###
 
@@ -170,7 +178,7 @@ CSV context can be added to LINQPad 6 same way as any other context.
 
 ### Generation ###
 
-- Generate single class for similar files - single class will be generated for similar files which allows to query them as single one. Might not work well for files with relations.
+- Generate single class for similar files - single class will be generated for similar files which allows to query them as a single one. Might not work well for files with relations.
 - String comparison - string comparison for `Equals` and `GetHashCode` methods.
 
 ### Relations ###
@@ -261,7 +269,7 @@ string this[int index] { get; set; }
 string this[string index] { get; set; }
 ```
 
-See below.
+See [properties access](#properties-access) below.
 
 > Relations are not participated.
 
@@ -299,7 +307,7 @@ Authors.First()
 
 ### Extension Methods ###
 
-Driver provides extension methods for converting string to nullable types:
+Driver provides extension methods for converting string to `T?`. `CultureInfo.InvariantCulture` is used by default.
 
 ```csharp
 // Bool.
@@ -310,6 +318,9 @@ int? ToInt(CultureInfo? cultureInfo = null);
 
 // Long.
 long? ToLong(CultureInfo? cultureInfo = null);
+
+// Float.
+float? ToFloat(CultureInfo? cultureInfo = null);
 
 // Double.
 double? ToDouble(CultureInfo? cultureInfo = null);
@@ -353,8 +364,9 @@ TimeSpan? ToTimeSpan(
 
 ## Known Issues ##
 
+- Default encoding for files without BOM is UTF-8.
 - Some strange Unicode characters in column names may cause errors in generated data context source code.
-- Writing changed objects back to CSV is not directly supported, there is no `SubmitChanges()` . But you can use LINQPad's `Util.WriteCsv`.
+- Writing changed objects back to CSV is not directly supported, there is no `SubmitChanges()`. But you can use LINQPad's `Util.WriteCsv`.
 - Similar files single class generation does not detect relations correctly. However, you can query over related multiple files.
 
 ## Authors ##

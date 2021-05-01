@@ -15,6 +15,21 @@ namespace CsvLINQPadDriver
         /// </summary>
         string Files { get; set; }
 
+        /// <summary>
+        /// Files order by.
+        /// </summary>
+        FilesOrderBy FilesOrderBy { get; set; }
+
+        /// <summary>
+        /// Files without BOM encoding.
+        /// </summary>
+        NoBomEncoding NoBomEncoding { get; set; }
+
+        /// <summary>
+        /// Allow CSV comments.
+        /// </summary>
+        bool AllowComments { get; set; }
+
         public IEnumerable<string> ParsedFiles { get; }
 
         /// <summary>

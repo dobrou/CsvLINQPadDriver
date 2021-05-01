@@ -33,23 +33,26 @@ namespace CsvLINQPadDriver.CodeGen
             _properties = properties;
         }
 
+        public record TypeCodeResult(string TypeName, string Code, string CodeName, string FilePath);
+        public record Result(string Code, IReadOnlyCollection<IGrouping<string, TypeCodeResult>> CodeGroups);
+
         // ReSharper disable once RedundantAssignment
-        public static (string Code, IReadOnlyCollection<IGrouping<string, (string Type, string Code, string CodeName)>> CodeGroups)
-            GenerateCode(CsvDatabase db, ref string nameSpace, ref string typeName, ICsvDataContextDriverProperties props) =>
+        public static Result GenerateCode(CsvDatabase db, ref string nameSpace, ref string typeName, ICsvDataContextDriverProperties props) =>
             new CsvCSharpCodeGenerator(nameSpace, typeName = DefaultContextTypeName, props).GenerateSrcFile(db);
 
-        private (string, IReadOnlyCollection<IGrouping<string, (string Type, string Code, string CodeName)>>) GenerateSrcFile(CsvDatabase csvDatabase)
+        private Result GenerateSrcFile(CsvDatabase csvDatabase)
         {
             var csvTables = csvDatabase.Tables;
 
             var groups = csvTables
                     .Select(table => GenerateTableRowDataTypeClass(table, _properties.HideRelationsFromDump, _properties.StringComparison))
-                    .GroupBy(typeCode => typeCode.Type)
+                    .GroupBy(typeCode => typeCode.TypeName)
                     .ToImmutableList();
 
-            return ($@"using System;
-using System.Linq;
+            return new Result($@"using System;
 using System.Collections.Generic;
+
+using CsvLINQPadDriver;
 
 namespace {_contextNameSpace}
 {{
@@ -67,6 +70,8 @@ namespace {_contextNameSpace}
                 {GetBoolConst(_properties.IsStringInternEnabled)},
                 {GetBoolConst(_properties.IsCacheEnabled)},
                 {table.CsvSeparator.AsValidCSharpCode()},
+                {nameof(NoBomEncoding)}.{_properties.NoBomEncoding},
+                {GetBoolConst(_properties.AllowComments)},
                 {table.FilePath.AsValidCSharpCode()},
                 new {typeof(CsvColumnInfoList<>).GetCodeTypeClassName(GetClassName(table))} {{
                     {string.Join(string.Empty, table.Columns.Select(c => $@"{{ {c.Index}, x => x.{c.CodeName} }}, "))}
@@ -88,12 +93,12 @@ namespace {_contextNameSpace}
                 val ? "true" : "false";
         }
 
-        private static (string Type, string Code, string CodeName) GenerateTableRowDataTypeClass(CsvTable table, bool hideRelationsFromDump, StringComparison stringComparison)
+        private static TypeCodeResult GenerateTableRowDataTypeClass(CsvTable table, bool hideRelationsFromDump, StringComparison stringComparison)
         {
             var className = GetClassName(table);
             var properties = table.Columns.Select(GetPropertyName).ToImmutableList();
 
-            return (className, $@"
+            return new TypeCodeResult(className, $@"
     public sealed record {className} : {typeof(ICsvRowBase).GetCodeTypeClassName()}
     {{{string.Join(string.Empty, table.Columns.Select(csvColumn => $@"
         public string {GetPropertyName(csvColumn)} {{ get; set; }}"))}
@@ -106,7 +111,7 @@ namespace {_contextNameSpace}
         [{typeof(HideFromDumpAttribute).GetCodeTypeClassName()}]" : string.Empty)}
         public IEnumerable<{csvRelation.TargetTable.GetCodeRowClassName()}> {csvRelation.CodeName} {{ get; set; }}")
             )}
-    }}", table.CodeName!);
+    }}", table.CodeName!, table.FilePath);
 
             static string GetPropertyName(ICsvNames csvColumn) =>
                 csvColumn.CodeName!;

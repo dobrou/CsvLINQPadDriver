@@ -18,6 +18,9 @@ namespace CsvLINQPadDriver.Helpers
         public static long? ToLong(this string? str, CultureInfo? cultureInfo = null) =>
             GetValueOrNull(long.TryParse(str, NumberStyles.Integer, SelectCulture(cultureInfo), out var parsedValue), parsedValue);
 
+        public static float? ToFloat(this string? str, CultureInfo? cultureInfo = null) =>
+            GetValueOrNull(float.TryParse(str, NumberStyles.Float | NumberStyles.AllowThousands, SelectCulture(cultureInfo), out var parsedValue), parsedValue);
+
         public static double? ToDouble(this string? str, CultureInfo? cultureInfo = null) =>
             GetValueOrNull(double.TryParse(str, NumberStyles.Float | NumberStyles.AllowThousands, SelectCulture(cultureInfo), out var parsedValue), parsedValue);
 
@@ -69,6 +72,7 @@ namespace CsvLINQPadDriver.Helpers
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static T? GetValueOrNull<T>(bool converted, T value) where T: struct =>
+            // ReSharper disable once RedundantCast
             converted ? value : (T?)null;
     }
 }
