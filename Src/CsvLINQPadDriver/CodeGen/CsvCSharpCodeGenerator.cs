@@ -17,7 +17,7 @@ using CsvLINQPadDriver.Helpers;
 
 namespace CsvLINQPadDriver.CodeGen
 {
-    public class CsvCSharpCodeGenerator
+    internal class CsvCSharpCodeGenerator
     {
         private const string DefaultContextTypeName = "CsvDataContext";
 
@@ -37,7 +37,7 @@ namespace CsvLINQPadDriver.CodeGen
         public record Result(string Code, IReadOnlyCollection<IGrouping<string, TypeCodeResult>> CodeGroups);
 
         // ReSharper disable once RedundantAssignment
-        public static Result GenerateCode(CsvDatabase db, ref string nameSpace, ref string typeName, ICsvDataContextDriverProperties props) =>
+        internal static Result GenerateCode(CsvDatabase db, ref string nameSpace, ref string typeName, ICsvDataContextDriverProperties props) =>
             new CsvCSharpCodeGenerator(nameSpace, typeName = DefaultContextTypeName, props).GenerateSrcFile(db);
 
         private Result GenerateSrcFile(CsvDatabase csvDatabase)

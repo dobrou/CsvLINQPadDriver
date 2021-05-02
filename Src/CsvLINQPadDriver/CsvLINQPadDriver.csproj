@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <UseWpf>true</UseWpf>
-    <Deterministic>false</Deterministic>
+    <Deterministic>true</Deterministic>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <LangVersion>9.0</LangVersion>
     <Nullable>enable</Nullable>
@@ -19,7 +19,7 @@
     <Authors>Martin Dobroucký (dobrou@gmail.com), Ivan Ivon (ivan.ivon@gmail.com)</Authors>
     <RepositoryType>git</RepositoryType>
     <PackageTags>linqpaddriver csv</PackageTags>
-    <PackageProjectUrl>https://github.com/i2van/CsvLINQPadDriver/</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/i2van/CsvLINQPadDriver</PackageProjectUrl>
     <Description>LINQPad 6 CSV driver.</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/i2van/CsvLINQPadDriver</RepositoryUrl>

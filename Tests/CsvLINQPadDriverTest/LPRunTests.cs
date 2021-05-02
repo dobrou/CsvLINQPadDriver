@@ -11,14 +11,14 @@ using Moq;
 using NUnit.Framework;
 
 using CsvLINQPadDriver;
-using CsvLINQPadDriverTest.LPRun;
+using LPRun;
 
 namespace CsvLINQPadDriverTest
 {
     [TestFixture]
     public class LPRunTests
     {
-        private static readonly string Files = Context.GetCsvFullPath("**.csv");
+        private static readonly string Files = Context.GetDataFullPath("**.csv");
 
         [OneTimeSetUp]
         public void Init()
@@ -46,7 +46,7 @@ namespace CsvLINQPadDriverTest
                 }
 
                 static string GetFilePath(string fileName) =>
-                    Context.GetCsvFullPath(Path.Combine("Encoding", $"{fileName}.csv"));
+                    Context.GetDataFullPath(Path.Combine("Encoding", $"{fileName}.csv"));
             }
         }
 

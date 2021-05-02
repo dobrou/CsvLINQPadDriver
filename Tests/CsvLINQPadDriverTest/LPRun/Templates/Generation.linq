@@ -8,10 +8,23 @@ copy.Should().NotBeSameAs(original, Reason());
 copy.Should().NotBeSameAs(modifiedCopy, Reason());
 
 // Equality.
+original.Should().NotBe(Authors.First(), Reason());
+
 copy.Should().Be(original, Reason());
 copy.Should().Be((object)original, Reason());
 
 copy.Should().NotBe(modifiedCopy, Reason());
+
+copy.Equals(null).Should().BeFalse(Reason());
+
+copy.Equals(original).Should().BeTrue(Reason());
+copy.Equals((object)original).Should().BeTrue(Reason());
+
+(copy == original).Should().BeTrue(Reason());
+(copy != original).Should().BeFalse(Reason());
+
+(copy == null).Should().BeFalse(Reason());
+(copy != null).Should().BeTrue(Reason());
 
 // Hash code.
 copy.GetHashCode().Should().Be(original.GetHashCode(), Reason());

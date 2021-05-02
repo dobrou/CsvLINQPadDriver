@@ -10,7 +10,7 @@ using CsvLINQPadDriver.Helpers;
 
 namespace CsvLINQPadDriver.DataModel
 {
-    public class CsvDataModelGenerator
+    internal class CsvDataModelGenerator
     {
         private const StringComparison IdsComparison = StringComparison.OrdinalIgnoreCase;
 

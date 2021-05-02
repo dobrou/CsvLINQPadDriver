@@ -2,7 +2,7 @@
 
 namespace CsvLINQPadDriver.DataModel
 {
-    public record CsvTable
+    internal record CsvTable
     (
         string FilePath,
         char? CsvSeparator,
@@ -13,7 +13,7 @@ namespace CsvLINQPadDriver.DataModel
     {
         public string? CodeName { get; set; }
         public string? DisplayName { get; set; }
-        
+
         public string? ClassName
         {
             get => _className ?? CodeName;

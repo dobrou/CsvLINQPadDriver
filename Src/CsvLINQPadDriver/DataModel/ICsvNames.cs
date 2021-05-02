@@ -1,6 +1,6 @@
 ﻿namespace CsvLINQPadDriver.DataModel
 {
-    public interface ICsvNames
+    internal interface ICsvNames
     {
         string? CodeName { get; set; }
         string? DisplayName { get; set; }

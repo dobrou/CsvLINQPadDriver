@@ -2,9 +2,9 @@
 using System.IO;
 using System.Linq;
 
-namespace CsvLINQPadDriverTest.LPRun
+namespace LPRun
 {
-    internal static class Driver
+    public static class Driver
     {
         public static void Install(string driverDir, params string[] files)
         {

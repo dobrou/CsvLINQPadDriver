@@ -1,8 +1,8 @@
 ﻿using System.IO;
 
-namespace CsvLINQPadDriverTest.LPRun
+namespace LPRun
 {
-    internal static class LinqScript
+    public static class LinqScript
     {
         public static string Create(string file, string connection)
         {

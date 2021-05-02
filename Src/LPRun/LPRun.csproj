@@ -1,0 +1,64 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <Deterministic>true</Deterministic>
+    <LangVersion>9.0</LangVersion>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Authors>Ivan Ivon (ivan.ivon@gmail.com), LINQPad/LPRun by Joseph Albahari</Authors>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>linqpad lprun tests unittests integrationtests</PackageTags>
+    <PackageProjectUrl>https://github.com/i2van/CsvLINQPadDriver/tree/master/Src/LPRun</PackageProjectUrl>
+    <Description>LINQPad driver LPRun unit/integration tests runner.</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <RepositoryUrl>https://github.com/i2van/CsvLINQPadDriver</RepositoryUrl>
+    <PackageReleaseNotes>LPRun 6.13.13</PackageReleaseNotes>
+    <Copyright>Copyright © 2021 Ivan Ivon, LINQPad/LPRun by Joseph Albahari</Copyright>
+    <AssemblyVersion>6.13.13.0</AssemblyVersion>
+    <FileVersion>6.13.13.0</FileVersion>
+    <Version>6.13.13</Version>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <NoWarn>1701;1702;NU5100</NoWarn>
+    <OutputPath>..\..\bin\Release</OutputPath>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <NoWarn>1701;1702;NU5100</NoWarn>
+    <OutputPath>..\..\bin\Debug</OutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="LPRun\Bin\LINQPad.Runtime.dll" />
+    <None Remove="LPRun\Bin\LINQPad.Runtime.runtimeconfig.json" />
+    <None Remove="LPRun\Bin\LPRun6-x86.exe" />
+    <None Remove="LPRun\Bin\LPRun6.exe" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="LPRun\Bin\LINQPad.Runtime.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+    </Content>
+    <Content Include="LPRun\Bin\LINQPad.Runtime.runtimeconfig.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+    </Content>
+    <Content Include="LPRun\Bin\LPRun6-x86.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+    </Content>
+    <Content Include="LPRun\Bin\LPRun6.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+    </Content>
+  </ItemGroup>
+
+</Project>

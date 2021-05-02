@@ -1,38 +1,39 @@
 ﻿using System;
-using System.IO;
 using System.Reflection;
 
-namespace CsvLINQPadDriverTest.LPRun
+using static System.IO.Path;
+
+namespace LPRun
 {
-    internal static class Context
+    public static class Context
     {
-        private static readonly string BaseDir = Path.GetDirectoryName(new Uri(Assembly.GetExecutingAssembly().CodeBase!).LocalPath)!;
+        private static readonly string BaseDir = GetDirectoryName(new Uri(Assembly.GetExecutingAssembly().CodeBase!).LocalPath)!;
         private static readonly string LpRunDir = GetFullPath("LPRun");
 
         private static readonly string ExeDir = GetLpRunFullPath("Bin");
         private static readonly string TemplatesDir = GetLpRunFullPath("Templates");
-        private static readonly string CsvDir = GetLpRunFullPath("CSV");
+        private static readonly string DataDir = GetLpRunFullPath("Data");
 
         public static string FilesDir { get; } = GetLpRunFullPath("Files");
-        public static string Exe { get; } = Path.Combine(ExeDir, GetLpRunExe());
+        public static string Exe { get; } = Combine(ExeDir, GetLpRunExe());
 
         public static string GetExeFullPath(string path) =>
-            Path.Combine(ExeDir, path);
+            Combine(ExeDir, path);
 
-        public static string GetCsvFullPath(string path) =>
-            Path.Combine(CsvDir, path);
+        public static string GetDataFullPath(string path) =>
+            Combine(DataDir, path);
 
         public static string GetTemplatesFullPath(string path) =>
-            Path.Combine(TemplatesDir, path);
+            Combine(TemplatesDir, path);
 
         public static string GetFilesFullPath(string path) =>
-            Path.Combine(FilesDir, path);
+            Combine(FilesDir, path);
 
         public static string GetFullPath(string path) =>
-            Path.Combine(BaseDir, path);
+            Combine(BaseDir, path);
 
         private static string GetLpRunFullPath(string path) =>
-            Path.Combine(LpRunDir, path);
+            Combine(LpRunDir, path);
 
         private static string GetLpRunExe() =>
             Environment.Is64BitProcess

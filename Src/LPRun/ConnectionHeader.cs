@@ -5,9 +5,9 @@ using System.Linq;
 using System.Reflection;
 using System.Security;
 
-namespace CsvLINQPadDriverTest.LPRun
+namespace LPRun
 {
-    internal static class ConnectionHeader
+    public static class ConnectionHeader
     {
         public static string Get<T>(string driverAssemblyName, string driverNamespace, T driverConfig, params string[] additionalNamespaces)
             where T : notnull =>

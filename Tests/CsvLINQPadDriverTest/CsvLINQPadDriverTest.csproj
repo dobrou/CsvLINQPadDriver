@@ -20,12 +20,12 @@
 
   <ItemGroup>
     <None Remove="Fishes3.linq" />
-    <None Remove="LPRun\CSV\Authors.csv" />
-    <None Remove="LPRun\CSV\Authors2.csv" />
-    <None Remove="LPRun\CSV\Books.csv" />
-    <None Remove="LPRun\CSV\Books2.csv" />
-    <None Remove="LPRun\CSV\Comments.csv" />
-    <None Remove="LPRun\CSV\Encoding\Utf8Cp65001.csv" />
+    <None Remove="LPRun\Data\Authors.csv" />
+    <None Remove="LPRun\Data\Authors2.csv" />
+    <None Remove="LPRun\Data\Books.csv" />
+    <None Remove="LPRun\Data\Books2.csv" />
+    <None Remove="LPRun\Data\Comments.csv" />
+    <None Remove="LPRun\Data\Encoding\Utf8Cp65001.csv" />
     <None Remove="LPRun\LINQPad.Runtime.dll" />
     <None Remove="LPRun\LINQPad.Runtime.runtimeconfig.json" />
     <None Remove="LPRun\LPRun6-x86.exe" />
@@ -40,34 +40,22 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="LPRun\CSV\Authors2.csv">
+    <Content Include="LPRun\Data\Authors2.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="LPRun\CSV\Books.csv">
+    <Content Include="LPRun\Data\Books.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="LPRun\CSV\Authors.csv">
+    <Content Include="LPRun\Data\Authors.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="LPRun\Bin\LINQPad.Runtime.dll">
+    <Content Include="LPRun\Data\Books2.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="LPRun\Bin\LINQPad.Runtime.runtimeconfig.json">
+    <Content Include="LPRun\Data\Comments.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="LPRun\Bin\LPRun6-x86.exe">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="LPRun\Bin\LPRun6.exe">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="LPRun\CSV\Books2.csv">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="LPRun\CSV\Comments.csv">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="LPRun\CSV\Encoding\Utf8Cp65001.csv">
+    <Content Include="LPRun\Data\Encoding\Utf8Cp65001.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="LPRun\Templates\Encoding.linq">
@@ -95,6 +83,7 @@
 
   <ItemGroup>
     <PackageReference Include="FluentAssertions" Version="5.10.3" />
+    <PackageReference Include="LPRun" Version="6.13.13" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.9.4" />
     <PackageReference Include="Moq" Version="4.16.1" />
     <PackageReference Include="NUnit" Version="3.13.2" />

@@ -2,11 +2,11 @@
 using System.Diagnostics;
 using System.Text;
 
-namespace CsvLINQPadDriverTest.LPRun
+namespace LPRun
 {
-    internal static class Runner
+    public static class Runner
     {
-        internal record Result(string Output, string Error, int ExitCode);
+        public record Result(string Output, string Error, int ExitCode);
 
         public static Result Execute(string linqFile, TimeSpan waitForExit)
         {
