@@ -26,12 +26,11 @@ namespace CsvLINQPadDriver.DataModel
 
         private CsvDatabase CreateModel() 
         {
-            var files = FileUtils
-                .EnumFiles(_csvDataContextDriverProperties.ParsedFiles)
+            var files = _csvDataContextDriverProperties.ParsedFiles.EnumFiles()
                 .OrderFiles(_csvDataContextDriverProperties.FilesOrderBy)
                 .ToImmutableList();
 
-            var baseDir = FileUtils.GetLongestCommonPrefixPath(files);
+            var baseDir = files.GetLongestCommonPrefixPath();
 
             var csvDatabase = new CsvDatabase(baseDir, CreateTables().ToImmutableList(), files);
 
@@ -64,12 +63,12 @@ namespace CsvLINQPadDriver.DataModel
 
                 foreach (var file in files.Where(File.Exists))
                 {
-                    var csvSeparator = _csvDataContextDriverProperties.CsvSeparatorChar ?? FileUtils.CsvDetectSeparator(file);
+                    var csvSeparator = _csvDataContextDriverProperties.CsvSeparatorChar;
                     var noBomEncoding = _csvDataContextDriverProperties.NoBomEncoding;
                     var allowComments = _csvDataContextDriverProperties.AllowComments;
 
                     if (_csvDataContextDriverProperties.IgnoreInvalidFiles &&
-                        !FileUtils.IsCsvFormatValid(file, csvSeparator, noBomEncoding, allowComments))
+                        !file.IsCsvFormatValid(csvSeparator, noBomEncoding, allowComments))
                     {
                         continue;
                     }
@@ -78,7 +77,7 @@ namespace CsvLINQPadDriver.DataModel
                     var fileDir = (Path.GetDirectoryName($"{file.Remove(0, baseDir.Length)}x") ?? string.Empty).TrimStart(Path.DirectorySeparatorChar);
                     var codeName = CodeGenHelper.GetSafeCodeName(Path.GetFileNameWithoutExtension(fileName) + (string.IsNullOrWhiteSpace(fileDir) ? string.Empty : $"_{fileDir}"));
 
-                    var columns = FileUtils.CsvReadHeader(file, csvSeparator, noBomEncoding, allowComments)
+                    var columns = file.CsvReadHeader(csvSeparator, noBomEncoding, allowComments)
                         .Select((value, index) => (value, index))
                         .Select(col => new CsvColumn(col.value ?? string.Empty, col.index)
                         {

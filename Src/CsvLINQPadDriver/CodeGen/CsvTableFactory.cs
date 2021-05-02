@@ -9,7 +9,7 @@ namespace CsvLINQPadDriver.CodeGen
         public static CsvTableBase<TRow> CreateTable<TRow>(
             bool isStringInternEnabled,
             bool isCacheEnabled,
-            char csvSeparator,
+            char? csvSeparator,
             NoBomEncoding noBomEncoding,
             bool allowComments,
             string filePath,

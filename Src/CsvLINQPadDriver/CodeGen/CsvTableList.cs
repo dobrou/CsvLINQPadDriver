@@ -12,7 +12,7 @@ namespace CsvLINQPadDriver.CodeGen
         private readonly IDictionary<string, ILookup<string, TRow>> _indices = new Dictionary<string, ILookup<string, TRow>>();
         private readonly Lazy<IList<TRow>> _dataCache;
 
-        public CsvTableList(bool isStringInternEnabled, char csvSeparator, NoBomEncoding noBomEncoding, bool allowComments, string filePath, IEnumerable<CsvColumnInfo> propertiesInfo, Action<TRow> relationsInit)
+        public CsvTableList(bool isStringInternEnabled, char? csvSeparator, NoBomEncoding noBomEncoding, bool allowComments, string filePath, IEnumerable<CsvColumnInfo> propertiesInfo, Action<TRow> relationsInit)
             : base(isStringInternEnabled, csvSeparator, noBomEncoding, allowComments, filePath, propertiesInfo, relationsInit) =>
             _dataCache = new Lazy<IList<TRow>>(() => ReadData().Cache($"{typeof(TRow).Name}:{FilePath}"));
 

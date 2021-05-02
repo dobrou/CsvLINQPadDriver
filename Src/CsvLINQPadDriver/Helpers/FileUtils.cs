@@ -25,42 +25,7 @@ namespace CsvLINQPadDriver.Helpers
 
         private static readonly Lazy<IReadOnlyDictionary<NoBomEncoding, Encoding>> NoBomEncodings = new(CalculateNoBomEncodings);
 
-        [DllImport("kernel32.dll")]
-        private static extern int GetSystemDefaultLCID();
-
-        [DllImport("kernel32.dll")]
-        private static extern int GetUserDefaultLCID();
-
-        private static IReadOnlyDictionary<NoBomEncoding, Encoding> CalculateNoBomEncodings()
-        {
-            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-
-            return new Dictionary<NoBomEncoding, Encoding>
-            {
-                [NoBomEncoding.UTF8]             = Encoding.UTF8,
-                [NoBomEncoding.Unicode]          = Encoding.Unicode,
-                [NoBomEncoding.BigEndianUnicode] = Encoding.BigEndianUnicode,
-                [NoBomEncoding.UTF32]            = Encoding.UTF32,
-                [NoBomEncoding.BigEndianUTF32]   = new UTF32Encoding(true, true),
-                [NoBomEncoding.ASCII]            = Encoding.ASCII,
-                [NoBomEncoding.SystemCodePage]   = GetCodePageEncoding(false),
-                [NoBomEncoding.UserCodePage]     = GetCodePageEncoding(true)
-            };
-
-            static Encoding GetCodePageEncoding(bool user) =>
-                Encoding.GetEncoding(CultureInfo.GetCultureInfo(user ? GetUserDefaultLCID() : GetSystemDefaultLCID()).TextInfo.ANSICodePage);
-        }
-
-        private static string? StringIntern(string? str) =>
-            str switch
-            {
-                null => null,
-                _ => StringInternCache.TryGetValue(str, out var intern)
-                        ? intern
-                        : StringInternCache[str] = str
-            };
-
-        public static IEnumerable<T> CsvReadRows<T>(string fileName, char csvSeparator, bool internString, NoBomEncoding noBomEncoding, bool allowComments, CsvRowMappingBase<T> csvClassMap)
+        public static IEnumerable<T> CsvReadRows<T>(this string fileName, char? csvSeparator, bool internString, NoBomEncoding noBomEncoding, bool allowComments, CsvRowMappingBase<T> csvClassMap)
             where T : ICsvRowBase, new()
         {
             return CsvReadRows(fileName, csvSeparator, noBomEncoding, allowComments)
@@ -81,27 +46,17 @@ namespace CsvLINQPadDriver.Helpers
             }
         }
 
-        private static IEnumerable<string[]> CsvReadRows(string fileName, char csvSeparator, NoBomEncoding noBomEncoding, bool allowComments)
-        {
-            using var csvParser = CreateCsvParser(fileName, csvSeparator, noBomEncoding, allowComments);
-
-            while (csvParser.Read())
-            {
-                yield return csvParser.Record;
-            }
-        }
-
         public static string GetDefaultDrive() =>
             Path.GetPathRoot(Environment.SystemDirectory)!.ToLower();
 
-        public static IEnumerable<string> CsvReadHeader(string fileName, char csvSeparator, NoBomEncoding noBomEncoding, bool allowComments)
+        public static IEnumerable<string> CsvReadHeader(this string fileName, char? csvSeparator, NoBomEncoding noBomEncoding, bool allowComments)
         {
             using var csvParser = CreateCsvParser(fileName, csvSeparator, noBomEncoding, allowComments);
 
             return csvParser.Read() ? csvParser.Record : new string[0];
         }
 
-        public static bool IsCsvFormatValid(string fileName, char csvSeparator, NoBomEncoding noBomEncoding, bool allowComments)
+        public static bool IsCsvFormatValid(this string fileName, char? csvSeparator, NoBomEncoding noBomEncoding, bool allowComments)
         {
             var header = $"{fileName} is not valid CSV file:";
 
@@ -171,49 +126,7 @@ namespace CsvLINQPadDriver.Helpers
             }
         }
 
-        public static char CsvDetectSeparator(string fileName, string[]? csvData = null)
-        {
-            var defaultCsvSeparators = Path.GetExtension(fileName).ToLowerInvariant() switch
-            {
-                "tsv" => new[] { '\t', ',', ';' },
-                _ => new[] { ',', ';', '\t' }
-            };
-
-            var csvSeparator = defaultCsvSeparators.First();
-
-            if (!File.Exists(fileName))
-            {
-                return csvSeparator;
-            }
-
-            var defaultCsvSeparator = csvSeparator;
-
-            try
-            {
-                // Get most used char from separators as separator.
-                csvSeparator = (csvData ?? File.ReadLines(fileName).Take(1))
-                    .SelectMany(line => line.ToCharArray())
-                    .Where(defaultCsvSeparators.Contains)
-                    .GroupBy(ch => ch)
-                    .OrderByDescending(chGroup => chGroup.Count())
-                    .Select(chGroup => chGroup.Key)
-                    .DefaultIfEmpty(csvSeparator)
-                    .First();
-            }
-            catch(Exception exception)
-            {
-                CsvDataContextDriver.WriteToLog($"CSV separator detection failed for {fileName}", exception);
-            }
-
-            if(csvSeparator != defaultCsvSeparator)
-            {
-                CsvDataContextDriver.WriteToLog($"Using CSV separator '{csvSeparator}' for {fileName}");
-            }
-
-            return csvSeparator;
-        }
-
-        public static string GetLongestCommonPrefixPath(IEnumerable<string> paths)
+        public static string GetLongestCommonPrefixPath(this IEnumerable<string> paths)
         {
             var pathsValid = paths.GetFilesOnly().ToImmutableList();
 
@@ -225,7 +138,7 @@ namespace CsvLINQPadDriver.Helpers
                 .LastOrDefault(prefix => pathsValid.All(path => path.StartsWith(prefix, FileNameComparison))) ?? string.Empty;
         }
 
-        public static IEnumerable<string> EnumFiles(IEnumerable<string> paths) =>
+        public static IEnumerable<string> EnumFiles(this IEnumerable<string> paths) =>
             GetFilesOnly(paths)
                 .SelectMany(EnumFiles)
                 .Distinct(FileNameComparer)
@@ -236,39 +149,6 @@ namespace CsvLINQPadDriver.Helpers
 
         public static string GetHumanizedFileSize(this IEnumerable<string> files) =>
             GetHumanizedFileSize(files.Select(file => file).Sum(GetFileSize));
-
-        private static long GetFileSize(string fileName)
-        {
-            try
-            {
-                return new FileInfo(fileName).Length;
-            }
-            catch (Exception exception)
-            {
-                CsvDataContextDriver.WriteToLog($"Failed to get {fileName} size", exception);
-                return 0;
-            }
-        }
-
-        private static string GetHumanizedFileSize(long size) =>
-            size.Bytes().Humanize("0.#");
-
-        private static CsvParser CreateCsvParser(string fileName, char csvSeparator, NoBomEncoding noBomEncoding, bool allowComments)
-        {
-            const int bufferSize = 4096 * 20;
-
-            var csvConfiguration = new CsvConfiguration(CultureInfo.InvariantCulture)
-            {
-                Delimiter = csvSeparator.ToString(),
-                AllowComments = allowComments,
-                HasHeaderRecord = false,
-                DetectColumnCountChanges = false,
-                BufferSize = bufferSize,
-                ProcessFieldBufferSize = bufferSize
-            };
-
-            return new CsvParser(new StreamReader(fileName, NoBomEncodings.Value[noBomEncoding], true, bufferSize / sizeof(char)), csvConfiguration);
-        }
 
         public static IEnumerable<string> GetFilesOnly(this IEnumerable<string> paths) =>
             paths
@@ -299,6 +179,41 @@ namespace CsvLINQPadDriver.Helpers
             };
 
             return fileInfos.Select(fileInfo => fileInfo.FullName);
+        }
+
+        private static long GetFileSize(string fileName)
+        {
+            try
+            {
+                return new FileInfo(fileName).Length;
+            }
+            catch (Exception exception)
+            {
+                CsvDataContextDriver.WriteToLog($"Failed to get {fileName} size", exception);
+                return 0;
+            }
+        }
+
+        private static string GetHumanizedFileSize(long size) =>
+            size.Bytes().Humanize("0.#");
+
+        private static CsvParser CreateCsvParser(string fileName, char? csvSeparator, NoBomEncoding noBomEncoding, bool allowComments)
+        {
+            const int bufferSize = 4096 * 20;
+
+            var csvConfiguration = new CsvConfiguration(CultureInfo.InvariantCulture)
+            {
+                DetectDelimiter = csvSeparator is null,
+                AllowComments = allowComments,
+                HasHeaderRecord = false,
+                DetectColumnCountChanges = false,
+                BufferSize = bufferSize,
+                ProcessFieldBufferSize = bufferSize
+            };
+
+            csvConfiguration.Delimiter = csvSeparator?.ToString() ?? csvConfiguration.Delimiter;
+
+            return new CsvParser(new StreamReader(fileName, NoBomEncodings.Value[noBomEncoding], true, bufferSize / sizeof(char)), csvConfiguration);
         }
 
         private static IEnumerable<string> EnumFiles(string path)
@@ -341,5 +256,50 @@ namespace CsvLINQPadDriver.Helpers
                 return Enumerable.Empty<string>();
             }
         }
+
+        private static IEnumerable<string[]> CsvReadRows(string fileName, char? csvSeparator, NoBomEncoding noBomEncoding, bool allowComments)
+        {
+            using var csvParser = CreateCsvParser(fileName, csvSeparator, noBomEncoding, allowComments);
+
+            while (csvParser.Read())
+            {
+                yield return csvParser.Record;
+            }
+        }
+
+        [DllImport("kernel32.dll")]
+        private static extern int GetSystemDefaultLCID();
+
+        [DllImport("kernel32.dll")]
+        private static extern int GetUserDefaultLCID();
+
+        private static IReadOnlyDictionary<NoBomEncoding, Encoding> CalculateNoBomEncodings()
+        {
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+
+            return new Dictionary<NoBomEncoding, Encoding>
+            {
+                [NoBomEncoding.UTF8]             = Encoding.UTF8,
+                [NoBomEncoding.Unicode]          = Encoding.Unicode,
+                [NoBomEncoding.BigEndianUnicode] = Encoding.BigEndianUnicode,
+                [NoBomEncoding.UTF32]            = Encoding.UTF32,
+                [NoBomEncoding.BigEndianUTF32]   = new UTF32Encoding(true, true),
+                [NoBomEncoding.ASCII]            = Encoding.ASCII,
+                [NoBomEncoding.SystemCodePage]   = GetCodePageEncoding(false),
+                [NoBomEncoding.UserCodePage]     = GetCodePageEncoding(true)
+            };
+
+            static Encoding GetCodePageEncoding(bool user) =>
+                Encoding.GetEncoding(CultureInfo.GetCultureInfo(user ? GetUserDefaultLCID() : GetSystemDefaultLCID()).TextInfo.ANSICodePage);
+        }
+
+        private static string? StringIntern(string? str) =>
+            str switch
+            {
+                null => null,
+                _ => StringInternCache.TryGetValue(str, out var intern)
+                        ? intern
+                        : StringInternCache[str] = str
+            };
     }
 }

@@ -28,11 +28,12 @@
 Added files sorting.
 Added allow comments option.
 Added similar/total files sizes.
+Use CsvHelper separator autodetection.
     </PackageReleaseNotes>
     <Copyright>Copyright © Martin Dobroucký 2013-2014, Ivan Ivon 2021</Copyright>
-    <AssemblyVersion>6.8.1.0</AssemblyVersion>
-    <FileVersion>6.8.1.0</FileVersion>
-    <Version>6.8.1</Version>
+    <AssemblyVersion>6.8.2.0</AssemblyVersion>
+    <FileVersion>6.8.2.0</FileVersion>
+    <Version>6.8.2</Version>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <ApplicationIcon>Connection.ico</ApplicationIcon>
   </PropertyGroup>
