@@ -40,7 +40,7 @@ namespace CsvLINQPadDriver
         {
             var textBox = (TextBox)sender;
 
-            if (!(e.Data.GetData(DataFormats.FileDrop, true) is IEnumerable<string> files))
+            if (e.Data.GetData(DataFormats.FileDrop, true) is not IEnumerable<string> files)
             {
                 return;
             }

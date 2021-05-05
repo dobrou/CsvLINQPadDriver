@@ -3,11 +3,13 @@ using System.Reflection;
 
 using static System.IO.Path;
 
+// ReSharper disable once UnusedMember.Global
+
 namespace LPRun
 {
     public static class Context
     {
-        private static readonly string BaseDir = GetDirectoryName(new Uri(Assembly.GetExecutingAssembly().CodeBase!).LocalPath)!;
+        private static readonly string BaseDir = GetDirectoryName(new Uri(Assembly.GetExecutingAssembly().CodeBase).LocalPath)!;
         private static readonly string LpRunDir = GetFullPath("LPRun");
 
         private static readonly string ExeDir = GetLpRunFullPath("Bin");

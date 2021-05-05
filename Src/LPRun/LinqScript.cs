@@ -1,5 +1,8 @@
 ﻿using System.IO;
 
+// ReSharper disable UnusedType.Global
+// ReSharper disable once UnusedMember.Global
+
 namespace LPRun
 {
     public static class LinqScript

@@ -5,6 +5,9 @@ using System.Linq;
 using System.Reflection;
 using System.Security;
 
+// ReSharper disable UnusedType.Global
+// ReSharper disable once UnusedMember.Global
+
 namespace LPRun
 {
     public static class ConnectionHeader

@@ -2,6 +2,9 @@
 using System.IO;
 using System.Linq;
 
+// ReSharper disable UnusedType.Global
+// ReSharper disable once UnusedMember.Global
+
 namespace LPRun
 {
     public static class Driver

@@ -1,8 +1,7 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿// ReSharper disable UnusedMember.Global
 
 namespace CsvLINQPadDriver.CodeGen
 {
-    [SuppressMessage("ReSharper", "UnusedMember.Global")]
     public interface ICsvRowBase
     {
         string this[int index] { get; set; }

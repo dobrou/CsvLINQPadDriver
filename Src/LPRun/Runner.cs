@@ -2,6 +2,9 @@
 using System.Diagnostics;
 using System.Text;
 
+// ReSharper disable UnusedType.Global
+// ReSharper disable once UnusedMember.Global
+
 namespace LPRun
 {
     public static class Runner

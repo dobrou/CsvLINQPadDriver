@@ -1,13 +1,13 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using System.Runtime.CompilerServices;
 
+// ReSharper disable MemberCanBePrivate.Global
+// ReSharper disable UnusedMember.Global
+
 namespace CsvLINQPadDriver.Helpers
 {
-    [SuppressMessage("ReSharper", "UnusedMember.Global")]
-    [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
     public static class StringExtensions
     {
         private static readonly CultureInfo DefaultCultureInfo = CultureInfo.InvariantCulture;

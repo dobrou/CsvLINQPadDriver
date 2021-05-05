@@ -129,7 +129,7 @@ namespace CsvLINQPadDriverTest
 
             return multipleDriverPropertiesTestData
                     .Concat(singleDriverPropertiesTestData!)
-                    .Concat(allowCommentsTestData!)
+                    .Concat(allowCommentsTestData)
                     .Concat(stringComparisonDriverPropertiesTestData)!;
 
             IEnumerable<ICsvDataContextDriverProperties> GetCsvDataContextDriverProperties()

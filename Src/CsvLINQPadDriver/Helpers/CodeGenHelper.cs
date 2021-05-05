@@ -21,7 +21,7 @@ namespace CsvLINQPadDriver.Helpers
 
             if (safeName.Length > MaxLength)
             {
-                safeName = safeName.Substring(0, MaxLength);
+                safeName = safeName[..MaxLength];
             }
 
             safeName = CodeNameInvalidCharacters.Replace(safeName, SafeChar);

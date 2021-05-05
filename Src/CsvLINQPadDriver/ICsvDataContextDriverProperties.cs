@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
+
+// ReSharper disable UnusedMemberInSuper.Global
+// ReSharper disable UnusedMember.Global
 
 namespace CsvLINQPadDriver
 {
-    [SuppressMessage("ReSharper", "UnusedMemberInSuper.Global")]
-    [SuppressMessage("ReSharper", "UnusedMember.Global")]
     public interface ICsvDataContextDriverProperties
     {
         bool Persist { get; set; }

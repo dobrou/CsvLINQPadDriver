@@ -63,7 +63,7 @@ namespace CsvLINQPadDriver.DataModel
 
                 foreach (var file in files.Where(File.Exists))
                 {
-                    var csvSeparator = _csvDataContextDriverProperties.CsvSeparatorChar;
+                    var csvSeparator  = _csvDataContextDriverProperties.CsvSeparatorChar;
                     var noBomEncoding = _csvDataContextDriverProperties.NoBomEncoding;
                     var allowComments = _csvDataContextDriverProperties.AllowComments;
 
@@ -74,14 +74,14 @@ namespace CsvLINQPadDriver.DataModel
                     }
 
                     var fileName = Path.GetFileName(file);
-                    var fileDir = (Path.GetDirectoryName($"{file.Remove(0, baseDir.Length)}x") ?? string.Empty).TrimStart(Path.DirectorySeparatorChar);
+                    var fileDir  = (Path.GetDirectoryName($"{file.Remove(0, baseDir.Length)}x") ?? string.Empty).TrimStart(Path.DirectorySeparatorChar);
                     var codeName = CodeGenHelper.GetSafeCodeName(Path.GetFileNameWithoutExtension(fileName) + (string.IsNullOrWhiteSpace(fileDir) ? string.Empty : $"_{fileDir}"));
 
                     var columns = file.CsvReadHeader(csvSeparator, noBomEncoding, allowComments)
                         .Select((value, index) => (value, index))
                         .Select(col => new CsvColumn(col.value ?? string.Empty, col.index)
                         {
-                            CodeName = CodeGenHelper.GetSafeCodeName(col.value),
+                            CodeName    = CodeGenHelper.GetSafeCodeName(col.value),
                             DisplayName = string.Empty
                         })
                         .ToImmutableList();
@@ -171,7 +171,7 @@ namespace CsvLINQPadDriver.DataModel
             {
                 if (fileName.EndsWith(postfix, IdsComparison))
                 {
-                    idName = $"{fileName.Substring(0, fileName.Length - postfix.Length)}id";
+                    idName = $"{fileName[..^postfix.Length]}id";
                     return true;
                 }
 

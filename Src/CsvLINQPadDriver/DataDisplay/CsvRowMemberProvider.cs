@@ -61,7 +61,7 @@ namespace CsvLINQPadDriver.DataDisplay
 
             static bool IsMemberVisible(MemberInfo member) =>
                  (member.MemberType & (MemberTypes.Field | MemberTypes.Property)) != 0 &&
-                 member.GetCustomAttributes(typeof(HideFromDumpAttribute), true).Length == 0;
+                 !member.GetCustomAttributes(typeof(HideFromDumpAttribute), true).Any();
         }
 
         public static ICustomMemberProvider? GetCsvRowMemberProvider(object objectToDisplay)
