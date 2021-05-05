@@ -11,7 +11,8 @@
 * [Download](#download)
 * [Usage](#usage)
   * [Setup](#setup)
-  * [Test Example](#test-example)
+  * [LINQPad Test Script Example](#linqpad-test-script-example)
+  * [NUnit Test Example](#nunit-test-example)
 * [Known Issues](#known-issues)
 * [Authors](#authors)
 * [Credits](#credits)
@@ -21,7 +22,7 @@
 
 ## Description ##
 
-LINQPad driver [LPRun](https://www.linqpad.net/lprun.aspx) unit/integration tests runner. Can be used for testing [LINQPad 6](https://www.linqpad.net/LINQPad6.aspx) drivers using LPRun.
+LINQPad driver [LPRun](https://www.linqpad.net/lprun.aspx) unit/integration tests runner. Can be used for testing [LINQPad 6](https://www.linqpad.net/LINQPad6.aspx) drivers using LPRun or for running LINQPad scripts.
 
 ## Website ##
 
@@ -40,12 +41,34 @@ LPRun is a part of [CsvLINQPadDriver for LINQPad 6](https://github.com/i2van/Csv
 3. Create the following folder structure in test project:
 
 ```
-LPRun
+LPRun # Created by LPRun NuGet.
     Templates # LINQPad script templates.
     Data      # Optional: Driver data files.
 ```
 
-### Test Example ###
+### LINQPad Test Script Example ###
+
+LPRun executes LINQPad test script. Test script uses [Fluent Assertions](https://github.com/fluentassertions/fluentassertions) for assertion checks.
+
+[StringComparison.linq](https://github.com/i2van/CsvLINQPadDriver/blob/master/Tests/CsvLINQPadDriverTest/LPRun/Templates/StringComparison.linq) LINQPad test script example:
+
+```csharp
+var original = Books.First();
+var copy = original with { Title = original.Title.ToUpper() };
+
+var expectedEquality = original.Title.Equals(copy.Title, context.StringComparison);
+
+original.Equals(copy).Should().Be(expectedEquality, Reason());
+
+original.GetHashCode()
+    .Equals(copy.GetHashCode())
+    .Should()
+    .Be(expectedEquality, Reason());
+```
+
+`Reason()` method and `context` variable are injected by [test](https://github.com/i2van/CsvLINQPadDriver/blob/master/Tests/CsvLINQPadDriverTest/LPRunTests.cs) [below](#nunit-test-example).
+
+### NUnit Test Example ###
 
 Full NUnit test code can be found [here](https://github.com/i2van/CsvLINQPadDriver/blob/master/Tests/CsvLINQPadDriverTest/LPRunTests.cs).
 
@@ -95,11 +118,23 @@ public class LPRunTests
         // Helpers.
         IEnumerable<string> GetQueryHeaders()
         {
+            // Connection header.
             yield return ConnectionHeader.Get(
                 "CsvLINQPadDriver",
                 "CsvLINQPadDriver.CsvDataContextDriver",
                 driverProperties,
                 "System.Runtime.CompilerServices");
+
+            // FluentAssertions helper.
+            yield return
+                @"string Reason([CallerLineNumber] int sourceLineNumber = 0) =>" +
+                @" $""something went wrong at line #{sourceLineNumber}"";";
+
+            // Test context.
+            if (!string.IsNullOrWhiteSpace(context))
+            {
+                yield return $"var context = {context};";
+            }
         }
     }
 
@@ -111,7 +146,6 @@ public class LPRunTests
         // Omitted for brevity.
     }
 }
-
 ```
 
 ## Known Issues ##

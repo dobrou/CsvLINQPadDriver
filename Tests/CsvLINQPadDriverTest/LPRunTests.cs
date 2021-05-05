@@ -79,7 +79,7 @@ namespace CsvLINQPadDriverTest
 
             IEnumerable<string> GetQueryHeaders()
             {
-                yield return ConnectionHeader.Get("CsvLINQPadDriver", "CsvLINQPadDriver.CsvDataContextDriver", driverProperties!, "System.Runtime.CompilerServices");
+                yield return ConnectionHeader.Get("CsvLINQPadDriver", "CsvLINQPadDriver.CsvDataContextDriver", driverProperties, "System.Runtime.CompilerServices");
                 yield return @"string Reason([CallerLineNumber] int sourceLineNumber = 0) => $""something went wrong at line #{sourceLineNumber}"";";
                 if (!string.IsNullOrWhiteSpace(context))
                 {
