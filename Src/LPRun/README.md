@@ -34,6 +34,8 @@ LPRun is a part of [CsvLINQPadDriver for LINQPad 6](https://github.com/i2van/Csv
 
 ## Usage ##
 
+Tested driver **MUST NOT** be installed via NuGet into LINQPad. In this case LPRun will use it instead of local one.
+
 ### Setup ###
 
 1. Create test project.

@@ -12,7 +12,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <OutputPath>..\..\bin\Debug\</OutputPath>
   </PropertyGroup>
-  
+
   <PropertyGroup>
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
@@ -31,9 +31,9 @@ Added similar/total files sizes.
 Use CsvHelper separator autodetection.
     </PackageReleaseNotes>
     <Copyright>Copyright © Martin Dobroucký 2013-2014, Ivan Ivon 2021</Copyright>
-    <AssemblyVersion>6.8.2.0</AssemblyVersion>
-    <FileVersion>6.8.2.0</FileVersion>
-    <Version>6.8.2</Version>
+    <AssemblyVersion>6.9.0.0</AssemblyVersion>
+    <FileVersion>6.9.0.0</FileVersion>
+    <Version>6.9.0</Version>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <ApplicationIcon>Connection.ico</ApplicationIcon>
   </PropertyGroup>
@@ -44,21 +44,22 @@ Use CsvHelper separator autodetection.
 
   <ItemGroup>
     <None Remove="Connection.ico" />
-    <None Remove="Connection.png" />
-    <None Remove="FailedConnection.png" />
-    <None Remove="NuGetIcon.png" />
-    <None Include="NuGetIcon.png">
-      <Pack>True</Pack>
-      <PackagePath></PackagePath>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
-  <ItemGroup>
     <Content Include="Connection.png">
+      <Pack>True</Pack>
+      <PackagePath>lib\netcoreapp3.1\</PackagePath>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="FailedConnection.png">
+      <Pack>True</Pack>
+      <PackagePath>lib\netcoreapp3.1\</PackagePath>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="NuGetIcon.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
