@@ -46,18 +46,22 @@
     <Content Include="LPRun\Bin\LINQPad.Runtime.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <PackageCopyToOutput>true</PackageCopyToOutput>
+      <PackagePath>content\LPRun\Bin\</PackagePath>
     </Content>
     <Content Include="LPRun\Bin\LINQPad.Runtime.runtimeconfig.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <PackageCopyToOutput>true</PackageCopyToOutput>
+      <PackagePath>content\LPRun\Bin\</PackagePath>
     </Content>
     <Content Include="LPRun\Bin\LPRun6-x86.exe">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <PackageCopyToOutput>true</PackageCopyToOutput>
+      <PackagePath>content\LPRun\Bin\</PackagePath>
     </Content>
     <Content Include="LPRun\Bin\LPRun6.exe">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <PackageCopyToOutput>true</PackageCopyToOutput>
+      <PackagePath>content\LPRun\Bin\</PackagePath>
     </Content>
   </ItemGroup>
 
