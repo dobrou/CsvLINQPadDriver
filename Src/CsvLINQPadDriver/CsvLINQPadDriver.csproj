@@ -65,7 +65,7 @@ Use CsvHelper separator autodetection.
 
   <ItemGroup>
     <PackageReference Include="CsvHelper" Version="27.0.2" />
-    <PackageReference Include="Humanizer.Core" Version="2.9.9" />
+    <PackageReference Include="Humanizer.Core" Version="2.10.1" />
     <PackageReference Include="IsExternalInit" Version="1.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
