@@ -92,7 +92,7 @@
                     <Label Padding="0 0 4 0" Content="CSV _separator (\t for tab). Auto-detected if empty"/>
                     <TextBox MaxLength="6" MaxLines="1" Text="{Binding CsvSeparator}" ToolTip="Character used to separate columns in CSV file. Separator is auto-detected for each file if empty"/>
                 </DockPanel>
-                <CheckBox IsChecked="{Binding UseCsvHelperSeparatorAutoDetection}" Content="_Use CsvHelper separator auto-detection" ToolTip="Use CsvHelper separator auto-detection. Use with caution: sometimes it fails"/>
+                <CheckBox IsChecked="{Binding UseCsvHelperSeparatorAutoDetection}" Content="_Use CsvHelper library separator auto-detection" ToolTip="Use CsvHelper library separator auto-detection. Use with caution: sometimes it fails"/>
                 <CheckBox IsChecked="{Binding IgnoreInvalidFiles}" Content="Ignore files _with invalid format" ToolTip="Ignore files with invalid format"/>
                 <CheckBox IsChecked="{Binding AllowComments}" Content="_Allow comments" ToolTip="Ignore lines starting with #"/>
             </StackPanel>

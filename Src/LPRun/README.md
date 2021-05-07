@@ -68,7 +68,7 @@ original.GetHashCode()
     .Be(expectedEquality, Reason());
 ```
 
-`Reason()` method and `context` variable are injected by [test](https://github.com/i2van/CsvLINQPadDriver/blob/master/Tests/CsvLINQPadDriverTest/LPRunTests.cs) [below](#nunit-test-example).
+`Reason()` method (prints exact line number if assertion fails) and `context` variable are injected by [test](https://github.com/i2van/CsvLINQPadDriver/blob/master/Tests/CsvLINQPadDriverTest/LPRunTests.cs) [below](#nunit-test-example).
 
 ### NUnit Test Example ###
 

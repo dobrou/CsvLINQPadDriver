@@ -167,7 +167,7 @@ CSV context can be added to LINQPad 6 same way as any other context.
 ### Format ###
 
 - CSV separator - character used to separate columns in files. Can be `,`, `\t`, etc. Auto-detected if empty.
-- Use CsvHelper separator auto-detection. Use with caution: sometimes it fails.
+- Use CsvHelper library separator auto-detection. Use with caution: sometimes it fails.
 - Ignore files with invalid format - files with strange content not similar to CSV format will be ignored.
 - Allow comments - lines starting with `#` will be ignored.
 
