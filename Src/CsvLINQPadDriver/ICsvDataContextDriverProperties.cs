@@ -40,6 +40,11 @@ namespace CsvLINQPadDriver
         char? CsvSeparatorChar { get; }
 
         /// <summary>
+        /// Use CsvHelper separator auto detection.
+        /// </summary>
+        bool UseCsvHelperSeparatorAutoDetection { get; }
+
+        /// <summary>
         /// If <c>true</c> - generates single class for similar CSV files.
         /// </summary>
         bool UseSingleClassForSameFiles { get; set; }

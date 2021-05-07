@@ -87,6 +87,13 @@ namespace CsvLINQPadDriver
             }
         }
 
+        public bool UseCsvHelperSeparatorAutoDetection
+        {
+            get => GetValue(false);
+            // ReSharper disable once UnusedMember.Global
+            set => SetValue(value);
+        }
+
         public bool UseSingleClassForSameFiles
         {
             get => GetValue(true);

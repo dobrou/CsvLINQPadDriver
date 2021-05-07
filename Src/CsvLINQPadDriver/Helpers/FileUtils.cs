@@ -301,5 +301,47 @@ namespace CsvLINQPadDriver.Helpers
                         ? intern
                         : StringInternCache[str] = str
             };
+
+        public static char CsvDetectSeparator(string fileName, string[]? csvData = null)
+        {
+            var defaultCsvSeparators = Path.GetExtension(fileName).ToLowerInvariant() switch
+            {
+                "tsv" => new[] { '\t', ',', ';' },
+                _     => new[] { ',', ';', '\t' }
+            };
+
+            var csvSeparator = defaultCsvSeparators.First();
+
+            if (!File.Exists(fileName))
+            {
+                return csvSeparator;
+            }
+
+            var defaultCsvSeparator = csvSeparator;
+
+            try
+            {
+                // Get most used char from separators as separator.
+                csvSeparator = (csvData ?? File.ReadLines(fileName).Take(1))
+                    .SelectMany(line => line.ToCharArray())
+                    .Where(defaultCsvSeparators.Contains)
+                    .GroupBy(ch => ch)
+                    .OrderByDescending(chGroup => chGroup.Count())
+                    .Select(chGroup => chGroup.Key)
+                    .DefaultIfEmpty(csvSeparator)
+                    .First();
+            }
+            catch (Exception exception)
+            {
+                CsvDataContextDriver.WriteToLog($"CSV separator detection failed for {fileName}", exception);
+            }
+
+            if (csvSeparator != defaultCsvSeparator)
+            {
+                CsvDataContextDriver.WriteToLog($"Using CSV separator '{csvSeparator}' for {fileName}");
+            }
+
+            return csvSeparator;
+        }
     }
 }
