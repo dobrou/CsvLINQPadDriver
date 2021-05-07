@@ -72,7 +72,6 @@ namespace CsvLINQPadDriver.Helpers
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static T? GetValueOrNull<T>(bool converted, T value) where T: struct =>
-            // ReSharper disable once RedundantCast
-            converted ? value : (T?)null;
+            converted ? value : null;
     }
 }

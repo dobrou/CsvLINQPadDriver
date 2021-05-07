@@ -65,8 +65,7 @@ namespace CsvLINQPadDriver.DataModel
                 {
                     var csvSeparator  = _csvDataContextDriverProperties.CsvSeparatorChar ?? (
                         _csvDataContextDriverProperties.UseCsvHelperSeparatorAutoDetection
-                            // ReSharper disable once RedundantCast
-                            ? (char?)null
+                            ? null
                             : file.CsvDetectSeparator());
                     var noBomEncoding = _csvDataContextDriverProperties.NoBomEncoding;
                     var allowComments = _csvDataContextDriverProperties.AllowComments;

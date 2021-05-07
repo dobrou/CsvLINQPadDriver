@@ -17,8 +17,7 @@ namespace CsvLINQPadDriver.CodeGen
             Action<TRow> relationsInit)
             where TRow : ICsvRowBase, new() =>
             isCacheEnabled
-                // ReSharper disable once RedundantCast
-                ? (CsvTableBase<TRow>)new CsvTableList<TRow>(isStringInternEnabled, csvSeparator, noBomEncoding, allowComments, filePath, propertiesInfo, relationsInit)
+                ? new CsvTableList<TRow>(isStringInternEnabled, csvSeparator, noBomEncoding, allowComments, filePath, propertiesInfo, relationsInit)
                 : new CsvTableEnumerable<TRow>(isStringInternEnabled, csvSeparator, noBomEncoding, allowComments, filePath, propertiesInfo, relationsInit);
     }
 }
