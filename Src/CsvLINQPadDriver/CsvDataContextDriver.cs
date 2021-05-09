@@ -53,7 +53,7 @@ namespace CsvLINQPadDriver
             {
                 properties.Files = string.Join(Environment.NewLine,
                     "# Drag&drop (use Ctrl to add files)",
-                    "# Type file paths, or directory paths with pattern like *.csv or **.csv (** will recurse subdirectories)",
+                    "# Type file paths, or folder paths with pattern like *.csv or **.csv (** will recurse sub-folders)",
                     "# Press Ctrl+Shift+V to insert from clipboard and proceed",
                     $"{FileUtils.GetDefaultDrive()}*.csv");
             }

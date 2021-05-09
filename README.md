@@ -17,8 +17,7 @@
   * [Manual](#manual)
 * [Usage](#usage)
 * [Configuration Options](#configuration-options)
-  * [General](#general)
-  * [Files](#files)
+  * [CSV files](#csv-files)
   * [Format](#format)
   * [Memory](#memory)
   * [Generation](#generation)
@@ -128,8 +127,8 @@ select new { author.Name, book.Title }
 
   - Open LINQPad 6.
   - Click `Add connection` main window.
-  - Click button `View more drivers...`.
-  - Click radio button `Show all drivers` and type `CsvLINQPadDriver`.
+  - Click button `View more drivers...`
+  - Click radio button `Show all drivers` and type `CsvLINQPadDriver`
   - Install.
 
 ### Manual ###
@@ -138,31 +137,27 @@ Get latest [CsvLINQPadDriver.\*.lpx6](https://github.com/i2van/CsvLINQPadDriver/
 
   - Open LINQPad 6.
   - Click `Add connection` main window.
-  - Click button `View more drivers...`.
+  - Click button `View more drivers...`
   - Click button `Install driver from .LPX6 file...` and select downloaded `lpx6` file.
 
 ## Usage ##
 
 CSV context can be added to LINQPad 6 same way as any other context.
 
-- Click `Add connection`.
-- Select `CSV Context Driver` and click `Next`.
+- Click `Add connection`
+- Select `CSV Context Driver` and click `Next`
 - Enter CSV file names or Drag&Drop (`Ctrl` adds files) from Explorer. Optionally configure other options.
 - Query your data.
 
 ## Configuration Options ##
 
-### General ###
+### CSV files ###
 
-- **CSV files** - list of CSV files and directories. Type one file/dir per line or Drag&Drop (`Ctrl` adds files) from explorer. Supports special wildcards: `*` and `**`.
-  - `c:\x\*.csv` - all files in folder `c:\x`.
-  - `c:\x\**.csv` - all files in folder `c:\x` and all sub-directories.
-
+- CSV files - list of CSV files and folders. Type one file/folder per line or Drag&Drop (`Ctrl` adds files) from Windows Explorer. Wildcards `*` and `**` are supported.
+  - `c:\x\*.csv` - all files in folder `c:\x`
+  - `c:\x\**.csv` - all files in folder `c:\x` and all sub-folders.
+- Order files by - specifies files sort order. Affects similar files order.
 - No BOM encoding - specifies encoding for files without [BOM](https://en.wikipedia.org/wiki/Byte_order_mark). `UTF-8` is default.
-
-### Files ###
-
-- Order by - specifies files sort order. Affects similar files order.
 
 ### Format ###
 
@@ -173,7 +168,7 @@ CSV context can be added to LINQPad 6 same way as any other context.
 
 ### Memory ###
 
-- Cache CSV data in memory
+- Cache CSV data in memory:
   - if checked: parsed rows from file are cached in memory. This cache survives multiple query runs, even when query is changed. Cache is cleared as soon as LINQPad clears query data.
   - if unchecked: disable cache. Multiple enumerations of file content results in multiple reads and parsing of file. Can be significantly slower for complex queries. Significantly reduces memory usage.  Useful when reading very large files.
 - Intern CSV strings - intern strings. Significantly reduce memory consumption when CSV contains repeatable values.
@@ -368,7 +363,7 @@ TimeSpan? ToTimeSpan(
 
 - Default encoding for files without BOM is UTF-8.
 - Some strange Unicode characters in column names may cause errors in generated data context source code.
-- Writing changed objects back to CSV is not directly supported, there is no `SubmitChanges()`. But you can use LINQPad's `Util.WriteCsv`.
+- Writing changed objects back to CSV is not directly supported, there is no `SubmitChanges()`. But you can use LINQPad's `Util.WriteCsv`
 - Similar files single class generation does not detect relations correctly. However, you can query over related multiple files.
 
 ## Authors ##

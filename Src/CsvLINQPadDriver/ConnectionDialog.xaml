@@ -1,13 +1,12 @@
 ﻿<Window x:Class="CsvLINQPadDriver.ConnectionDialog"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:system="clr-namespace:System;assembly=System.Runtime"
     xmlns:wpf="clr-namespace:CsvLINQPadDriver.Wpf"
     Title="CSV Files Connection"
     Icon="Connection.ico"
     Background="{x:Static SystemColors.ControlBrush}"
-    Width="680"
-    Height="580"
+    Width="760"
+    Height="720"
     WindowStartupLocation="CenterScreen"
     FocusManager.FocusedElement="{Binding ElementName=FilesTextBox}"
     Loaded="ConnectionDialog_OnLoaded">
@@ -15,6 +14,7 @@
     <Window.Resources>
         <ObjectDataProvider x:Key="NoBomEncodingData" MethodName="GetValues" ObjectType="{x:Type wpf:NoBomEncodingEnumObjectDataSource}" />
         <ObjectDataProvider x:Key="FilesOrderByData" MethodName="GetValues" ObjectType="{x:Type wpf:FilesOrderByEnumObjectDataSource}" />
+        <ObjectDataProvider x:Key="StringComparisonData" MethodName="GetValues" ObjectType="{x:Type wpf:StringComparisonEnumObjectDataSource}" />
     </Window.Resources>
 
     <Window.CommandBindings>
@@ -39,63 +39,72 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <DockPanel Grid.Row="0">
-            <DockPanel DockPanel.Dock="Top" LastChildFill="True" VerticalAlignment="Center" KeyboardNavigation.TabNavigation="Local">
-                <Label Padding="0,3,0,3" Content="CSV _files. Drag&amp;Drop (Ctrl adds files) or type one file/directory per line." DockPanel.Dock="Left" Target="{Binding ElementName=FilesTextBox}" />
-                <Label Padding="0,3,0,3" Content=" No _BOM encoding" DockPanel.Dock="Left" Target="{Binding ElementName=NoBomEncodingComboBox}" />
-                <TextBlock DockPanel.Dock="Right" Padding="6 3 3 0" KeyboardNavigation.TabIndex="2">
-                    <Hyperlink TextDecorations="" NavigateUri="https://en.wikipedia.org/wiki/Byte_order_mark" Command="ApplicationCommands.Help">
-                        <TextBlock Text="?" ToolTip="BOM on Wikipedia" />
-                    </Hyperlink>
-                </TextBlock>
-                <ComboBox
+        <GroupBox Header="CSV _files. Drag&amp;Drop (Ctrl adds files) or type one file/folder per line">
+            <Grid Margin="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="103"/>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <TextBox Grid.ColumnSpan="3"
+                    Name="FilesTextBox"
+                    VerticalAlignment="Stretch"
+                    HorizontalAlignment="Stretch"
+                    AcceptsReturn="True"
+                    HorizontalScrollBarVisibility="Auto"
+                    VerticalScrollBarVisibility="Auto"
+                    Text="{Binding Files, UpdateSourceTrigger=PropertyChanged}"
+                    ToolTip="CSV files. Drag&amp;Drop (Ctrl adds files) or type one file per line. Supports mask '*.csv' or recursive '**.csv'"
+                    AllowDrop="True"
+                    PreviewDragEnter="FilesTextBox_DragEnter"
+                    PreviewDragOver="FilesTextBox_DragEnter"
+                    PreviewDrop="FilesTextBox_DragDrop"/>
+
+                <!-- ReSharper disable once MarkupAttributeTypo -->
+                <Label Grid.Row="1" Grid.Column="0" Padding="0 5 4 0" Content="Order f_iles by" Target="{Binding ElementName=FilesOrderByComboBox}"/>
+                <ComboBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2"
+                    Name="FilesOrderByComboBox"
+                    ToolTip="Files sort order. Affects similar files order"
+                    Margin="0,3,0,0"
+                    SelectedValue="{Binding FilesOrderBy}"
+                    SelectedValuePath="Item1"
+                    DisplayMemberPath="Item2"
+                    ItemsSource="{Binding Source={StaticResource FilesOrderByData}}"/>
+
+                <Label Grid.Row="2" Grid.Column="0" Padding="0,5,4,0" Content="No _BOM encoding" Target="{Binding ElementName=NoBomEncodingComboBox}" />
+                <ComboBox Grid.Row="2" Grid.Column="1"
                     Name="NoBomEncodingComboBox"
-                    Margin="3,0,0,3"
+                    Margin="0,3,0,0"
                     ToolTip="Encoding for files without BOM"
                     SelectedValue="{Binding NoBomEncoding}"
                     SelectedValuePath="Item1"
                     DisplayMemberPath="Item2"
-                    ItemsSource="{Binding Source={StaticResource NoBomEncodingData}}"
-                    KeyboardNavigation.TabIndex="1"/>
-            </DockPanel>
-            <TextBox
-            Name="FilesTextBox"
-            AcceptsReturn="True"
-            HorizontalScrollBarVisibility="Auto"
-            VerticalScrollBarVisibility="Auto"
-            Text="{Binding Files, UpdateSourceTrigger=PropertyChanged}"
-            ToolTip="CSV files. Drag&amp;Drop (Ctrl adds files) or type one file per line. Supports mask '*.csv' or recursive '**.csv'"
-            AllowDrop="True"
-            PreviewDragEnter="FilesTextBox_DragEnter"
-            PreviewDragOver="FilesTextBox_DragEnter"
-            PreviewDrop="FilesTextBox_DragDrop"/>
-        </DockPanel>
+                    ItemsSource="{Binding Source={StaticResource NoBomEncodingData}}"/>
+                <TextBlock Grid.Row="2" Grid.Column="2" Padding="5 5 0 0">
+                    <Hyperlink TextDecorations="" NavigateUri="https://en.wikipedia.org/wiki/Byte_order_mark" Command="ApplicationCommands.Help">
+                        <TextBlock Text="?" ToolTip="BOM on Wikipedia" />
+                    </Hyperlink>
+                </TextBlock>
+            </Grid>
+        </GroupBox>
 
         <StackPanel Grid.Row="1">
-            <GroupBox Header="Files">
+            <GroupBox Header="Format">
                 <StackPanel Margin="2" Height="Auto">
                     <DockPanel VerticalAlignment="Center">
-                        <Label Padding="0 3 4 0" Content="_Order by"/>
-                        <ComboBox
-                            ToolTip="Files sort order. Affects similar files order"
-                            SelectedValue="{Binding FilesOrderBy}"
-                            SelectedValuePath="Item1"
-                            DisplayMemberPath="Item2"
-                            ItemsSource="{Binding Source={StaticResource FilesOrderByData}}"
-                        />
+                        <Label Padding="0 0 4 0" Content="CSV _separator (\t for tab). Auto-detected if empty"/>
+                        <TextBox MaxLength="6" MaxLines="1" Text="{Binding CsvSeparator}" ToolTip="Character used to separate columns in CSV file. Separator is auto-detected for each file if empty"/>
                     </DockPanel>
+                    <CheckBox IsChecked="{Binding UseCsvHelperSeparatorAutoDetection}" Content="_Use CsvHelper library separator auto-detection" ToolTip="Use CsvHelper library separator auto-detection. Use with caution: sometimes it fails"/>
+                    <CheckBox IsChecked="{Binding IgnoreInvalidFiles}" Content="Ignore files _with invalid format" ToolTip="Ignore files with invalid format"/>
+                    <CheckBox IsChecked="{Binding AllowComments}" Content="_Allow comments" ToolTip="Ignore lines starting with #"/>
                 </StackPanel>
-            </GroupBox>
-            <GroupBox Header="Format">
-            <StackPanel Margin="2" Height="Auto">
-                <DockPanel VerticalAlignment="Center">
-                    <Label Padding="0 0 4 0" Content="CSV _separator (\t for tab). Auto-detected if empty"/>
-                    <TextBox MaxLength="6" MaxLines="1" Text="{Binding CsvSeparator}" ToolTip="Character used to separate columns in CSV file. Separator is auto-detected for each file if empty"/>
-                </DockPanel>
-                <CheckBox IsChecked="{Binding UseCsvHelperSeparatorAutoDetection}" Content="_Use CsvHelper library separator auto-detection" ToolTip="Use CsvHelper library separator auto-detection. Use with caution: sometimes it fails"/>
-                <CheckBox IsChecked="{Binding IgnoreInvalidFiles}" Content="Ignore files _with invalid format" ToolTip="Ignore files with invalid format"/>
-                <CheckBox IsChecked="{Binding AllowComments}" Content="_Allow comments" ToolTip="Ignore lines starting with #"/>
-            </StackPanel>
             </GroupBox>
             <GroupBox Header="Memory">
                 <StackPanel Margin="2" Height="Auto">
@@ -108,30 +117,30 @@
                 <StackPanel Margin="2" Height="Auto">
                     <!-- ReSharper disable once MarkupAttributeTypo -->
                     <CheckBox IsChecked="{Binding UseSingleClassForSameFiles}" Content="G_enerate single class for similar files" ToolTip="Single class generation allows to join similar files and query over them. Might not work well for files with relations"/>
-                    <DockPanel VerticalAlignment="Center" LastChildFill="True" KeyboardNavigation.TabNavigation="Local">
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="103"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
                         <!-- ReSharper disable once MarkupAttributeTypo -->
-                        <Label Padding="0 3 4 0" Content="S_tring comparison" DockPanel.Dock="Left" Target="{Binding ElementName=StringComparisonComboBox}"/>
-                        <TextBlock DockPanel.Dock="Right" Padding="5 3 0 0" KeyboardNavigation.TabIndex="2">
+                        <Label Grid.Column="0" Padding="0 3 4 0" Content="S_tring comparison" Target="{Binding ElementName=StringComparisonComboBox}"/>
+                        <ComboBox Grid.Column="1"
+                            Name="StringComparisonComboBox"
+                            Margin="0,1,0,0"
+                            SelectedValue="{Binding Path=StringComparison}"
+                            ToolTip="String comparison for Equals and GetHashCode methods"
+                            SelectedValuePath="Item1"
+                            DisplayMemberPath="Item2"
+                            ItemsSource="{Binding Source={StaticResource StringComparisonData}}"/>
+                        <TextBlock Grid.Row="0" Grid.Column="2" Padding="5 3 0 0">
                             <Hyperlink TextDecorations="" NavigateUri="https://docs.microsoft.com/en-us/dotnet/api/system.stringcomparison#fields" Command="ApplicationCommands.Help">
                                 <TextBlock Text="?" ToolTip="StringComparison on Microsoft Docs" />
                             </Hyperlink>
                         </TextBlock>
-                        <ComboBox Name="StringComparisonComboBox"
-                                  SelectedValue="{Binding Path=StringComparison}"
-                                  ToolTip="String comparison for Equals and GetHashCode methods"
-                                  KeyboardNavigation.TabIndex="1">
-                            <ComboBox.ItemsSource>
-                                <x:Array Type="{x:Type system:StringComparison}">
-                                    <system:StringComparison>CurrentCulture</system:StringComparison>
-                                    <system:StringComparison>CurrentCultureIgnoreCase</system:StringComparison>
-                                    <system:StringComparison>InvariantCulture</system:StringComparison>
-                                    <system:StringComparison>InvariantCultureIgnoreCase</system:StringComparison>
-                                    <system:StringComparison>Ordinal</system:StringComparison>
-                                    <system:StringComparison>OrdinalIgnoreCase</system:StringComparison>
-                                </x:Array>
-                            </ComboBox.ItemsSource>
-                        </ComboBox>
-                    </DockPanel>
+                    </Grid>
                 </StackPanel>
             </GroupBox>
             <GroupBox Header="Relations">
