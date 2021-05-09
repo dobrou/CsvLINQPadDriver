@@ -32,7 +32,7 @@ namespace CsvLINQPadDriver
             var parsedFiles = new CsvDataContextDriverProperties(cxInfo).ParsedFiles.EnumFiles().ToImmutableList();
             var parsedFilesCount = parsedFiles.Count;
             var dateTime = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss}";
-            var totalFilesSize = parsedFiles.GetHumanizedFileSize();
+            var filesAndTotalSize = $"{"file".ToQuantity(parsedFilesCount)} {parsedFiles.GetHumanizedFileSize()}";
 
             return $"{parsedFiles.GetLongestCommonPrefixPath()}{GetFilesCountString()}";
 
@@ -40,8 +40,7 @@ namespace CsvLINQPadDriver
                 parsedFilesCount switch
                 {
                     0 => $"({dateTime}, no files)",
-                    1 => $" ({dateTime}, {totalFilesSize})",
-                    _ => $" ({dateTime}, {"file".ToQuantity(parsedFilesCount)}, {totalFilesSize})"
+                    _ => $" ({dateTime}, {filesAndTotalSize})"
                 };
         }
 
