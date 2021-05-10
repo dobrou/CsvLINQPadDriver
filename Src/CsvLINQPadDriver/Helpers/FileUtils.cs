@@ -21,7 +21,7 @@ namespace CsvLINQPadDriver.Helpers
         private const StringComparison FileNameComparison = StringComparison.OrdinalIgnoreCase;
 
         private static readonly StringComparer FileNameComparer = StringComparer.OrdinalIgnoreCase;
-        private static readonly Dictionary<string, string> StringInternCache = new();
+        private static readonly HashSet<string> StringInternCache = new();
 
         private static readonly Lazy<IReadOnlyDictionary<NoBomEncoding, Encoding>> NoBomEncodings = new(CalculateNoBomEncodings);
 
@@ -335,13 +335,21 @@ namespace CsvLINQPadDriver.Helpers
                 Encoding.GetEncoding(CultureInfo.GetCultureInfo(user ? GetUserDefaultLCID() : GetSystemDefaultLCID()).TextInfo.ANSICodePage);
         }
 
-        private static string? StringIntern(string? str) =>
-            str switch
+        private static string? StringIntern(string? str)
+        {
+            if (str is null)
             {
-                null => null,
-                _ => StringInternCache.TryGetValue(str, out var intern)
-                        ? intern
-                        : StringInternCache[str] = str
-            };
+                return null;
+            }
+
+            if (StringInternCache.TryGetValue(str, out var intern))
+            {
+                return intern;
+            }
+
+            StringInternCache.Add(str);
+
+            return str;
+        }
     }
 }
