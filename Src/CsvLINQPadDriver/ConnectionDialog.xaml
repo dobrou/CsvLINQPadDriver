@@ -39,7 +39,7 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <GroupBox Header="CSV _files. Drag&amp;Drop (Ctrl adds files) or type one file/folder per line">
+        <GroupBox Header="CSV _Files">
             <Grid Margin="2">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="103"/>
@@ -48,6 +48,7 @@
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
@@ -60,7 +61,7 @@
                     HorizontalScrollBarVisibility="Auto"
                     VerticalScrollBarVisibility="Auto"
                     Text="{Binding Files, UpdateSourceTrigger=PropertyChanged}"
-                    ToolTip="CSV files. Drag&amp;Drop (Ctrl adds files) or type one file per line. Supports mask '*.csv' or recursive '**.csv'"
+                    ToolTip="CSV files. Drag&amp;Drop (Ctrl adds files) or type one file/folder per line. Wildcards * and ? are supported; **.csv searches in all sub-folders"
                     AllowDrop="True"
                     PreviewDragEnter="FilesTextBox_DragEnter"
                     PreviewDragOver="FilesTextBox_DragEnter"
@@ -91,6 +92,8 @@
                         <TextBlock Text="?" ToolTip="BOM on Wikipedia" />
                     </Hyperlink>
                 </TextBlock>
+
+                <CheckBox Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" Margin="0 5 0 0" IsChecked="{Binding IgnoreInvalidFiles}" Content="Ignore files _with invalid format" ToolTip="Ignore files with content which does not resemble CSV"/>
             </Grid>
         </GroupBox>
 
@@ -102,7 +105,6 @@
                         <TextBox MaxLength="6" MaxLines="1" Text="{Binding CsvSeparator}" ToolTip="Character used to separate columns in CSV file. Separator is auto-detected for each file if empty"/>
                     </DockPanel>
                     <CheckBox IsChecked="{Binding UseCsvHelperSeparatorAutoDetection}" Content="_Use CsvHelper library separator auto-detection" ToolTip="Use CsvHelper library separator auto-detection. Use with caution: sometimes it fails"/>
-                    <CheckBox IsChecked="{Binding IgnoreInvalidFiles}" Content="Ignore files _with invalid format" ToolTip="Ignore files with invalid format"/>
                     <CheckBox IsChecked="{Binding AllowComments}" Content="_Allow comments" ToolTip="Ignore lines starting with #"/>
                 </StackPanel>
             </GroupBox>

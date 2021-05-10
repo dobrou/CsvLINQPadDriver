@@ -51,8 +51,8 @@ namespace CsvLINQPadDriver
             if (connectionDialogOptions.IsNewConnection)
             {
                 properties.Files = string.Join(Environment.NewLine,
-                    "# Drag&drop (use Ctrl to add files)",
-                    "# Type file paths, or folder paths with pattern like *.csv or **.csv (** will recurse sub-folders)",
+                    "# Drag&drop here. Use Ctrl to add files",
+                    "# Type one file/folder per line. Wildcards * and ? are supported; **.csv searches in all sub-folders",
                     "# Press Ctrl+Shift+V to insert from clipboard and proceed",
                     $"{FileUtils.GetDefaultDrive()}*.csv");
             }

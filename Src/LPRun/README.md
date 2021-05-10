@@ -42,7 +42,7 @@ Tested driver **MUST NOT** be installed via NuGet into LINQPad. In this case LPR
 2. Add LPRun [![NuGet](https://img.shields.io/nuget/v/LPRun.svg)](https://www.nuget.org/packages/LPRun)
 3. Create the following folder structure in test project:
 
-```txt
+```text
 LPRun # Created by LPRun NuGet.
     Templates # LINQPad script templates.
     Data      # Optional: Driver data files.

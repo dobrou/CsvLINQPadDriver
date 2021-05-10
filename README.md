@@ -17,7 +17,7 @@
   * [Manual](#manual)
 * [Usage](#usage)
 * [Configuration Options](#configuration-options)
-  * [CSV files](#csv-files)
+  * [CSV Files](#csv-files)
   * [Format](#format)
   * [Memory](#memory)
   * [Generation](#generation)
@@ -65,7 +65,7 @@ Let's have 2 CSV files:
 
 `Authors.csv`
 
-```csv
+```text
 Id,Name
 1,Author 1
 2,Author 2
@@ -74,7 +74,7 @@ Id,Name
 
 `Books.csv`
 
-```csv
+```text
 Id,Title,AuthorId
 11,Author 1 Book 1,1
 12,Author 1 Book 2,1
@@ -151,19 +151,20 @@ CSV context can be added to LINQPad 6 same way as any other context.
 
 ## Configuration Options ##
 
-### CSV files ###
+### CSV Files ###
 
-* CSV files - list of CSV files and folders. Type one file/folder per line or Drag&Drop (`Ctrl` adds files) from Windows Explorer. Wildcards `*` and `**` are supported.
-  * `c:\x\*.csv` - all files in folder `c:\x`
-  * `c:\x\**.csv` - all files in folder `c:\x` and all sub-folders.
+* CSV files - list of CSV files and folders. Type one file/folder per line or Drag&Drop (`Ctrl` adds files). Wildcards `*` and `?` are supported; `**.csv` searches in all sub-folders.
+  * `c:\Books\Books?.csv` - `Books.csv`, `Books1.csv`, etc. files in folder `c:\Books`
+  * `c:\Books\*.csv` - all `*.csv` files in folder `c:\Books`
+  * `c:\Books\**.csv` - all `*.csv` files in folder `c:\Books` and all its sub-folders.
 * Order files by - specifies files sort order. Affects similar files order.
 * No BOM encoding - specifies encoding for files without [BOM](https://en.wikipedia.org/wiki/Byte_order_mark). `UTF-8` is default.
+* Ignore files with invalid format - files with content which does not resemble CSV will be ignored.
 
 ### Format ###
 
 * CSV separator - character used to separate columns in files. Can be `,`, `\t`, etc. Auto-detected if empty.
 * Use CsvHelper library separator auto-detection. Use with caution: sometimes it fails.
-* Ignore files with invalid format - files with strange content not similar to CSV format will be ignored.
 * Allow comments - lines starting with `#` will be ignored.
 
 ### Memory ###
@@ -193,7 +194,7 @@ CSV context can be added to LINQPad 6 same way as any other context.
 There is no definition of relations between CSV files, but we can guess some relations from files and columns names.
 Relations between `fileName.columnName` are detected in cases similar to following examples:
 
-```txt
+```text
 Books.AuthorId  <-> Authors.Id
 Books.AuthorsId <-> Authors.Id
 Books.AuthorId  <-> Authors.AuthorId
