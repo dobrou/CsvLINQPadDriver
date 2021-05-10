@@ -42,7 +42,7 @@ Tested driver **MUST NOT** be installed via NuGet into LINQPad. In this case LPR
 2. Add LPRun [![NuGet](https://img.shields.io/nuget/v/LPRun.svg)](https://www.nuget.org/packages/LPRun)
 3. Create the following folder structure in test project:
 
-```
+```txt
 LPRun # Created by LPRun NuGet.
     Templates # LINQPad script templates.
     Data      # Optional: Driver data files.
@@ -156,19 +156,19 @@ public class LPRunTests
 
 ## Authors ##
 
-- Ivan Ivon (ivan.ivon@gmail.com)
+* Ivan Ivon (ivan.ivon@gmail.com)
 
 ## Credits ##
 
 ### Tools ###
 
-- [LINQPad 6](https://www.linqpad.net/LINQPad6.aspx)
-- [LINQPad Command-Line and Scripting](https://www.linqpad.net/lprun.aspx)
+* [LINQPad 6](https://www.linqpad.net/LINQPad6.aspx)
+* [LINQPad Command-Line and Scripting](https://www.linqpad.net/lprun.aspx)
 
 ### NuGet ###
 
-- [Fluent Assertions](https://github.com/fluentassertions/fluentassertions)
-- [NUnit](https://github.com/nunit/nunit)
+* [Fluent Assertions](https://github.com/fluentassertions/fluentassertions)
+* [NUnit](https://github.com/nunit/nunit)
 
 ## License ##
 

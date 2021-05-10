@@ -23,15 +23,15 @@
   * [Generation](#generation)
   * [Relations](#relations)
   * [Misc](#misc)
-* [Relations](#relations-1)
+* [Relations Detection](#relations-detection)
 * [Performance](#performance)
 * [Data Types](#data-types)
 * [Generated Data Object](#generated-data-object)
   * [Methods](#methods)
-     * [ToString](#tostring)
-     * [GetHashCode](#gethashcode)
-     * [Equals](#equals)
-     * [Indexers](#indexers)
+    * [ToString](#tostring)
+    * [GetHashCode](#gethashcode)
+    * [Equals](#equals)
+    * [Indexers](#indexers)
   * [Properties Access](#properties-access)
   * [Extension Methods](#extension-methods)
 * [Known Issues](#known-issues)
@@ -45,10 +45,10 @@
 
 CsvLINQPadDriver is LINQPad 6 data context dynamic driver for querying CSV files.
 
-- You can query data in CSV files with LINQ, just like it would be regular database. No need to write custom data model, mappings, etc.
-- Driver automatically generates new data types for every CSV file with corresponding properties and mappings for all columns.
-- Based on column and file names, possible relations between CSV tables are detected and generated.
-- Single class generation allows to join similar files and query over them. Might not work well for files with relations.
+* You can query data in CSV files with LINQ, just like it would be regular database. No need to write custom data model, mappings, etc.
+* Driver automatically generates new data types for every CSV file with corresponding properties and mappings for all columns.
+* Based on column and file names, possible relations between CSV tables are detected and generated.
+* Single class generation allows to join similar files and query over them. Might not work well for files with relations.
 
 ## Website ##
 
@@ -65,7 +65,7 @@ Let's have 2 CSV files:
 
 `Authors.csv`
 
-```
+```csv
 Id,Name
 1,Author 1
 2,Author 2
@@ -74,7 +74,7 @@ Id,Name
 
 `Books.csv`
 
-```
+```csv
 Id,Title,AuthorId
 11,Author 1 Book 1,1
 12,Author 1 Book 2,1
@@ -118,81 +118,82 @@ select new { author.Name, book.Title }
 
 ## Prerequisites ##
 
-- [LINQPad 6](https://www.linqpad.net/LINQPad6.aspx)
-- [.NET Core 3.1](https://dotnet.microsoft.com/download/dotnet-core/3.1)
+* [LINQPad 6](https://www.linqpad.net/LINQPad6.aspx)
+* [.NET Core 3.1](https://dotnet.microsoft.com/download/dotnet-core/3.1)
 
 ## Installation ##
 
 ### NuGet [![NuGet](https://img.shields.io/nuget/v/CsvLINQPadDriver.svg)](https://www.nuget.org/packages/CsvLINQPadDriver/) ###
 
-  - Open LINQPad 6.
-  - Click `Add connection` main window.
-  - Click button `View more drivers...`
-  - Click radio button `Show all drivers` and type `CsvLINQPadDriver`
-  - Install.
+* Open LINQPad 6.
+* Click `Add connection` main window.
+* Click button `View more drivers...`
+* Click radio button `Show all drivers` and type `CsvLINQPadDriver`
+* Install.
 
 ### Manual ###
 
 Get latest [CsvLINQPadDriver.\*.lpx6](https://github.com/i2van/CsvLINQPadDriver/releases) file.
 
-  - Open LINQPad 6.
-  - Click `Add connection` main window.
-  - Click button `View more drivers...`
-  - Click button `Install driver from .LPX6 file...` and select downloaded `lpx6` file.
+* Open LINQPad 6.
+* Click `Add connection` main window.
+* Click button `View more drivers...`
+* Click button `Install driver from .LPX6 file...` and select downloaded `lpx6` file.
 
 ## Usage ##
 
 CSV context can be added to LINQPad 6 same way as any other context.
 
-- Click `Add connection`
-- Select `CSV Context Driver` and click `Next`
-- Enter CSV file names or Drag&Drop (`Ctrl` adds files) from Explorer. Optionally configure other options.
-- Query your data.
+* Click `Add connection`
+* Select `CSV Context Driver` and click `Next`
+* Enter CSV file names or Drag&Drop (`Ctrl` adds files) from Explorer. Optionally configure other options.
+* Query your data.
 
 ## Configuration Options ##
 
 ### CSV files ###
 
-- CSV files - list of CSV files and folders. Type one file/folder per line or Drag&Drop (`Ctrl` adds files) from Windows Explorer. Wildcards `*` and `**` are supported.
-  - `c:\x\*.csv` - all files in folder `c:\x`
-  - `c:\x\**.csv` - all files in folder `c:\x` and all sub-folders.
-- Order files by - specifies files sort order. Affects similar files order.
-- No BOM encoding - specifies encoding for files without [BOM](https://en.wikipedia.org/wiki/Byte_order_mark). `UTF-8` is default.
+* CSV files - list of CSV files and folders. Type one file/folder per line or Drag&Drop (`Ctrl` adds files) from Windows Explorer. Wildcards `*` and `**` are supported.
+  * `c:\x\*.csv` - all files in folder `c:\x`
+  * `c:\x\**.csv` - all files in folder `c:\x` and all sub-folders.
+* Order files by - specifies files sort order. Affects similar files order.
+* No BOM encoding - specifies encoding for files without [BOM](https://en.wikipedia.org/wiki/Byte_order_mark). `UTF-8` is default.
 
 ### Format ###
 
-- CSV separator - character used to separate columns in files. Can be `,`, `\t`, etc. Auto-detected if empty.
-- Use CsvHelper library separator auto-detection. Use with caution: sometimes it fails.
-- Ignore files with invalid format - files with strange content not similar to CSV format will be ignored.
-- Allow comments - lines starting with `#` will be ignored.
+* CSV separator - character used to separate columns in files. Can be `,`, `\t`, etc. Auto-detected if empty.
+* Use CsvHelper library separator auto-detection. Use with caution: sometimes it fails.
+* Ignore files with invalid format - files with strange content not similar to CSV format will be ignored.
+* Allow comments - lines starting with `#` will be ignored.
 
 ### Memory ###
 
-- Cache CSV data in memory:
-  - if checked: parsed rows from file are cached in memory. This cache survives multiple query runs, even when query is changed. Cache is cleared as soon as LINQPad clears query data.
-  - if unchecked: disable cache. Multiple enumerations of file content results in multiple reads and parsing of file. Can be significantly slower for complex queries. Significantly reduces memory usage.  Useful when reading very large files.
-- Intern CSV strings - intern strings. Significantly reduce memory consumption when CSV contains repeatable values.
+* Cache CSV data in memory:
+  * if checked: parsed rows from file are cached in memory. This cache survives multiple query runs, even when query is changed. Cache is cleared as soon as LINQPad clears query data.
+  * if unchecked: disable cache. Multiple enumerations of file content results in multiple reads and parsing of file. Can be significantly slower for complex queries. Significantly reduces memory usage.  Useful when reading very large files.
+* Intern CSV strings - intern strings. Significantly reduce memory consumption when CSV contains repeatable values.
 
 ### Generation ###
 
-- Generate single class for similar files - single class will be generated for similar files which allows to query them as a single one. Might not work well for files with relations.
-- String comparison - string comparison for `Equals` and `GetHashCode` methods.
+* Generate single class for similar files - single class will be generated for similar files which allows to query them as a single one. Might not work well for files with relations.
+* String comparison - string comparison for `Equals` and `GetHashCode` methods.
 
 ### Relations ###
 
-- Detect relations - driver will try to detect and generate relations between files.
-  - Hide relations from `Dump()` - LINQPad will not show relations content when `Dump()`ed. This prevents loading too many data.
+* Detect relations - driver will try to detect and generate relations between files.
+  * Hide relations from `Dump()` - LINQPad will not show relations content when `Dump()`ed. This prevents loading too many data.
 
 ### Misc ##
 
-- Debug info - additional debug information will be available. For example generated Data Context source.
-- Remember this connection - connection info will be saved and available after LINQPad restart.
+* Debug info - additional debug information will be available. For example generated Data Context source.
+* Remember this connection - connection info will be saved and available after LINQPad restart.
 
-## Relations ##
+## Relations Detection ##
 
 There is no definition of relations between CSV files, but we can guess some relations from files and columns names.
 Relations between `fileName.columnName` are detected in cases similar to following examples:
-```
+
+```txt
 Books.AuthorId  <-> Authors.Id
 Books.AuthorsId <-> Authors.Id
 Books.AuthorId  <-> Authors.AuthorId
@@ -202,9 +203,10 @@ Books.Id        <-> Authors.BookId
 ## Performance ##
 
 When executing LINQ query on CSV context:
-- Only files used in query are loaded from disk.
-- As soon as any record from file is accessed, whole file is loaded into memory.
-- Relations are lazily evaluated and retrieved using cached lookup tables.
+
+* Only files used in query are loaded from disk.
+* As soon as any record from file is accessed, whole file is loaded into memory.
+* Relations are lazily evaluated and retrieved using cached lookup tables.
 
 Don't expect performance comparable with SQL server. But for reasonably sized CSV files there should not be any problem.
 
@@ -272,10 +274,10 @@ See [properties access](#properties-access) below.
 
 ### Properties Access ###
 
-- Generated data objects are mutable, however saving changes is not supported.
-- Generated data object properties can be accessed either by name or via indexer.
-- Index can be integer (zero-based property index) or string (property name). If there is no index `IndexOutOfRangeException` will be thrown.
-- Relations can not be accessed via indexers.
+* Generated data objects are mutable, however saving changes is not supported.
+* Generated data object properties can be accessed either by name or via indexer.
+* Index can be integer (zero-based property index) or string (property name). If there is no index `IndexOutOfRangeException` will be thrown.
+* Relations can not be accessed via indexers.
 
 ```csharp
 var author = Authors.First();
@@ -361,30 +363,30 @@ TimeSpan? ToTimeSpan(
 
 ## Known Issues ##
 
-- Default encoding for files without BOM is UTF-8.
-- Some strange Unicode characters in column names may cause errors in generated data context source code.
-- Writing changed objects back to CSV is not directly supported, there is no `SubmitChanges()`. But you can use LINQPad's `Util.WriteCsv`
-- Similar files single class generation does not detect relations correctly. However, you can query over related multiple files.
+* Default encoding for files without BOM is UTF-8.
+* Some strange Unicode characters in column names may cause errors in generated data context source code.
+* Writing changed objects back to CSV is not directly supported, there is no `SubmitChanges()`. But you can use LINQPad's `Util.WriteCsv`
+* Similar files single class generation does not detect relations correctly. However, you can query over related multiple files.
 
 ## Authors ##
 
-- Martin Dobroucký (dobrou@gmail.com)
-- Ivan Ivon (ivan.ivon@gmail.com)
+* Martin Dobroucký (dobrou@gmail.com)
+* Ivan Ivon (ivan.ivon@gmail.com)
 
 ## Credits ##
 
 ### Tools ###
 
-- [LINQPad 6](https://www.linqpad.net/LINQPad6.aspx)
-- [LINQPad Command-Line and Scripting](https://www.linqpad.net/lprun.aspx)
+* [LINQPad 6](https://www.linqpad.net/LINQPad6.aspx)
+* [LINQPad Command-Line and Scripting](https://www.linqpad.net/lprun.aspx)
 
 ### NuGet ###
 
-- [CsvHelper](https://github.com/JoshClose/CsvHelper)
-- [Fluent Assertions](https://github.com/fluentassertions/fluentassertions)
-- [Humanizer](https://github.com/Humanizr/Humanizer)
-- [Moq](https://github.com/moq/moq4)
-- [NUnit](https://github.com/nunit/nunit)
+* [CsvHelper](https://github.com/JoshClose/CsvHelper)
+* [Fluent Assertions](https://github.com/fluentassertions/fluentassertions)
+* [Humanizer](https://github.com/Humanizr/Humanizer)
+* [Moq](https://github.com/moq/moq4)
+* [NUnit](https://github.com/nunit/nunit)
 
 ## License ##
 
