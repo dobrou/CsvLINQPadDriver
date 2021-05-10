@@ -17,11 +17,11 @@
     <Description>LINQPad driver LPRun unit/integration tests runner.</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/i2van/CsvLINQPadDriver</RepositoryUrl>
-    <PackageReleaseNotes>LPRun 6.13.13</PackageReleaseNotes>
+    <PackageReleaseNotes>LPRun 6.13.13 NuGet fixes.</PackageReleaseNotes>
     <Copyright>Copyright © 2021 Ivan Ivon, LINQPad/LPRun by Joseph Albahari</Copyright>
-    <AssemblyVersion>6.13.13.0</AssemblyVersion>
-    <FileVersion>6.13.13.0</FileVersion>
-    <Version>6.13.13</Version>
+    <AssemblyVersion>6.13.14.0</AssemblyVersion>
+    <FileVersion>6.13.14.0</FileVersion>
+    <Version>6.13.14</Version>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
   </PropertyGroup>
 
@@ -36,32 +36,25 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="LPRun\Bin\LINQPad.Runtime.dll" />
-    <None Remove="LPRun\Bin\LINQPad.Runtime.runtimeconfig.json" />
-    <None Remove="LPRun\Bin\LPRun6-x86.exe" />
-    <None Remove="LPRun\Bin\LPRun6.exe" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Content Include="LPRun\Bin\LINQPad.Runtime.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <PackageCopyToOutput>true</PackageCopyToOutput>
-      <PackagePath>content\LPRun\Bin\</PackagePath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <PackagePath>contentFiles\any\netstandard2.1\LPRun\Bin\</PackagePath>
     </Content>
     <Content Include="LPRun\Bin\LINQPad.Runtime.runtimeconfig.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <PackageCopyToOutput>true</PackageCopyToOutput>
-      <PackagePath>content\LPRun\Bin\</PackagePath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <PackagePath>contentFiles\any\netstandard2.1\LPRun\Bin\</PackagePath>
     </Content>
     <Content Include="LPRun\Bin\LPRun6-x86.exe">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <PackageCopyToOutput>true</PackageCopyToOutput>
-      <PackagePath>content\LPRun\Bin\</PackagePath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <PackagePath>contentFiles\any\netstandard2.1\LPRun\Bin\</PackagePath>
     </Content>
     <Content Include="LPRun\Bin\LPRun6.exe">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <PackageCopyToOutput>true</PackageCopyToOutput>
-      <PackagePath>content\LPRun\Bin\</PackagePath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <PackagePath>contentFiles\any\netstandard2.1\LPRun\Bin\</PackagePath>
     </Content>
   </ItemGroup>
 
