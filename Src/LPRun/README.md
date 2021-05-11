@@ -1,3 +1,4 @@
+[![Latest build](https://github.com/i2van/CsvLINQPadDriver/workflows/build/badge.svg)](https://github.com/i2van/CsvLINQPadDriver/actions)
 [![NuGet](https://img.shields.io/nuget/v/LPRun.svg)](https://www.nuget.org/packages/LPRun)
 [![Downloads](https://img.shields.io/nuget/dt/LPRun.svg)](https://www.nuget.org/packages/LPRun)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)

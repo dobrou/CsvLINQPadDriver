@@ -142,7 +142,7 @@ Get latest [CsvLINQPadDriver.\*.lpx6](https://github.com/i2van/CsvLINQPadDriver/
 
 ## Usage ##
 
-CSV context can be added to LINQPad 6 same way as any other context.
+CSV files connection can be added to LINQPad 6 the same way as any other connection.
 
 * Click `Add connection`
 * Select `CSV Context Driver` and click `Next`
@@ -186,7 +186,7 @@ CSV context can be added to LINQPad 6 same way as any other context.
 
 ### Misc ##
 
-* Debug info - additional debug information will be available. For example generated Data Context source.
+* Debug info - additional debug information will be available, e.g. generated Data Context source.
 * Remember this connection - connection info will be saved and available after LINQPad restart.
 
 ## Relations Detection ##
@@ -203,7 +203,7 @@ Books.Id        <-> Authors.BookId
 
 ## Performance ##
 
-When executing LINQ query on CSV context:
+When executing LINQ query for CSV connection:
 
 * Only files used in query are loaded from disk.
 * As soon as any record from file is accessed, whole file is loaded into memory.
