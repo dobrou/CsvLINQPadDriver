@@ -24,8 +24,8 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/i2van/CsvLINQPadDriver</RepositoryUrl>
     <PackageIcon>NuGetIcon.png</PackageIcon>
-    <PackageReleaseNotes>Returned CSV separator auto-detection - CsvHelper detection is buggy.
-Add CsvHelper auto-detection option.
+    <PackageReleaseNotes>Add CsvHelper library auto-detection option.
+UI changes.
     </PackageReleaseNotes>
     <Copyright>Copyright © Martin Dobroucký 2013-2014, Ivan Ivon 2021</Copyright>
     <AssemblyVersion>6.9.0.0</AssemblyVersion>

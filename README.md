@@ -367,7 +367,8 @@ TimeSpan? ToTimeSpan(
 * Default encoding for files without BOM is UTF-8.
 * Some strange Unicode characters in column names may cause errors in generated data context source code.
 * Writing changed objects back to CSV is not directly supported, there is no `SubmitChanges()`. But you can use LINQPad's `Util.WriteCsv`
-* Similar files single class generation does not detect relations correctly. However, you can query over related multiple files.
+* Relations detection does not work well for similar files single class generation. However, you can query over related multiple files.
+* Relations detection with file sorting might produce broken source code for similar files single class generation.
 
 ## Authors ##
 
