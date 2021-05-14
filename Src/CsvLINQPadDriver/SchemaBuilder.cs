@@ -53,13 +53,14 @@ namespace CsvLINQPadDriver
                 {
                     var codeNames = tableCodeGroup.Select(typeCodeResult => typeCodeResult.CodeName).ToImmutableList();
                     var similarFilesSize = tableCodeGroup.Select(typeCodeResult => typeCodeResult.FilePath).GetHumanizedFileSize();
+                    var similarFilesCount = codeNames.Count;
 
-                    var total = $"({codeNames.Count} of {csvDatabase.Files.Count})";
-
-                    schema.Insert(index++, new ExplorerItem($"{codeNames.First()} similar files {total} joined data ({similarFilesSize})", ExplorerItemKind.Schema, ExplorerIcon.View)
+                    schema.Insert(index++, new ExplorerItem($"{codeNames.First()} similar files joined data ({similarFilesCount}/{csvDatabase.Files.Count} files {similarFilesSize})", ExplorerItemKind.Schema, ExplorerIcon.View)
                     {
-                        ToolTipText = $"Drag&drop similar files {total} joined data to text window{Environment.NewLine}{Environment.NewLine}" +
-                                      $"{string.Join(Environment.NewLine, codeNames.Count <= 3 ? codeNames : codeNames.Take(2).Concat(new []{ "..." }).Concat(codeNames.Skip(codeNames.Count-1)))}",
+                        ToolTipText = string.Join(Environment.NewLine,
+                                        $"Drag&drop {similarFilesCount} similar files joined data to text window", 
+                                        string.Empty,
+                                        $"{string.Join(Environment.NewLine, similarFilesCount <= 3 ? codeNames : codeNames.Take(2).Concat(new []{ "..." }).Concat(codeNames.Skip(similarFilesCount - 1)))}"),
                         DragText = $@"new []
 {{
 {string.Join(Environment.NewLine, codeNames.Select(n => $"\t{n},"))}

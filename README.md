@@ -43,7 +43,7 @@
 
 ## Description ##
 
-CsvLINQPadDriver is LINQPad 6 data context dynamic driver for querying CSV files.
+CsvLINQPadDriver is LINQPad 6 data context dynamic driver for querying [CSV](https://en.wikipedia.org/wiki/Comma-separated_values) files.
 
 * You can query data in CSV files with LINQ, just like it would be regular database. No need to write custom data model, mappings, etc.
 * Driver automatically generates new data types for every CSV file with corresponding properties and mappings for all columns.
@@ -153,41 +153,41 @@ CSV files connection can be added to LINQPad 6 the same way as any other connect
 
 ### CSV Files ###
 
-* CSV files - list of CSV files and folders. Type one file/folder per line or Drag&Drop (`Ctrl` adds files). Wildcards `*` and `?` are supported; `**.csv` searches in all sub-folders.
-  * `c:\Books\Books?.csv` - `Books.csv`, `Books1.csv`, etc. files in folder `c:\Books`
-  * `c:\Books\*.csv` - all `*.csv` files in folder `c:\Books`
-  * `c:\Books\**.csv` - all `*.csv` files in folder `c:\Books` and all its sub-folders.
-* Order files by - specifies files sort order. Affects similar files order.
-* No BOM encoding - specifies encoding for files without [BOM](https://en.wikipedia.org/wiki/Byte_order_mark). `UTF-8` is default.
-* Ignore files with invalid format - files with content which does not resemble CSV will be ignored.
+* CSV files: list of CSV files and folders. Can be added via files/folder dialogs, dedicated hotkeys, by typing one file/folder per line or by Drag&Drop (`Ctrl` adds files). Wildcards `?` and `*` are supported; `**.csv` searches in folder and its sub-folders.
+  * `c:\Books\Books?.csv`: `Books.csv`, `Books1.csv`, etc. files in folder `c:\Books`
+  * `c:\Books\*.csv`: all `*.csv` files in folder `c:\Books`
+  * `c:\Books\**.csv`: all `*.csv` files in folder `c:\Books` and its sub-folders.
+* Order files by: specifies files sort order. Affects similar files order.
+* No BOM encoding: specifies encoding for files without [BOM](https://en.wikipedia.org/wiki/Byte_order_mark). `UTF-8` is default.
+* Ignore files with invalid format: files with content which does not resemble CSV will be ignored.
 
 ### Format ###
 
-* CSV separator - character used to separate columns in files. Can be `,`, `\t`, etc. Auto-detected if empty.
+* CSV separator: character used to separate columns in files. Can be `,`, `\t`, etc. Auto-detected if empty.
 * Use CsvHelper library separator auto-detection. Use with caution: sometimes it fails.
-* Allow comments - lines starting with `#` will be ignored.
+* Allow comments: lines starting with `#` will be ignored.
 
 ### Memory ###
 
 * Cache CSV data in memory:
   * if checked: parsed rows from file are cached in memory. This cache survives multiple query runs, even when query is changed. Cache is cleared as soon as LINQPad clears query data.
   * if unchecked: disable cache. Multiple enumerations of file content results in multiple reads and parsing of file. Can be significantly slower for complex queries. Significantly reduces memory usage.  Useful when reading very large files.
-* Intern CSV strings - intern strings. Significantly reduce memory consumption when CSV contains repeatable values.
+* Intern CSV strings: intern strings. Significantly reduce memory consumption when CSV contains repeatable values.
 
 ### Generation ###
 
-* Generate single class for similar files - single class will be generated for similar files which allows to query them as a single one. Might not work well for files with relations.
-* String comparison - string comparison for `Equals` and `GetHashCode` methods.
+* Generate single class for similar files: single class will be generated for similar files which allows to query them as a single one. Might not work well for files with relations.
+* String comparison: string comparison for `Equals` and `GetHashCode` methods.
 
 ### Relations ###
 
-* Detect relations - driver will try to detect and generate relations between files.
-  * Hide relations from `Dump()` - LINQPad will not show relations content when `Dump()`ed. This prevents loading too many data.
+* Detect relations: driver will try to detect and generate relations between files.
+  * Hide relations from `Dump()`: LINQPad will not show relations content when `Dump()`ed. This prevents loading too many data.
 
 ### Misc ##
 
-* Debug info - additional debug information will be available, e.g. generated Data Context source.
-* Remember this connection - connection info will be saved and available after LINQPad restart.
+* Debug info: additional debug information will be available, e.g. generated Data Context source.
+* Remember this connection: connection info will be saved and available after LINQPad restart.
 
 ## Relations Detection ##
 

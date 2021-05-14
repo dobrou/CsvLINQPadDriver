@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Text.RegularExpressions;
 
 using Humanizer;
 
@@ -16,7 +17,7 @@ using CsvLINQPadDriver.CodeGen;
 
 namespace CsvLINQPadDriver.Helpers
 {
-    public static class FileUtils
+    public static class FileExtensions
     {
         private const StringComparison FileNameComparison = StringComparison.OrdinalIgnoreCase;
 
@@ -45,9 +46,6 @@ namespace CsvLINQPadDriver.Helpers
                 return csvClassMap.InitRowObject(rowColumns);
             }
         }
-
-        public static string GetDefaultDrive() =>
-            Path.GetPathRoot(Environment.SystemDirectory)!.ToLower();
 
         public static IEnumerable<string> CsvReadHeader(this string fileName, char? csvSeparator, NoBomEncoding noBomEncoding, bool allowComments)
         {
@@ -256,6 +254,34 @@ namespace CsvLINQPadDriver.Helpers
             csvConfiguration.Delimiter = csvSeparator?.ToString() ?? csvConfiguration.Delimiter;
 
             return new CsvParser(new StreamReader(fileName, NoBomEncodings.Value[noBomEncoding], true, bufferSize / sizeof(char)), csvConfiguration);
+        }
+
+        public record DeduceFileOrFolderResult(bool IsFile, string Path);
+
+        public static DeduceFileOrFolderResult DeduceFileOrFolder(this string path)
+        {
+            if (Regex.IsMatch(path, @"[\\/]$"))
+            {
+                return new DeduceFileOrFolderResult(false, path);
+            }
+
+            var isFolder = Regex.IsMatch(Path.GetFileName(path), @"[?*]");
+            if (isFolder)
+            {
+                return new DeduceFileOrFolderResult(false, Path.GetDirectoryName(path)!);
+            }
+
+            try
+            {
+                var fileInfo = new FileInfo(path);
+                isFolder = (int)fileInfo.Attributes != -1 && fileInfo.Attributes.HasFlag(FileAttributes.Directory);
+            }
+            catch
+            {
+                // ignored
+            }
+
+            return new DeduceFileOrFolderResult(!isFolder, path);
         }
 
         private static IEnumerable<string> EnumFiles(string path)

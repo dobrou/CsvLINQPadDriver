@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 
 using Humanizer;
@@ -23,9 +22,10 @@ namespace CsvLINQPadDriver
         public override Version Version =>
             Assembly.GetExecutingAssembly().GetName().Version!;
 
-        [SuppressMessage("ReSharper", "StringLiteralTypo")]
         public override string Author =>
+            // ReSharper disable StringLiteralTypo
             "Martin Dobroucký (dobrou@gmail.com), Ivan Ivon (ivan.ivon@gmail.com)";
+            // ReSharper restore StringLiteralTypo
 
         public override string GetConnectionDescription(IConnectionInfo cxInfo)
         {
@@ -51,10 +51,11 @@ namespace CsvLINQPadDriver
             if (connectionDialogOptions.IsNewConnection)
             {
                 properties.Files = string.Join(Environment.NewLine,
-                    "# Drag&drop here. Use Ctrl to add files",
-                    "# Type one file/folder per line. Wildcards * and ? are supported; **.csv searches in all sub-folders",
-                    "# Press Ctrl+Shift+V to insert from clipboard and proceed",
-                    $"{FileUtils.GetDefaultDrive()}*.csv");
+                    "# Drag&drop here. Use Ctrl to add files.",
+                    "# Type one file/folder per line. Wildcards ? and * are supported; **.csv searches in folder and its sub-folders.",
+                    "# Press Ctrl+Shift+V to clear, paste from clipboard and proceed.",
+                    "# Press Ctrl+Shift+Alt+V to paste from clipboard and proceed.",
+                    string.Empty, string.Empty);
             }
 
             if (new ConnectionDialog(properties).ShowDialog() != true)
