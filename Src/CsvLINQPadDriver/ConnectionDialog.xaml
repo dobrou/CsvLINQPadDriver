@@ -16,6 +16,8 @@
         <ObjectDataProvider x:Key="FilesOrderByData" MethodName="GetValues" ObjectType="{x:Type wpf:FilesOrderByEnumObjectDataSource}"/>
         <ObjectDataProvider x:Key="StringComparisonData" MethodName="GetValues" ObjectType="{x:Type wpf:StringComparisonEnumObjectDataSource}"/>
 
+        <GridLength x:Key="ComBoxLabelGridLength">103</GridLength>
+
         <Style TargetType="{x:Type Hyperlink}">
             <Setter Property="TextDecorations" Value=""/>
         </Style>
@@ -122,7 +124,7 @@
             </GroupBox.Header>
             <Grid Style="{StaticResource GroupGridStyle}">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="103"/>
+                    <ColumnDefinition Width="{StaticResource ComBoxLabelGridLength}"/>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
@@ -233,7 +235,7 @@
 
                     <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="103"/>
+                            <ColumnDefinition Width="{StaticResource ComBoxLabelGridLength}"/>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>

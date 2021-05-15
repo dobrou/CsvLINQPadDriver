@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using System.Runtime.InteropServices;
 
 namespace CsvLINQPadDriver.Helpers
@@ -13,7 +12,7 @@ namespace CsvLINQPadDriver.Helpers
         {
             if (doSelect)
             {
-                SelectItem(path);
+                SelectFile(path);
             }
             else
             {
@@ -21,46 +20,36 @@ namespace CsvLINQPadDriver.Helpers
             }
         }
 
+        private static void ShellExecute(string verb, string what) =>
+            ShellExecute(IntPtr.Zero, verb, what, null, null, SW_SHOW);
+
+        private static void SelectFile(string file)
+        {
+            // ReSharper disable once IdentifierTypo
+            IntPtr pidl = ILCreateFromPath(file);
+            if (pidl != IntPtr.Zero)
+            {
+                SHOpenFolderAndSelectItems(pidl, 0, IntPtr.Zero, 0);
+                ILFree(pidl);
+            }
+        }
+
         // ReSharper disable IdentifierTypo
         // ReSharper disable InconsistentNaming
-        private const int SW_SHOWNORMAL = 1;
+        private const int SW_SHOW = 5;
 
         [DllImport("shell32.dll", CharSet = CharSet.Unicode)]
-        private static extern IntPtr ShellExecute(IntPtr hwnd, string lpOperation, string lpFile, string lpParameters, string lpDirectory, int nShowCmd);
+        private static extern IntPtr ShellExecute(IntPtr hwnd, string lpOperation, string lpFile, string? lpParameters, string? lpDirectory, int nShowCmd);
 
         [DllImport("shell32.dll")]
-        private static extern int SHOpenFolderAndSelectItems(IntPtr pidlFolder, uint cidl, IntPtr[] apidl, uint dwFlags);
+        private static extern int SHOpenFolderAndSelectItems(IntPtr pidlFolder, uint cidl, IntPtr apidl, uint dwFlags);
 
         [DllImport("shell32.dll", CharSet = CharSet.Unicode)]
-        private static extern void SHParseDisplayName(string name, IntPtr bindingContext, out IntPtr pidl, uint sfgaoIn, out uint psfgaoOut);
+        private static extern IntPtr ILCreateFromPath(string pszPath);
+
+        [DllImport("shell32.dll")]
+        private static extern void ILFree(IntPtr pidl);
         // ReSharper restore InconsistentNaming
         // ReSharper restore IdentifierTypo
-
-        private static void ShellExecute(string verb, string what) =>
-            ShellExecute(IntPtr.Zero, verb, what, string.Empty, string.Empty, SW_SHOWNORMAL);
-
-        private static void SelectItem(string filePath)
-        {
-            var folderPath = Path.GetDirectoryName(filePath);
-
-            SHParseDisplayName(folderPath!, IntPtr.Zero, out var folder, 0, out _);
-
-            if (folder == IntPtr.Zero)
-            {
-                return;
-            }
-
-            SHParseDisplayName(filePath, IntPtr.Zero, out var file, 0, out _);
-
-            if (file != IntPtr.Zero)
-            {
-                IntPtr[] files = { file };
-
-                SHOpenFolderAndSelectItems(folder, (uint)files.Length, files, 0);
-                Marshal.FreeCoTaskMem(file);
-            }
-
-            Marshal.FreeCoTaskMem(folder);
-        }
     }
 }

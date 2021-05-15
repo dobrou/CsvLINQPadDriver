@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -28,21 +27,15 @@ namespace CsvLINQPadDriver
         private void OkButton_Click(object sender, RoutedEventArgs e) =>
             DialogResult = true;
 
-        private void FilesTextBox_DragEnter(object sender, DragEventArgs e)
-        {
-            e.Handled = true;
-
-            e.Effects = e.Data.GetDataPresent(DataFormats.FileDrop)
-                ? e.KeyStates.HasFlag(DragDropKeyStates.ControlKey)
+        private void FilesTextBox_DragEnter(object sender, DragEventArgs e) =>
+            e.Effects = (e.Handled = true) && e.Data.GetDataPresent(DataFormats.FileDrop)
+                ? IsDragAndDropInAddMode(e.KeyStates)
                     ? DragDropEffects.Copy
-                    : DragDropEffects.Link
+                    : DragDropEffects.Move
                 : DragDropEffects.None;
-        }
 
         private void FilesTextBox_DragDrop(object sender, DragEventArgs e)
         {
-            var textBox = (TextBox)sender;
-
             if (e.Data.GetData(DataFormats.FileDrop, true) is not IEnumerable<string> files)
             {
                 return;
@@ -51,16 +44,16 @@ namespace CsvLINQPadDriver
             // Add *.csv mask to dirs.
             files = files.Select(path => Directory.Exists(path) ? Path.Combine(path, "*.csv") : path);
 
-            // If Ctrl is pressed then add files to text box instead of replacing whole text.
-            if (e.KeyStates.HasFlag(DragDropKeyStates.ControlKey))
+            if (!IsDragAndDropInAddMode(e.KeyStates))
             {
-                files = new[] { textBox.Text }.Concat(files);
+                FilesTextBox.Clear();
             }
 
-            textBox.Text = string.Join(Environment.NewLine, files);
-
-            textBox.GetBindingExpression(TextBox.TextProperty)?.UpdateSource();
+            AppendFiles(files.ToArray());
         }
+
+        private static bool IsDragAndDropInAddMode(DragDropKeyStates keyStates) =>
+            keyStates.HasFlag(DragDropKeyStates.ControlKey);
 
         private void ConnectionDialog_OnLoaded(object sender, RoutedEventArgs e) =>
             MoveCaretToEnd();
