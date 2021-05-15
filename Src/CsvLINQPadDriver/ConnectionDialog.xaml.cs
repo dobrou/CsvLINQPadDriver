@@ -106,8 +106,11 @@ namespace CsvLINQPadDriver
         private void AddFolderAndItsSubfoldersCommandBinding_OnExecuted(object sender, ExecutedRoutedEventArgs e) =>
             AddFolder(true);
 
-        private void ClearCommandBinding_OnExecuted(object sender, ExecutedRoutedEventArgs e) =>
+        private void ClearCommandBinding_OnExecuted(object sender, ExecutedRoutedEventArgs e)
+        {
             FilesTextBox.Clear();
+            FilesTextBox.Focus();
+        }
 
         private void ClearCommandBinding_OnCanExecute(object sender, CanExecuteRoutedEventArgs e) =>
             e.CanExecute = FilesTextBox?.Text.Any() == true;
