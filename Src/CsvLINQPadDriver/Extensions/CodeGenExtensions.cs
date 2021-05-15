@@ -3,9 +3,9 @@ using System.CodeDom.Compiler;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace CsvLINQPadDriver.Helpers
+namespace CsvLINQPadDriver.Extensions
 {
-    internal static class CodeGenHelper
+    internal static class CodeGenExtensions
     {
         private const string SafeChar = "_";
         private const int MaxLength = 128;
@@ -15,7 +15,7 @@ namespace CsvLINQPadDriver.Helpers
 
         private static readonly string[] InvalidIdentifierNames = { nameof(System), nameof(ToString), nameof(Equals), nameof(GetHashCode) };
 
-        public static string GetSafeCodeName(string? name)
+        public static string GetSafeCodeName(this string? name)
         {
             var safeName = name ?? string.Empty;
 

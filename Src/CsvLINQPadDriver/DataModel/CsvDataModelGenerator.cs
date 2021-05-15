@@ -6,7 +6,7 @@ using System.IO;
 using System.Linq;
 
 using CsvLINQPadDriver.CodeGen;
-using CsvLINQPadDriver.Helpers;
+using CsvLINQPadDriver.Extensions;
 
 namespace CsvLINQPadDriver.DataModel
 {
@@ -78,13 +78,13 @@ namespace CsvLINQPadDriver.DataModel
 
                     var fileName = Path.GetFileName(file);
                     var fileDir  = (Path.GetDirectoryName($"{file.Remove(0, baseDir.Length)}x") ?? string.Empty).TrimStart(Path.DirectorySeparatorChar);
-                    var codeName = CodeGenHelper.GetSafeCodeName(Path.GetFileNameWithoutExtension(fileName) + (string.IsNullOrWhiteSpace(fileDir) ? string.Empty : $"_{fileDir}"));
+                    var codeName = (Path.GetFileNameWithoutExtension(fileName) + (string.IsNullOrWhiteSpace(fileDir) ? string.Empty : $"_{fileDir}")).GetSafeCodeName();
 
                     var columns = file.CsvReadHeader(csvSeparator, noBomEncoding, allowComments)
                         .Select((value, index) => (value, index))
                         .Select(col => new CsvColumn(col.value ?? string.Empty, col.index)
                         {
-                            CodeName    = CodeGenHelper.GetSafeCodeName(col.value),
+                            CodeName    = col.value.GetSafeCodeName(),
                             DisplayName = string.Empty
                         })
                         .ToImmutableList();

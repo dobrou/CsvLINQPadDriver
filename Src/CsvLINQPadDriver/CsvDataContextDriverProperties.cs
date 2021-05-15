@@ -5,7 +5,7 @@ using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 
-using CsvLINQPadDriver.Helpers;
+using CsvLINQPadDriver.Extensions;
 
 using LINQPad.Extensibility.DataContext;
 

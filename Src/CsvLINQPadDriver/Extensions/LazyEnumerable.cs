@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace CsvLINQPadDriver.Helpers
+namespace CsvLINQPadDriver.Extensions
 {
     public class LazyEnumerable<T> : IEnumerable<T>
     {

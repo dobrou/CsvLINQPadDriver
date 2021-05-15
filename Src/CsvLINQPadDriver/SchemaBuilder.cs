@@ -8,7 +8,7 @@ using CsvHelper;
 
 using CsvLINQPadDriver.CodeGen;
 using CsvLINQPadDriver.DataModel;
-using CsvLINQPadDriver.Helpers;
+using CsvLINQPadDriver.Extensions;
 
 using LINQPad.Extensibility.DataContext;
 

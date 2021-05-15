@@ -15,7 +15,7 @@ using CsvHelper.Configuration;
 
 using CsvLINQPadDriver.CodeGen;
 
-namespace CsvLINQPadDriver.Helpers
+namespace CsvLINQPadDriver.Extensions
 {
     public static class FileExtensions
     {
@@ -258,31 +258,14 @@ namespace CsvLINQPadDriver.Helpers
 
         public record DeduceFileOrFolderResult(bool IsFile, string Path);
 
-        public static DeduceFileOrFolderResult DeduceFileOrFolder(this string path)
-        {
-            if (Regex.IsMatch(path, @"[\\/]$"))
-            {
-                return new DeduceFileOrFolderResult(false, path);
-            }
-
-            var isFolder = Regex.IsMatch(Path.GetFileName(path), @"[?*]");
-            if (isFolder)
-            {
-                return new DeduceFileOrFolderResult(false, Path.GetDirectoryName(path)!);
-            }
-
-            try
-            {
-                var fileInfo = new FileInfo(path);
-                isFolder = (int)fileInfo.Attributes != -1 && fileInfo.Attributes.HasFlag(FileAttributes.Directory);
-            }
-            catch
-            {
-                // ignored
-            }
-
-            return new DeduceFileOrFolderResult(!isFolder, path);
-        }
+        public static DeduceFileOrFolderResult DeduceFileOrFolder(this string path) =>
+            Regex.IsMatch(path, @"[\\/]$")
+                ? new DeduceFileOrFolderResult(false, path)
+                : Regex.IsMatch(Path.GetFileName(path), @"[?*]")
+                    ? new DeduceFileOrFolderResult(false, Path.GetDirectoryName(path) ?? path)
+                    : Path.GetExtension(path).Length < 3
+                        ? new DeduceFileOrFolderResult(false, path)
+                        : new DeduceFileOrFolderResult(true, path);
 
         private static IEnumerable<string> EnumFiles(string path)
         {

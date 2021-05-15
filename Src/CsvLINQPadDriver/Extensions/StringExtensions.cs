@@ -6,7 +6,7 @@ using System.Runtime.CompilerServices;
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable UnusedMember.Global
 
-namespace CsvLINQPadDriver.Helpers
+namespace CsvLINQPadDriver.Extensions
 {
     public static class StringExtensions
     {

@@ -25,13 +25,14 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/i2van/CsvLINQPadDriver</RepositoryUrl>
     <PackageIcon>NuGetIcon.png</PackageIcon>
-    <PackageReleaseNotes>User now can choose files/folders using corresponding dialogs.</PackageReleaseNotes>
+    <PackageReleaseNotes>UI improvements and fixes.</PackageReleaseNotes>
     <Copyright>Copyright © Martin Dobroucký 2013-2014, Ivan Ivon 2021</Copyright>
-    <AssemblyVersion>6.10.0.0</AssemblyVersion>
-    <FileVersion>6.10.0.0</FileVersion>
-    <Version>6.10.0</Version>
+    <AssemblyVersion>6.11.0.0</AssemblyVersion>
+    <FileVersion>6.11.0.0</FileVersion>
+    <Version>6.11.0</Version>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <ApplicationIcon>Connection.ico</ApplicationIcon>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">

@@ -9,7 +9,7 @@ using LINQPad;
 using LINQPad.Extensibility.DataContext;
 
 using CsvLINQPadDriver.DataDisplay;
-using CsvLINQPadDriver.Helpers;
+using CsvLINQPadDriver.Extensions;
 
 namespace CsvLINQPadDriver
 {
@@ -74,7 +74,7 @@ namespace CsvLINQPadDriver
 
         public override IEnumerable<string> GetNamespacesToAdd(IConnectionInfo cxInfo)
         {
-            yield return typeof(Helpers.StringExtensions).Namespace!;
+            yield return typeof(Extensions.StringExtensions).Namespace!;
         }
 
         public override List<ExplorerItem> GetSchemaAndBuildAssembly(IConnectionInfo cxInfo, AssemblyName assemblyToBuild, ref string nameSpace, ref string typeName) =>

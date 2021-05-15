@@ -8,7 +8,7 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Documents;
 using System.Windows.Input;
 
-using CsvLINQPadDriver.Helpers;
+using CsvLINQPadDriver.Extensions;
 using CsvLINQPadDriver.Wpf;
 
 namespace CsvLINQPadDriver
@@ -16,6 +16,10 @@ namespace CsvLINQPadDriver
     public partial class ConnectionDialog
     {
         private const string HelpUri = "https://github.com/i2van/CsvLINQPadDriver/blob/master/README.md#csvlinqpaddriver-for-linqpad-6";
+
+        private bool _addFolderAndItsSubfoldersDialogOpened;
+
+        public static readonly RoutedUICommand CtrlLeftClickCommand = new();
 
         public ConnectionDialog(ICsvDataContextDriverProperties csvDataContextDriverProperties)
         {
@@ -41,15 +45,33 @@ namespace CsvLINQPadDriver
                 return;
             }
 
-            // Add *.csv mask to dirs.
-            files = files.Select(path => Directory.Exists(path) ? Path.Combine(path, "*.csv") : path);
-
             if (!IsDragAndDropInAddMode(e.KeyStates))
             {
                 FilesTextBox.Clear();
             }
 
-            AppendFiles(files.ToArray());
+            AppendFiles(files.Select(GetEnrichedPath).ToArray());
+
+            string GetEnrichedPath(string path)
+            {
+                try
+                {
+                    // Add *.csv mask to dirs.
+                    return Directory.Exists(path)
+                        ? Path.Combine(path, GetFolderFilesMask(_addFolderAndItsSubfoldersDialogOpened))
+                        : path;
+                }
+                catch (Exception exception)
+                {
+                    ShowWarning(string.Join(Environment.NewLine,
+                                    $"Could not determine whether {path} is a file or folder due to error:",
+                                    string.Empty,
+                                    exception.Message,
+                                    string.Empty,
+                                    "Assuming a file."));
+                    return path;
+                }
+            }
         }
 
         private static bool IsDragAndDropInAddMode(DragDropKeyStates keyStates) =>
@@ -115,29 +137,72 @@ namespace CsvLINQPadDriver
         private void ClearCommandBinding_OnCanExecute(object sender, CanExecuteRoutedEventArgs e) =>
             e.CanExecute = FilesTextBox?.Text.Any() == true;
 
-        private void BrowseFileOrFolderCommandBinding_OnExecuted(object sender, ExecutedRoutedEventArgs e)
+        private void CtrlLeftClickCommandBinding_OnExecuted(object sender, ExecutedRoutedEventArgs e)
         {
-            if (TryGetLineAtCaret(out var line))
+            if (!ReferenceEquals(e.OriginalSource, FilesTextBox))
             {
-                var (isFile, path) = line!.DeduceFileOrFolder();
-                path.Explore(isFile);
+                return;
+            }
+
+            SetCaretIndexFromMousePosition();
+
+            ApplicationCommands.Find.Execute(null, FilesTextBox);
+
+            void SetCaretIndexFromMousePosition()
+            {
+                var caretIndex = FilesTextBox.GetCharacterIndexFromPoint(Mouse.GetPosition(FilesTextBox), true);
+                if (caretIndex >= 0)
+                {
+                    FilesTextBox.CaretIndex = caretIndex;
+                }
             }
         }
 
-        private void BrowseFileOrFolderCommandBinding_OnCanExecuteTrue(object sender, CanExecuteRoutedEventArgs e) =>
-            e.CanExecute = TryGetLineAtCaret(out var line) &&
-                           Path.IsPathFullyQualified(line!);
+        private void BrowseFileOrFolderCommandBinding_OnExecuted(object sender, ExecutedRoutedEventArgs e)
+        {
+            if (!TryGetFullPathAtLine(out var fullPath))
+            {
+                ShowWarning("Only absolute paths are supported.");
+                return;
+            }
 
-        private bool TryGetLineAtCaret(out string? line) =>
-            !string.IsNullOrWhiteSpace(line = FilesTextBox?.GetLineText(FilesTextBox.GetLineIndexFromCharacterIndex(FilesTextBox.CaretIndex)).Trim());
+            var (isFile, path) = fullPath!.DeduceFileOrFolder();
+            var shellResult = path.Explore(isFile);
+
+            if (!shellResult)
+            {
+                ShowWarning(shellResult);
+            }
+        }
+
+        private void ShowWarning(string text) =>
+            MessageBox.Show(this, text, Title, MessageBoxButton.OK, MessageBoxImage.Exclamation);
+
+        private void BrowseFileOrFolderCommandBinding_OnCanExecuteTrue(object sender, CanExecuteRoutedEventArgs e) =>
+            e.CanExecute = TryGetFullPathAtLine(out _);
+
+        private bool TryGetFullPathAtLine(out string? fullPath)
+        {
+            return TryGetLineAtCaret(out fullPath) && Path.IsPathFullyQualified(fullPath!);
+
+            bool TryGetLineAtCaret(out string? line) =>
+                !string.IsNullOrWhiteSpace(line = FilesTextBox?.GetLineText(FilesTextBox.GetLineIndexFromCharacterIndex(FilesTextBox.CaretIndex)).Trim());
+        }
 
         private void AddFolder(bool withSubfolders)
         {
+            _addFolderAndItsSubfoldersDialogOpened = withSubfolders;
+
             if ($"Add Folder{(withSubfolders ? " and Its Sub-folders" : string.Empty)}".TryBrowseForFolder(out var folder))
             {
-                AppendFiles(Path.Combine(folder, $"{(withSubfolders ? "**" : "*")}.csv"));
+                AppendFiles(Path.Combine(folder, GetFolderFilesMask(withSubfolders)));
             }
+
+            _addFolderAndItsSubfoldersDialogOpened = false;
         }
+
+        private static string GetFolderFilesMask(bool withSubfolders) =>
+            $"{(withSubfolders ? "**" : "*")}.csv";
 
         private void AppendFiles(params string[] files)
         {

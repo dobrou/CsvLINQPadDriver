@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-using CsvLINQPadDriver.Helpers;
+using CsvLINQPadDriver.Extensions;
 
 namespace CsvLINQPadDriver.CodeGen
 {

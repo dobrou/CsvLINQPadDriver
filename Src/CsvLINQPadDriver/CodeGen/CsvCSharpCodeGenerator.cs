@@ -13,7 +13,7 @@ using Humanizer;
 
 using CsvLINQPadDriver.DataDisplay;
 using CsvLINQPadDriver.DataModel;
-using CsvLINQPadDriver.Helpers;
+using CsvLINQPadDriver.Extensions;
 
 namespace CsvLINQPadDriver.CodeGen
 {
