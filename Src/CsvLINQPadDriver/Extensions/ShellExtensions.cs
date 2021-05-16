@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 
 namespace CsvLINQPadDriver.Extensions
 {
-    public static class ShellExtensions
+    internal static class ShellExtensions
     {
         public record ShellResult(string Message)
         {

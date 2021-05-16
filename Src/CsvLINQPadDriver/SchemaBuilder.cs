@@ -18,15 +18,17 @@ namespace CsvLINQPadDriver
     {
         internal static List<ExplorerItem> GetSchemaAndBuildAssembly(ICsvDataContextDriverProperties csvDataContextDriverProperties, AssemblyName assemblyToBuild, ref string nameSpace, ref string typeName)
         {
+            const ExplorerItemKind errorExplorerItemKind = ExplorerItemKind.ReferenceLink;
+            const ExplorerIcon errorExplorerIcon = ExplorerIcon.Box;
+
             var csvDatabase = CsvDataModelGenerator.CreateModel(csvDataContextDriverProperties);
 
             var (code, tableCodeGroups) = CsvCSharpCodeGenerator.GenerateCode(csvDatabase, ref nameSpace, ref typeName, csvDataContextDriverProperties);
 
             var compileErrors = BuildAssembly(code, assemblyToBuild);
+            var hasCompilationErrors = compileErrors.Any();
 
             var schema = GetSchema(csvDatabase);
-
-            var hasCompilationErrors = compileErrors.Any();
 
             var index = 0;
 
@@ -39,12 +41,23 @@ namespace CsvLINQPadDriver
                 });
             }
 
+            var exceptions = csvDatabase.Exceptions;
+            if (exceptions.Any())
+            {
+                var fileOrFolder = $"{exceptions.Pluralize("file")} or {exceptions.Pluralize("folder")}";
+                schema.Insert(index++, new ExplorerItem($"{exceptions.Count} {fileOrFolder} {exceptions.Pluralize("was", "were")} not processed", errorExplorerItemKind, errorExplorerIcon)
+                {
+                    ToolTipText = $"Drag&drop {fileOrFolder} processing {exceptions.Pluralize("error")} to text window",
+                    DragText = exceptions.Select(exception => exception.Message).JoinNewLine()
+                });
+            }
+
             if (hasCompilationErrors)
             {
-                schema.Insert(0, new ExplorerItem("Data context compilation failed", ExplorerItemKind.Schema, ExplorerIcon.Box)
+                schema.Insert(0, new ExplorerItem("Data context compilation failed", errorExplorerItemKind, errorExplorerIcon)
                 {
                     ToolTipText = "Drag&drop data context compilation errors to text window",
-                    DragText = string.Join(Environment.NewLine, compileErrors)
+                    DragText = compileErrors.JoinNewLine()
                 });
             }
             else
@@ -53,19 +66,31 @@ namespace CsvLINQPadDriver
                 {
                     var codeNames = tableCodeGroup.Select(typeCodeResult => typeCodeResult.CodeName).ToImmutableList();
                     var similarFilesSize = tableCodeGroup.Select(typeCodeResult => typeCodeResult.FilePath).GetHumanizedFileSize();
+                    var filePaths = new HashSet<string>(codeNames);
                     var similarFilesCount = codeNames.Count;
 
-                    schema.Insert(index++, new ExplorerItem($"{codeNames.First()} similar files joined data ({similarFilesCount}/{csvDatabase.Files.Count} files {similarFilesSize})", ExplorerItemKind.Schema, ExplorerIcon.View)
+                    schema.Insert(index++, new ExplorerItem($"{codeNames.First()} similar files joined data ({similarFilesCount}/{csvDatabase.Files.Count} files {similarFilesSize})", ExplorerItemKind.QueryableObject, ExplorerIcon.View)
                     {
-                        ToolTipText = string.Join(Environment.NewLine,
-                                        $"Drag&drop {similarFilesCount} similar files joined data to text window", 
-                                        string.Empty,
-                                        $"{string.Join(Environment.NewLine, similarFilesCount <= 3 ? codeNames : codeNames.Take(2).Concat(new []{ "..." }).Concat(codeNames.Skip(similarFilesCount - 1)))}"),
+                        Children = schema.Where(IsSimilarFile).ToList(),
+                        IsEnumerable = true,
+                        ToolTipText =
+                            $"Drag&drop {similarFilesCount} similar files joined data to text window".JoinNewLine(
+                            string.Empty,
+                            $"{string.Join(Environment.NewLine, similarFilesCount <= 3 ? codeNames : codeNames.Take(2).Concat(new []{ "..." }).Concat(codeNames.Skip(similarFilesCount - 1)))}"),
                         DragText = $@"new []
 {{
 {string.Join(Environment.NewLine, codeNames.Select(n => $"\t{n},"))}
-}}.SelectMany(_ => _)"
+}}.SelectMany(_ => _)
+"
                     });
+
+                    if (!csvDataContextDriverProperties.ShowSameFilesNonGrouped)
+                    {
+                        schema.RemoveAll(IsSimilarFile);
+                    }
+
+                    bool IsSimilarFile(ExplorerItem explorerItem) =>
+                        filePaths!.Contains(explorerItem.Tag);
                 }
             }
 
@@ -100,6 +125,7 @@ namespace CsvLINQPadDriver
                 new ExplorerItem(table.DisplayName, ExplorerItemKind.QueryableObject, ExplorerIcon.Table)
                 {
                     DragText = table.CodeName,
+                    Tag = table.CodeName,
                     IsEnumerable = true,
                     ToolTipText = table.FilePath,
                     Children =

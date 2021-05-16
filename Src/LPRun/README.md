@@ -1,6 +1,7 @@
 [![Latest build](https://github.com/i2van/CsvLINQPadDriver/workflows/build/badge.svg)](https://github.com/i2van/CsvLINQPadDriver/actions)
-[![NuGet](https://buildstats.info/nuget/LPRun)](https://www.nuget.org/packages/LPRun)
-[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![NuGet](https://img.shields.io/nuget/v/LPRun)](https://www.nuget.org/packages/LPRun)
+[![Downloads](https://img.shields.io/nuget/dt/LPRun)](https://www.nuget.org/packages/LPRun)
+[![License](https://img.shields.io/badge/license-MIT-yellow)](https://opensource.org/licenses/MIT)
 
 # LINQPad Driver LPRun Unit/Integration Tests Runner #
 
@@ -30,7 +31,7 @@ LPRun is a part of [CsvLINQPadDriver for LINQPad 6](https://github.com/i2van/Csv
 
 ## Download ##
 
-[![NuGet](https://buildstats.info/nuget/LPRun)](https://www.nuget.org/packages/LPRun)
+[![NuGet](https://img.shields.io/nuget/v/LPRun)](https://www.nuget.org/packages/LPRun)
 
 ## Usage ##
 
@@ -39,7 +40,7 @@ Tested driver **MUST NOT** be installed via NuGet into LINQPad. In this case LPR
 ### Setup ###
 
 1. Create test project.
-2. Add LPRun [![NuGet](https://buildstats.info/nuget/LPRun)](https://www.nuget.org/packages/LPRun)
+2. Add LPRun [![NuGet](https://img.shields.io/nuget/v/LPRun)](https://www.nuget.org/packages/LPRun)
 3. Create the following folder structure in test project:
 
 ```text

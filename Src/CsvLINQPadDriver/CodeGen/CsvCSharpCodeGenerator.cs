@@ -37,7 +37,7 @@ namespace CsvLINQPadDriver.CodeGen
         public record Result(string Code, IReadOnlyCollection<IGrouping<string, TypeCodeResult>> CodeGroups);
 
         // ReSharper disable once RedundantAssignment
-        internal static Result GenerateCode(CsvDatabase db, ref string nameSpace, ref string typeName, ICsvDataContextDriverProperties props) =>
+        public static Result GenerateCode(CsvDatabase db, ref string nameSpace, ref string typeName, ICsvDataContextDriverProperties props) =>
             new CsvCSharpCodeGenerator(nameSpace, typeName = DefaultContextTypeName, props).GenerateSrcFile(db);
 
         private Result GenerateSrcFile(CsvDatabase csvDatabase)
@@ -49,12 +49,7 @@ namespace CsvLINQPadDriver.CodeGen
                     .GroupBy(typeCode => typeCode.TypeName)
                     .ToImmutableList();
 
-            return new Result($@"using System;
-using System.Collections.Generic;
-
-using CsvLINQPadDriver;
-
-namespace {_contextNameSpace}
+            return new Result($@"namespace {_contextNameSpace}
 {{
     /// <summary>CSV Data Context</summary>
     public class {_contextTypeName} : {typeof(CsvDataContextBase).GetCodeTypeClassName()}
@@ -70,8 +65,9 @@ namespace {_contextNameSpace}
                 {GetBoolConst(_properties.IsStringInternEnabled)},
                 {GetBoolConst(_properties.IsCacheEnabled)},
                 {table.CsvSeparator.AsValidCSharpCode()},
-                {nameof(NoBomEncoding)}.{_properties.NoBomEncoding},
+                {typeof(NoBomEncoding).GetCodeTypeClassName()}.{_properties.NoBomEncoding},
                 {GetBoolConst(_properties.AllowComments)},
+                {GetBoolConst(_properties.IgnoreBadData)},
                 {table.FilePath.AsValidCSharpCode()},
                 new {typeof(CsvColumnInfoList<>).GetCodeTypeClassName(GetClassName(table))} {{
                     {string.Join(string.Empty, table.Columns.Select(c => $@"{{ {c.Index}, x => x.{c.CodeName} }}, "))}
@@ -109,7 +105,7 @@ namespace {_contextNameSpace}
 
         /// <summary>{SecurityElement.Escape(csvRelation.DisplayName)}</summary> {(hideRelationsFromDump ? $@"
         [{typeof(HideFromDumpAttribute).GetCodeTypeClassName()}]" : string.Empty)}
-        public IEnumerable<{csvRelation.TargetTable.GetCodeRowClassName()}> {csvRelation.CodeName} {{ get; set; }}")
+        public System.Collections.Generic.IEnumerable<{csvRelation.TargetTable.GetCodeRowClassName()}> {csvRelation.CodeName} {{ get; set; }}")
             )}
     }}", table.CodeName!, table.FilePath);
 
@@ -142,7 +138,7 @@ namespace {_contextNameSpace}
         }}";
 
             static string GenerateIndexerException(bool intIndexer) =>
-                $@"default: throw new IndexOutOfRangeException(string.Format(""There is no property {(intIndexer ? "at index {0}" : "with name \\\"{0}\\\"")}"", index));";
+                $@"default: throw new System.IndexOutOfRangeException(string.Format(""There is no property {(intIndexer ? "at index {0}" : "with name \\\"{0}\\\"")}"", index));";
 
             static string IntToStr(int val) =>
                 val.ToString(CultureInfo.InvariantCulture);
@@ -155,7 +151,7 @@ namespace {_contextNameSpace}
             return $@"
         public override string ToString()
         {{
-            return string.Format(""{string.Join(string.Empty, properties.Select((v, i) => $"{v.PadRight(namePadding)} : {{{i+1}}}{{0}}"))}"", Environment.NewLine, {string.Join(", ", properties)});
+            return string.Format(""{string.Join(string.Empty, properties.Select((v, i) => $"{v.PadRight(namePadding)} : {{{i+1}}}{{0}}"))}"", System.Environment.NewLine, {string.Join(", ", properties)});
         }}";
         }
 
@@ -166,14 +162,14 @@ namespace {_contextNameSpace}
             if(obj == null) return false;
             if(ReferenceEquals(this, obj)) return true;
             return  {string.Join($" && {Environment.NewLine}{GetIndent(20)}",
-                properties.Select(property => $"string.Equals({property}, obj.{property}, StringComparison.{stringComparison})"))};
+                properties.Select(property => $"string.Equals({property}, obj.{property}, System.StringComparison.{stringComparison})"))};
         }}
 
         public override int GetHashCode()
         {{
-            var hashCode = new HashCode();
+            var hashCode = new System.HashCode();
 
-{string.Join(Environment.NewLine, properties.Select(property => $"{GetIndent(12)}hashCode.Add({property}, StringComparer.{GetStringComparer(stringComparison)});"))}
+{string.Join(Environment.NewLine, properties.Select(property => $"{GetIndent(12)}hashCode.Add({property}, System.StringComparer.{GetStringComparer(stringComparison)});"))}
 
             return hashCode.ToHashCode();
         }}";

@@ -1,6 +1,7 @@
 [![Latest build](https://github.com/i2van/CsvLINQPadDriver/workflows/build/badge.svg)](https://github.com/i2van/CsvLINQPadDriver/actions)
-[![NuGet](https://buildstats.info/nuget/CsvLINQPadDriver)](https://www.nuget.org/packages/CsvLINQPadDriver)
-[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![NuGet](https://img.shields.io/nuget/v/CsvLINQPadDriver)](https://www.nuget.org/packages/CsvLINQPadDriver)
+[![Downloads](https://img.shields.io/nuget/dt/CsvLINQPadDriver)](https://www.nuget.org/packages/CsvLINQPadDriver)
+[![License](https://img.shields.io/badge/license-MIT-yellow)](https://opensource.org/licenses/MIT)
 
 # CsvLINQPadDriver for LINQPad 6 #
 
@@ -12,7 +13,7 @@
 * [Example](#example)
 * [Prerequisites](#prerequisites)
 * [Installation](#installation)
-  * [NuGet](#nuget-)
+  * [NuGet](#nuget)
   * [Manual](#manual)
 * [Usage](#usage)
 * [Configuration Options](#configuration-options)
@@ -37,7 +38,7 @@
 * [Authors](#authors)
 * [Credits](#credits)
   * [Tools](#tools)
-  * [NuGet](#nuget)
+  * [Libraries](#libraries)
 * [License](#license)
 
 ## Description ##
@@ -122,7 +123,9 @@ select new { author.Name, book.Title }
 
 ## Installation ##
 
-### NuGet [![NuGet](https://buildstats.info/nuget/CsvLINQPadDriver)](https://www.nuget.org/packages/CsvLINQPadDriver) ###
+### NuGet ###
+
+[![NuGet](https://img.shields.io/nuget/v/CsvLINQPadDriver)](https://www.nuget.org/packages/CsvLINQPadDriver)
 
 * Open LINQPad 6.
 * Click `Add connection` main window.
@@ -152,30 +155,33 @@ CSV files connection can be added to LINQPad 6 the same way as any other connect
 
 ### CSV Files ###
 
-* CSV files: list of CSV files and folders. Can be added via files/folder dialogs, dedicated hotkeys, by typing one file/folder per line or by Drag&Drop (`Ctrl` adds files). Wildcards `?` and `*` are supported; `**.csv` searches in folder and its sub-folders.
+* CSV files: list of CSV files and folders. Can be added via files/folder dialogs, dedicated hotkeys, by typing one file/folder per line or by Drag&Drop (`Ctrl` adds files, `Alt` toggles `*` and `**` masks). Wildcards `?` and `*` are supported; `**.csv` searches in folder and its sub-folders.
   * `c:\Books\Books?.csv`: `Books.csv`, `Books1.csv`, etc. files in folder `c:\Books`
   * `c:\Books\*.csv`: all `*.csv` files in folder `c:\Books`
   * `c:\Books\**.csv`: all `*.csv` files in folder `c:\Books` and its sub-folders.
 * Order files by: specifies files sort order. Affects similar files order.
 * No BOM encoding: specifies encoding for files without [BOM](https://en.wikipedia.org/wiki/Byte_order_mark). `UTF-8` is default.
+* Validate file paths: check if file paths are valid.
 * Ignore files with invalid format: files with content which does not resemble CSV will be ignored.
 
 ### Format ###
 
 * CSV separator: character used to separate columns in files. Can be `,`, `\t`, etc. Auto-detected if empty.
-* Use CsvHelper library separator auto-detection. Use with caution: sometimes it fails.
+* Use CsvHelper library separator auto-detection: use CsvHelper library separator auto-detection instead of internal one.
+* Ignore bad data: ignore malformed CSV data.
 * Allow comments: lines starting with `#` will be ignored.
 
 ### Memory ###
 
-* Cache CSV data in memory:
+* Cache data in memory:
   * if checked: parsed rows from file are cached in memory. This cache survives multiple query runs, even when query is changed. Cache is cleared as soon as LINQPad clears query data.
   * if unchecked: disable cache. Multiple enumerations of file content results in multiple reads and parsing of file. Can be significantly slower for complex queries. Significantly reduces memory usage.  Useful when reading very large files.
-* Intern CSV strings: intern strings. Significantly reduce memory consumption when CSV contains repeatable values.
+* Intern strings: intern strings. Significantly reduce memory consumption when CSV contains repeatable values.
 
 ### Generation ###
 
 * Generate single class for similar files: single class will be generated for similar files which allows to query them as a single one. Might not work well for files with relations.
+  * Also show similar files non-grouped: show similar files non-grouped in addition to similar files groups.
 * String comparison: string comparison for `Equals` and `GetHashCode` methods.
 
 ### Relations ###
@@ -185,8 +191,9 @@ CSV files connection can be added to LINQPad 6 the same way as any other connect
 
 ### Misc ##
 
-* Debug info: additional debug information will be available, e.g. generated Data Context source.
-* Remember this connection: connection info will be saved and available after LINQPad restart.
+* Debug info: show additional driver debug info, e.g. generated data context source.
+* Contains production data: files contain production data.
+* Remember this connection: connection will be available on next run.
 
 ## Relations Detection ##
 
@@ -248,7 +255,13 @@ Formats object the way PowerShell [Format-List](https://docs.microsoft.com/en-us
 int GetHashCode();
 ```
 
-Returns object hash code. Hash code is not cached and recalculated each time method is called. Also note that each time driver is reloaded hash codes will be [different](https://andrewlock.net/why-is-string-gethashcode-different-each-time-i-run-my-program-in-net-core/).
+Returns object hash code.
+
+Note that:
+
+* Generated data object is mutable.
+* Hash code is not cached and recalculated each time method is called.
+* Each time driver is reloaded string hash codes will be [different](https://andrewlock.net/why-is-string-gethashcode-different-each-time-i-run-my-program-in-net-core/).
 
 > Depends on string comparison driver setting. Relations are not participated.
 
@@ -381,13 +394,14 @@ TimeSpan? ToTimeSpan(
 * [LINQPad 6](https://www.linqpad.net/LINQPad6.aspx)
 * [LINQPad Command-Line and Scripting](https://www.linqpad.net/lprun.aspx)
 
-### NuGet ###
+### Libraries ###
 
 * [CsvHelper](https://github.com/JoshClose/CsvHelper)
 * [Fluent Assertions](https://github.com/fluentassertions/fluentassertions)
 * [Humanizer](https://github.com/Humanizr/Humanizer)
 * [Moq](https://github.com/moq/moq4)
 * [NUnit](https://github.com/nunit/nunit)
+* [Windows API Code Pack](https://github.com/contre/Windows-API-Code-Pack-1.1)
 
 ## License ##
 

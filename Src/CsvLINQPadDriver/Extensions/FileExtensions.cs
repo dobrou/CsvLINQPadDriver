@@ -17,8 +17,10 @@ using CsvLINQPadDriver.CodeGen;
 
 namespace CsvLINQPadDriver.Extensions
 {
-    public static class FileExtensions
+    internal static class FileExtensions
     {
+        private const string RecursiveMaskMarker = "**";
+
         private const StringComparison FileNameComparison = StringComparison.OrdinalIgnoreCase;
 
         private static readonly StringComparer FileNameComparer = StringComparer.OrdinalIgnoreCase;
@@ -26,12 +28,59 @@ namespace CsvLINQPadDriver.Extensions
 
         private static readonly Lazy<IReadOnlyDictionary<NoBomEncoding, Encoding>> NoBomEncodings = new(CalculateNoBomEncodings);
 
-        public static IEnumerable<T> CsvReadRows<T>(this string fileName, char? csvSeparator, bool internString, NoBomEncoding noBomEncoding, bool allowComments, CsvRowMappingBase<T> csvClassMap)
+        private record SupportedFileType(FileType FileType, string Extension, string Description)
+        {
+            private readonly string? _mask;
+
+            public string Mask
+            {
+                get => _mask ?? Extension;
+                init => _mask = value;
+            }
+        }
+
+        private static readonly SupportedFileType[] SupportedFileTypes =
+        {
+            new ( FileType.CSV,  "csv", "CSV"  ),
+            new ( FileType.TSV,  "tsv", "TSV"  ),
+            new ( FileType.Text, "txt", "Text" ),
+            new ( FileType.Log,  "log", "Log"  ),
+            new ( FileType.All,  "",    "All"  ) { Mask = "*" }
+        };
+
+        private static readonly HashSet<string> SupportedFileExtensions = new(
+            SupportedFileTypes
+                .Where(supportedFileType => !string.IsNullOrWhiteSpace(supportedFileType.Extension))
+                .Select(supportedFileType => $".{supportedFileType.Extension}"),
+            FileNameComparer);
+
+        public const string InlineComment = "#";
+
+        private static readonly FileType DefaultFileType = SupportedFileTypes.First().FileType;
+
+        public static readonly string DefaultMask = GetMask(DefaultFileType);
+        public static readonly string DefaultRecursiveMask = GetMask(DefaultFileType, true);
+
+        public static string GetMask(this FileType fileType, bool recursive = false) =>
+            $"{(recursive ? RecursiveMaskMarker : "*")}.{fileType.GetSupportedFileType().Mask}";
+
+        public static string GetExtension(this FileType fileType) =>
+            fileType.GetSupportedFileType().Extension;
+
+        public static int GetFilterIndex(this FileType fileType) =>
+            Array.FindIndex(SupportedFileTypes, supportedFileType => supportedFileType.FileType == fileType) + 1;
+
+        private static SupportedFileType GetSupportedFileType(this FileType fileType) =>
+            SupportedFileTypes.FirstOrDefault(supportedFileType => supportedFileType.FileType == fileType) ?? throw new ArgumentException($"Unknown {fileType}", nameof(fileType));
+
+        public static readonly string Filter = string.Join("|", SupportedFileTypes.Select(supportedFileType => $"{supportedFileType.Description} Files (*.{supportedFileType.Mask})|*.{supportedFileType.Mask}"));
+
+        public static IEnumerable<T> CsvReadRows<T>(this string fileName, char? csvSeparator, bool internString, NoBomEncoding noBomEncoding, bool allowComments, bool ignoreBadData, CsvRowMappingBase<T> csvClassMap)
             where T : ICsvRowBase, new()
         {
-            return CsvReadRows(fileName, csvSeparator, noBomEncoding, allowComments)
-                .Skip(1) // Skip header.
-                .Select(GetRecord);
+            return CsvReadRows(fileName, csvSeparator, noBomEncoding, allowComments, ignoreBadData)
+                    .Skip(1) // Skip header.
+                    .Select(GetRecord);
 
             T GetRecord(string?[] rowColumns)
             {
@@ -47,20 +96,20 @@ namespace CsvLINQPadDriver.Extensions
             }
         }
 
-        public static IEnumerable<string> CsvReadHeader(this string fileName, char? csvSeparator, NoBomEncoding noBomEncoding, bool allowComments)
+        public static IEnumerable<string> CsvReadHeader(this string fileName, char? csvSeparator, NoBomEncoding noBomEncoding, bool allowComments, bool ignoreBadData)
         {
-            using var csvParser = CreateCsvParser(fileName, csvSeparator, noBomEncoding, allowComments);
+            using var csvParser = CreateCsvParser(fileName, csvSeparator, noBomEncoding, allowComments, ignoreBadData);
 
             return csvParser.Read() ? csvParser.Record : new string[0];
         }
 
         public static char CsvDetectSeparator(this string fileName, string[]? csvData = null)
         {
-            var defaultCsvSeparators = Path.GetExtension(fileName).ToLowerInvariant() switch
+            var defaultCsvSeparators = (Path.GetExtension(fileName).ToLowerInvariant() switch
             {
-                "tsv" => new[] { '\t', ',', ';' },
-                _     => new[] { ',', ';', '\t' }
-            };
+                "tsv" => "\t,;",
+                _     => ",;\t"
+            }).ToCharArray();
 
             var csvSeparator = defaultCsvSeparators.First();
 
@@ -96,7 +145,7 @@ namespace CsvLINQPadDriver.Extensions
             return csvSeparator;
         }
 
-        public static bool IsCsvFormatValid(this string fileName, char? csvSeparator, NoBomEncoding noBomEncoding, bool allowComments)
+        public static bool IsCsvFormatValid(this string fileName, char? csvSeparator, NoBomEncoding noBomEncoding, bool allowComments, bool ignoreBadData)
         {
             var header = $"{fileName} is not valid CSV file:";
 
@@ -109,7 +158,7 @@ namespace CsvLINQPadDriver.Extensions
 
             try
             {
-                using var csvParser = CreateCsvParser(fileName, csvSeparator, noBomEncoding, allowComments);
+                using var csvParser = CreateCsvParser(fileName, csvSeparator, noBomEncoding, allowComments, ignoreBadData);
 
                 if (!csvParser.Read())
                 {
@@ -178,9 +227,9 @@ namespace CsvLINQPadDriver.Extensions
                 .LastOrDefault(prefix => pathsValid.All(path => path.StartsWith(prefix, FileNameComparison))) ?? string.Empty;
         }
 
-        public static IEnumerable<string> EnumFiles(this IEnumerable<string> paths) =>
+        public static IEnumerable<string> EnumFiles(this IEnumerable<string> paths, ICollection<Exception>? exceptions = null) =>
             GetFilesOnly(paths)
-                .SelectMany(EnumFiles)
+                .SelectMany(files => EnumFiles(files, exceptions))
                 .Distinct(FileNameComparer)
                 .ToImmutableList();
 
@@ -190,10 +239,13 @@ namespace CsvLINQPadDriver.Extensions
         public static string GetHumanizedFileSize(this IEnumerable<string> files) =>
             GetHumanizedFileSize(files.Select(file => file).Sum(GetFileSize));
 
-        public static IEnumerable<string> GetFilesOnly(this IEnumerable<string> paths) =>
+        public static IEnumerable<string> GetFilesOnly(this string paths) =>
+            Regex.Split(paths, @"[\r\n]+").GetFilesOnly();
+
+        private static IEnumerable<string> GetFilesOnly(this IEnumerable<string> paths) =>
             paths
                 .Select(path => path.Trim())
-                .Where(path => !path.StartsWith("#"))
+                .Where(path => !path.IsInlineComment())
                 .Where(path => !string.IsNullOrWhiteSpace(path))
                 .Distinct(FileNameComparer);
 
@@ -221,6 +273,9 @@ namespace CsvLINQPadDriver.Extensions
             return fileInfos.Select(fileInfo => fileInfo.FullName);
         }
 
+        public static string GetInlineCommentContent(this string line) =>
+            line.Trim().TrimStart(InlineComment.ToCharArray());
+
         private static long GetFileSize(string fileName)
         {
             try
@@ -237,7 +292,7 @@ namespace CsvLINQPadDriver.Extensions
         private static string GetHumanizedFileSize(long size) =>
             size.Bytes().Humanize("0.#");
 
-        private static CsvParser CreateCsvParser(string fileName, char? csvSeparator, NoBomEncoding noBomEncoding, bool allowComments)
+        private static CsvParser CreateCsvParser(string fileName, char? csvSeparator, NoBomEncoding noBomEncoding, bool allowComments, bool ignoreBadData)
         {
             const int bufferSize = 4096 * 20;
 
@@ -252,22 +307,27 @@ namespace CsvLINQPadDriver.Extensions
             };
 
             csvConfiguration.Delimiter = csvSeparator?.ToString() ?? csvConfiguration.Delimiter;
+            csvConfiguration.BadDataFound = ignoreBadData ? null : csvConfiguration.BadDataFound;
 
             return new CsvParser(new StreamReader(fileName, NoBomEncodings.Value[noBomEncoding], true, bufferSize / sizeof(char)), csvConfiguration);
         }
 
         public record DeduceFileOrFolderResult(bool IsFile, string Path);
 
-        public static DeduceFileOrFolderResult DeduceFileOrFolder(this string path) =>
+        public static DeduceFileOrFolderResult DeduceIsFileOrFolder(this string path, bool removeMask = false) =>
             Regex.IsMatch(path, @"[\\/]$")
                 ? new DeduceFileOrFolderResult(false, path)
                 : Regex.IsMatch(Path.GetFileName(path), @"[?*]")
-                    ? new DeduceFileOrFolderResult(false, Path.GetDirectoryName(path) ?? path)
-                    : Path.GetExtension(path).Length < 3
-                        ? new DeduceFileOrFolderResult(false, path)
-                        : new DeduceFileOrFolderResult(true, path);
+                    ? new DeduceFileOrFolderResult(true, removeMask ? Path.GetDirectoryName(path) ?? path : path)
+                    : new DeduceFileOrFolderResult(SupportedFileExtensions.Contains(Path.GetExtension(path)), path);
 
-        private static IEnumerable<string> EnumFiles(string path)
+        public static void Add(this ICollection<Exception>? exceptions, string file, Exception exception) =>
+            exceptions?.Add(file, $"processing failed: {exception.Message}");
+
+        public static void Add(this ICollection<Exception>? exceptions, string file, string message) =>
+            exceptions?.Add(new Exception($"'{file}' {message}"));
+
+        private static IEnumerable<string> EnumFiles(string path, ICollection<Exception>? exceptions = null)
         {
             try
             {
@@ -277,14 +337,14 @@ namespace CsvLINQPadDriver.Extensions
                     return new[] { path };
                 }
 
-                var file = Path.GetFileName(path);
+                var fileOrMask = Path.GetFileName(path);
 
                 string baseDir;
 
-                var isPathOnlyDir = string.IsNullOrWhiteSpace(file) || Directory.Exists(path);
+                var isPathOnlyDir = string.IsNullOrWhiteSpace(fileOrMask) || Directory.Exists(path);
                 if (isPathOnlyDir)
                 {
-                    file = "*.csv";
+                    fileOrMask = DefaultMask;
                     baseDir = path;
                 }
                 else
@@ -292,25 +352,51 @@ namespace CsvLINQPadDriver.Extensions
                     baseDir = Path.GetDirectoryName(path) ?? string.Empty;
                 }
 
-                if (!Directory.Exists(baseDir))
-                {
-                    return Enumerable.Empty<string>();
-                }
-
-                return Directory
-                    .EnumerateFiles(baseDir, file, file.Contains("**") ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
+                return !Directory.Exists(baseDir)
+                        ? Enumerable.Empty<string>()
+                        : Directory
+                            .EnumerateFiles(baseDir, fileOrMask,
+                                Path.GetFileNameWithoutExtension(fileOrMask).Contains(RecursiveMaskMarker)
+                                    ? SearchOption.AllDirectories
+                                    : SearchOption.TopDirectoryOnly)
+                            .SafeWalk(exceptions);
             }
-            catch(Exception exception)
+            catch (Exception exception)
             {
-                CsvDataContextDriver.WriteToLog($"File enumeration failed for {path}", exception);
+                exceptions.Add(path, exception);
 
                 return Enumerable.Empty<string>();
             }
         }
 
-        private static IEnumerable<string[]> CsvReadRows(string fileName, char? csvSeparator, NoBomEncoding noBomEncoding, bool allowComments)
+        private static IEnumerable<T> SafeWalk<T>(this IEnumerable<T> source, ICollection<Exception>? exceptions = null)
         {
-            using var csvParser = CreateCsvParser(fileName, csvSeparator, noBomEncoding, allowComments);
+            using var enumerator = source.GetEnumerator();
+
+            bool? hasCurrent;
+
+            do
+            {
+                try
+                {
+                    hasCurrent = enumerator.MoveNext();
+                }
+                catch (Exception exception)
+                {
+                    exceptions?.Add(exception);
+                    hasCurrent = null;
+                }
+
+                if (hasCurrent is true)
+                {
+                    yield return enumerator.Current;
+                }
+            } while (hasCurrent ?? true);
+        }
+
+        private static IEnumerable<string[]> CsvReadRows(string fileName, char? csvSeparator, NoBomEncoding noBomEncoding, bool allowComments, bool ignoreBadData)
+        {
+            using var csvParser = CreateCsvParser(fileName, csvSeparator, noBomEncoding, allowComments, ignoreBadData);
 
             while (csvParser.Read())
             {
@@ -360,5 +446,8 @@ namespace CsvLINQPadDriver.Extensions
 
             return str;
         }
+
+        private static bool IsInlineComment(this string line) =>
+            line.TrimStart().StartsWith(InlineComment);
     }
 }

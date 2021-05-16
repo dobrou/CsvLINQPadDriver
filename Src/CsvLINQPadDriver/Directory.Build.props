@@ -1,0 +1,7 @@
+<Project>
+  <PropertyGroup>
+    <Version>6.12.0</Version>
+    <PackageReleaseNotes>UI improvements.
+Files handling improvements.</PackageReleaseNotes>
+  </PropertyGroup>
+</Project>

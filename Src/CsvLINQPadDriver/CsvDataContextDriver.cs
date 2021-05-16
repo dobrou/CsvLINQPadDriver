@@ -50,11 +50,11 @@ namespace CsvLINQPadDriver
 
             if (connectionDialogOptions.IsNewConnection)
             {
-                properties.Files = string.Join(Environment.NewLine,
-                    "# Drag&drop here. Use Ctrl to add files.",
-                    "# Type one file/folder per line. Wildcards ? and * are supported; **.csv searches in folder and its sub-folders.",
-                    "# Press Ctrl+Shift+V to clear, paste from clipboard and proceed.",
-                    "# Press Ctrl+Shift+Alt+V to paste from clipboard and proceed.",
+                properties.Files =
+                    $"{FileExtensions.InlineComment} Drag&drop here (from add files/folder dialogs as well). Ctrl adds files. Alt toggles * and ** masks.".JoinNewLine(
+                    $"{FileExtensions.InlineComment} {ConnectionDialog.WildcardsToolTip}.",
+                    $"{FileExtensions.InlineComment} Ctrl+V (Ctrl+Alt+V) pastes from clipboard, appends {FileExtensions.DefaultMask} ({FileExtensions.DefaultRecursiveMask}) to folders.",
+                    $"{FileExtensions.InlineComment} Ctrl+Shift+V (Ctrl+Shift+Alt+V) clears, pastes from clipboard, appends {FileExtensions.DefaultMask} ({FileExtensions.DefaultRecursiveMask}) to folders and proceeds.",
                     string.Empty, string.Empty);
             }
 

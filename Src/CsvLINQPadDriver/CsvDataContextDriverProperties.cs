@@ -22,6 +22,12 @@ namespace CsvLINQPadDriver
             _driverData = connectionInfo.DriverData;
         }
 
+        public bool IsProduction
+        {
+            get => _connectionInfo.IsProduction;
+            set => _connectionInfo.IsProduction = value;
+        }
+
         public bool Persist
         {
             get => _connectionInfo.Persist;
@@ -31,6 +37,12 @@ namespace CsvLINQPadDriver
         public string Files
         {
             get => GetValue(string.Empty)!;
+            set => SetValue(value);
+        }
+
+        public FileType FileType
+        {
+            get => GetValue(FileType.CSV);
             set => SetValue(value);
         }
 
@@ -46,6 +58,12 @@ namespace CsvLINQPadDriver
             set => SetValue(value);
         }
 
+        public bool IgnoreBadData
+        {
+            get => GetValue(false);
+            set => SetValue(value);
+        }
+
         public bool AllowComments
         {
             get => GetValue(false);
@@ -53,7 +71,7 @@ namespace CsvLINQPadDriver
         }
 
         public IEnumerable<string> ParsedFiles =>
-            Regex.Split(Files, @"[\r\n]+").GetFilesOnly();
+            Files.GetFilesOnly();
 
         public string CsvSeparator
         {
@@ -100,6 +118,12 @@ namespace CsvLINQPadDriver
             set => SetValue(value);
         }
 
+        public bool ShowSameFilesNonGrouped
+        {
+            get => GetValue(false);
+            set => SetValue(value);
+        }
+
         public StringComparison StringComparison
         {
             get => GetValue(StringComparison.InvariantCulture);
@@ -121,6 +145,12 @@ namespace CsvLINQPadDriver
         public bool DebugInfo
         {
             get => GetValue(false);
+            set => SetValue(value);
+        }
+
+        public bool ValidateFilePaths
+        {
+            get => GetValue(true);
             set => SetValue(value);
         }
 

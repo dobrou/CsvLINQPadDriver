@@ -12,6 +12,7 @@ var data = new []
 	Utf32Bom_Encoding
 }.SelectMany(_ => _).ToList();
 
+data.Should().HaveCount(5, Reason());
 data.Distinct().Should().HaveCount(1, Reason());
 
 data.SelectMany(row => properties.Select(property => row[property] == property))

@@ -8,12 +8,19 @@ namespace CsvLINQPadDriver
 {
     public interface ICsvDataContextDriverProperties
     {
+        bool IsProduction { get; set; }
+
         bool Persist { get; set; }
 
         /// <summary>
         /// Path to directory with CSV files or directly to CSV file.
         /// </summary>
         string Files { get; set; }
+
+        /// <summary>
+        /// Default file type.
+        /// </summary>
+        FileType FileType { get; set; }
 
         /// <summary>
         /// Files order by.
@@ -24,6 +31,11 @@ namespace CsvLINQPadDriver
         /// Files without BOM encoding.
         /// </summary>
         NoBomEncoding NoBomEncoding { get; set; }
+
+        /// <summary>
+        /// Ignore malformed CSV data.
+        /// </summary>
+        bool IgnoreBadData { get; set; }
 
         /// <summary>
         /// Allow CSV comments.
@@ -50,6 +62,11 @@ namespace CsvLINQPadDriver
         bool UseSingleClassForSameFiles { get; set; }
 
         /// <summary>
+        /// If <c>true</c> - shows similar files non-grouped in addition to similar files groups.
+        /// </summary>
+        bool ShowSameFilesNonGrouped { get; set; }
+
+        /// <summary>
         /// Generated class methods string comparison.
         /// </summary>
         StringComparison StringComparison { get; set; }
@@ -65,9 +82,14 @@ namespace CsvLINQPadDriver
         bool HideRelationsFromDump { get; set; }
 
         /// <summary>
-        /// If <c>true</c> - some additional debug info is accessible
+        /// If <c>true</c> - some additional debug info is accessible.
         /// </summary>
         bool DebugInfo { get; set; }
+
+        /// <summary>
+        /// If <c>true</c> - check if file paths are valid.
+        /// </summary>
+        bool ValidateFilePaths { get; set; }
 
         /// <summary>
         /// Beginning of every file will be scanned and suspicious files with format not similar to CSV will be ignored

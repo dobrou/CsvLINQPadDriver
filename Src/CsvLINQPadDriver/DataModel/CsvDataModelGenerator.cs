@@ -24,15 +24,17 @@ namespace CsvLINQPadDriver.DataModel
         public static CsvDatabase CreateModel(ICsvDataContextDriverProperties csvDataContextDriverProperties) =>
             new CsvDataModelGenerator(csvDataContextDriverProperties).CreateModel();
 
-        private CsvDatabase CreateModel() 
+        private CsvDatabase CreateModel()
         {
-            var files = _csvDataContextDriverProperties.ParsedFiles.EnumFiles()
+            var exceptions = new List<Exception>();
+
+            var files = _csvDataContextDriverProperties.ParsedFiles.EnumFiles(exceptions)
                 .OrderFiles(_csvDataContextDriverProperties.FilesOrderBy)
                 .ToImmutableList();
 
             var baseDir = files.GetLongestCommonPrefixPath();
 
-            var csvDatabase = new CsvDatabase(baseDir, CreateTables().ToImmutableList(), files);
+            var csvDatabase = new CsvDatabase(baseDir, CreateTables().ToImmutableList(), files, exceptions);
 
             MakeCodeNamesUnique(csvDatabase.Tables);
 
@@ -69,9 +71,10 @@ namespace CsvLINQPadDriver.DataModel
                             : file.CsvDetectSeparator());
                     var noBomEncoding = _csvDataContextDriverProperties.NoBomEncoding;
                     var allowComments = _csvDataContextDriverProperties.AllowComments;
+                    var ignoreBadData = _csvDataContextDriverProperties.IgnoreBadData;
 
                     if (_csvDataContextDriverProperties.IgnoreInvalidFiles &&
-                        !file.IsCsvFormatValid(csvSeparator, noBomEncoding, allowComments))
+                        !file.IsCsvFormatValid(csvSeparator, noBomEncoding, allowComments, ignoreBadData))
                     {
                         continue;
                     }
@@ -80,14 +83,30 @@ namespace CsvLINQPadDriver.DataModel
                     var fileDir  = (Path.GetDirectoryName($"{file.Remove(0, baseDir.Length)}x") ?? string.Empty).TrimStart(Path.DirectorySeparatorChar);
                     var codeName = (Path.GetFileNameWithoutExtension(fileName) + (string.IsNullOrWhiteSpace(fileDir) ? string.Empty : $"_{fileDir}")).GetSafeCodeName();
 
-                    var columns = file.CsvReadHeader(csvSeparator, noBomEncoding, allowComments)
-                        .Select((value, index) => (value, index))
-                        .Select(col => new CsvColumn(col.value ?? string.Empty, col.index)
-                        {
-                            CodeName    = col.value.GetSafeCodeName(),
-                            DisplayName = string.Empty
-                        })
-                        .ToImmutableList();
+                    ImmutableList<CsvColumn> columns;
+
+                    try
+                    {
+                        columns = file.CsvReadHeader(csvSeparator, noBomEncoding, allowComments, ignoreBadData)
+                            .Select((value, index) => (value, index))
+                            .Select(col => new CsvColumn(col.value ?? string.Empty, col.index)
+                            {
+                                CodeName = col.value.GetSafeCodeName(),
+                                DisplayName = string.Empty
+                            })
+                            .ToImmutableList();
+                    }
+                    catch (Exception exception)
+                    {
+                        exceptions.Add(file, exception);
+                        continue;
+                    }
+
+                    if (!columns.Any())
+                    {
+                        exceptions.Add(file, "has no columns.");
+                        continue;
+                    }
 
                     yield return new CsvTable(file, csvSeparator, columns, new List<CsvRelation>())
                     {
@@ -105,7 +124,7 @@ namespace CsvLINQPadDriver.DataModel
 
                         var key = string.Join(string.Empty, columns.Select(c => $"{c.Name}\t{c.Index}\n"));
 
-                        if (!tableCodeNames.TryGetValue(key, out var className))
+                        if (!tableCodeNames!.TryGetValue(key, out var className))
                         {
                             className = codeName;
                             tableCodeNames.Add(key, className);
@@ -193,7 +212,7 @@ namespace CsvLINQPadDriver.DataModel
             var stringToCsvTableColumnLookup = (
                 from csvTable in csvTables 
                 from csvColumn in csvTable.Columns 
-                where csvColumn.Name.EndsWith("id", IdsComparison)
+                where IsIdColumn(csvColumn.Name)
                 select (csvTable, csvColumn)
             ).ToLookup(csvTableColumn => csvTableColumn.csvColumn.Name, tableColumn => tableColumn, IdsComparer);
 
@@ -232,6 +251,9 @@ namespace CsvLINQPadDriver.DataModel
                     relationsGroup.Key.Relations.Add(relation);
                 }
             }
+
+            static bool IsIdColumn(string columnName) =>
+                columnName.EndsWith("id", IdsComparison);
         }
     }
 }
