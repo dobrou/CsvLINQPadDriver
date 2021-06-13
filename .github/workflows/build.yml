@@ -4,18 +4,17 @@ on: [push, pull_request]
 
 jobs:
   build:
-
     runs-on: windows-latest
-    strategy:
-      matrix:
-        dotnet: [ '3.1.x' ]
-
     steps:
     - uses: actions/checkout@v2
-    - name: Setup .NET
+    - name: Setup .NET Core 5.0 SDK for Build
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: ${{ matrix.dotnet-version }}
+          dotnet-version: '5.0.x'
+    - name: Setup .NET Core 3.1 SDK for Test
+      uses: actions/setup-dotnet@v1
+      with:
+          dotnet-version: '3.1.x'
     - name: Clean
       run: dotnet clean --configuration Release && dotnet nuget locals all --clear
     - name: Restore dependencies
