@@ -64,6 +64,12 @@ namespace CsvLINQPadDriver
             set => SetValue(value);
         }
 
+        public bool AutoDetectEncoding
+        {
+            get => GetValue(true);
+            set => SetValue(value);
+        }
+
         public bool AllowComments
         {
             get => GetValue(false);

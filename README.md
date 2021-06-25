@@ -159,15 +159,16 @@ CSV files connection can be added to LINQPad 6 the same way as any other connect
   * `c:\Books\Books?.csv`: `Books.csv`, `Books1.csv`, etc. files in folder `c:\Books`
   * `c:\Books\*.csv`: all `*.csv` files in folder `c:\Books`
   * `c:\Books\**.csv`: all `*.csv` files in folder `c:\Books` and its sub-folders.
-* Order files by: specifies files sort order. Affects similar files order.
-* No BOM encoding: specifies encoding for files without [BOM](https://en.wikipedia.org/wiki/Byte_order_mark). `UTF-8` is default.
+* Order files by: specify files sort order. Affects similar files order.
+* Fallback encoding: specify encoding to use if file encoding could not be detected, e.g. due to missing [BOM](https://en.wikipedia.org/wiki/Byte_order_mark). `UTF-8` is default.
+* Auto-detect file encodings: try to detect file encodings.
 * Validate file paths: check if file paths are valid.
 * Ignore files with invalid format: files with content which does not resemble CSV will be ignored.
 
 ### Format ###
 
 * CSV separator: character used to separate columns in files. Can be `,`, `\t`, etc. Auto-detected if empty.
-* Use CsvHelper library separator auto-detection: use CsvHelper library separator auto-detection instead of internal one.
+* Use [CsvHelper](https://joshclose.github.io/CsvHelper) library separator auto-detection: use CsvHelper library separator auto-detection instead of internal one.
 * Ignore bad data: ignore malformed CSV data.
 * Allow comments: lines starting with `#` will be ignored.
 
@@ -402,6 +403,7 @@ TimeSpan? ToTimeSpan(
 * [Moq](https://github.com/moq/moq4)
 * [NUnit](https://github.com/nunit/nunit)
 * [Windows API Code Pack](https://github.com/contre/Windows-API-Code-Pack-1.1)
+* [UnicodeCharsetDetector](https://github.com/i2van/UnicodeCharsetDetector)
 
 ## License ##
 

@@ -26,7 +26,8 @@ namespace CsvLINQPadDriverTest
             Driver.Install("CsvLINQPadDriver",
                 "CsvLINQPadDriver.dll",
                 "CsvHelper.dll",
-                "Humanizer.dll"
+                "Humanizer.dll",
+                "UnicodeCharsetDetector.dll"
             );
 
             CreateEncodingFiles();
@@ -35,7 +36,10 @@ namespace CsvLINQPadDriverTest
             {
                 var contents = File.ReadAllText(GetFilePath("Utf8Cp65001"), Encoding.Default);
 
-                Array.ForEach(GetEncodings().ToArray(), fileEncoding => File.WriteAllText(GetFilePath(fileEncoding.FileName), contents, fileEncoding.Encoding));
+                Array.ForEach(GetEncodings().ToArray(), WriteFiles);
+
+                void WriteFiles((string FileName, Encoding Encoding) fileEncoding) =>
+                    File.WriteAllText(GetFilePath(fileEncoding.FileName), contents, fileEncoding.Encoding);
 
                 static IEnumerable<(string FileName, Encoding Encoding)> GetEncodings()
                 {
@@ -50,15 +54,17 @@ namespace CsvLINQPadDriverTest
             }
         }
 
+        public record ScriptWithDriverPropertiesTestData(string LinqScriptName, string? Context, ICsvDataContextDriverProperties DriverProperties);
+
         [Test]
-        [TestCaseSource(nameof(TestsData))]
-        public void Execute_ScriptWithDriverProperties_Success((string linqScriptName, string? context, ICsvDataContextDriverProperties driverProperties) testData)
+        [TestCaseSource(nameof(ScriptWithDriverPropertiesTestDataTestsData))]
+        public void Execute_ScriptWithDriverProperties_Success(ScriptWithDriverPropertiesTestData testData)
         {
             var (linqScriptName, context, driverProperties) = testData;
 
-            var queryConfig = GetQueryHeaders().Aggregate(new StringBuilder(), (stringBuilder, h) =>
+            var queryConfig = GetQueryHeaders().Aggregate(new StringBuilder(), (stringBuilder, header) =>
             {
-                stringBuilder.AppendLine(h);
+                stringBuilder.AppendLine(header);
                 stringBuilder.AppendLine();
                 return stringBuilder;
             }).ToString();
@@ -88,7 +94,7 @@ namespace CsvLINQPadDriverTest
             }
         }
 
-        private static IEnumerable<(string linqScriptName, string? context, ICsvDataContextDriverProperties driverProperties)> TestsData()
+        private static IEnumerable<ScriptWithDriverPropertiesTestData> ScriptWithDriverPropertiesTestDataTestsData()
         {
             const string? noContext = null;
             const StringComparison defaultStringComparison = StringComparison.InvariantCulture;
@@ -103,34 +109,34 @@ namespace CsvLINQPadDriverTest
 
             var multipleDriverPropertiesTestData = GetCsvDataContextDriverProperties()
                 .SelectMany(driverProperties =>
-                    linqScriptNames.Select(linqScriptName =>
+                    linqScriptNames.Select(linqScriptName => new ScriptWithDriverPropertiesTestData
                         (linqScriptName, 
                          $"new {{ {nameof(driverProperties.UseSingleClassForSameFiles)} = {driverProperties.UseSingleClassForSameFiles.ToString().ToLowerInvariant()} }}",
                          driverProperties)));
 
             var singleDriverPropertiesTestData = new[] { "Extensions", "SimilarFilesRelations" }
-                .Select(linqFile =>
+                .Select(linqFile => new ScriptWithDriverPropertiesTestData
                     (linqFile, 
                      noContext,
                      defaultCsvDataContextDriverProperties));
 
             var stringComparisonDriverPropertiesTestData = ((StringComparison[])Enum.GetValues(typeof(StringComparison)))
                 .SelectMany(stringComparison =>
-                    new [] { "StringComparison", "Encoding" }.Select(linqFile =>
+                    new [] { "StringComparison", "Encoding" }.Select(linqFile => new ScriptWithDriverPropertiesTestData
                         (linqFile,
                          $"new {{ {nameof(defaultCsvDataContextDriverProperties.StringComparison)} = {nameof(StringComparison)}.{stringComparison} }}",
                          GetDefaultCsvDataContextDriverPropertiesObject(stringComparison))));
 
             var allowCommentsTestData = new[] { true, false }
-                .Select(allowComments =>
+                .Select(allowComments => new ScriptWithDriverPropertiesTestData
                         ("Comments",
                          $"new {{ ExpectedCount = {(allowComments ? 1 : 2)} }}",
                          GetDefaultCsvDataContextDriverPropertiesObject(defaultStringComparison, allowComments)));
 
             return multipleDriverPropertiesTestData
-                    .Concat(singleDriverPropertiesTestData!)
+                    .Concat(singleDriverPropertiesTestData)
                     .Concat(allowCommentsTestData)
-                    .Concat(stringComparisonDriverPropertiesTestData)!;
+                    .Concat(stringComparisonDriverPropertiesTestData);
 
             IEnumerable<ICsvDataContextDriverProperties> GetCsvDataContextDriverProperties()
             {

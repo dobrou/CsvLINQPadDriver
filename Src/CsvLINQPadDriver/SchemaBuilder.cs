@@ -76,7 +76,7 @@ namespace CsvLINQPadDriver
                         ToolTipText =
                             $"Drag&drop {similarFilesCount} similar files joined data to text window".JoinNewLine(
                             string.Empty,
-                            $"{string.Join(Environment.NewLine, similarFilesCount <= 3 ? codeNames : codeNames.Take(2).Concat(new []{ "..." }).Concat(codeNames.Skip(similarFilesCount - 1)))}"),
+                            $"{string.Join(Environment.NewLine, similarFilesCount <= 4 ? codeNames : codeNames.Take(2).Concat(new []{ "..." }).Concat(codeNames.Skip(similarFilesCount - 1)))}"),
                         DragText = $@"new []
 {{
 {string.Join(Environment.NewLine, codeNames.Select(n => $"\t{n},"))}
@@ -90,7 +90,7 @@ namespace CsvLINQPadDriver
                     }
 
                     bool IsSimilarFile(ExplorerItem explorerItem) =>
-                        filePaths!.Contains(explorerItem.Tag);
+                        filePaths.Contains(explorerItem.Tag);
                 }
             }
 
@@ -117,7 +117,9 @@ namespace CsvLINQPadDriver
                 SourceCode = new[] { code }
             });
 
-            return result.Successful ? new string[0] : result.Errors;
+            return result.Successful
+                    ? Array.Empty<string>()
+                    : result.Errors;
         }
 
         private static List<ExplorerItem> GetSchema(CsvDatabase db) =>

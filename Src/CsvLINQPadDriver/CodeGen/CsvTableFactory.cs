@@ -13,12 +13,13 @@ namespace CsvLINQPadDriver.CodeGen
             NoBomEncoding noBomEncoding,
             bool allowComments,
             bool ignoreBadData,
+            bool autoDetectEncoding,
             string filePath,
             IEnumerable<CsvColumnInfo> propertiesInfo,
             Action<TRow> relationsInit)
             where TRow : ICsvRowBase, new() =>
             isCacheEnabled
-                ? new CsvTableList<TRow>(isStringInternEnabled, csvSeparator, noBomEncoding, allowComments, ignoreBadData, filePath, propertiesInfo, relationsInit)
-                : new CsvTableEnumerable<TRow>(isStringInternEnabled, csvSeparator, noBomEncoding, allowComments, ignoreBadData, filePath, propertiesInfo, relationsInit);
+                ? new CsvTableList<TRow>(isStringInternEnabled, csvSeparator, noBomEncoding, allowComments, ignoreBadData, autoDetectEncoding, filePath, propertiesInfo, relationsInit)
+                : new CsvTableEnumerable<TRow>(isStringInternEnabled, csvSeparator, noBomEncoding, allowComments, ignoreBadData, autoDetectEncoding, filePath, propertiesInfo, relationsInit);
     }
 }

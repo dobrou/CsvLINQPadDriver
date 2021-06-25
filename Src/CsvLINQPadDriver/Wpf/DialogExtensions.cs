@@ -28,8 +28,8 @@ namespace CsvLINQPadDriver.Wpf
             var result = openFileDialog.ShowDialog() == true;
 
             fileNames = result
-                ? openFileDialog.FileNames
-                : new string[0];
+                        ? openFileDialog.FileNames
+                        : Array.Empty<string>();
 
             return result;
         }

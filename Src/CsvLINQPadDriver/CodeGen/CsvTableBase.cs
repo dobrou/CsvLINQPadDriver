@@ -25,6 +25,7 @@ namespace CsvLINQPadDriver.CodeGen
         private readonly NoBomEncoding _noBomEncoding;
         private readonly bool _allowComments;
         private readonly bool _ignoreBadData;
+        private readonly bool _autoDetectEncoding;
 
         protected readonly string FilePath;
 
@@ -34,6 +35,7 @@ namespace CsvLINQPadDriver.CodeGen
             NoBomEncoding noBomEncoding,
             bool allowComments,
             bool ignoreBadData,
+            bool autoDetectEncoding,
             string filePath,
             IEnumerable<CsvColumnInfo> propertiesInfo,
             Action<TRow> relationsInit)
@@ -43,6 +45,7 @@ namespace CsvLINQPadDriver.CodeGen
             _noBomEncoding = noBomEncoding;
             _allowComments = allowComments;
             _ignoreBadData = ignoreBadData;
+            _autoDetectEncoding = autoDetectEncoding;
 
             FilePath = filePath;
 
@@ -50,7 +53,7 @@ namespace CsvLINQPadDriver.CodeGen
         }
 
         protected IEnumerable<TRow> ReadData() =>
-            FilePath.CsvReadRows(_csvSeparator, IsStringInternEnabled, _noBomEncoding, _allowComments, _ignoreBadData, _cachedCsvRowMappingBase!);
+            FilePath.CsvReadRows(_csvSeparator, IsStringInternEnabled, _noBomEncoding, _allowComments, _ignoreBadData, _autoDetectEncoding, _cachedCsvRowMappingBase!);
 
         // ReSharper disable once UnusedMember.Global
         public abstract IEnumerable<TRow> WhereIndexed(Func<TRow, string> getProperty, string propertyName, params string[] values);

@@ -18,10 +18,11 @@ namespace CsvLINQPadDriver.CodeGen
             NoBomEncoding noBomEncoding,
             bool allowComments,
             bool ignoreBadData,
+            bool autoDetectEncoding,
             string filePath,
             IEnumerable<CsvColumnInfo> propertiesInfo,
             Action<TRow> relationsInit)
-            : base(isStringInternEnabled, csvSeparator, noBomEncoding, allowComments, ignoreBadData, filePath, propertiesInfo, relationsInit) =>
+            : base(isStringInternEnabled, csvSeparator, noBomEncoding, allowComments, ignoreBadData, autoDetectEncoding, filePath, propertiesInfo, relationsInit) =>
             _dataCache = new Lazy<IList<TRow>>(() => ReadData().Cache($"{typeof(TRow).Name}:{FilePath}"));
 
         private IList<TRow> DataCache =>

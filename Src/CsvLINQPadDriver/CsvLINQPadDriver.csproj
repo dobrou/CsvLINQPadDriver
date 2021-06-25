@@ -6,12 +6,16 @@
     <UseWindowsForms>true</UseWindowsForms>
     <Deterministic>true</Deterministic>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-    <LangVersion>9.0</LangVersion>
+    <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <OutputPath>..\..\bin\Debug\</OutputPath>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <OutputPath>..\..\bin\Release\</OutputPath>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -29,10 +33,6 @@
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <ApplicationIcon>Connection.ico</ApplicationIcon>
     <ApplicationManifest>app.manifest</ApplicationManifest>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <OutputPath>..\..\bin\Release\</OutputPath>
   </PropertyGroup>
 
   <ItemGroup>
@@ -58,14 +58,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="CsvHelper" Version="27.1.0" />
+    <PackageReference Include="CsvHelper" Version="27.1.1" />
     <PackageReference Include="Humanizer.Core" Version="2.11.10" />
-    <PackageReference Include="IsExternalInit" Version="1.0.0">
+    <PackageReference Include="IsExternalInit" Version="1.0.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="LINQPad.Reference" Version="1.1.0" />
     <PackageReference Include="Microsoft-WindowsAPICodePack-Core" Version="1.1.4" />
+    <PackageReference Include="UnicodeCharsetDetector.Standard" Version="1.0.1" />
   </ItemGroup>
 
   <ItemGroup>

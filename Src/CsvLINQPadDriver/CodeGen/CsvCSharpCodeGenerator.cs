@@ -68,6 +68,7 @@ namespace CsvLINQPadDriver.CodeGen
                 {typeof(NoBomEncoding).GetCodeTypeClassName()}.{_properties.NoBomEncoding},
                 {GetBoolConst(_properties.AllowComments)},
                 {GetBoolConst(_properties.IgnoreBadData)},
+                {GetBoolConst(_properties.AutoDetectEncoding)},
                 {table.FilePath.AsValidCSharpCode()},
                 new {typeof(CsvColumnInfoList<>).GetCodeTypeClassName(GetClassName(table))} {{
                     {string.Join(string.Empty, table.Columns.Select(c => $@"{{ {c.Index}, x => x.{c.CodeName} }}, "))}
@@ -81,7 +82,7 @@ namespace CsvLINQPadDriver.CodeGen
         }}
     }} // context class
 
-    // Data types {string.Join(Environment.NewLine, groups.Select(grouping => grouping.First().Code))} // data types
+    // Data types {string.Join(Environment.NewLine, groups.Select(grouping => grouping.OrderByDescending(code => code.Code.Length).First().Code))} // data types
 }} // namespace
 ", groups);
 

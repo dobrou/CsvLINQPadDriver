@@ -29,6 +29,7 @@ namespace CsvLINQPadDriver
         public static readonly RoutedUICommand BrowseCommand = new();
         public static readonly RoutedUICommand CtrlLeftClickCommand = new();
         public static readonly RoutedUICommand PasteWithFolderAndItsSubfoldersCommand = new();
+        public static readonly RoutedUICommand WrapFilesTextCommand = new();
 
         public static readonly string WildcardsToolTip = $"Type one file/folder per line. Wildcards ? and * are supported; {FileExtensions.DefaultRecursiveMask} searches in folder and its sub-folders";
 
@@ -37,6 +38,8 @@ namespace CsvLINQPadDriver
         public ConnectionDialog(ICsvDataContextDriverProperties csvDataContextDriverProperties)
         {
             DataContext = csvDataContextDriverProperties;
+
+            Array.ForEach(new[] { typeof(Control), typeof(Hyperlink) }, type => ToolTipService.ShowOnDisabledProperty.OverrideMetadata(type, new FrameworkPropertyMetadata(true)));
 
             InitializeComponent();
 
@@ -90,7 +93,7 @@ namespace CsvLINQPadDriver
                         ref validateFilePaths) == false;
 
                 TypedDataContext.ValidateFilePaths = validateFilePaths;
-                ValidateFilePathsCheckBox.GetBindingExpression(ToggleButton.IsCheckedProperty)!.UpdateTarget();
+                ValidateFilePathsCheckBox.UpdateTargetBinding(ToggleButton.IsCheckedProperty);
 
                 if (!canClose)
                 {
@@ -247,14 +250,21 @@ namespace CsvLINQPadDriver
         private void AddFolderAndItsSubfoldersCommandBinding_OnExecuted(object sender, ExecutedRoutedEventArgs e) =>
             AddFolder(true);
 
-        private void ClearCommandBinding_OnExecuted(object sender, ExecutedRoutedEventArgs e)
-        {
+        private void ClearCommandBinding_OnExecuted(object sender, ExecutedRoutedEventArgs e) =>
             FilesTextBox.Clear();
-            FilesTextBox.Focus();
-        }
 
         private void ClearCommandBinding_OnCanExecute(object sender, CanExecuteRoutedEventArgs e) =>
             e.CanExecute = FilesTextBox?.Text.Any() == true;
+
+        private void WrapFilesTextCommand_OnExecuted(object sender, ExecutedRoutedEventArgs e)
+        {
+            FilesTextBox.TextWrapping =
+                FilesTextBox.TextWrapping == TextWrapping.Wrap
+                    ? TextWrapping.NoWrap
+                    : TextWrapping.Wrap;
+
+            ScrollToActiveLine();
+        }
 
         private void CtrlLeftClickCommandBinding_OnExecuted(object sender, ExecutedRoutedEventArgs e)
         {
@@ -280,6 +290,8 @@ namespace CsvLINQPadDriver
                 return;
             }
 
+            ScrollToActiveLine();
+
             var (isFile, path) = fullPath!.DeduceIsFileOrFolder(true);
             var shellResult = path.Explore(isFile);
 
@@ -292,6 +304,14 @@ namespace CsvLINQPadDriver
                     string.Empty,
                     shellResult));
             }
+        }
+
+        private void ScrollToActiveLine()
+        {
+            FilesTextBox.ScrollToLine(GetActiveLineIndex());
+
+            int GetActiveLineIndex() =>
+                FilesTextBox.GetLineIndexFromCharacterIndex(FilesTextBox.CaretIndex);
         }
 
         private void BrowseCommandBinding_OnCanExecute(object sender, CanExecuteRoutedEventArgs e) =>
@@ -311,9 +331,7 @@ namespace CsvLINQPadDriver
             return TryGetLineAtCaret(out fullPath) && IsPathValid(fullPath!);
 
             bool TryGetLineAtCaret(out string? line) =>
-                !string.IsNullOrWhiteSpace(line = (strip ?? PassFunc)(FilesTextBox.GetLineText(FilesTextBox.GetLineIndexFromCharacterIndex(FilesTextBox.CaretIndex))).Trim());
-
-            static string PassFunc(string value) => value;
+                !string.IsNullOrWhiteSpace(line = (strip ?? Functions.Pass)(FilesTextBox.GetLineTextAtCaretIndex()).Trim());
         }
 
         private bool TryGetFullPathAtLineIncludingInlineComment(out string? fullPath) =>
@@ -380,7 +398,7 @@ namespace CsvLINQPadDriver
 
             checkBox.IsChecked = this.ShowYesNoDialog(
                 ReplaceHotKeyChar((string)checkBox.Content, string.Empty),
-                "This option might mangle CSV parsing. Use at your own risk",
+                "This option might mangle CSV parsing. Would you like to use it anyway?",
                 "I understand and want to use it",
                 "Do not use",
                 false) == true;

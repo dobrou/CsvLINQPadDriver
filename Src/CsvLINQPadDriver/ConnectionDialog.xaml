@@ -20,17 +20,20 @@
         <ObjectDataProvider x:Key="FilesOrderByData" MethodName="GetValues" ObjectType="{x:Type wpf:FilesOrderByEnumObjectDataSource}"/>
         <ObjectDataProvider x:Key="StringComparisonData" MethodName="GetValues" ObjectType="{x:Type wpf:StringComparisonEnumObjectDataSource}"/>
 
-        <Style x:Key="HelpTextBlock" TargetType="{x:Type TextBlock}">
-            <Setter Property="Text" Value="?"/>
-        </Style>
-
         <Style TargetType="{x:Type CheckBox}">
             <Setter Property="VerticalContentAlignment" Value="Center"/>
         </Style>
 
         <Style TargetType="{x:Type Hyperlink}">
             <Setter Property="TextDecorations" Value=""/>
-            <Setter Property="ToolTipService.ShowOnDisabled" Value="True"/>
+        </Style>
+
+        <Style x:Key="HelpTextBlock" TargetType="{x:Type TextBlock}">
+            <Setter Property="Text" Value="?"/>
+        </Style>
+
+        <Style x:Key="HelpHyperlink" TargetType="{x:Type Hyperlink}" BasedOn="{StaticResource {x:Type Hyperlink}}">
+            <Setter Property="Command" Value="{x:Static this:ConnectionDialog.HelpCommand}"/>
         </Style>
 
         <Style x:Key="WrappedTextBlock" TargetType="{x:Type TextBlock}">
@@ -39,6 +42,10 @@
 
         <Style x:Key="TextBlockHyperlinkContainer" TargetType="{x:Type TextBlock}" BasedOn="{StaticResource WrappedTextBlock}">
             <Setter Property="Margin" Value="0 0 5 0"/>
+        </Style>
+
+        <Style x:Key="TextBlockHyperlinkSingleContainer" TargetType="{x:Type TextBlock}" BasedOn="{StaticResource WrappedTextBlock}">
+            <Setter Property="Margin" Value="0"/>
         </Style>
 
         <Thickness x:Key="GroupMarginStyle" Left="2" Right="2" Top="2" Bottom="2"/>
@@ -75,9 +82,8 @@
             <Setter Property="MinWidth" Value="85"/>
         </Style>
 
-        <Style x:Key="DependentCheckBoxStyle" TargetType="{x:Type CheckBox}">
+        <Style x:Key="DependentCheckBoxStyle" TargetType="{x:Type CheckBox}" BasedOn="{StaticResource {x:Type CheckBox}}">
             <Setter Property="Margin" Value="16 0 0 0"/>
-            <Setter Property="ToolTipService.ShowOnDisabled" Value="True"/>
         </Style>
     </Window.Resources>
 
@@ -103,13 +109,17 @@
             Executed="PasteFromClipboardForFolderAndProceedCommandBinding_OnExecuted"
             CanExecute="ClipboardCommandBinding_OnCanExecute"/>
         <CommandBinding
+            Command="{x:Static this:ConnectionDialog.BrowseCommand}"
+            Executed="BrowseCommandBinding_OnExecuted"
+            CanExecute="BrowseCommandBinding_OnCanExecute"/>
+        <CommandBinding
             Command="{x:Static this:ConnectionDialog.ClearCommand}"
             Executed="ClearCommandBinding_OnExecuted"
             CanExecute="ClearCommandBinding_OnCanExecute"/>
         <CommandBinding
-            Command="{x:Static this:ConnectionDialog.BrowseCommand}"
-            Executed="BrowseCommandBinding_OnExecuted"
-            CanExecute="BrowseCommandBinding_OnCanExecute"/>
+            Command="{x:Static this:ConnectionDialog.WrapFilesTextCommand}"
+            Executed="WrapFilesTextCommand_OnExecuted"
+            CanExecute="CommandBinding_OnCanAlwaysExecute"/>
         <CommandBinding
             Command="{x:Static this:ConnectionDialog.HelpCommand}"
             Executed="HelpCommandBinding_OnExecuted"
@@ -147,7 +157,7 @@
 
         <GroupBox>
             <GroupBox.Header>
-                <StackPanel Margin="-1 1 0 0" Orientation="Horizontal" VerticalAlignment="Center">
+                <StackPanel Margin="-1 1 0 0" Orientation="Horizontal">
                     <ComboBox
                         Style="{StaticResource EnumComboBoxStyle}"
                         ToolTip="Active file type"
@@ -172,35 +182,53 @@
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
-                <WrapPanel Grid.ColumnSpan="3" Margin="0 0 0 2" Orientation="Horizontal" HorizontalAlignment="Stretch">
-                    <TextBlock Style="{StaticResource WrappedTextBlock}">
-                        <TextBlock Style="{StaticResource TextBlockHyperlinkContainer}">
-                            <Hyperlink Command="{x:Static this:ConnectionDialog.AddFilesCommand}">
-                                <TextBlock Text="Add files" ToolTip="Add files (Ctrl+O)" Style="{StaticResource WrappedTextBlock}"/>
+                <Grid Grid.ColumnSpan="3">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <WrapPanel Grid.Column="0" Margin="0 0 0 2" Orientation="Horizontal" HorizontalAlignment="Stretch">
+                        <TextBlock Style="{StaticResource WrappedTextBlock}">
+                            <TextBlock Style="{StaticResource TextBlockHyperlinkContainer}">
+                                <Hyperlink Command="{x:Static this:ConnectionDialog.AddFilesCommand}" ToolTip="Add files (Ctrl+O)">Add files</Hyperlink>
+                            </TextBlock>
+                            <TextBlock Style="{StaticResource TextBlockHyperlinkContainer}">
+                                <Hyperlink Command="{x:Static this:ConnectionDialog.AddFolderCommand}" ToolTip="Add folder (Ctrl+Shift+O)">Add folder</Hyperlink>
+                            </TextBlock>
+                            <TextBlock Style="{StaticResource TextBlockHyperlinkContainer}">
+                                <Hyperlink Command="{x:Static this:ConnectionDialog.AddFolderAndItsSubfoldersCommand}" ToolTip="Add folder and its sub-folders (Ctrl+Shift+Alt+O)">Add folder and its sub-folders</Hyperlink>
+                            </TextBlock>
+                            <TextBlock Style="{StaticResource TextBlockHyperlinkContainer}">
+                                <Hyperlink Command="{x:Static this:ConnectionDialog.BrowseCommand}" ToolTip="Browse file or folder at the current line (Ctrl+F) or any line (Ctrl+Click)">Browse</Hyperlink>
+                            </TextBlock>
+                            <TextBlock Style="{StaticResource TextBlockHyperlinkContainer}">
+                                <Hyperlink Command="{x:Static this:ConnectionDialog.ClearCommand}" ToolTip="Clear (Ctrl+L)">Clear</Hyperlink>
+                            </TextBlock>
+                        </TextBlock>
+                    </WrapPanel>
+
+                    <Grid Grid.Column="1">
+                        <TextBlock Style="{StaticResource TextBlockHyperlinkSingleContainer}">
+                            <Hyperlink Command="{x:Static this:ConnectionDialog.WrapFilesTextCommand}">
+                                <TextBlock>
+                                    <TextBlock.Style>
+                                        <Style TargetType="{x:Type TextBlock}">
+                                            <Setter Property="Text" Value="⮨"/>
+                                            <Setter Property="ToolTip" Value="Turn on word wrap (Ctrl+W)"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding TextWrapping, ElementName=FilesTextBox}" Value="Wrap">
+                                                    <Setter Property="Text" Value="➞"/>
+                                                    <Setter Property="ToolTip" Value="Turn off word wrap (Ctrl+W)"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
                             </Hyperlink>
                         </TextBlock>
-                        <TextBlock Style="{StaticResource TextBlockHyperlinkContainer}">
-                            <Hyperlink Command="{x:Static this:ConnectionDialog.AddFolderCommand}">
-                                <TextBlock Text="Add folder" ToolTip="Add folder (Ctrl+Shift+O)" Style="{StaticResource WrappedTextBlock}"/>
-                            </Hyperlink>
-                        </TextBlock>
-                        <TextBlock Style="{StaticResource TextBlockHyperlinkContainer}">
-                            <Hyperlink Command="{x:Static this:ConnectionDialog.AddFolderAndItsSubfoldersCommand}">
-                                <TextBlock Text="Add folder and its sub-folders" ToolTip="Add folder and its sub-folders (Ctrl+Shift+Alt+O)" Style="{StaticResource WrappedTextBlock}"/>
-                            </Hyperlink>
-                        </TextBlock>
-                        <TextBlock Style="{StaticResource TextBlockHyperlinkContainer}" ToolTip="Browse file or folder at the current line (Ctrl+F) or any line (Ctrl+Click)">
-                            <Hyperlink Command="{x:Static this:ConnectionDialog.BrowseCommand}">
-                                <TextBlock Text="Browse" Style="{StaticResource WrappedTextBlock}"/>
-                            </Hyperlink>
-                        </TextBlock>
-                        <TextBlock Style="{StaticResource TextBlockHyperlinkContainer}">
-                            <Hyperlink Command="{x:Static this:ConnectionDialog.ClearCommand}">
-                                <TextBlock Text="Clear" ToolTip="Clear (Ctrl+L)" Style="{StaticResource WrappedTextBlock}"/>
-                            </Hyperlink>
-                        </TextBlock>
-                    </TextBlock>
-                </WrapPanel>
+                    </Grid>
+                </Grid>
 
                 <TextBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3"
                     Name="FilesTextBox"
@@ -229,6 +257,9 @@
                             Command="{x:Static this:ConnectionDialog.ClearCommand}"
                             Gesture="Ctrl+L"/>
                         <KeyBinding
+                            Command="{x:Static this:ConnectionDialog.WrapFilesTextCommand}"
+                            Gesture="Ctrl+W"/>
+                        <KeyBinding
                             Command="{x:Static this:ConnectionDialog.PasteFromClipboardForFolderAndProceedCommand}"
                             Gesture="Ctrl+Shift+V"/>
                         <KeyBinding
@@ -246,20 +277,22 @@
                     SelectedValue="{Binding FilesOrderBy}"
                     ItemsSource="{Binding Source={StaticResource FilesOrderByData}}"/>
 
-                <Label Grid.Row="3" Grid.Column="0" Padding="0 5 4 0" Content="No _BOM encoding" Target="{Binding ElementName=NoBomEncodingComboBox}"/>
+                <Label Grid.Row="3" Grid.Column="0" Padding="0 5 4 0" Content="Fall_back encoding" Target="{Binding ElementName=NoBomEncodingComboBox}"/>
                 <ComboBox Grid.Row="3" Grid.Column="1"
                     Name="NoBomEncodingComboBox"
                     Style="{StaticResource FilesGroupComboBoxStyle}"
-                    ToolTip="Encoding for files without BOM"
+                    ToolTip="Specify encoding to use if file encoding could not be detected, e.g. due to missing BOM"
                     SelectedValue="{Binding NoBomEncoding}"
                     ItemsSource="{Binding Source={StaticResource NoBomEncodingData}}"/>
                 <TextBlock Grid.Row="3" Grid.Column="2" Padding="5 5 0 0">
-                    <Hyperlink NavigateUri="https://en.wikipedia.org/wiki/Byte_order_mark" Command="{x:Static this:ConnectionDialog.HelpCommand}">
-                        <TextBlock Style="{StaticResource HelpTextBlock}" ToolTip="BOM on Wikipedia"/>
+                    <Hyperlink NavigateUri="https://en.wikipedia.org/wiki/Byte_order_mark" ToolTip="BOM on Wikipedia" Style="{StaticResource HelpHyperlink}">
+                        <TextBlock Style="{StaticResource HelpTextBlock}"/>
                     </Hyperlink>
                 </TextBlock>
 
                 <StackPanel Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3" Margin="0 5 0 0" Orientation="Vertical">
+                    <!-- ReSharper disable once MarkupAttributeTypo -->
+                    <CheckBox IsChecked="{Binding AutoDetectEncoding}" Content="Auto-detect file encodin_gs" ToolTip="Try to detect file encodings"/>
                     <CheckBox IsChecked="{Binding ValidateFilePaths}" Content="_Validate file paths" ToolTip="Check if file paths are valid" Name="ValidateFilePathsCheckBox"/>
                     <CheckBox IsChecked="{Binding IgnoreInvalidFiles}" Content="Ignore files _with invalid format" ToolTip="Ignore files with content which does not resemble CSV"/>
                 </StackPanel>
@@ -312,8 +345,8 @@
                             SelectedValue="{Binding Path=StringComparison}"
                             ItemsSource="{Binding Source={StaticResource StringComparisonData}}"/>
                         <TextBlock Grid.Row="0" Grid.Column="2" Padding="5 3 0 0">
-                            <Hyperlink NavigateUri="https://docs.microsoft.com/en-us/dotnet/api/system.stringcomparison#fields" Command="{x:Static this:ConnectionDialog.HelpCommand}">
-                                <TextBlock Style="{StaticResource HelpTextBlock}" ToolTip="StringComparison on Microsoft Docs"/>
+                            <Hyperlink NavigateUri="https://docs.microsoft.com/en-us/dotnet/api/system.stringcomparison#fields" ToolTip="StringComparison on Microsoft Docs" Style="{StaticResource HelpHyperlink}">
+                                <TextBlock Style="{StaticResource HelpTextBlock}"/>
                             </Hyperlink>
                         </TextBlock>
                     </Grid>

@@ -10,6 +10,8 @@ using System.Text.RegularExpressions;
 
 using Humanizer;
 
+using UnicodeCharsetDetector;
+
 using CsvHelper;
 using CsvHelper.Configuration;
 
@@ -22,6 +24,11 @@ namespace CsvLINQPadDriver.Extensions
         private const string RecursiveMaskMarker = "**";
 
         private const StringComparison FileNameComparison = StringComparison.OrdinalIgnoreCase;
+
+        private static readonly UnicodeCharsetDetector.UnicodeCharsetDetector UnicodeCharsetDetector = new();
+
+        private static readonly char[] TsvSeparators = "\t,;".ToCharArray();
+        private static readonly char[] CsvSeparators = ",;\t".ToCharArray();
 
         private static readonly StringComparer FileNameComparer = StringComparer.OrdinalIgnoreCase;
         private static readonly HashSet<string> StringInternCache = new();
@@ -75,10 +82,18 @@ namespace CsvLINQPadDriver.Extensions
 
         public static readonly string Filter = string.Join("|", SupportedFileTypes.Select(supportedFileType => $"{supportedFileType.Description} Files (*.{supportedFileType.Mask})|*.{supportedFileType.Mask}"));
 
-        public static IEnumerable<T> CsvReadRows<T>(this string fileName, char? csvSeparator, bool internString, NoBomEncoding noBomEncoding, bool allowComments, bool ignoreBadData, CsvRowMappingBase<T> csvClassMap)
+        public static IEnumerable<T> CsvReadRows<T>(
+            this string fileName,
+            char? csvSeparator,
+            bool internString,
+            NoBomEncoding noBomEncoding,
+            bool allowComments,
+            bool ignoreBadData,
+            bool autoDetectEncoding,
+            CsvRowMappingBase<T> csvClassMap)
             where T : ICsvRowBase, new()
         {
-            return CsvReadRows(fileName, csvSeparator, noBomEncoding, allowComments, ignoreBadData)
+            return CsvReadRows(fileName, csvSeparator, noBomEncoding, allowComments, ignoreBadData, autoDetectEncoding)
                     .Skip(1) // Skip header.
                     .Select(GetRecord);
 
@@ -96,20 +111,28 @@ namespace CsvLINQPadDriver.Extensions
             }
         }
 
-        public static IEnumerable<string> CsvReadHeader(this string fileName, char? csvSeparator, NoBomEncoding noBomEncoding, bool allowComments, bool ignoreBadData)
+        public static IEnumerable<string> CsvReadHeader(
+            this string fileName,
+            char? csvSeparator,
+            NoBomEncoding noBomEncoding,
+            bool allowComments,
+            bool ignoreBadData,
+            bool autoDetectEncoding)
         {
-            using var csvParser = CreateCsvParser(fileName, csvSeparator, noBomEncoding, allowComments, ignoreBadData);
+            using var csvParser = CreateCsvParser(fileName, csvSeparator, noBomEncoding, allowComments, ignoreBadData, autoDetectEncoding);
 
-            return csvParser.Read() ? csvParser.Record : new string[0];
+            return csvParser.Read()
+                    ? csvParser.Record
+                    : Array.Empty<string>();
         }
 
         public static char CsvDetectSeparator(this string fileName, string[]? csvData = null)
         {
-            var defaultCsvSeparators = (Path.GetExtension(fileName).ToLowerInvariant() switch
+            var defaultCsvSeparators = Path.GetExtension(fileName).ToLowerInvariant() switch
             {
-                "tsv" => "\t,;",
-                _     => ",;\t"
-            }).ToCharArray();
+                ".tsv" => TsvSeparators,
+                _      => CsvSeparators
+            };
 
             var csvSeparator = defaultCsvSeparators.First();
 
@@ -145,7 +168,13 @@ namespace CsvLINQPadDriver.Extensions
             return csvSeparator;
         }
 
-        public static bool IsCsvFormatValid(this string fileName, char? csvSeparator, NoBomEncoding noBomEncoding, bool allowComments, bool ignoreBadData)
+        public static bool IsCsvFormatValid(
+            this string fileName,
+            char? csvSeparator,
+            NoBomEncoding noBomEncoding,
+            bool allowComments,
+            bool ignoreBadData,
+            bool autoDetectEncoding)
         {
             var header = $"{fileName} is not valid CSV file:";
 
@@ -158,7 +187,7 @@ namespace CsvLINQPadDriver.Extensions
 
             try
             {
-                using var csvParser = CreateCsvParser(fileName, csvSeparator, noBomEncoding, allowComments, ignoreBadData);
+                using var csvParser = CreateCsvParser(fileName, csvSeparator, noBomEncoding, allowComments, ignoreBadData, autoDetectEncoding);
 
                 if (!csvParser.Read())
                 {
@@ -220,7 +249,7 @@ namespace CsvLINQPadDriver.Extensions
             var pathsValid = paths.GetFilesOnly().ToImmutableList();
 
             // Get longest common path prefix.
-            var filePaths = pathsValid.FirstOrDefault()?.Split(Path.DirectorySeparatorChar) ?? new string[0];
+            var filePaths = pathsValid.FirstOrDefault()?.Split(Path.DirectorySeparatorChar) ?? Array.Empty<string>();
 
             return Enumerable.Range(1, filePaths.Length)
                 .Select(i => string.Join(Path.DirectorySeparatorChar, filePaths.Take(i).ToImmutableList()))
@@ -292,7 +321,13 @@ namespace CsvLINQPadDriver.Extensions
         private static string GetHumanizedFileSize(long size) =>
             size.Bytes().Humanize("0.#");
 
-        private static CsvParser CreateCsvParser(string fileName, char? csvSeparator, NoBomEncoding noBomEncoding, bool allowComments, bool ignoreBadData)
+        private static CsvParser CreateCsvParser(
+            string fileName,
+            char? csvSeparator,
+            NoBomEncoding noBomEncoding,
+            bool allowComments,
+            bool ignoreBadData,
+            bool autoDetectEncoding)
         {
             const int bufferSize = 4096 * 20;
 
@@ -309,7 +344,9 @@ namespace CsvLINQPadDriver.Extensions
             csvConfiguration.Delimiter = csvSeparator?.ToString() ?? csvConfiguration.Delimiter;
             csvConfiguration.BadDataFound = ignoreBadData ? null : csvConfiguration.BadDataFound;
 
-            return new CsvParser(new StreamReader(fileName, NoBomEncodings.Value[noBomEncoding], true, bufferSize / sizeof(char)), csvConfiguration);
+            var encoding = (autoDetectEncoding ? DetectEncoding(fileName) : null) ?? NoBomEncodings.Value[noBomEncoding];
+
+            return new CsvParser(new StreamReader(fileName, encoding, !autoDetectEncoding, bufferSize / sizeof(char)), csvConfiguration);
         }
 
         public record DeduceFileOrFolderResult(bool IsFile, string Path);
@@ -394,9 +431,15 @@ namespace CsvLINQPadDriver.Extensions
             } while (hasCurrent ?? true);
         }
 
-        private static IEnumerable<string[]> CsvReadRows(string fileName, char? csvSeparator, NoBomEncoding noBomEncoding, bool allowComments, bool ignoreBadData)
+        private static IEnumerable<string[]> CsvReadRows(
+            string fileName,
+            char? csvSeparator,
+            NoBomEncoding noBomEncoding,
+            bool allowComments,
+            bool ignoreBadData,
+            bool autoDetectEncoding)
         {
-            using var csvParser = CreateCsvParser(fileName, csvSeparator, noBomEncoding, allowComments, ignoreBadData);
+            using var csvParser = CreateCsvParser(fileName, csvSeparator, noBomEncoding, allowComments, ignoreBadData, autoDetectEncoding);
 
             while (csvParser.Read())
             {
@@ -428,6 +471,19 @@ namespace CsvLINQPadDriver.Extensions
 
             static Encoding GetCodePageEncoding(bool user) =>
                 Encoding.GetEncoding(CultureInfo.GetCultureInfo(user ? GetUserDefaultLCID() : GetSystemDefaultLCID()).TextInfo.ANSICodePage);
+        }
+
+        private static Encoding? DetectEncoding(string fileName)
+        {
+            try
+            {
+                using var stream = File.OpenRead(fileName);
+                return UnicodeCharsetDetector.Check(stream).ToEncoding();
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         private static string? StringIntern(string? str)

@@ -72,9 +72,10 @@ namespace CsvLINQPadDriver.DataModel
                     var noBomEncoding = _csvDataContextDriverProperties.NoBomEncoding;
                     var allowComments = _csvDataContextDriverProperties.AllowComments;
                     var ignoreBadData = _csvDataContextDriverProperties.IgnoreBadData;
+                    var autoDetectEncoding = _csvDataContextDriverProperties.AutoDetectEncoding;
 
                     if (_csvDataContextDriverProperties.IgnoreInvalidFiles &&
-                        !file.IsCsvFormatValid(csvSeparator, noBomEncoding, allowComments, ignoreBadData))
+                        !file.IsCsvFormatValid(csvSeparator, noBomEncoding, allowComments, ignoreBadData, autoDetectEncoding))
                     {
                         continue;
                     }
@@ -87,7 +88,7 @@ namespace CsvLINQPadDriver.DataModel
 
                     try
                     {
-                        columns = file.CsvReadHeader(csvSeparator, noBomEncoding, allowComments, ignoreBadData)
+                        columns = file.CsvReadHeader(csvSeparator, noBomEncoding, allowComments, ignoreBadData, autoDetectEncoding)
                             .Select((value, index) => (value, index))
                             .Select(col => new CsvColumn(col.value ?? string.Empty, col.index)
                             {

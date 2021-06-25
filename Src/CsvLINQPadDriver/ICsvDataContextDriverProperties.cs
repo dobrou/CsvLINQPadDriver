@@ -38,6 +38,11 @@ namespace CsvLINQPadDriver
         bool IgnoreBadData { get; set; }
 
         /// <summary>
+        /// Auto-detect encoding.
+        /// </summary>
+        bool AutoDetectEncoding { get; set; }
+
+        /// <summary>
         /// Allow CSV comments.
         /// </summary>
         bool AllowComments { get; set; }
