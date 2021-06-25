@@ -402,8 +402,8 @@ TimeSpan? ToTimeSpan(
 * [Humanizer](https://github.com/Humanizr/Humanizer)
 * [Moq](https://github.com/moq/moq4)
 * [NUnit](https://github.com/nunit/nunit)
-* [Windows API Code Pack](https://github.com/contre/Windows-API-Code-Pack-1.1)
 * [UnicodeCharsetDetector](https://github.com/i2van/UnicodeCharsetDetector)
+* [Windows API Code Pack](https://github.com/contre/Windows-API-Code-Pack-1.1)
 
 ## License ##
 
