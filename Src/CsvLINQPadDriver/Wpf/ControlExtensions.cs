@@ -61,5 +61,8 @@ namespace CsvLINQPadDriver.Wpf
 
         public static void UpdateTargetBinding(this FrameworkElement frameworkElement, DependencyProperty dependencyProperty) =>
             frameworkElement.GetBindingExpression(dependencyProperty)!.UpdateTarget();
+
+        public static string ReplaceHotKeyChar(this ContentControl contentControl, string? newChar = null) =>
+            ((string)contentControl.Content).Replace("_", newChar);
     }
 }

@@ -54,7 +54,7 @@
             <Setter Property="Margin" Value="{StaticResource GroupMarginStyle}"/>
         </Style>
 
-        <Style x:Key="FreeStackPanelStyle" TargetType="{x:Type StackPanel}">
+        <Style x:Key="FreeBorderStyle" TargetType="{x:Type Border}">
             <Setter Property="Margin" Value="0 7 0 0"/>
         </Style>
 
@@ -166,6 +166,11 @@
                         Padding="4 2 4 3"
                         ItemsSource="{Binding Source={StaticResource FileTypeData}}"/>
                     <Label Padding="3 2 0 3" Content="_Files" Target="{Binding ElementName=FilesTextBox}"/>
+                    <TextBlock Margin="3 0 0 0" VerticalAlignment="Center">
+                        <Hyperlink NavigateUri="https://github.com/i2van/CsvLINQPadDriver/#csv-files" ToolTip="CSV Files Connection help (F1 for driver help) on GitHub" Style="{StaticResource HelpHyperlink}">
+                            <TextBlock Style="{StaticResource HelpTextBlock}"/>
+                        </Hyperlink>
+                    </TextBlock>
                 </StackPanel>
             </GroupBox.Header>
             <Grid Style="{StaticResource GroupGridStyle}">
@@ -238,7 +243,7 @@
                     HorizontalScrollBarVisibility="Auto"
                     VerticalScrollBarVisibility="Auto"
                     Text="{Binding Files, UpdateSourceTrigger=PropertyChanged}"
-                    ToolTip="CSV files. Drag&amp;Drop (Ctrl adds files, Alt toggles * and ** masks)"
+                    ToolTip="Drag&amp;drop (Ctrl adds files, Alt toggles * and ** masks)"
                     AllowDrop="True"
                     PreviewDragEnter="FilesTextBox_DragEnter"
                     PreviewDragOver="FilesTextBox_DragEnter"
@@ -312,6 +317,7 @@
                     <CheckBox IsChecked="{Binding AllowComments}" Content="Allow co_mments" ToolTip="Ignore lines starting with #"/>
                 </StackPanel>
             </GroupBox>
+
             <GroupBox Header="Memory">
                 <StackPanel Style="{StaticResource GroupStackPanelStyle}">
                     <CheckBox IsChecked="{Binding IsCacheEnabled}" Content="_Cache data in memory" ToolTip="Cache parsed rows. This cache survives multiple query runs, even when query is changed"/>
@@ -319,10 +325,11 @@
                     <CheckBox IsChecked="{Binding IsStringInternEnabled}" Content="I_ntern strings" ToolTip="Intern strings. Significantly reduce memory consumption when CSV contains repeatable values"/>
                 </StackPanel>
             </GroupBox>
+
             <GroupBox Header="Generation">
                 <StackPanel Style="{StaticResource GroupStackPanelStyle}">
                     <!-- ReSharper disable once MarkupAttributeTypo -->
-                    <CheckBox IsChecked="{Binding UseSingleClassForSameFiles}" Content="G_enerate single class for similar files" ToolTip="Single class generation allows to join similar files and query over them. Might not work well for files with relations"/>
+                    <CheckBox IsChecked="{Binding UseSingleClassForSameFiles}" Content="G_enerate single class for similar files" ToolTip="Single class generation allows to join similar files and query over them. Relations support is limited"/>
                     <CheckBox IsChecked="{Binding ShowSameFilesNonGrouped}"
                               IsEnabled="{Binding UseSingleClassForSameFiles}"
                               Content="A_lso show similar files non-grouped"
@@ -352,6 +359,7 @@
                     </Grid>
                 </StackPanel>
             </GroupBox>
+
             <GroupBox Header="Relations">
                 <StackPanel Style="{StaticResource GroupStackPanelStyle}">
                     <CheckBox IsChecked="{Binding DetectRelations}" Content="Detect _relations" ToolTip="Detect relations between CSV files/tables (based on files and column names)"/>
@@ -362,13 +370,14 @@
                               Style="{StaticResource DependentCheckBoxStyle}"/>
                 </StackPanel>
             </GroupBox>
-            <StackPanel Style="{StaticResource FreeStackPanelStyle}">
+
+            <Border Style="{StaticResource FreeBorderStyle}">
                 <CheckBox IsChecked="{Binding DebugInfo}" Content="_Debug info" ToolTip="Show additional driver debug info"/>
-            </StackPanel>
+            </Border>
 
             <Separator Margin="1 8 0 1"/>
 
-            <StackPanel Style="{StaticResource FreeStackPanelStyle}">
+            <Border Style="{StaticResource FreeBorderStyle}">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
@@ -390,7 +399,7 @@
                         <Button Content="Cancel" Style="{StaticResource CloseDialogButtonStyle}" IsCancel="True"/>
                     </StackPanel>
                 </Grid>
-            </StackPanel>
+            </Border>
         </StackPanel>
     </Grid>
 </Window>

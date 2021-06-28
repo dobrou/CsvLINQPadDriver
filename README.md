@@ -155,7 +155,7 @@ CSV files connection can be added to LINQPad 6 the same way as any other connect
 
 ### CSV Files ###
 
-* CSV files: list of CSV files and folders. Can be added via files/folder dialogs, dedicated hotkeys, by typing one file/folder per line or by Drag&Drop (`Ctrl` adds files, `Alt` toggles `*` and `**` masks). Wildcards `?` and `*` are supported; `**.csv` searches in folder and its sub-folders.
+* CSV files: list of CSV files and folders. Can be added via files/folder dialogs, dedicated hotkeys, by typing one file/folder per line or by Drag&drop (`Ctrl` adds files, `Alt` toggles `*` and `**` masks). Wildcards `?` and `*` are supported; `**.csv` searches in folder and its sub-folders.
   * `c:\Books\Books?.csv`: `Books.csv`, `Books1.csv`, etc. files in folder `c:\Books`
   * `c:\Books\*.csv`: all `*.csv` files in folder `c:\Books`
   * `c:\Books\**.csv`: all `*.csv` files in folder `c:\Books` and its sub-folders.
@@ -181,7 +181,7 @@ CSV files connection can be added to LINQPad 6 the same way as any other connect
 
 ### Generation ###
 
-* Generate single class for similar files: single class will be generated for similar files which allows to query them as a single one. Might not work well for files with relations.
+* Generate single class for similar files: single class will be generated for similar files which allows to query them as a single one. Relations support is limited.
   * Also show similar files non-grouped: show similar files non-grouped in addition to similar files groups.
 * String comparison: string comparison for `Equals` and `GetHashCode` methods.
 
@@ -193,8 +193,8 @@ CSV files connection can be added to LINQPad 6 the same way as any other connect
 ### Misc ##
 
 * Debug info: show additional driver debug info, e.g. generated data context source.
-* Contains production data: files contain production data.
 * Remember this connection: connection will be available on next run.
+* Contains production data: files contain production data.
 
 ## Relations Detection ##
 

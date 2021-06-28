@@ -39,14 +39,29 @@ namespace CsvLINQPadDriver
         {
             DataContext = csvDataContextDriverProperties;
 
-            Array.ForEach(new[] { typeof(Control), typeof(Hyperlink) }, type => ToolTipService.ShowOnDisabledProperty.OverrideMetadata(type, new FrameworkPropertyMetadata(true)));
-
+            OverrideDependencyPropertiesMetadata();
             InitializeComponent();
+            SetupControls();
+            AddCommandManagerPreviewHandlers();
 
-            FilesTextBox.ToolTip += $" or {char.ToLower(WildcardsToolTip[0])}{WildcardsToolTip[1..]}";
+            static void OverrideDependencyPropertiesMetadata()
+            {
+                Array.ForEach(new[] { typeof(Control), typeof(Hyperlink) }, type => ToolTipService.ShowOnDisabledProperty.OverrideMetadata(type, new FrameworkPropertyMetadata(true)));
 
-            CommandManager.AddPreviewExecutedHandler(FilesTextBox, FilesTextBox_OnPreviewExecuted);
-            CommandManager.AddPreviewCanExecuteHandler(FilesTextBox, FilesTextBox_OnPreviewCanExecute);
+                var showDurationPropertyType = typeof(FrameworkElement);
+                var showDurationProperty = ToolTipService.ShowDurationProperty;
+                var duration = showDurationProperty.GetMetadata(showDurationPropertyType);
+                showDurationProperty.OverrideMetadata(showDurationPropertyType, new FrameworkPropertyMetadata((int)duration.DefaultValue * 125 / 100));
+            }
+
+            void AddCommandManagerPreviewHandlers()
+            {
+                CommandManager.AddPreviewExecutedHandler(FilesTextBox, FilesTextBox_OnPreviewExecuted);
+                CommandManager.AddPreviewCanExecuteHandler(FilesTextBox, FilesTextBox_OnPreviewCanExecute);
+            }
+
+            void SetupControls() =>
+                FilesTextBox.ToolTip = $"{FilesTextBox.ToolTip} or {char.ToLower(WildcardsToolTip[0])}{WildcardsToolTip[1..]}".Replace(". ", Environment.NewLine);
         }
 
         private ICsvDataContextDriverProperties TypedDataContext =>
@@ -89,7 +104,7 @@ namespace CsvLINQPadDriver
                         "Proceed as is",
                         instructionText.ToLowerInvariant(),
                         invalidFilePaths.JoinNewLine(),
-                        ReplaceHotKeyChar((string)ValidateFilePathsCheckBox.Content, "&"),
+                        ValidateFilePathsCheckBox.ReplaceHotKeyChar("&"),
                         ref validateFilePaths) == false;
 
                 TypedDataContext.ValidateFilePaths = validateFilePaths;
@@ -292,7 +307,7 @@ namespace CsvLINQPadDriver
 
             ScrollToActiveLine();
 
-            var (isFile, path) = fullPath!.DeduceIsFileOrFolder(true);
+            var (isFile, path) = fullPath.DeduceIsFileOrFolder(true);
             var shellResult = path.Explore(isFile);
 
             if (!shellResult)
@@ -320,7 +335,7 @@ namespace CsvLINQPadDriver
         private static bool IsPathValid(string path) =>
             Path.IsPathFullyQualified(path);
 
-        private bool TryGetFullPathAtLine(out string? fullPath, Func<string, string>? strip = null)
+        private bool TryGetFullPathAtLineIncludingInlineComment(out string fullPath)
         {
             if (FilesTextBox is null)
             {
@@ -328,14 +343,11 @@ namespace CsvLINQPadDriver
                 return false;
             }
 
-            return TryGetLineAtCaret(out fullPath) && IsPathValid(fullPath!);
+            return TryGetLineAtCaret(out fullPath) && IsPathValid(fullPath);
 
-            bool TryGetLineAtCaret(out string? line) =>
-                !string.IsNullOrWhiteSpace(line = (strip ?? Functions.Pass)(FilesTextBox.GetLineTextAtCaretIndex()).Trim());
+            bool TryGetLineAtCaret(out string line) =>
+                !string.IsNullOrWhiteSpace(line = FilesTextBox.GetLineTextAtCaretIndex().GetInlineCommentContent().Trim());
         }
-
-        private bool TryGetFullPathAtLineIncludingInlineComment(out string? fullPath) =>
-            TryGetFullPathAtLine(out fullPath, FileExtensions.GetInlineCommentContent);
 
         private void AddFolder(bool withSubfolders)
         {
@@ -360,17 +372,17 @@ namespace CsvLINQPadDriver
             FilesTextBox.AppendText(Environment.NewLine);
 
             MoveCaretToEnd(true);
-        }
 
-        private void AppendNewLine()
-        {
-            if (HasFiles() && !Regex.IsMatch(FilesTextBox.Text, @"[\r\n]$"))
+            void AppendNewLine()
             {
-                FilesTextBox.AppendText(Environment.NewLine);
-            }
+                if (HasFiles() && !Regex.IsMatch(FilesTextBox.Text, @"[\r\n]$"))
+                {
+                    FilesTextBox.AppendText(Environment.NewLine);
+                }
 
-            bool HasFiles() =>
-                !string.IsNullOrWhiteSpace(FilesTextBox?.Text);
+                bool HasFiles() =>
+                    !string.IsNullOrWhiteSpace(FilesTextBox?.Text);
+            }
         }
 
         private void MoveCaretToEnd(bool scrollToEnd = false)
@@ -397,14 +409,11 @@ namespace CsvLINQPadDriver
             }
 
             checkBox.IsChecked = this.ShowYesNoDialog(
-                ReplaceHotKeyChar((string)checkBox.Content, string.Empty),
+                checkBox.ReplaceHotKeyChar(),
                 "This option might mangle CSV parsing. Would you like to use it anyway?",
                 "I understand and want to use it",
                 "Do not use",
                 false) == true;
         }
-
-        private static string ReplaceHotKeyChar(string what, string newChar) =>
-            what.Replace("_", newChar);
     }
 }
