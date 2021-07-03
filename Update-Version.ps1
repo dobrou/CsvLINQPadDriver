@@ -35,7 +35,7 @@ function Main
 
     Write-Output "Reading '$buildPropsFile'..."
 
-    $buildPropsXml = ([xml](Get-Content $buildPropsFile)).Project.PropertyGroup
+    $buildPropsXml = ([xml](Get-Content $buildPropsFile)).Project.PropertyGroup[0]
     $version = $buildPropsXml.Version
     $buildProps = [PSCustomObject]@{
         Version      = $version

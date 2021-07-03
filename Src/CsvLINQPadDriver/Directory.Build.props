@@ -1,6 +1,55 @@
-<Project>
+﻿<Project>
   <PropertyGroup>
-    <Version>6.13.1</Version>
-    <PackageReleaseNotes>Bugfixes.</PackageReleaseNotes>
+    <Version>6.14.0</Version>
+    <PackageReleaseNotes>Added use record type option.
+Generation string comparison can be used for comparing interned strings.</PackageReleaseNotes>
   </PropertyGroup>
+
+  <PropertyGroup>
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+    <Authors>Martin Dobroucký (dobrou@gmail.com), Ivan Ivon (ivan.ivon@gmail.com)</Authors>
+    <Copyright>Copyright © Martin Dobroucký 2013-2014, Ivan Ivon 2021</Copyright>
+    <ApplicationIcon>Connection.ico</ApplicationIcon>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <UseWpf>true</UseWpf>
+    <UseWindowsForms>true</UseWindowsForms>
+    <Deterministic>true</Deterministic>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath>..\..\bin\Debug\</OutputPath>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <OutputPath>..\..\bin\Release\</OutputPath>
+    <DefineConstants />
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CsvHelper" Version="27.1.1" />
+    <PackageReference Include="Humanizer.Core" Version="2.11.10" />
+    <PackageReference Include="IsExternalInit" Version="1.0.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="LINQPad.Reference" Version="1.1.0" />
+    <PackageReference Include="Microsoft-WindowsAPICodePack-Core" Version="1.1.4" />
+    <PackageReference Include="UnicodeCharsetDetector.Standard" Version="1.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Connection.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="ConnectionDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </None>
+  </ItemGroup>
 </Project>

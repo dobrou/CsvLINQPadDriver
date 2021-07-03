@@ -8,6 +8,7 @@ namespace CsvLINQPadDriver.CodeGen
         // ReSharper disable once UnusedMember.Global
         public static CsvTableBase<TRow> CreateTable<TRow>(
             bool isStringInternEnabled,
+            StringComparer? internStringComparer,
             bool isCacheEnabled,
             char? csvSeparator,
             NoBomEncoding noBomEncoding,
@@ -19,7 +20,27 @@ namespace CsvLINQPadDriver.CodeGen
             Action<TRow> relationsInit)
             where TRow : ICsvRowBase, new() =>
             isCacheEnabled
-                ? new CsvTableList<TRow>(isStringInternEnabled, csvSeparator, noBomEncoding, allowComments, ignoreBadData, autoDetectEncoding, filePath, propertiesInfo, relationsInit)
-                : new CsvTableEnumerable<TRow>(isStringInternEnabled, csvSeparator, noBomEncoding, allowComments, ignoreBadData, autoDetectEncoding, filePath, propertiesInfo, relationsInit);
+                ? new CsvTableList<TRow>(
+                    isStringInternEnabled,
+                    internStringComparer,
+                    csvSeparator,
+                    noBomEncoding,
+                    allowComments,
+                    ignoreBadData,
+                    autoDetectEncoding,
+                    filePath,
+                    propertiesInfo,
+                    relationsInit)
+                : new CsvTableEnumerable<TRow>(
+                    isStringInternEnabled,
+                    internStringComparer,
+                    csvSeparator,
+                    noBomEncoding,
+                    allowComments,
+                    ignoreBadData,
+                    autoDetectEncoding,
+                    filePath,
+                    propertiesInfo,
+                    relationsInit);
     }
 }

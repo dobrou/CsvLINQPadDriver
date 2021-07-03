@@ -10,6 +10,7 @@
     Width="660"
     Height="740"
     WindowStartupLocation="CenterScreen"
+    ShowInTaskbar="True"
     FocusManager.FocusedElement="{Binding ElementName=FilesTextBox}"
     CheckBox.Checked="UnstableOption_OnChecked"
     Loaded="ConnectionDialog_OnLoaded">
@@ -323,16 +324,23 @@
                     <CheckBox IsChecked="{Binding IsCacheEnabled}" Content="_Cache data in memory" ToolTip="Cache parsed rows. This cache survives multiple query runs, even when query is changed"/>
                     <!-- ReSharper disable once MarkupAttributeTypo -->
                     <CheckBox IsChecked="{Binding IsStringInternEnabled}" Content="I_ntern strings" ToolTip="Intern strings. Significantly reduce memory consumption when CSV contains repeatable values"/>
+                    <CheckBox IsChecked="{Binding UseStringComparerForStringIntern}"
+                              IsEnabled="{Binding IsStringInternEnabled}"
+                              Content="{Binding ElementName=StringComparisonComboBox, Path=SelectedValue}"
+                              ContentStringFormat="Use {0} generation string comparison"
+                              ToolTip="Compare interned strings using generation string comparison"
+                              Style="{StaticResource DependentCheckBoxStyle}"/>
                 </StackPanel>
             </GroupBox>
 
             <GroupBox Header="Generation">
                 <StackPanel Style="{StaticResource GroupStackPanelStyle}">
+                    <CheckBox IsChecked="{Binding UseRecordType}" Visibility="{x:Static this:ConnectionDialog.NetCoreOnlyVisibility}" Content="Use record t_ype" ToolTip="Generate records instead of classes"/>
                     <!-- ReSharper disable once MarkupAttributeTypo -->
-                    <CheckBox IsChecked="{Binding UseSingleClassForSameFiles}" Content="G_enerate single class for similar files" ToolTip="Single class generation allows to join similar files and query over them. Relations support is limited"/>
+                    <CheckBox IsChecked="{Binding UseSingleClassForSameFiles}" Content="G_enerate single type for similar files" ToolTip="Single type generation allows to join similar files and query over them. Relations support is limited"/>
                     <CheckBox IsChecked="{Binding ShowSameFilesNonGrouped}"
                               IsEnabled="{Binding UseSingleClassForSameFiles}"
-                              Content="A_lso show similar files non-grouped"
+                              Content="Also show similar files non-grouped"
                               ToolTip="Show similar files non-grouped in addition to similar files groups"
                               Style="{StaticResource DependentCheckBoxStyle}"/>
                     <Grid>
@@ -365,7 +373,7 @@
                     <CheckBox IsChecked="{Binding DetectRelations}" Content="Detect _relations" ToolTip="Detect relations between CSV files/tables (based on files and column names)"/>
                     <CheckBox IsChecked="{Binding HideRelationsFromDump}"
                               IsEnabled="{Binding DetectRelations}"
-                              Content="_Hide relations from Dump()"
+                              Content="Hide relations from Dump()"
                               ToolTip="LINQPad will not show relations content when Dump()ed. This prevents from loading too many data"
                               Style="{StaticResource DependentCheckBoxStyle}"/>
                 </StackPanel>

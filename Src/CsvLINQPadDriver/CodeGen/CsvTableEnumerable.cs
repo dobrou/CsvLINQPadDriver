@@ -9,6 +9,7 @@ namespace CsvLINQPadDriver.CodeGen
     {
         public CsvTableEnumerable(
             bool isStringInternEnabled,
+            StringComparer? internStringComparer,
             char? csvSeparator,
             NoBomEncoding noBomEncoding,
             bool allowComments,
@@ -17,7 +18,17 @@ namespace CsvLINQPadDriver.CodeGen
             string filePath,
             IEnumerable<CsvColumnInfo> propertiesInfo,
             Action<TRow> relationsInit)
-            : base(isStringInternEnabled, csvSeparator, noBomEncoding, allowComments, ignoreBadData, autoDetectEncoding, filePath, propertiesInfo, relationsInit)
+            : base(
+                isStringInternEnabled,
+                internStringComparer,
+                csvSeparator,
+                noBomEncoding,
+                allowComments,
+                ignoreBadData,
+                autoDetectEncoding,
+                filePath,
+                propertiesInfo,
+                relationsInit)
         {
         }
 

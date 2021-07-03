@@ -1,7 +1,6 @@
 ﻿using System;
 using System.CodeDom;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -14,6 +13,12 @@ using Humanizer;
 using CsvLINQPadDriver.DataDisplay;
 using CsvLINQPadDriver.DataModel;
 using CsvLINQPadDriver.Extensions;
+
+#if NETCOREAPP
+using System.Collections.Immutable;
+#else
+using CsvLINQPadDriver.Microsoft.Bcl;
+#endif
 
 namespace CsvLINQPadDriver.CodeGen
 {
@@ -37,17 +42,19 @@ namespace CsvLINQPadDriver.CodeGen
         public record Result(string Code, IReadOnlyCollection<IGrouping<string, TypeCodeResult>> CodeGroups);
 
         // ReSharper disable once RedundantAssignment
-        public static Result GenerateCode(CsvDatabase db, ref string nameSpace, ref string typeName, ICsvDataContextDriverProperties props) =>
-            new CsvCSharpCodeGenerator(nameSpace, typeName = DefaultContextTypeName, props).GenerateSrcFile(db);
+        public static Result GenerateCode(CsvDatabase db, ref string nameSpace, ref string typeName, ICsvDataContextDriverProperties properties) =>
+            new CsvCSharpCodeGenerator(nameSpace, typeName = DefaultContextTypeName, properties).GenerateSrcFile(db);
 
         private Result GenerateSrcFile(CsvDatabase csvDatabase)
         {
             var csvTables = csvDatabase.Tables;
 
             var groups = csvTables
-                    .Select(table => GenerateTableRowDataTypeClass(table, _properties.HideRelationsFromDump, _properties.StringComparison))
+                    .Select(table => GenerateTableRowDataTypeClass(table, _properties.UseRecordType, _properties.StringComparison, _properties.HideRelationsFromDump))
                     .GroupBy(typeCode => typeCode.TypeName)
                     .ToImmutableList();
+
+            var isStringInternEnabled = _properties.IsStringInternEnabled;
 
             return new Result($@"namespace {_contextNameSpace}
 {{
@@ -62,7 +69,8 @@ namespace CsvLINQPadDriver.CodeGen
         {{
             // Init tables data {string.Join(string.Empty, csvTables.Select(table => $@"
             this.{table.CodeName} = {typeof(CsvTableFactory).GetCodeTypeClassName()}.CreateTable<{GetClassName(table)}>(
-                {GetBoolConst(_properties.IsStringInternEnabled)},
+                {GetBoolConst(isStringInternEnabled)},
+                {(isStringInternEnabled && _properties.UseStringComparerForStringIntern ? GetStringComparer(_properties.StringComparison) : "null")},
                 {GetBoolConst(_properties.IsCacheEnabled)},
                 {table.CsvSeparator.AsValidCSharpCode()},
                 {typeof(NoBomEncoding).GetCodeTypeClassName()}.{_properties.NoBomEncoding},
@@ -90,19 +98,25 @@ namespace CsvLINQPadDriver.CodeGen
                 val ? "true" : "false";
         }
 
-        private static TypeCodeResult GenerateTableRowDataTypeClass(CsvTable table, bool hideRelationsFromDump, StringComparison stringComparison)
+        private static TypeCodeResult GenerateTableRowDataTypeClass(CsvTable table, bool useRecordType, StringComparison stringComparison, bool hideRelationsFromDump)
         {
             var className = GetClassName(table);
             var properties = table.Columns.Select(GetPropertyName).ToImmutableList();
 
+            var (generatedType, interfaces) =
+#if NETCOREAPP
+                useRecordType ? ("record", string.Empty) :
+#endif
+                ("class", $", System.IEquatable<{className}>");
+
             return new TypeCodeResult(className, $@"
-    public sealed record {className} : {typeof(ICsvRowBase).GetCodeTypeClassName()}
+    public sealed {generatedType} {className} : {typeof(ICsvRowBase).GetCodeTypeClassName()}{interfaces}
     {{{string.Join(string.Empty, table.Columns.Select(csvColumn => $@"
         public string {GetPropertyName(csvColumn)} {{ get; set; }}"))}
-        {GenerateIndexer(properties, true)}
-        {GenerateIndexer(properties, false)}
-        {GenerateToString(properties)}
-        {GenerateEqualsAndGetHashCode(className, properties, stringComparison)}{string.Join(string.Empty, table.Relations.Select(csvRelation => $@"
+{GenerateIndexer(properties, true)}
+{GenerateIndexer(properties, false)}
+{GenerateToString(properties)}
+{GenerateEqualsAndGetHashCode(className, useRecordType, stringComparison, properties)}{string.Join(string.Empty, table.Relations.Select(csvRelation => $@"
 
         /// <summary>{SecurityElement.Escape(csvRelation.DisplayName)}</summary> {(hideRelationsFromDump ? $@"
         [{typeof(HideFromDumpAttribute).GetCodeTypeClassName()}]" : string.Empty)}
@@ -156,24 +170,48 @@ namespace CsvLINQPadDriver.CodeGen
         }}";
         }
 
-        private static string GenerateEqualsAndGetHashCode(string typeName, IReadOnlyCollection<string> properties, StringComparison stringComparison) =>
-            $@"
+        private static string GenerateEqualsAndGetHashCode(string typeName, bool useRecordType, StringComparison stringComparison, IReadOnlyCollection<string> properties)
+        {
+            var objectEquals = useRecordType
+                ? string.Empty
+                : $@"
+        public override bool Equals(object obj)
+        {{
+            if(obj == null || obj.GetType() != typeof({typeName})) return false;
+            return Equals(({typeName})obj);
+        }}
+
+        public static bool operator == ({typeName} obj1, {typeName} obj2)
+        {{
+            return ReferenceEquals(obj1, null)
+                ? ReferenceEquals(obj2, null)
+                : obj1.Equals(obj2);
+        }}
+
+        public static bool operator != ({typeName} obj1, {typeName} obj2)
+        {{
+            return !(obj1 == obj2);
+        }}
+";
+
+            return $@"{objectEquals}
         public bool Equals({typeName} obj)
         {{
             if(obj == null) return false;
             if(ReferenceEquals(this, obj)) return true;
             return  {string.Join($" && {Environment.NewLine}{GetIndent(20)}",
-                properties.Select(property => $"string.Equals({property}, obj.{property}, System.StringComparison.{stringComparison})"))};
+                properties.Select(property => $"{GetStringComparer(stringComparison)}.Equals({property}, obj.{property})"))};
         }}
 
         public override int GetHashCode()
         {{
             var hashCode = new System.HashCode();
 
-{string.Join(Environment.NewLine, properties.Select(property => $"{GetIndent(12)}hashCode.Add({property}, System.StringComparer.{GetStringComparer(stringComparison)});"))}
+{string.Join(Environment.NewLine, properties.Select(property => $"{GetIndent(12)}hashCode.Add({property}, {GetStringComparer(stringComparison)});"))}
 
             return hashCode.ToHashCode();
         }}";
+        }
 
         private static string GetClassName(CsvTable table) =>
             table.GetCodeRowClassName();
@@ -182,7 +220,7 @@ namespace CsvLINQPadDriver.CodeGen
             new(' ', count);
 
         private static string GetStringComparer(StringComparison stringComparison) =>
-            stringComparison switch
+            "System.StringComparer." + stringComparison switch
             {
                 StringComparison.CurrentCulture => nameof(StringComparer.CurrentCulture), 
                 StringComparison.CurrentCultureIgnoreCase => nameof(StringComparer.CurrentCultureIgnoreCase), 
@@ -203,7 +241,7 @@ namespace CsvLINQPadDriver.CodeGen
             static string ToClassName(string? name) =>
                 string.IsNullOrWhiteSpace(name)
                     ? throw new ArgumentNullException(nameof(name), "Name is null or empty")
-                    : $"R{(name.Length < 3 ? name : name.Singularize())}";
+                    : $"R{(name!.Length < 3 ? name : name.Singularize())}";
         }
 
         public static string GetCodeTypeClassName(this Type type, params string[] genericParameters) =>

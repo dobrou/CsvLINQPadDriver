@@ -19,6 +19,13 @@ namespace CsvLINQPadDriver
     {
         private const string HelpUri = "https://github.com/i2van/CsvLINQPadDriver/#readme";
 
+        public const Visibility NetCoreOnlyVisibility =
+#if NETCOREAPP
+            Visibility.Visible;
+#else
+            Visibility.Collapsed;
+#endif
+
         public static readonly RoutedUICommand AddFilesCommand = new();
         public static readonly RoutedUICommand AddFolderCommand = new();
         public static readonly RoutedUICommand AddFolderAndItsSubfoldersCommand = new();
@@ -333,7 +340,11 @@ namespace CsvLINQPadDriver
             e.CanExecute = TryGetFullPathAtLineIncludingInlineComment(out _);
 
         private static bool IsPathValid(string path) =>
+#if NETCOREAPP
             Path.IsPathFullyQualified(path);
+#else
+            Path.IsPathRooted(path);
+#endif
 
         private bool TryGetFullPathAtLineIncludingInlineComment(out string fullPath)
         {

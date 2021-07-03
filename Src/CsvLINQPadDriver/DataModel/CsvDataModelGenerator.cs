@@ -1,12 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 
 using CsvLINQPadDriver.CodeGen;
 using CsvLINQPadDriver.Extensions;
+
+#if NETCOREAPP
+using System.Collections.Immutable;
+#else
+using CsvLINQPadDriver.Microsoft.Bcl;
+#endif
 
 namespace CsvLINQPadDriver.DataModel
 {
@@ -84,7 +89,11 @@ namespace CsvLINQPadDriver.DataModel
                     var fileDir  = (Path.GetDirectoryName($"{file.Remove(0, baseDir.Length)}x") ?? string.Empty).TrimStart(Path.DirectorySeparatorChar);
                     var codeName = (Path.GetFileNameWithoutExtension(fileName) + (string.IsNullOrWhiteSpace(fileDir) ? string.Empty : $"_{fileDir}")).GetSafeCodeName();
 
+#if NETCOREAPP
                     ImmutableList<CsvColumn> columns;
+#else
+                    List<CsvColumn> columns;
+#endif
 
                     try
                     {

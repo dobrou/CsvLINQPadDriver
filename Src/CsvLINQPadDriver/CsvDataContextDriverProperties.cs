@@ -118,6 +118,12 @@ namespace CsvLINQPadDriver
             set => SetValue(value);
         }
 
+        public bool UseRecordType
+        {
+            get => GetValue(true);
+            set => SetValue(value);
+        }
+
         public bool UseSingleClassForSameFiles
         {
             get => GetValue(true);
@@ -172,6 +178,12 @@ namespace CsvLINQPadDriver
             set => SetValue(value);
         }
 
+        public bool UseStringComparerForStringIntern
+        {
+            get => GetValue(false);
+            set => SetValue(value);
+        }
+
         public bool IsCacheEnabled
         {
             get => GetValue(true);
@@ -188,8 +200,21 @@ namespace CsvLINQPadDriver
             GetValue(v => v, defaultValue, callerMemberName);
 
         private T GetValue<T>(T defaultValue, [CallerMemberName] string callerMemberName = "")
+#if NETCOREAPP
             where T: Enum =>
-            (T)GetValue(v => Enum.TryParse(typeof(T), v, out var val) ? val : defaultValue, defaultValue, callerMemberName)!;
+            (T)
+#else
+            where T : struct =>
+#endif
+            GetValue(v =>
+#if NETCOREAPP
+                Enum.TryParse(typeof(T), v, out var val)
+#else
+                Enum.TryParse(v, out T val)
+#endif
+                    ? val
+                    : defaultValue,
+                defaultValue, callerMemberName)!;
 
         private void SetValue<T>(T value, [CallerMemberName] string callerMemberName = "") =>
             _driverData.SetElementValue(callerMemberName, value);

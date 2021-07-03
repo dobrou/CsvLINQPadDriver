@@ -1,25 +1,55 @@
-name: build
+﻿name: build
 
 on: [push, pull_request]
+
+env:
+  SLN:  CsvLINQPadDriver.sln
+  SLN5: CsvLINQPadDriver5.sln
+  SLN_CONFIG: Release
 
 jobs:
   build:
     runs-on: windows-latest
+
     steps:
-    - uses: actions/checkout@v2
+
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    # LINQPad 6
+
     - name: Setup .NET Core 5.0 SDK for Build
       uses: actions/setup-dotnet@v1
       with:
           dotnet-version: '5.0.x'
+
     - name: Setup .NET Core 3.1 SDK for Test
       uses: actions/setup-dotnet@v1
       with:
           dotnet-version: '3.1.x'
-    - name: Clean
-      run: dotnet clean --configuration Release && dotnet nuget locals all --clear
-    - name: Restore dependencies
-      run: dotnet restore
-    - name: Build
-      run: dotnet build --no-restore --configuration Release
-    - name: Test
-      run: dotnet test --no-build --configuration Release --verbosity normal
+
+    - name: ${{env.SLN}} ${{ env.SLN_CONFIG }} clean
+      run: dotnet clean ${{ env.SLN }} --configuration ${{ env.SLN_CONFIG }} && dotnet nuget locals all --clear
+
+    - name: ${{env.SLN}} restore dependencies
+      run: dotnet restore ${{ env.SLN }}
+
+    - name: ${{env.SLN}} ${{ env.SLN_CONFIG }} build
+      run: dotnet build ${{ env.SLN }} --configuration ${{ env.SLN_CONFIG }} --no-restore
+
+    - name: ${{env.SLN}} ${{ env.SLN_CONFIG }} test
+      run: dotnet test ${{ env.SLN }} --configuration ${{ env.SLN_CONFIG }} --no-build --verbosity normal
+
+    # LINQPad 5
+
+    - name: Setup msbuild
+      uses: microsoft/setup-msbuild@v1.0.2
+
+    - name: Setup NuGet
+      uses: NuGet/setup-nuget@v1.0.5
+
+    - name: ${{env.SLN5}} restore dependencies
+      run: nuget restore ${{ env.SLN5 }}
+
+    - name: ${{env.SLN5}} ${{ env.SLN_CONFIG }} build
+      run: msbuild ${{ env.SLN5 }} /p:Configuration=${{ env.SLN_CONFIG }}

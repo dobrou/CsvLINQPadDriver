@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Reflection;
 
 using Humanizer;
@@ -10,6 +9,12 @@ using LINQPad.Extensibility.DataContext;
 
 using CsvLINQPadDriver.DataDisplay;
 using CsvLINQPadDriver.Extensions;
+
+#if NETCOREAPP
+using System.Collections.Immutable;
+#else
+using CsvLINQPadDriver.Microsoft.Bcl;
+#endif
 
 namespace CsvLINQPadDriver
 {

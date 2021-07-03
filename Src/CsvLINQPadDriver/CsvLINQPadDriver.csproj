@@ -2,27 +2,10 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <UseWpf>true</UseWpf>
-    <UseWindowsForms>true</UseWindowsForms>
-    <Deterministic>true</Deterministic>
-    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-    <LangVersion>latest</LangVersion>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <OutputPath>..\..\bin\Debug\</OutputPath>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <OutputPath>..\..\bin\Release\</OutputPath>
-    <DefineConstants />
   </PropertyGroup>
 
   <PropertyGroup>
-    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Authors>Martin Dobroucký (dobrou@gmail.com), Ivan Ivon (ivan.ivon@gmail.com)</Authors>
     <RepositoryType>git</RepositoryType>
     <PackageTags>linqpaddriver csv</PackageTags>
     <PackageProjectUrl>https://github.com/i2van/CsvLINQPadDriver</PackageProjectUrl>
@@ -30,11 +13,12 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/i2van/CsvLINQPadDriver</RepositoryUrl>
     <PackageIcon>NuGetIcon.png</PackageIcon>
-    <Copyright>Copyright © Martin Dobroucký 2013-2014, Ivan Ivon 2021</Copyright>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <ApplicationIcon>Connection.ico</ApplicationIcon>
-    <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Microsoft.Bcl\**" />
+  </ItemGroup>
 
   <ItemGroup>
     <None Remove="Connection.ico" />
@@ -59,34 +43,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="CsvHelper" Version="27.1.1" />
-    <PackageReference Include="Humanizer.Core" Version="2.11.10" />
-    <PackageReference Include="IsExternalInit" Version="1.0.1">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="LINQPad.Reference" Version="1.1.0" />
-    <PackageReference Include="Microsoft-WindowsAPICodePack-Core" Version="1.1.4" />
-    <PackageReference Include="UnicodeCharsetDetector.Standard" Version="1.0.1" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Resource Include="Connection.ico" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="ConnectionDialog.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </None>
-    <None Update="DevDeploy.bat">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
-  <ItemGroup>
     <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
       <_Parameter1>$(AssemblyName)Test</_Parameter1>
     </AssemblyAttribute>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="DevDeploy.bat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

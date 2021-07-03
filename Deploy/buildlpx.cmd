@@ -1,12 +1,46 @@
-@set version=6.13.1
-@set zip="%ProgramFiles%\7-Zip\7z.exe"
-@set output="CsvLINQPadDriver.%version%.lpx6"
+@echo off
 
-del %output%
+set version=6.14.0
+set fileName=CsvLINQPadDriver.%version%.lpx
 
-set releaseDir=..\bin\Release\netcoreapp3.1
+set zip="%ProgramFiles%\7-Zip\7z.exe"
 
-%zip% a -tzip -mx=9 "%output%" header.xml %releaseDir%\*.dll %releaseDir%\*Connection.png ..\README.md ..\LICENSE
+echo on
 
-@echo Package %output% created.
-@pause
+call :pack %fileName%6 netcoreapp3.1
+call :pack %fileName%  net461
+
+@echo off
+
+echo.
+pause
+
+exit /b 0
+
+:pack
+@echo off
+
+set lpx=%1
+set folder=..\bin\Release\%2
+
+set additional=
+
+if exist %lpx% del %lpx%
+if exist %folder%\Microsoft.Bcl.*.dll set additional=^
+%folder%\Microsoft.Bcl.HashCode.dll
+
+echo on
+
+%zip% a -tzip -mx=9 %lpx% ^
+header.xml ^
+..\README.md ^
+..\LICENSE ^
+%folder%\*Connection.png ^
+%folder%\CsvHelper.dll ^
+%folder%\CsvLINQPadDriver.dll ^
+%folder%\Humanizer.dll ^
+%folder%\Microsoft.WindowsAPICodePack.dll ^
+%folder%\UnicodeCharsetDetector.dll ^
+%additional%
+
+@exit /b 0

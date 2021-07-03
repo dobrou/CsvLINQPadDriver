@@ -2,9 +2,13 @@
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows;
+using System.Windows.Forms;
 using System.Windows.Interop;
 
 using Microsoft.WindowsAPICodePack.Dialogs;
+
+using MessageBox = System.Windows.MessageBox;
+using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
 
 namespace CsvLINQPadDriver.Wpf
 {
@@ -12,7 +16,7 @@ namespace CsvLINQPadDriver.Wpf
     {
         public static bool TryOpenFile(this string title, string filter, string defaultExt, out string[] fileNames, int filterIndex = 1)
         {
-            var openFileDialog = new Microsoft.Win32.OpenFileDialog
+            var openFileDialog = new OpenFileDialog
             {
                 Title = title,
                 Filter = filter,
@@ -36,13 +40,17 @@ namespace CsvLINQPadDriver.Wpf
 
         public static bool TryBrowseForFolder(this string description, out string folder)
         {
-            using var folderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog
+            using var folderBrowserDialog = new FolderBrowserDialog
             {
                 Description = description,
+                ShowNewFolderButton = false
+#if NETCOREAPP
+                ,
                 UseDescriptionForTitle = true
+#endif
             };
 
-            var result = folderBrowserDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK;
+            var result = folderBrowserDialog.ShowDialog() == DialogResult.OK;
 
             folder = result
                 ? folderBrowserDialog.SelectedPath
@@ -88,7 +96,7 @@ namespace CsvLINQPadDriver.Wpf
                 OwnerWindowHandle = new WindowInteropHelper(owner).Handle,
                 StartupLocation = TaskDialogStartupLocation.CenterOwner,
                 Cancelable = true,
-                
+
                 Caption = owner.Title,
                 InstructionText = instructionText,
                 Text = AppendDot(text),
@@ -145,7 +153,13 @@ namespace CsvLINQPadDriver.Wpf
             static void TaskDialogCommandLinkClicked(object sender, EventArgs e)
             {
                 var taskDialogCommandLink = (TaskDialogCommandLink)sender;
-                ((TaskDialog)taskDialogCommandLink.HostingDialog).Close(Enum.Parse<TaskDialogResult>(taskDialogCommandLink.Name));
+                ((TaskDialog)taskDialogCommandLink.HostingDialog).Close(
+#if NETCOREAPP
+                    Enum.Parse<TaskDialogResult>(
+#else
+                    (TaskDialogResult)Enum.Parse(typeof(TaskDialogResult), 
+#endif
+                        taskDialogCommandLink.Name));
             }
         }
 

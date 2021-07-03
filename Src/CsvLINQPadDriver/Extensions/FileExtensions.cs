@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -17,6 +16,12 @@ using CsvHelper.Configuration;
 
 using CsvLINQPadDriver.CodeGen;
 
+#if NETCOREAPP
+using System.Collections.Immutable;
+#else
+using CsvLINQPadDriver.Microsoft.Bcl;
+#endif
+
 namespace CsvLINQPadDriver.Extensions
 {
     internal static class FileExtensions
@@ -31,7 +36,14 @@ namespace CsvLINQPadDriver.Extensions
         private static readonly char[] CsvSeparators = ",;\t".ToCharArray();
 
         private static readonly StringComparer FileNameComparer = StringComparer.OrdinalIgnoreCase;
-        private static readonly HashSet<string> StringInternCache = new();
+
+        private static
+#if NETCOREAPP
+            HashSet<string>
+#else
+            Dictionary<string, string>
+#endif
+                StringInternCache = null!;
 
         private static readonly Lazy<IReadOnlyDictionary<NoBomEncoding, Encoding>> NoBomEncodings = new(CalculateNoBomEncodings);
 
@@ -86,6 +98,7 @@ namespace CsvLINQPadDriver.Extensions
             this string fileName,
             char? csvSeparator,
             bool internString,
+            StringComparer? internStringComparer,
             NoBomEncoding noBomEncoding,
             bool allowComments,
             bool ignoreBadData,
@@ -93,6 +106,10 @@ namespace CsvLINQPadDriver.Extensions
             CsvRowMappingBase<T> csvClassMap)
             where T : ICsvRowBase, new()
         {
+            StringInternCache = internStringComparer is null
+                ? new()
+                : new(internStringComparer);
+
             return CsvReadRows(fileName, csvSeparator, noBomEncoding, allowComments, ignoreBadData, autoDetectEncoding)
                     .Skip(1) // Skip header.
                     .Select(GetRecord);
@@ -251,8 +268,14 @@ namespace CsvLINQPadDriver.Extensions
             // Get longest common path prefix.
             var filePaths = pathsValid.FirstOrDefault()?.Split(Path.DirectorySeparatorChar) ?? Array.Empty<string>();
 
+            var directorySeparator = Path.DirectorySeparatorChar
+#if NETFRAMEWORK
+                .ToString()
+#endif
+            ;
+
             return Enumerable.Range(1, filePaths.Length)
-                .Select(i => string.Join(Path.DirectorySeparatorChar, filePaths.Take(i).ToImmutableList()))
+                .Select(i => string.Join(directorySeparator, filePaths.Take(i).ToImmutableList()))
                 .LastOrDefault(prefix => pathsValid.All(path => path.StartsWith(prefix, FileNameComparison))) ?? string.Empty;
         }
 
@@ -455,7 +478,9 @@ namespace CsvLINQPadDriver.Extensions
 
         private static IReadOnlyDictionary<NoBomEncoding, Encoding> CalculateNoBomEncodings()
         {
+#if NETCOREAPP
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+#endif
 
             return new Dictionary<NoBomEncoding, Encoding>
             {
@@ -498,7 +523,11 @@ namespace CsvLINQPadDriver.Extensions
                 return intern;
             }
 
+#if NETCOREAPP
             StringInternCache.Add(str);
+#else
+            StringInternCache.Add(str, str);
+#endif
 
             return str;
         }

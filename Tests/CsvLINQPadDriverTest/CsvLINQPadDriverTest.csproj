@@ -17,27 +17,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Fishes3.linq" />
-    <None Remove="LPRun\Data\Authors.csv" />
-    <None Remove="LPRun\Data\Authors2.csv" />
-    <None Remove="LPRun\Data\Books.csv" />
-    <None Remove="LPRun\Data\Books2.csv" />
-    <None Remove="LPRun\Data\Comments.csv" />
-    <None Remove="LPRun\Data\Encoding\Utf8Cp65001.csv" />
-    <None Remove="LPRun\LINQPad.Runtime.dll" />
-    <None Remove="LPRun\LINQPad.Runtime.runtimeconfig.json" />
-    <None Remove="LPRun\LPRun6-x86.exe" />
-    <None Remove="LPRun\LPRun6.exe" />
-    <None Remove="LPRun\Templates\Comments.linq" />
-    <None Remove="LPRun\Templates\Encoding.linq" />
-    <None Remove="LPRun\Templates\Extensions.linq" />
-    <None Remove="LPRun\Templates\Generation.linq" />
-    <None Remove="LPRun\Templates\Relations.linq" />
-    <None Remove="LPRun\Templates\SimilarFilesRelations.linq" />
-    <None Remove="LPRun\Templates\StringComparison.linq" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Content Include="LPRun\Data\Authors2.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -53,6 +32,9 @@
     <Content Include="LPRun\Data\Comments.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="LPRun\Data\Same.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="LPRun\Data\Encoding\Utf8Cp65001.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -60,6 +42,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="LPRun\Templates\Comments.linq">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="LPRun\Templates\StringComparisonForInterning.linq">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="LPRun\Templates\StringComparison.linq">

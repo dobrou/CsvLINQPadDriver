@@ -1,7 +1,26 @@
 // Copy.
 var original = Books.First();
+
+#if USE_RECORD_TYPE
 var copy = original with {};
-var modifiedCopy = copy with { Title = "" };
+var modifiedCopy = copy with { Title = null };
+#else
+var copy = new RBook
+{
+	Id = original.Id,
+	Title = original.Title,
+	AuthorId = original.AuthorId,
+	Authors = original.Authors
+};
+
+var modifiedCopy = new RBook
+{
+	Id = copy.Id,
+	Title = null,
+	AuthorId = copy.AuthorId,
+	Authors = copy.Authors
+};
+#endif
 
 // Reference equality.
 copy.Should().NotBeSameAs(original, Reason());

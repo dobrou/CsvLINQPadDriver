@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29411.108
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CsvLINQPadDriver5", "Src\CsvLINQPadDriver\CsvLINQPadDriver5.csproj", "{421D7A1C-AF93-430C-A705-B9323200EFD7}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{421D7A1C-AF93-430C-A705-B9323200EFD7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{421D7A1C-AF93-430C-A705-B9323200EFD7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{421D7A1C-AF93-430C-A705-B9323200EFD7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{421D7A1C-AF93-430C-A705-B9323200EFD7}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {9F99CBEE-76DE-45EF-B67B-4E556971551B}
+	EndGlobalSection
+EndGlobal

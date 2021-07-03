@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
 using System.Reflection;
 
@@ -11,6 +10,16 @@ using CsvLINQPadDriver.DataModel;
 using CsvLINQPadDriver.Extensions;
 
 using LINQPad.Extensibility.DataContext;
+
+#if NETCOREAPP
+using System.Collections.Immutable;
+#else
+using System.CodeDom.Compiler;
+using System.IO;
+using Microsoft.CSharp;
+
+using CsvLINQPadDriver.Microsoft.Bcl;
+#endif
 
 namespace CsvLINQPadDriver
 {
@@ -104,6 +113,7 @@ namespace CsvLINQPadDriver
 
         private static string[] BuildAssembly(string code, AssemblyName name)
         {
+#if NETCOREAPP
             var referencedAssemblies = DataContextDriver.GetCoreFxReferenceAssemblies().Concat(new []
             {
                 typeof(SchemaBuilder).Assembly.Location,
@@ -120,6 +130,29 @@ namespace CsvLINQPadDriver
             return result.Successful
                     ? Array.Empty<string>()
                     : result.Errors;
+#else
+            using var codeProvider = new CSharpCodeProvider(new Dictionary<string, string> { ["CompilerVersion"] = "v4.0" });
+
+            var compilerParameters = new CompilerParameters(new []
+            {
+                typeof(SchemaBuilder).Assembly.Location,
+                typeof(CsvReader).Assembly.Location,
+                typeof(HashCode).Assembly.Location,
+                "System.dll",
+                "System.Core.dll"
+            })
+            {
+                IncludeDebugInformation = true,
+                OutputAssembly = name.CodeBase,
+                CompilerOptions = $@"/doc:""{Path.ChangeExtension(name.CodeBase, ".xml")}"""
+            };
+
+            var compilerResults = codeProvider.CompileAssemblyFromSource(compilerParameters, code);
+
+            return compilerResults.Errors.HasErrors
+                ? compilerResults.Errors.OfType<CompilerError>().Where(e => !e.IsWarning).Select(e => $"{e.Line},{e.Column}: {e.ErrorText}").ToArray()
+                : Array.Empty<string>();
+#endif
         }
 
         private static List<ExplorerItem> GetSchema(CsvDatabase db) =>

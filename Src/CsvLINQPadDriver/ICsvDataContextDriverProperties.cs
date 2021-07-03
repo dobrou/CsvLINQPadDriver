@@ -62,6 +62,11 @@ namespace CsvLINQPadDriver
         bool UseCsvHelperSeparatorAutoDetection { get; }
 
         /// <summary>
+        /// Create records instead of classes.
+        /// </summary>
+        bool UseRecordType { get; set; }
+
+        /// <summary>
         /// If <c>true</c> - generates single class for similar CSV files.
         /// </summary>
         bool UseSingleClassForSameFiles { get; set; }
@@ -107,6 +112,11 @@ namespace CsvLINQPadDriver
         /// Custom per context interning is used.
         /// </summary>
         bool IsStringInternEnabled { get; set; }
+
+        /// <summary>
+        /// Compare interned strings using generation string comparer.
+        /// </summary>
+        bool UseStringComparerForStringIntern { get; set; }
 
         /// <summary>
         /// <c>true</c> - Parsed rows from file are cached.

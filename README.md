@@ -3,7 +3,7 @@
 [![Downloads](https://img.shields.io/nuget/dt/CsvLINQPadDriver)](https://www.nuget.org/packages/CsvLINQPadDriver)
 [![License](https://img.shields.io/badge/license-MIT-yellow)](https://opensource.org/licenses/MIT)
 
-# CsvLINQPadDriver for LINQPad 6 #
+# CsvLINQPadDriver for LINQPad 6/5 #
 
 ## Table of Contents ##
 
@@ -13,8 +13,10 @@
 * [Example](#example)
 * [Prerequisites](#prerequisites)
 * [Installation](#installation)
-  * [NuGet](#nuget)
-  * [Manual](#manual)
+  * [LINQPad 6](#linqpad-6)
+    * [NuGet](#nuget)
+    * [Manual](#manual)
+  * [LINQPad 5](#linqpad-5)
 * [Usage](#usage)
 * [Configuration Options](#configuration-options)
   * [CSV Files](#csv-files)
@@ -31,6 +33,7 @@
     * [ToString](#tostring)
     * [GetHashCode](#gethashcode)
     * [Equals](#equals)
+    * [Overloaded Operators](#overloaded-operators)
     * [Indexers](#indexers)
   * [Properties Access](#properties-access)
   * [Extension Methods](#extension-methods)
@@ -43,7 +46,7 @@
 
 ## Description ##
 
-CsvLINQPadDriver is LINQPad 6 data context dynamic driver for querying [CSV](https://en.wikipedia.org/wiki/Comma-separated_values) files.
+CsvLINQPadDriver is LINQPad 6/5 data context dynamic driver for querying [CSV](https://en.wikipedia.org/wiki/Comma-separated_values) files.
 
 * You can query data in CSV files with LINQ, just like it would be regular database. No need to write custom data model, mappings, etc.
 * Driver automatically generates new data types for every CSV file with corresponding properties and mappings for all columns.
@@ -57,7 +60,7 @@ CsvLINQPadDriver is LINQPad 6 data context dynamic driver for querying [CSV](htt
 
 ## Download ##
 
-Latest [CsvLINQPadDriver.\*.lpx6](https://github.com/i2van/CsvLINQPadDriver/releases) for LINQPad 6 manual installation.
+Latest [CsvLINQPadDriver.\*.lpx6/CsvLINQPadDriver.\*.lpx](https://github.com/i2van/CsvLINQPadDriver/releases) for LINQPad 6/5 manual installation.
 
 ## Example ##
 
@@ -90,6 +93,7 @@ public class CsvDataContext
     public CsvTableBase<RBook> Books { get; private set; }
 }
 
+// record/class for LINQPad 6, class for LINQPad 5.
 public sealed record RAuthor
 {
     public string Id { get; set; }
@@ -118,33 +122,44 @@ select new { author.Name, book.Title }
 
 ## Prerequisites ##
 
-* [LINQPad 6](https://www.linqpad.net/LINQPad6.aspx)
-* [.NET Core 3.1](https://dotnet.microsoft.com/download/dotnet-core/3.1)
+* [LINQPad 6](https://www.linqpad.net/LINQPad6.aspx): [.NET Core 3.1](https://dotnet.microsoft.com/download/dotnet-core/3.1)
+* [LINQPad 5](https://www.linqpad.net/LINQPad5.aspx): [.NET Framework 4.6.1](https://www.microsoft.com/en-us/download/details.aspx?id=49981)
 
 ## Installation ##
 
-### NuGet ###
+### LINQPad 6 ###
+
+#### NuGet ####
 
 [![NuGet](https://img.shields.io/nuget/v/CsvLINQPadDriver)](https://www.nuget.org/packages/CsvLINQPadDriver)
 
 * Open LINQPad 6.
-* Click `Add connection` main window.
+* Click `Add connection` link.
 * Click button `View more drivers...`
 * Click radio button `Show all drivers` and type `CsvLINQPadDriver`
 * Install.
 
-### Manual ###
+#### Manual ####
 
 Get latest [CsvLINQPadDriver.\*.lpx6](https://github.com/i2van/CsvLINQPadDriver/releases) file.
 
 * Open LINQPad 6.
-* Click `Add connection` main window.
+* Click `Add connection` link.
 * Click button `View more drivers...`
 * Click button `Install driver from .LPX6 file...` and select downloaded `lpx6` file.
 
+### LINQPad 5 ###
+
+Get latest [CsvLINQPadDriver.\*.lpx](https://github.com/i2van/CsvLINQPadDriver/releases) file.
+
+* Open LINQPad 5.
+* Click `Add connection` link.
+* Click button `View more drivers...`
+* Click button `Browse...` and select downloaded `lpx` file.
+
 ## Usage ##
 
-CSV files connection can be added to LINQPad 6 the same way as any other connection.
+CSV files connection can be added to LINQPad 6/5 the same way as any other connection.
 
 * Click `Add connection`
 * Select `CSV Context Driver` and click `Next`
@@ -178,10 +193,12 @@ CSV files connection can be added to LINQPad 6 the same way as any other connect
   * if checked: parsed rows from file are cached in memory. This cache survives multiple query runs, even when query is changed. Cache is cleared as soon as LINQPad clears query data.
   * if unchecked: disable cache. Multiple enumerations of file content results in multiple reads and parsing of file. Can be significantly slower for complex queries. Significantly reduces memory usage.  Useful when reading very large files.
 * Intern strings: intern strings. Significantly reduce memory consumption when CSV contains repeatable values.
+  * Use [generation](#generation) string comparison: compare interned strings using generation string comparison.
 
 ### Generation ###
 
-* Generate single class for similar files: single class will be generated for similar files which allows to query them as a single one. Relations support is limited.
+* Use [record](https://docs.microsoft.com/en-us/dotnet/csharp/whats-new/tutorials/records) type: generate records instead of classes (LINQPad 6 only).
+* Generate single type for similar files: single type will be generated for similar files which allows to join similar files and query over them. Relations support is limited.
   * Also show similar files non-grouped: show similar files non-grouped in addition to similar files groups.
 * String comparison: string comparison for `Equals` and `GetHashCode` methods.
 
@@ -224,7 +241,7 @@ Everything is string. Because there is no data type info in CSV files, this is b
 
 ## Generated Data Object ##
 
-Generated data object is sealed mutable [record](https://docs.microsoft.com/en-us/dotnet/csharp/whats-new/tutorials/records). You can create record's shallow copy using [with](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/operators/with-expression) expression.
+Generated data object is sealed mutable class or [record](https://docs.microsoft.com/en-us/dotnet/csharp/whats-new/tutorials/records) (LINQPad 6 only). You can create record's shallow copy using [with](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/operators/with-expression) expression.
 
 ### Methods ##
 
@@ -233,6 +250,9 @@ string ToString();
 
 bool Equals(T obj);
 bool Equals(object obj);
+
+static bool operator == (T obj1, T obj2);
+static bool operator != (T obj1, T obj2);
 
 int GetHashCode();
 
@@ -275,6 +295,15 @@ bool Equals(object obj);
 
 > Depends on string comparison driver setting. Relations are not participated.
 
+#### Overloaded Operators ####
+
+```csharp
+static bool operator == (T obj1, T obj2);
+static bool operator != (T obj1, T obj2);
+```
+
+> Depends on string comparison driver setting. Relations are not participated.
+
 #### Indexers ####
 
 ```csharp
@@ -289,8 +318,8 @@ See [properties access](#properties-access) below.
 ### Properties Access ###
 
 * Generated data objects are mutable, however saving changes is not supported.
-* Generated data object properties can be accessed either by name or via indexer.
-* Index can be integer (zero-based property index) or string (property name). If there is no index `IndexOutOfRangeException` will be thrown.
+* Generated data object properties can be accessed either by case-sensitive name or via indexer.
+* Index can be integer (zero-based property index) or string (case-sensitive property name). If there is no index `IndexOutOfRangeException` will be thrown.
 * Relations can not be accessed via indexers.
 
 ```csharp
@@ -392,7 +421,7 @@ TimeSpan? ToTimeSpan(
 
 ### Tools ###
 
-* [LINQPad 6](https://www.linqpad.net/LINQPad6.aspx)
+* [LINQPad 6](https://www.linqpad.net/LINQPad6.aspx)/[LINQPad 5](https://www.linqpad.net/LINQPad5.aspx)
 * [LINQPad Command-Line and Scripting](https://www.linqpad.net/lprun.aspx)
 
 ### Libraries ###
@@ -400,6 +429,7 @@ TimeSpan? ToTimeSpan(
 * [CsvHelper](https://github.com/JoshClose/CsvHelper)
 * [Fluent Assertions](https://github.com/fluentassertions/fluentassertions)
 * [Humanizer](https://github.com/Humanizr/Humanizer)
+* [Microsoft.Bcl.HashCode](https://www.nuget.org/packages/Microsoft.Bcl.HashCode) (for LINQPad 5 only).
 * [Moq](https://github.com/moq/moq4)
 * [NUnit](https://github.com/nunit/nunit)
 * [UnicodeCharsetDetector](https://github.com/i2van/UnicodeCharsetDetector)

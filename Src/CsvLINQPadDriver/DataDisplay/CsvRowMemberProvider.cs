@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
 using System.Reflection;
 
@@ -9,6 +8,12 @@ using CsvLINQPadDriver.CodeGen;
 using LINQPad;
 
 using static System.Linq.Expressions.Expression;
+
+#if NETCOREAPP
+using System.Collections.Immutable;
+#else
+using CsvLINQPadDriver.Microsoft.Bcl;
+#endif
 
 namespace CsvLINQPadDriver.DataDisplay
 {
