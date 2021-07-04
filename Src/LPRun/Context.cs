@@ -10,14 +10,16 @@ namespace LPRun
     public static class Context
     {
         private static readonly string BaseDir = GetDirectoryName(new Uri(Assembly.GetExecutingAssembly().CodeBase).LocalPath)!;
+
         private static readonly string LpRunDir = GetFullPath("LPRun");
+        private static readonly string LpRunExe = $"LPRun6{(Environment.Is64BitProcess ? string.Empty : "-x86")}.exe";
 
         private static readonly string ExeDir = GetLpRunFullPath("Bin");
         private static readonly string TemplatesDir = GetLpRunFullPath("Templates");
         private static readonly string DataDir = GetLpRunFullPath("Data");
 
         public static string FilesDir { get; } = GetLpRunFullPath("Files");
-        public static string Exe { get; } = Combine(ExeDir, GetLpRunExe());
+        public static string Exe { get; } = Combine(ExeDir, LpRunExe);
 
         public static string GetExeFullPath(string path) =>
             Combine(ExeDir, path);
@@ -36,10 +38,5 @@ namespace LPRun
 
         private static string GetLpRunFullPath(string path) =>
             Combine(LpRunDir, path);
-
-        private static string GetLpRunExe() =>
-            Environment.Is64BitProcess
-                ? "LPRun6.exe"
-                : "LPRun6-x86.exe";
     }
 }

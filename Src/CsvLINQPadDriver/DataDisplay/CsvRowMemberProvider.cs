@@ -12,7 +12,7 @@ using static System.Linq.Expressions.Expression;
 #if NETCOREAPP
 using System.Collections.Immutable;
 #else
-using CsvLINQPadDriver.Microsoft.Bcl;
+using CsvLINQPadDriver.Bcl.Extensions;
 #endif
 
 namespace CsvLINQPadDriver.DataDisplay

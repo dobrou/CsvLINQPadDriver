@@ -220,11 +220,11 @@
                                 <TextBlock>
                                     <TextBlock.Style>
                                         <Style TargetType="{x:Type TextBlock}">
-                                            <Setter Property="Text" Value="⮨"/>
+                                            <Setter Property="Text" Value="{x:Static this:ConnectionDialog.WrapText}"/>
                                             <Setter Property="ToolTip" Value="Turn on word wrap (Ctrl+W)"/>
                                             <Style.Triggers>
                                                 <DataTrigger Binding="{Binding TextWrapping, ElementName=FilesTextBox}" Value="Wrap">
-                                                    <Setter Property="Text" Value="➞"/>
+                                                    <Setter Property="Text" Value="{x:Static this:ConnectionDialog.UnwrapText}"/>
                                                     <Setter Property="ToolTip" Value="Turn off word wrap (Ctrl+W)"/>
                                                 </DataTrigger>
                                             </Style.Triggers>

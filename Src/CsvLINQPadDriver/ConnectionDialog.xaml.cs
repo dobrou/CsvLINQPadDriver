@@ -38,6 +38,12 @@ namespace CsvLINQPadDriver
         public static readonly RoutedUICommand PasteWithFolderAndItsSubfoldersCommand = new();
         public static readonly RoutedUICommand WrapFilesTextCommand = new();
 
+        private static T IfWin10<T>(T ifTrue, T ifFalse) =>
+            Environment.OSVersion.Version.Major >= 10 ? ifTrue : ifFalse;
+
+        public static readonly string WrapText   = IfWin10("⭹", "Wrap");
+        public static readonly string UnwrapText = IfWin10("⭲", "Unwrap");
+
         public static readonly string WildcardsToolTip = $"Type one file/folder per line. Wildcards ? and * are supported; {FileExtensions.DefaultRecursiveMask} searches in folder and its sub-folders";
 
         private bool _addFolderAndItsSubfoldersDialogOpened;

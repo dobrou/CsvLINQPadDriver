@@ -18,7 +18,7 @@ using System.CodeDom.Compiler;
 using System.IO;
 using Microsoft.CSharp;
 
-using CsvLINQPadDriver.Microsoft.Bcl;
+using CsvLINQPadDriver.Bcl.Extensions;
 #endif
 
 namespace CsvLINQPadDriver

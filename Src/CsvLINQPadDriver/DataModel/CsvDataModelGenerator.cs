@@ -10,7 +10,7 @@ using CsvLINQPadDriver.Extensions;
 #if NETCOREAPP
 using System.Collections.Immutable;
 #else
-using CsvLINQPadDriver.Microsoft.Bcl;
+using CsvLINQPadDriver.Bcl.Extensions;
 #endif
 
 namespace CsvLINQPadDriver.DataModel

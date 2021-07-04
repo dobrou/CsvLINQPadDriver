@@ -19,7 +19,7 @@ using CsvLINQPadDriver.CodeGen;
 #if NETCOREAPP
 using System.Collections.Immutable;
 #else
-using CsvLINQPadDriver.Microsoft.Bcl;
+using CsvLINQPadDriver.Bcl.Extensions;
 #endif
 
 namespace CsvLINQPadDriver.Extensions
@@ -414,14 +414,17 @@ namespace CsvLINQPadDriver.Extensions
                     baseDir = Path.GetDirectoryName(path) ?? string.Empty;
                 }
 
-                return !Directory.Exists(baseDir)
-                        ? Enumerable.Empty<string>()
-                        : Directory
-                            .EnumerateFiles(baseDir, fileOrMask,
-                                Path.GetFileNameWithoutExtension(fileOrMask).Contains(RecursiveMaskMarker)
-                                    ? SearchOption.AllDirectories
-                                    : SearchOption.TopDirectoryOnly)
-                            .SafeWalk(exceptions);
+                return
+#if NETCOREAPP
+                    Directory
+#else
+                    exceptions
+#endif
+                        .EnumerateFiles(baseDir, fileOrMask,
+                            Path.GetFileNameWithoutExtension(fileOrMask).Contains(RecursiveMaskMarker)
+                                ? SearchOption.AllDirectories
+                                : SearchOption.TopDirectoryOnly)
+                        .SkipExceptions(exceptions);
             }
             catch (Exception exception)
             {
@@ -429,31 +432,6 @@ namespace CsvLINQPadDriver.Extensions
 
                 return Enumerable.Empty<string>();
             }
-        }
-
-        private static IEnumerable<T> SafeWalk<T>(this IEnumerable<T> source, ICollection<Exception>? exceptions = null)
-        {
-            using var enumerator = source.GetEnumerator();
-
-            bool? hasCurrent;
-
-            do
-            {
-                try
-                {
-                    hasCurrent = enumerator.MoveNext();
-                }
-                catch (Exception exception)
-                {
-                    exceptions?.Add(exception);
-                    hasCurrent = null;
-                }
-
-                if (hasCurrent is true)
-                {
-                    yield return enumerator.Current;
-                }
-            } while (hasCurrent ?? true);
         }
 
         private static IEnumerable<string[]> CsvReadRows(

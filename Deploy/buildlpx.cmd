@@ -1,6 +1,6 @@
 @echo off
 
-set version=6.14.0
+set version=6.14.1
 set fileName=CsvLINQPadDriver.%version%.lpx
 
 set zip="%ProgramFiles%\7-Zip\7z.exe"
