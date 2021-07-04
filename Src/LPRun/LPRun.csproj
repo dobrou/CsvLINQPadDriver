@@ -1,0 +1,69 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <Deterministic>true</Deterministic>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Authors>Ivan Ivon (ivan.ivon@gmail.com), LINQPad/LPRun by Joseph Albahari</Authors>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>linqpad lprun tests unittests integrationtests</PackageTags>
+    <PackageProjectUrl>https://github.com/i2van/CsvLINQPadDriver/tree/master/Src/LPRun</PackageProjectUrl>
+    <Description>LINQPad driver LPRun unit/integration tests runner.</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <RepositoryUrl>https://github.com/i2van/CsvLINQPadDriver</RepositoryUrl>
+    <PackageReleaseNotes>LPRun 6.13.13 NuGet fixes.</PackageReleaseNotes>
+    <Copyright>Copyright © 2021 Ivan Ivon, LINQPad/LPRun by Joseph Albahari</Copyright>
+    <AssemblyVersion>6.13.14.0</AssemblyVersion>
+    <FileVersion>6.13.14.0</FileVersion>
+    <Version>6.13.14</Version>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <NoWarn>1701;1702;NU5100</NoWarn>
+    <OutputPath>..\..\bin\Release</OutputPath>
+    <DefineConstants />
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <NoWarn>1701;1702;NU5100</NoWarn>
+    <OutputPath>..\..\bin\Debug</OutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="LPRun\Bin\LINQPad.Runtime.dll">
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <PackagePath>contentFiles\any\netstandard2.1\LPRun\Bin\</PackagePath>
+    </Content>
+    <Content Include="LPRun\Bin\LINQPad.Runtime.runtimeconfig.json">
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <PackagePath>contentFiles\any\netstandard2.1\LPRun\Bin\</PackagePath>
+    </Content>
+    <Content Include="LPRun\Bin\LPRun6-x86.exe">
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <PackagePath>contentFiles\any\netstandard2.1\LPRun\Bin\</PackagePath>
+    </Content>
+    <Content Include="LPRun\Bin\LPRun6.exe">
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <PackagePath>contentFiles\any\netstandard2.1\LPRun\Bin\</PackagePath>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="IsExternalInit" Version="1.0.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+</Project>

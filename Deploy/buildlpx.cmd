@@ -1,13 +1,46 @@
-@set version=1.7
-@set zip="%ProgramFiles%\7-Zip\7z.exe"
-@set output="CsvLINQPadDriver.v%version%.lpx"
+@echo off
 
-del %output%
+set version=6.14.0
+set fileName=CsvLINQPadDriver.%version%.lpx
 
-%zip% a -tzip "%output%" header.xml ..\bin\Debug\CsvLINQPadDriver.dll ..\bin\Debug\CsvHelper.dll ..\bin\Debug\Connection.png ..\bin\Debug\FailedConnection.png ..\README.md ..\bin\Debug\CsvLINQPadFileOpen.exe 
-copy /y ..\bin\Debug\CsvLINQPadFileOpen.exe CsvLINQPadFileOpen.v%version%.exe
+set zip="%ProgramFiles%\7-Zip\7z.exe"
 
-@echo Package %output% created.
-@pause
+echo on
 
+call :pack %fileName%6 netcoreapp3.1
+call :pack %fileName%  net461
 
+@echo off
+
+echo.
+pause
+
+exit /b 0
+
+:pack
+@echo off
+
+set lpx=%1
+set folder=..\bin\Release\%2
+
+set additional=
+
+if exist %lpx% del %lpx%
+if exist %folder%\Microsoft.Bcl.*.dll set additional=^
+%folder%\Microsoft.Bcl.HashCode.dll
+
+echo on
+
+%zip% a -tzip -mx=9 %lpx% ^
+header.xml ^
+..\README.md ^
+..\LICENSE ^
+%folder%\*Connection.png ^
+%folder%\CsvHelper.dll ^
+%folder%\CsvLINQPadDriver.dll ^
+%folder%\Humanizer.dll ^
+%folder%\Microsoft.WindowsAPICodePack.dll ^
+%folder%\UnicodeCharsetDetector.dll ^
+%additional%
+
+@exit /b 0

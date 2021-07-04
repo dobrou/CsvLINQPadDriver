@@ -1,125 +1,184 @@
-﻿using CsvLINQPadDriver.CodeGen;
-using CsvLINQPadDriver.DataModel;
-using CsvLINQPadDriver.Helpers;
-using LINQPad.Extensibility.DataContext;
+﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+
+using CsvHelper;
+
+using CsvLINQPadDriver.CodeGen;
+using CsvLINQPadDriver.DataModel;
+using CsvLINQPadDriver.Extensions;
+
+using LINQPad.Extensibility.DataContext;
+
+#if NETCOREAPP
+using System.Collections.Immutable;
+#else
+using System.CodeDom.Compiler;
+using System.IO;
+using Microsoft.CSharp;
+
+using CsvLINQPadDriver.Microsoft.Bcl;
+#endif
 
 namespace CsvLINQPadDriver
 {
     internal class SchemaBuilder
     {
-        internal static List<ExplorerItem> GetSchemaAndBuildAssembly(ICsvDataContextDriverProperties props, AssemblyName assemblyName, ref string nameSpace, ref string typeName)
+        internal static List<ExplorerItem> GetSchemaAndBuildAssembly(ICsvDataContextDriverProperties csvDataContextDriverProperties, AssemblyName assemblyToBuild, ref string nameSpace, ref string typeName)
         {
-            Logger.LogEnabled = props.DebugInfo;
-            Logger.Log("Build started: " + props.Files);
-            var sw = Stopwatch.StartNew();
-            var sw2 = Stopwatch.StartNew();
+            const ExplorerItemKind errorExplorerItemKind = ExplorerItemKind.ReferenceLink;
+            const ExplorerIcon errorExplorerIcon = ExplorerIcon.Box;
 
-            CsvDatabase db = CsvDataModelGenerator.CreateModel(props);
+            var csvDatabase = CsvDataModelGenerator.CreateModel(csvDataContextDriverProperties);
 
-            Logger.Log("Model created. ({0} ms)", sw2.ElapsedMilliseconds); sw2.Restart();
+            var (code, tableCodeGroups) = CsvCSharpCodeGenerator.GenerateCode(csvDatabase, ref nameSpace, ref typeName, csvDataContextDriverProperties);
 
-            string code = CsvCSharpCodeGenerator.GenerateCode(db, ref nameSpace, ref typeName, props);
+            var compileErrors = BuildAssembly(code, assemblyToBuild);
+            var hasCompilationErrors = compileErrors.Any();
 
-            Logger.Log("Code generated. ({0} ms)", sw2.ElapsedMilliseconds); sw2.Restart();
+            var schema = GetSchema(csvDatabase);
 
-            string[] compileErrors = BuildAssembly(code, assemblyName);
+            var index = 0;
 
-            Logger.Log("Assembly compiled. ({0} ms)", sw2.ElapsedMilliseconds); sw2.Restart();
-
-            List<ExplorerItem> schema = GetSchema(db, props);
-
-            Logger.Log("Schema tree created. ({0} ms)", sw2.ElapsedMilliseconds); sw2.Restart();
-
-            bool anyCompileError = compileErrors != null && compileErrors.Any();
-            if (anyCompileError || props.DebugInfo)
+            if (hasCompilationErrors || csvDataContextDriverProperties.DebugInfo)
             {
-                schema.Insert(0, new ExplorerItem("Context Source Code", ExplorerItemKind.Schema, ExplorerIcon.Schema)
+                schema.Insert(index++, new ExplorerItem("Data context source code", ExplorerItemKind.Schema, ExplorerIcon.Schema)
                 {
-                    ToolTipText = "Data Context source code. Drag&drop to text window.",
-                    DragText = code,
+                    ToolTipText = "Drag&drop context source code to text window",
+                    DragText = code
                 });
             }
-            if (anyCompileError)
+
+            var exceptions = csvDatabase.Exceptions;
+            if (exceptions.Any())
             {
-                Logger.Log("Errors: {0}", compileErrors.Length);
-                schema.Insert(0, new ExplorerItem("Context Compile ERROR", ExplorerItemKind.Schema, ExplorerIcon.Box)
+                var fileOrFolder = $"{exceptions.Pluralize("file")} or {exceptions.Pluralize("folder")}";
+                schema.Insert(index++, new ExplorerItem($"{exceptions.Count} {fileOrFolder} {exceptions.Pluralize("was", "were")} not processed", errorExplorerItemKind, errorExplorerIcon)
                 {
-                    ToolTipText = "Data context compile failed. Drag&Drop error messages to text window to see them.",
-                    DragText = string.Join("\n", compileErrors),
+                    ToolTipText = $"Drag&drop {fileOrFolder} processing {exceptions.Pluralize("error")} to text window",
+                    DragText = exceptions.Select(exception => exception.Message).JoinNewLine()
                 });
             }
-            if (db.Tables.Count == 0)
+
+            if (hasCompilationErrors)
             {
-                schema.Insert(0, new ExplorerItem("No files found.", ExplorerItemKind.Schema, ExplorerIcon.Box));
+                schema.Insert(0, new ExplorerItem("Data context compilation failed", errorExplorerItemKind, errorExplorerIcon)
+                {
+                    ToolTipText = "Drag&drop data context compilation errors to text window",
+                    DragText = compileErrors.JoinNewLine()
+                });
+            }
+            else
+            {
+                foreach (var tableCodeGroup in tableCodeGroups.Where(codeGroup => codeGroup.Count() > 1))
+                {
+                    var codeNames = tableCodeGroup.Select(typeCodeResult => typeCodeResult.CodeName).ToImmutableList();
+                    var similarFilesSize = tableCodeGroup.Select(typeCodeResult => typeCodeResult.FilePath).GetHumanizedFileSize();
+                    var filePaths = new HashSet<string>(codeNames);
+                    var similarFilesCount = codeNames.Count;
+
+                    schema.Insert(index++, new ExplorerItem($"{codeNames.First()} similar files joined data ({similarFilesCount}/{csvDatabase.Files.Count} files {similarFilesSize})", ExplorerItemKind.QueryableObject, ExplorerIcon.View)
+                    {
+                        Children = schema.Where(IsSimilarFile).ToList(),
+                        IsEnumerable = true,
+                        ToolTipText =
+                            $"Drag&drop {similarFilesCount} similar files joined data to text window".JoinNewLine(
+                            string.Empty,
+                            $"{string.Join(Environment.NewLine, similarFilesCount <= 4 ? codeNames : codeNames.Take(2).Concat(new []{ "..." }).Concat(codeNames.Skip(similarFilesCount - 1)))}"),
+                        DragText = $@"new []
+{{
+{string.Join(Environment.NewLine, codeNames.Select(n => $"\t{n},"))}
+}}.SelectMany(_ => _)
+"
+                    });
+
+                    if (!csvDataContextDriverProperties.ShowSameFilesNonGrouped)
+                    {
+                        schema.RemoveAll(IsSimilarFile);
+                    }
+
+                    bool IsSimilarFile(ExplorerItem explorerItem) =>
+                        filePaths.Contains(explorerItem.Tag);
+                }
             }
 
-            Logger.Log("Tables: {0} Columns: {1} Relations: {2}", db.Tables.Count(), db.Tables.Sum(t => t.Columns.Count()), db.Tables.Sum(t => t.Relations.Count()) );
-            Logger.Log("Build finished. ({0} ms)", sw.ElapsedMilliseconds);
-
-            Logger.Log( string.Join("\n", db.Tables.SelectMany(t => t.Relations.Select( r => r.CodeName) )));
+            if (!csvDatabase.Tables.Any())
+            {
+                schema.Insert(0, new ExplorerItem("No files found", ExplorerItemKind.Schema, ExplorerIcon.Box));
+            }
 
             return schema;
         }
 
-        /// <summary>
-        /// Compile generated code into assembly
-        /// </summary>
-        /// <param name="code"></param>
-        /// <param name="name"></param>
-        /// <returns></returns>
         private static string[] BuildAssembly(string code, AssemblyName name)
         {
+#if NETCOREAPP
             var referencedAssemblies = DataContextDriver.GetCoreFxReferenceAssemblies().Concat(new []
             {
                 typeof(SchemaBuilder).Assembly.Location,
-                typeof(CsvHelper.CsvReader).Assembly.Location
-            }).ToArray();
-            var result = DataContextDriver.CompileSource(new CompilationInput()
-            {
-                FilePathsToReference = referencedAssemblies,
-                OutputPath = name.CodeBase,
-                SourceCode = new[] {code}
+                typeof(CsvReader).Assembly.Location
             });
 
-            return result.Successful ? null : result.Errors;
+            var result = DataContextDriver.CompileSource(new CompilationInput
+            {
+                FilePathsToReference = referencedAssemblies.ToArray(),
+                OutputPath = name.CodeBase,
+                SourceCode = new[] { code }
+            });
+
+            return result.Successful
+                    ? Array.Empty<string>()
+                    : result.Errors;
+#else
+            using var codeProvider = new CSharpCodeProvider(new Dictionary<string, string> { ["CompilerVersion"] = "v4.0" });
+
+            var compilerParameters = new CompilerParameters(new []
+            {
+                typeof(SchemaBuilder).Assembly.Location,
+                typeof(CsvReader).Assembly.Location,
+                typeof(HashCode).Assembly.Location,
+                "System.dll",
+                "System.Core.dll"
+            })
+            {
+                IncludeDebugInformation = true,
+                OutputAssembly = name.CodeBase,
+                CompilerOptions = $@"/doc:""{Path.ChangeExtension(name.CodeBase, ".xml")}"""
+            };
+
+            var compilerResults = codeProvider.CompileAssemblyFromSource(compilerParameters, code);
+
+            return compilerResults.Errors.HasErrors
+                ? compilerResults.Errors.OfType<CompilerError>().Where(e => !e.IsWarning).Select(e => $"{e.Line},{e.Column}: {e.ErrorText}").ToArray()
+                : Array.Empty<string>();
+#endif
         }
 
-        /// <summary>
-        /// Get LINQPad Schema from CSV data model
-        /// </summary>
-        /// <param name="db"></param>
-        /// <returns></returns>
-        private static List<ExplorerItem> GetSchema(CsvDatabase db, ICsvDataContextDriverProperties props)
-        {
-            var schema = (
-                from table in db.Tables ?? Enumerable.Empty<CsvTable>()
-                select new ExplorerItem(table.DisplayName, ExplorerItemKind.QueryableObject, ExplorerIcon.Table) {
+        private static List<ExplorerItem> GetSchema(CsvDatabase db) =>
+            db.Tables.Select(table =>
+                new ExplorerItem(table.DisplayName, ExplorerItemKind.QueryableObject, ExplorerIcon.Table)
+                {
                     DragText = table.CodeName,
-                    IsEnumerable = true,        
+                    Tag = table.CodeName,
+                    IsEnumerable = true,
                     ToolTipText = table.FilePath,
-                    Children = (
-                        from c in table.Columns ?? Enumerable.Empty<CsvColumn>()
-                        select new ExplorerItem(c.DisplayName, ExplorerItemKind.Property, ExplorerIcon.Column) 
-                        {
-                            DragText = c.CodeName,
-                            ToolTipText = (c.CsvColumnIndex + 1) + ":" + c.CsvColumnName,
-                        }
-                    ).Concat(
-                        from r in table.Relations
-                        select new ExplorerItem(r.DisplayName, ExplorerItemKind.CollectionLink, ExplorerIcon.ManyToMany)
-                        {
-                            DragText = r.CodeName,
-                            ToolTipText = string.Format("Relation to {0} where {1}.{2} == {3}.{4}", r.TargetTable.CodeName, r.SourceTable.CodeName, r.SourceColumn.CodeName, r.TargetTable.CodeName, r.TargetColumn.CodeName ),
-                        }
-                    ).ToList(),                    
-                }
-            ).ToList();
-
-            return schema;
-        }
+                    Children =
+                        table.Columns
+                            .Select(column =>
+                                new ExplorerItem(column.DisplayName, ExplorerItemKind.Property, ExplorerIcon.Column)
+                                {
+                                    DragText = column.CodeName,
+                                    ToolTipText = $"{column.Index}:{column.Name}"
+                                }
+                            ).Concat(
+                                table.Relations.Select(relation =>
+                                    new ExplorerItem(relation.DisplayName, ExplorerItemKind.CollectionLink, ExplorerIcon.ManyToMany)
+                                    {
+                                        DragText = relation.CodeName,
+                                        ToolTipText = $"Relation to {relation.TargetTable.CodeName} where {relation.SourceTable.CodeName}.{relation.SourceColumn.CodeName} == {relation.TargetTable.CodeName}.{relation.TargetColumn.CodeName}"
+                                    })
+                            ).ToList()
+                }).ToList();
     }
 }

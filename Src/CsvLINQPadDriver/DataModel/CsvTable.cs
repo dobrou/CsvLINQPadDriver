@@ -2,21 +2,24 @@
 
 namespace CsvLINQPadDriver.DataModel
 {
-    public class CsvTable
+    internal record CsvTable
+    (
+        string FilePath,
+        char? CsvSeparator,
+
+        IList<CsvColumn> Columns,
+        IList<CsvRelation> Relations
+    ) : ICsvNames
     {
-        public string CodeName { get; set; }
-        public string DisplayName { get; set; }
+        public string? CodeName { get; set; }
+        public string? DisplayName { get; set; }
 
-        public string FilePath { get; set; }
-        public char CsvSeparator { get; set; }
-
-        public IList<CsvColumn> Columns { get; set; }
-        public IList<CsvRelation> Relations { get; set; } 
-
-        public CsvTable()
+        public string? ClassName
         {
-            Columns = new List<CsvColumn>();
-            Relations = new List<CsvRelation>();
+            get => _className ?? CodeName;
+            init => _className = value;
         }
+
+        private readonly string? _className;
     }
 }

@@ -3,11 +3,14 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29411.108
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CsvLINQPadFileOpen", "Tools\CsvLINQPadFileOpen\CsvLINQPadFileOpen.csproj", "{238A7302-9986-4633-BA23-381105C96575}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CsvLINQPadDriverTest", "Tests\CsvLINQPadDriverTest\CsvLINQPadDriverTest.csproj", "{F9DD2249-D6AE-4320-8510-D26A2CAA2BB5}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B4703DCD-1916-476E-A814-5E31861D8DD2} = {B4703DCD-1916-476E-A814-5E31861D8DD2}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CsvLINQPadDriver", "Src\CsvLINQPadDriver\CsvLINQPadDriver.csproj", "{FA05F129-5DEB-4D69-BDC7-6FD89DFE83CC}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LPRun", "Src\LPRun\LPRun.csproj", "{B4703DCD-1916-476E-A814-5E31861D8DD2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,10 +18,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{238A7302-9986-4633-BA23-381105C96575}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{238A7302-9986-4633-BA23-381105C96575}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{238A7302-9986-4633-BA23-381105C96575}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{238A7302-9986-4633-BA23-381105C96575}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F9DD2249-D6AE-4320-8510-D26A2CAA2BB5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F9DD2249-D6AE-4320-8510-D26A2CAA2BB5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F9DD2249-D6AE-4320-8510-D26A2CAA2BB5}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -27,6 +26,10 @@ Global
 		{FA05F129-5DEB-4D69-BDC7-6FD89DFE83CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FA05F129-5DEB-4D69-BDC7-6FD89DFE83CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FA05F129-5DEB-4D69-BDC7-6FD89DFE83CC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B4703DCD-1916-476E-A814-5E31861D8DD2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B4703DCD-1916-476E-A814-5E31861D8DD2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B4703DCD-1916-476E-A814-5E31861D8DD2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B4703DCD-1916-476E-A814-5E31861D8DD2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

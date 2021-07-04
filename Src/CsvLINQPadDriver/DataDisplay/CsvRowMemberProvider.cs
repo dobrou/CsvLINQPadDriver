@@ -1,102 +1,92 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Reflection;
+
 using CsvLINQPadDriver.CodeGen;
+
 using LINQPad;
+
+using static System.Linq.Expressions.Expression;
+
+#if NETCOREAPP
+using System.Collections.Immutable;
+#else
+using CsvLINQPadDriver.Microsoft.Bcl;
+#endif
 
 namespace CsvLINQPadDriver.DataDisplay
 {
     internal class CsvRowMemberProvider : ICustomMemberProvider
     {
-        protected class ProviderData
+        private static readonly Dictionary<Type, ProviderData> ProvidersDataCache = new();
+
+        private readonly object _objectToDisplay;
+        private readonly ProviderData _providerData;
+
+        protected CsvRowMemberProvider(object objectToDisplay, ProviderData providerData)
         {
-            public IList<PropertyInfo> properties;
-            public IList<FieldInfo> fields;
-            public Func<object,object[]> valuesGet;
+            _objectToDisplay = objectToDisplay;
+            _providerData = providerData;
         }
 
-        protected static bool IsSupportedType(Type t)
-        {
-            return typeof(CsvRowBase).IsAssignableFrom(t);
-        }
+        public IEnumerable<string> GetNames() =>
+            _providerData.Properties
+                .Select(propertyInfo => propertyInfo.Name)
+                .Concat(_providerData.Fields.Select(fieldInfo => fieldInfo.Name));
 
-        protected static bool IsMemberVisible(MemberInfo member)
-        {
-            return
-                (MemberTypes.Field | MemberTypes.Property).HasFlag(member.MemberType)
-                && (member.GetCustomAttributes(typeof(HideFromDumpAttribute), true).Length == 0)
-            ;
-        }
+        public IEnumerable<Type> GetTypes() =>
+            _providerData.Properties
+                .Select(propertyInfo => propertyInfo.PropertyType)
+                .Concat(_providerData.Fields.Select(fieldInfo => fieldInfo.FieldType));
+
+        public IEnumerable<object> GetValues() =>
+            _providerData.ValuesGetter(_objectToDisplay);
+
+        protected record ProviderData(IList<PropertyInfo> Properties, IList<FieldInfo> Fields, Func<object, object[]> ValuesGetter);
 
         protected static ProviderData GetProviderData(Type objectType)
         {
-            var data = new ProviderData()
-            {
-                properties = objectType.GetProperties().Where(IsMemberVisible).ToList(),
-                fields = objectType.GetFields().Where(IsMemberVisible).ToList(),
-            };
+            var param = Parameter(typeof(object));
+            var properties = objectType.GetProperties().Where(IsMemberVisible).ToImmutableList();
+            var fields = objectType.GetFields().Where(IsMemberVisible).ToImmutableList();
 
-            var param = Expression.Parameter(typeof(object));
-            data.valuesGet = Expression.Lambda<Func<object,object[]>>(
-                Expression.NewArrayInit( typeof(object),
-                    Enumerable.Concat(
-                        data.properties.Select(pi => Expression.Property( Expression.TypeAs(param, objectType), pi)),
-                        data.fields.Select(fi => Expression.Field( Expression.TypeAs(param, objectType), fi))
-                    )
-                )            
-            , param).Compile();
-            
-            return data;
+            return new ProviderData(
+                properties,
+                fields,
+                Lambda<Func<object, object[]>>(
+                    NewArrayInit(typeof(object),
+                        properties
+                            .Where(propertyInfo => propertyInfo.GetIndexParameters().Length == 0)
+                            .Select(propertyInfo => Property(TypeAs(param, objectType), propertyInfo))
+                            .Concat(fields.Select(fieldInfo => Field(TypeAs(param, objectType), fieldInfo)))),
+                    param)
+                    .Compile()
+            );
+
+            static bool IsMemberVisible(MemberInfo member) =>
+                 (member.MemberType & (MemberTypes.Field | MemberTypes.Property)) != 0 &&
+                 !member.GetCustomAttributes(typeof(HideFromDumpAttribute), true).Any();
         }
 
-        protected static Dictionary<Type, ProviderData> ProvidersDataCache = new Dictionary<Type, ProviderData>();
-
-        public static ICustomMemberProvider GetCsvRowMemberProvider(object objectToDisplay)
+        public static ICustomMemberProvider? GetCsvRowMemberProvider(object objectToDisplay)
         {
             var objectType = objectToDisplay.GetType();
             if (!IsSupportedType(objectType))
+            {
                 return null;
+            }
 
-            ProviderData providerData;
-            if (!ProvidersDataCache.TryGetValue(objectType, out providerData))
+            if (!ProvidersDataCache.TryGetValue(objectType, out var providerData))
             {
                 providerData = GetProviderData(objectType);
                 ProvidersDataCache.Add(objectType, providerData);
             }
-            return new CsvRowMemberProvider(objectToDisplay, providerData);
 
-        }
+            return new CsvRowMemberProvider(objectToDisplay, providerData!);
 
-        private object objectToDisplay;
-        private ProviderData providerData;
-
-        protected CsvRowMemberProvider(object objectToDisplay, ProviderData providerData)
-        {
-            this.objectToDisplay = objectToDisplay;
-            this.providerData = providerData;
-        }
-
-        public IEnumerable<string> GetNames()
-        {
-            return Enumerable.Concat(
-                providerData.properties.Select(p => p.Name),
-                providerData.fields.Select(p => p.Name)
-            );
-        }
-
-        public IEnumerable<Type> GetTypes()
-        {
-            return Enumerable.Concat(
-                providerData.properties.Select(p => p.PropertyType),
-                providerData.fields.Select(p => p.FieldType)
-            );
-        }
-
-        public IEnumerable<object> GetValues()
-        {
-            return providerData.valuesGet(objectToDisplay);
+            static bool IsSupportedType(Type objectType) =>
+                typeof(ICsvRowBase).IsAssignableFrom(objectType);
         }
     }
 }

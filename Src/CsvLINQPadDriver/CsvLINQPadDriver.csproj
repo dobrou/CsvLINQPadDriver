@@ -1,49 +1,54 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
-    <UseWpf>true</UseWpf>
-    <Deterministic>false</Deterministic>
-    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <OutputPath>..\..\bin\Debug\</OutputPath>
-  </PropertyGroup>
-  
   <PropertyGroup>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>CsvLINQPadDriver.snk</AssemblyOriginatorKeyFile>
-  </PropertyGroup>
-  
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <OutputPath>..\..\bin\Release\</OutputPath>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>linqpaddriver csv</PackageTags>
+    <PackageProjectUrl>https://github.com/i2van/CsvLINQPadDriver</PackageProjectUrl>
+    <Description>LINQPad 6 CSV driver.</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <RepositoryUrl>https://github.com/i2van/CsvLINQPadDriver</RepositoryUrl>
+    <PackageIcon>NuGetIcon.png</PackageIcon>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Connection.png" />
-    <None Remove="FailedConnection.png" />
+    <Compile Remove="Microsoft.Bcl\**" />
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Connection.ico" />
     <Content Include="Connection.png">
+      <Pack>True</Pack>
+      <PackagePath>lib\netcoreapp3.1\</PackagePath>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="FailedConnection.png">
+      <Pack>True</Pack>
+      <PackagePath>lib\netcoreapp3.1\</PackagePath>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="NuGetIcon.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+      <PackageCopyToOutput>true</PackageCopyToOutput>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="CsvHelper" Version="15.0.1" />
-    <PackageReference Include="LINQPad.Reference" Version="1.1.0" />
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>$(AssemblyName)Test</_Parameter1>
+    </AssemblyAttribute>
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="ConnectionDialog.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </None>
     <None Update="DevDeploy.bat">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

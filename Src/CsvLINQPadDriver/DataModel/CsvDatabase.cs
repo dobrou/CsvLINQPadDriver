@@ -1,15 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace CsvLINQPadDriver.DataModel
 {
-    public class CsvDatabase
-    {
-        public IList<CsvTable> Tables { get; set; }
-        public string Name { get; set; }
-
-        public CsvDatabase()
-        {
-            Tables = new List<CsvTable>();
-        }
-    }
+    internal record CsvDatabase(
+        string Name,
+        IList<CsvTable> Tables,
+        IReadOnlyCollection<string> Files,
+        IReadOnlyCollection<Exception> Exceptions
+    );
 }

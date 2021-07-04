@@ -1,11 +1,12 @@
 ﻿namespace CsvLINQPadDriver.DataModel
 {
-    public class CsvColumn
+    internal record CsvColumn
+    (
+        string Name,
+        int Index
+    ) : ICsvNames
     {
-        public string CodeName { get; set; }
-        public string DisplayName { get; set; }
-
-        public string CsvColumnName { get; set; }
-        public int CsvColumnIndex { get; set; }
+        public string? CodeName { get; set; }
+        public string? DisplayName { get; set; }
     }
 }

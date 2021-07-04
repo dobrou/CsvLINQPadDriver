@@ -1,64 +1,77 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using CsvLINQPadDriver.Helpers;
+
+using CsvLINQPadDriver.Extensions;
 
 namespace CsvLINQPadDriver.CodeGen
 {
-    public class CsvTableFactory
-    {
-        public static bool IsCacheStatic = true;
-
-        public static CsvTableBase<TRow> CreateTable<TRow>(bool isStringInternEnabled, bool isCacheEnabled, char csvSeparator, string filePath, ICollection<CsvColumnInfo> propertiesInfo, Action<TRow> relationsInit) where TRow : CsvRowBase, new()
-        {
-            var table = isCacheEnabled
-                ? (CsvTableBase<TRow>)new CsvTableList<TRow>(csvSeparator, filePath, propertiesInfo, relationsInit)
-                : (CsvTableBase<TRow>)new CsvTableEnumerable<TRow>(csvSeparator, filePath, propertiesInfo, relationsInit)
-            ;
-            table.isStringInternEnabled = isStringInternEnabled;
-            return table;
-        }
-    }
-
     public class CsvTableBase
     {
-        internal bool isStringInternEnabled;
+        public static readonly StringComparer StringComparer = StringComparer.Ordinal;
+
+        internal bool IsStringInternEnabled { get; }
+
+        protected CsvTableBase(bool isStringInternEnabled) =>
+            IsStringInternEnabled = isStringInternEnabled;
     }
 
-    public abstract class CsvTableBase<TRow> : CsvTableBase, IEnumerable<TRow> where TRow : CsvRowBase, new()
+    public abstract class CsvTableBase<TRow> : CsvTableBase, IEnumerable<TRow>
+        where TRow : ICsvRowBase, new()
     {
-        public char CsvSeparator { get; private set; }
-        public string FilePath { get; private set; }
-        
-        internal ICollection<CsvColumnInfo> PropertiesInfo;
-        internal Action<TRow> RelationsInit;
-        
-        protected CsvTableBase(char csvSeparator, string filePath, ICollection<CsvColumnInfo> propertiesInfo, Action<TRow> relationsInit)
+        private static CsvRowMappingBase<TRow>? _cachedCsvRowMappingBase;
+
+        private readonly char? _csvSeparator;
+        private readonly NoBomEncoding _noBomEncoding;
+        private readonly StringComparer? _internStringComparer;
+        private readonly bool _allowComments;
+        private readonly bool _ignoreBadData;
+        private readonly bool _autoDetectEncoding;
+
+        protected readonly string FilePath;
+
+        protected CsvTableBase(
+            bool isStringInternEnabled,
+            StringComparer? internStringComparer,
+            char? csvSeparator,
+            NoBomEncoding noBomEncoding,
+            bool allowComments,
+            bool ignoreBadData,
+            bool autoDetectEncoding,
+            string filePath,
+            IEnumerable<CsvColumnInfo> propertiesInfo,
+            Action<TRow> relationsInit)
+            : base(isStringInternEnabled)
         {
-            this.CsvSeparator = csvSeparator;
-            this.FilePath = filePath;
-            this.PropertiesInfo = propertiesInfo;
-            this.RelationsInit = relationsInit;
+            _internStringComparer = internStringComparer;
+            _csvSeparator = csvSeparator;
+            _noBomEncoding = noBomEncoding;
+            _allowComments = allowComments;
+            _ignoreBadData = ignoreBadData;
+            _autoDetectEncoding = autoDetectEncoding;
+
+            FilePath = filePath;
+
+            _cachedCsvRowMappingBase ??= new CsvRowMappingBase<TRow>(propertiesInfo, relationsInit);
         }
 
-        protected IEnumerable<TRow> GetDataDirect()
-        {
-            return FileUtils.CsvReadRows(FilePath, CsvSeparator, isStringInternEnabled, new CsvRowMappingBase<TRow>(PropertiesInfo, RelationsInit));
-        }
+        protected IEnumerable<TRow> ReadData() =>
+            FilePath.CsvReadRows(
+                _csvSeparator,
+                IsStringInternEnabled,
+                _internStringComparer,
+                _noBomEncoding,
+                _allowComments,
+                _ignoreBadData,
+                _autoDetectEncoding,
+                _cachedCsvRowMappingBase!);
 
-        /// <summary>
-        /// Get index of rows by value of property
-        /// </summary>
-        /// <param name="getProperty"></param>
-        /// <param name="propertyName"></param>
-        /// <param name="values"></param>
-        /// <returns></returns>
-        abstract public IEnumerable<TRow> WhereIndexed(Func<TRow, string> getProperty, string propertyName, params string[] values);
+        // ReSharper disable once UnusedMember.Global
+        public abstract IEnumerable<TRow> WhereIndexed(Func<TRow, string> getProperty, string propertyName, params string[] values);
 
-        abstract public IEnumerator<TRow> GetEnumerator();
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
+        public abstract IEnumerator<TRow> GetEnumerator();
+
+        IEnumerator IEnumerable.GetEnumerator() =>
+            GetEnumerator();
     }
 }
