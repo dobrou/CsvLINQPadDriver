@@ -26,6 +26,8 @@ namespace CsvLINQPadDriver.Extensions
 {
     internal static class FileExtensions
     {
+        public const string InlineComment = "#";
+
         private const string RecursiveMaskMarker = "**";
 
         private const StringComparison FileNameComparison = StringComparison.OrdinalIgnoreCase;
@@ -34,6 +36,8 @@ namespace CsvLINQPadDriver.Extensions
 
         private static readonly char[] TsvSeparators = "\t,;".ToCharArray();
         private static readonly char[] CsvSeparators = ",;\t".ToCharArray();
+
+        private static readonly char[] InlineCommentCharArray = InlineComment.ToCharArray();
 
         private static readonly StringComparer FileNameComparer = StringComparer.OrdinalIgnoreCase;
 
@@ -72,8 +76,6 @@ namespace CsvLINQPadDriver.Extensions
                 .Where(supportedFileType => !string.IsNullOrWhiteSpace(supportedFileType.Extension))
                 .Select(supportedFileType => $".{supportedFileType.Extension}"),
             FileNameComparer);
-
-        public const string InlineComment = "#";
 
         private static readonly FileType DefaultFileType = SupportedFileTypes.First().FileType;
 
@@ -326,7 +328,7 @@ namespace CsvLINQPadDriver.Extensions
         }
 
         public static string GetInlineCommentContent(this string line) =>
-            line.Trim().TrimStart(InlineComment.ToCharArray());
+            line.Trim().TrimStart(InlineCommentCharArray);
 
         private static long GetFileSize(string fileName)
         {
