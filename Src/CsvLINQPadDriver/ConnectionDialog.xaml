@@ -196,6 +196,7 @@
 
                     <WrapPanel Grid.Column="0" Margin="0 0 0 2" Orientation="Horizontal" HorizontalAlignment="Stretch">
                         <TextBlock Style="{StaticResource WrappedTextBlock}">
+                            <!-- TODO: Sync with TextBox.InputBindings below. -->
                             <TextBlock Style="{StaticResource TextBlockHyperlinkContainer}">
                                 <Hyperlink Command="{x:Static this:ConnectionDialog.AddFilesCommand}" ToolTip="Add files (Ctrl+O)">Add files</Hyperlink>
                             </TextBlock>
@@ -250,6 +251,7 @@
                     PreviewDragOver="FilesTextBox_DragEnter"
                     PreviewDrop="FilesTextBox_DragDrop">
                     <TextBox.InputBindings>
+                        <!-- TODO: Sync with link bar above and TextBox.ContextMenu below. -->
                         <MouseBinding
                             Command="{x:Static this:ConnectionDialog.CtrlLeftClickCommand}"
                             Gesture="Ctrl+LeftClick"/>
@@ -272,6 +274,44 @@
                             Command="{x:Static this:ConnectionDialog.PasteFromClipboardForFolderAndItsSubfoldersAndProceedCommand}"
                             Gesture="Ctrl+Shift+Alt+V"/>
                     </TextBox.InputBindings>
+                    <TextBox.ContextMenu>
+                        <ContextMenu>
+                            <!-- TODO: Sync with link bar and TextBox.InputBindings above. -->
+                            <!-- ReSharper disable once MarkupAttributeTypo -->
+                            <MenuItem Command="{x:Static this:ConnectionDialog.AddFilesCommand}" Header="Add f_iles" InputGestureText="Ctrl+O"/>
+                            <MenuItem Command="{x:Static this:ConnectionDialog.AddFolderCommand}" Header="Add f_older" InputGestureText="Ctrl+Shift+O"/>
+                            <!-- ReSharper disable once MarkupAttributeTypo -->
+                            <MenuItem Command="{x:Static this:ConnectionDialog.AddFolderAndItsSubfoldersCommand}" Header="Add folder and its _sub-folders" InputGestureText="Ctrl+Shift+Alt+O"/>
+                            <Separator/>
+                            <MenuItem Command="{x:Static this:ConnectionDialog.BrowseCommand}" Header="_Browse" InputGestureText="Ctrl+F"/>
+                            <Separator/>
+                            <MenuItem Command="ApplicationCommands.Cut" Header="Cu_t"/>
+                            <MenuItem Command="ApplicationCommands.Copy" Header="_Copy"/>
+                            <MenuItem Command="ApplicationCommands.Paste" Header="_Paste (append *.csv to folders)"/>
+                            <MenuItem Command="{x:Static this:ConnectionDialog.PasteWithFolderAndItsSubfoldersCommand}" InputGestureText="Ctrl+Alt+V" Header="Past_e (append **.csv to folders)"/>
+                            <Separator/>
+                            <MenuItem Command="ApplicationCommands.SelectAll" Header="Select _all"/>
+                            <!-- ReSharper disable once MarkupAttributeTypo -->
+                            <MenuItem Command="{x:Static this:ConnectionDialog.ClearCommand}" Header="Clea_r" InputGestureText="Ctrl+L"/>
+                            <Separator/>
+                            <MenuItem Command="{x:Static this:ConnectionDialog.PasteFromClipboardForFolderAndProceedCommand}" InputGestureText="Ctrl+Shift+V" Header="Clear, paste (append *.csv to folders) a_nd proceed"/>
+                            <MenuItem Command="{x:Static this:ConnectionDialog.PasteFromClipboardForFolderAndItsSubfoldersAndProceedCommand}" InputGestureText="Ctrl+Shift+Alt+V" Header="Clear, paste (append **.csv to folders) an_d proceed"/>
+                            <Separator/>
+                            <MenuItem Command="{x:Static this:ConnectionDialog.WrapFilesTextCommand}" InputGestureText="Ctrl+W">
+                                <MenuItem.Style>
+                                    <Style TargetType="{x:Type MenuItem}">
+                                        <Setter Property="Header" Value="Turn on word _wrap"/>
+                                        <Style.Triggers>
+                                            <!-- ReSharper disable once Xaml.BindingWithContextNotResolved -->
+                                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.TextWrapping}" Value="Wrap">
+                                                <Setter Property="Header" Value="Turn off word _wrap"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </MenuItem.Style>
+                            </MenuItem>
+                        </ContextMenu>
+                    </TextBox.ContextMenu>
                 </TextBox>
 
                 <!-- ReSharper disable once MarkupAttributeTypo -->
