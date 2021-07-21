@@ -50,7 +50,7 @@ namespace CsvLINQPadDriver.Extensions
                 IntPtr[] files = { file };
                 Marshal.ThrowExceptionForHR(SHOpenFolderAndSelectItems(folder, (uint) files.Length, files, 0));
             }
-            catch (Exception exception)
+            catch (Exception exception) when (exception.CanBeHandled())
             {
                 return new ShellResult(Regex.Replace(exception.Message, @"\s+\([^)]+?\)$", string.Empty));
             }

@@ -18,7 +18,7 @@ namespace CsvLINQPadDriver.Extensions
                         break;
                     }
                 }
-                catch (Exception exception)
+                catch (Exception exception) when (exception.CanBeHandled())
                 {
                     exceptions?.Add(exception);
                     continue;

@@ -100,7 +100,7 @@ namespace CsvLINQPadDriver
                 {
                     return Regex.Unescape(csvSeparator).FirstOrDefault();
                 }
-                catch (Exception exception)
+                catch (Exception exception) when(exception.CanBeHandled())
                 {
                     var fallbackCsvSeparator = csvSeparator.First();
 

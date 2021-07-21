@@ -174,7 +174,7 @@ namespace CsvLINQPadDriver.Extensions
                     .DefaultIfEmpty(csvSeparator)
                     .First();
             }
-            catch (Exception exception)
+            catch (Exception exception) when (exception.CanBeHandled())
             {
                 CsvDataContextDriver.WriteToLog($"CSV separator detection failed for {fileName}", exception);
             }
@@ -255,7 +255,7 @@ namespace CsvLINQPadDriver.Extensions
 
                 return validCharsCount >= validCharsMinOkRatio * charsCount;
             }
-            catch(Exception exception)
+            catch(Exception exception) when (exception.CanBeHandled())
             {
                 CsvDataContextDriver.WriteToLog($"{header} failed with exception", exception);
 
@@ -336,7 +336,7 @@ namespace CsvLINQPadDriver.Extensions
             {
                 return new FileInfo(fileName).Length;
             }
-            catch (Exception exception)
+            catch (Exception exception) when (exception.CanBeHandled())
             {
                 CsvDataContextDriver.WriteToLog($"Failed to get {fileName} size", exception);
                 return 0;
@@ -426,7 +426,7 @@ namespace CsvLINQPadDriver.Extensions
                                 : SearchOption.TopDirectoryOnly)
                         .SkipExceptions(exceptions);
             }
-            catch (Exception exception)
+            catch (Exception exception) when (exception.CanBeHandled())
             {
                 exceptions.Add(path, exception);
 
