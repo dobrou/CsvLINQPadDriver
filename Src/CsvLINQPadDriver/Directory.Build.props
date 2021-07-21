@@ -1,7 +1,8 @@
 ﻿<Project>
   <PropertyGroup>
-    <Version>6.14.2</Version>
-    <PackageReleaseNotes>Added files editor context menu.</PackageReleaseNotes>
+    <Version>6.15.0</Version>
+    <PackageReleaseNotes>Improved encoding detection.
+Added files editor context menu.</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -40,6 +41,7 @@
     <PackageReference Include="LINQPad.Reference" Version="1.1.0" />
     <PackageReference Include="Microsoft-WindowsAPICodePack-Core" Version="1.1.4" />
     <PackageReference Include="UnicodeCharsetDetector.Standard" Version="1.1.1" />
+    <PackageReference Include="UTF.Unknown" Version="2.3.0" />
   </ItemGroup>
 
   <ItemGroup>

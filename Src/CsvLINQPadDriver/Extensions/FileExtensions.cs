@@ -482,8 +482,30 @@ namespace CsvLINQPadDriver.Extensions
         {
             try
             {
-                using var stream = File.OpenRead(fileName);
-                return UnicodeCharsetDetector.Check(stream).ToEncoding();
+                Charset charset;
+
+                using (var stream = File.OpenRead(fileName))
+                {
+                    charset = UnicodeCharsetDetector.Check(stream);
+                }
+
+                return DetectAsciiEncoding() ?? charset.ToEncoding();
+
+                Encoding? DetectAsciiEncoding()
+                {
+                    try
+                    {
+                        return charset switch
+                        {
+                            Charset.None or Charset.Ansi or Charset.Ascii => UtfUnknown.CharsetDetector.DetectFromFile(fileName).Detected?.Encoding,
+                            _ => null
+                        };
+                    }
+                    catch
+                    {
+                        return null;
+                    }
+                }
             }
             catch
             {

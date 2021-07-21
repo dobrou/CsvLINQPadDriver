@@ -1,6 +1,6 @@
 @echo off
 
-set version=6.14.2
+set version=6.15.0
 set fileName=CsvLINQPadDriver.%version%.lpx
 
 set zip="%ProgramFiles%\7-Zip\7z.exe"
@@ -41,6 +41,7 @@ header.xml ^
 %folder%\Humanizer.dll ^
 %folder%\Microsoft.WindowsAPICodePack.dll ^
 %folder%\UnicodeCharsetDetector.dll ^
+%folder%\UtfUnknown.dll ^
 %additional%
 
 @exit /b 0
