@@ -1,8 +1,7 @@
 ﻿<Project>
   <PropertyGroup>
-    <Version>6.15.0</Version>
-    <PackageReleaseNotes>Improved encoding detection.
-Added files editor context menu.</PackageReleaseNotes>
+    <Version>6.15.1</Version>
+    <PackageReleaseNotes>Updated dependencies.</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup>

@@ -297,14 +297,14 @@
                             <MenuItem Command="{x:Static this:ConnectionDialog.PasteFromClipboardForFolderAndProceedCommand}" InputGestureText="Ctrl+Shift+V" Header="Clear, paste (append *.csv to folders) a_nd proceed"/>
                             <MenuItem Command="{x:Static this:ConnectionDialog.PasteFromClipboardForFolderAndItsSubfoldersAndProceedCommand}" InputGestureText="Ctrl+Shift+Alt+V" Header="Clear, paste (append **.csv to folders) an_d proceed"/>
                             <Separator/>
-                            <MenuItem Command="{x:Static this:ConnectionDialog.WrapFilesTextCommand}" InputGestureText="Ctrl+W">
+                            <MenuItem Command="{x:Static this:ConnectionDialog.WrapFilesTextCommand}" Header="Word _wrap" InputGestureText="Ctrl+W" IsCheckable="True">
                                 <MenuItem.Style>
                                     <Style TargetType="{x:Type MenuItem}">
-                                        <Setter Property="Header" Value="Turn on word _wrap"/>
+                                        <Setter Property="IsChecked" Value="False"/>
                                         <Style.Triggers>
                                             <!-- ReSharper disable once Xaml.BindingWithContextNotResolved -->
                                             <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu}, Path=PlacementTarget.TextWrapping}" Value="Wrap">
-                                                <Setter Property="Header" Value="Turn off word _wrap"/>
+                                                <Setter Property="IsChecked" Value="True"/>
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
