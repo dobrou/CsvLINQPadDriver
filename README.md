@@ -174,8 +174,8 @@ CSV files connection can be added to LINQPad 6/5 the same way as any other conne
   * `c:\Books\Books?.csv`: `Books.csv`, `Books1.csv`, etc. files in folder `c:\Books`
   * `c:\Books\*.csv`: all `*.csv` files in folder `c:\Books`
   * `c:\Books\**.csv`: all `*.csv` files in folder `c:\Books` and its sub-folders.
-* Order files by: specify files sort order. Affects similar files order.
-* Fallback encoding: specify encoding to use if file encoding could not be detected, e.g. due to missing [BOM](https://en.wikipedia.org/wiki/Byte_order_mark). `UTF-8` is default.
+* Order files by: files sort order. Affects similar files order.
+* Fallback encoding: [encoding](https://docs.microsoft.com/en-us/windows/win32/intl/code-page-identifiers) to use if file encoding could not be detected. `UTF-8` is default.
 * Auto-detect file encodings: try to detect file encodings.
 * Validate file paths: check if file paths are valid.
 * Ignore files with invalid format: files with content which does not resemble CSV will be ignored.

@@ -1,7 +1,7 @@
 ﻿<Project>
   <PropertyGroup>
-    <Version>6.15.1</Version>
-    <PackageReleaseNotes>Updated dependencies.</PackageReleaseNotes>
+    <Version>6.16.0</Version>
+    <PackageReleaseNotes>Added more encodings.</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup>

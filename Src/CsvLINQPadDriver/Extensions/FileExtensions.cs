@@ -49,7 +49,7 @@ namespace CsvLINQPadDriver.Extensions
 #endif
                 StringInternCache = null!;
 
-        private static readonly Lazy<IReadOnlyDictionary<NoBomEncoding, Encoding>> NoBomEncodings = new(CalculateNoBomEncodings);
+        private static readonly Dictionary<NoBomEncoding, Encoding> NoBomEncodings = new();
 
         private record SupportedFileType(FileType FileType, string Extension, string Description)
         {
@@ -81,6 +81,11 @@ namespace CsvLINQPadDriver.Extensions
 
         public static readonly string DefaultMask = GetMask(DefaultFileType);
         public static readonly string DefaultRecursiveMask = GetMask(DefaultFileType, true);
+
+#if NETCOREAPP
+        static FileExtensions() =>
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+#endif
 
         public static string GetMask(this FileType fileType, bool recursive = false) =>
             $"{(recursive ? RecursiveMaskMarker : "*")}.{fileType.GetSupportedFileType().Mask}";
@@ -369,7 +374,7 @@ namespace CsvLINQPadDriver.Extensions
             csvConfiguration.Delimiter = csvSeparator?.ToString() ?? csvConfiguration.Delimiter;
             csvConfiguration.BadDataFound = ignoreBadData ? null : csvConfiguration.BadDataFound;
 
-            var encoding = (autoDetectEncoding ? DetectEncoding(fileName) : null) ?? NoBomEncodings.Value[noBomEncoding];
+            var encoding = (autoDetectEncoding ? DetectEncoding(fileName) : null) ?? GetFallbackEncoding(noBomEncoding);
 
             return new CsvParser(new StreamReader(fileName, encoding, !autoDetectEncoding, bufferSize / sizeof(char)), csvConfiguration);
         }
@@ -450,32 +455,43 @@ namespace CsvLINQPadDriver.Extensions
             }
         }
 
-        [DllImport("kernel32.dll")]
-        private static extern int GetSystemDefaultLCID();
-
-        [DllImport("kernel32.dll")]
-        private static extern int GetUserDefaultLCID();
-
-        private static IReadOnlyDictionary<NoBomEncoding, Encoding> CalculateNoBomEncodings()
+        private static Encoding GetFallbackEncoding(NoBomEncoding noBomEncoding)
         {
-#if NETCOREAPP
-            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-#endif
-
-            return new Dictionary<NoBomEncoding, Encoding>
+            if (!NoBomEncodings.TryGetValue(noBomEncoding, out var encoding))
             {
-                [NoBomEncoding.UTF8]             = Encoding.UTF8,
-                [NoBomEncoding.Unicode]          = Encoding.Unicode,
-                [NoBomEncoding.BigEndianUnicode] = Encoding.BigEndianUnicode,
-                [NoBomEncoding.UTF32]            = Encoding.UTF32,
-                [NoBomEncoding.BigEndianUTF32]   = new UTF32Encoding(true, true),
-                [NoBomEncoding.ASCII]            = Encoding.ASCII,
-                [NoBomEncoding.SystemCodePage]   = GetCodePageEncoding(false),
-                [NoBomEncoding.UserCodePage]     = GetCodePageEncoding(true)
-            };
+                NoBomEncodings.Add(noBomEncoding, encoding = GetEncoding());
+            }
 
-            static Encoding GetCodePageEncoding(bool user) =>
-                Encoding.GetEncoding(CultureInfo.GetCultureInfo(user ? GetUserDefaultLCID() : GetSystemDefaultLCID()).TextInfo.ANSICodePage);
+            return encoding!;
+
+            Encoding GetEncoding()
+            {
+                return noBomEncoding switch
+                {
+                    NoBomEncoding.UTF8 => Encoding.UTF8,
+                    NoBomEncoding.Unicode => Encoding.Unicode,
+                    NoBomEncoding.BigEndianUnicode => Encoding.BigEndianUnicode,
+                    NoBomEncoding.UTF32 => Encoding.UTF32,
+                    NoBomEncoding.BigEndianUTF32 => new UTF32Encoding(true, true),
+                    NoBomEncoding.UTF7 => Encoding.UTF7,
+                    NoBomEncoding.ASCII => Encoding.ASCII,
+                    NoBomEncoding.SystemCodePage => GetCodePageEncoding(false),
+                    NoBomEncoding.UserCodePage => GetCodePageEncoding(true),
+                    _ => Encoding.GetEncoding(FromCodePage())
+                };
+
+                static Encoding GetCodePageEncoding(bool user) =>
+                    Encoding.GetEncoding(CultureInfo.GetCultureInfo(user ? GetUserDefaultLCID() : GetSystemDefaultLCID()).TextInfo.ANSICodePage);
+
+                int FromCodePage() =>
+                    Convert.ToInt32(noBomEncoding.ToString()[2..], CultureInfo.InvariantCulture);
+
+                [DllImport("kernel32.dll")]
+                static extern int GetSystemDefaultLCID();
+
+                [DllImport("kernel32.dll")]
+                static extern int GetUserDefaultLCID();
+            }
         }
 
         private static Encoding? DetectEncoding(string fileName)

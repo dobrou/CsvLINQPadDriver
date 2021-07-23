@@ -327,11 +327,11 @@
                 <ComboBox Grid.Row="3" Grid.Column="1"
                     Name="NoBomEncodingComboBox"
                     Style="{StaticResource FilesGroupComboBoxStyle}"
-                    ToolTip="Specify encoding to use if file encoding could not be detected, e.g. due to missing BOM"
+                    ToolTip="Encoding to use if file encoding could not be detected"
                     SelectedValue="{Binding NoBomEncoding}"
                     ItemsSource="{Binding Source={StaticResource NoBomEncodingData}}"/>
                 <TextBlock Grid.Row="3" Grid.Column="2" Padding="5 5 0 0">
-                    <Hyperlink NavigateUri="https://en.wikipedia.org/wiki/Byte_order_mark" ToolTip="BOM on Wikipedia" Style="{StaticResource HelpHyperlink}">
+                    <Hyperlink NavigateUri="https://docs.microsoft.com/en-us/windows/win32/intl/code-page-identifiers" ToolTip="Code Page Identifiers on Microsoft Docs" Style="{StaticResource HelpHyperlink}">
                         <TextBlock Style="{StaticResource HelpTextBlock}"/>
                     </Hyperlink>
                 </TextBlock>
