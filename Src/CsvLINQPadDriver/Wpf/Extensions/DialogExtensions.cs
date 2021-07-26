@@ -1,66 +1,64 @@
 ﻿using System;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Windows;
-using System.Windows.Forms;
 using System.Windows.Interop;
 
 using Microsoft.WindowsAPICodePack.Dialogs;
 
-using MessageBox = System.Windows.MessageBox;
+using CsvLINQPadDriver.Extensions;
+
 using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
 
-namespace CsvLINQPadDriver.Wpf
+namespace CsvLINQPadDriver.Wpf.Extensions
 {
     internal static class DialogExtensions
     {
-        public static bool TryOpenFile(this string title, string filter, string defaultExt, out string[] fileNames, int filterIndex = 1)
+        public static bool TryOpenFiles(this Window owner, string title, string filter, string defaultExt, out string[] files, int filterIndex = 1)
         {
             var openFileDialog = new OpenFileDialog
             {
                 Title = title,
-                Filter = filter,
-                DefaultExt = string.IsNullOrEmpty(defaultExt) ? string.Empty : $".{defaultExt.TrimStart('.')}",
-                FilterIndex = filterIndex,
-                AddExtension = true,
-                CheckFileExists = true,
-                CheckPathExists = true,
                 Multiselect = true,
-                ValidateNames = true
+                ValidateNames = true,
+                CheckPathExists = true,
+                CheckFileExists = true,
+                DefaultExt = string.IsNullOrEmpty(defaultExt) ? string.Empty : $".{defaultExt.TrimStart('.')}",
+                Filter = filter,
+                FilterIndex = filterIndex,
+                AddExtension = true
             };
 
-            var result = openFileDialog.ShowDialog() == true;
+            var result = openFileDialog.ShowDialog(owner) == true;
 
-            fileNames = result
+            files = result
                         ? openFileDialog.FileNames
                         : Array.Empty<string>();
 
             return result;
         }
 
-        public static bool TryBrowseForFolder(this string description, out string folder)
+        public static bool TryBrowseForFolders(this Window owner, string title, out string[] folders)
         {
-            using var folderBrowserDialog = new FolderBrowserDialog
+            using var commonOpenFileDialog = new CommonOpenFileDialog
             {
-                Description = description,
-                ShowNewFolderButton = false
-#if NETCOREAPP
-                ,
-                UseDescriptionForTitle = true
-#endif
+                Title = title,
+                IsFolderPicker = true,
+                Multiselect = true,
+                EnsurePathExists = true,
+                EnsureValidNames = true
             };
 
-            var result = folderBrowserDialog.ShowDialog() == DialogResult.OK;
+            var result = commonOpenFileDialog.ShowDialog(owner) == CommonFileDialogResult.Ok;
 
-            folder = result
-                ? folderBrowserDialog.SelectedPath
-                : string.Empty;
+            folders = result
+                ? commonOpenFileDialog.FileNames.ToArray()
+                : Array.Empty<string>();
 
             return result;
         }
 
         public static void ShowWarning(this Window owner, string text) =>
-            MessageBox.Show(owner, AppendDot(text), owner.Title, MessageBoxButton.OK, MessageBoxImage.Exclamation);
+            MessageBox.Show(owner, text.AppendDot(), owner.Title, MessageBoxButton.OK, MessageBoxImage.Exclamation);
 
         public static bool? ShowYesNoDialog(
             this Window owner,
@@ -99,13 +97,13 @@ namespace CsvLINQPadDriver.Wpf
 
                 Caption = owner.Title,
                 InstructionText = instructionText,
-                Text = AppendDot(text),
+                Text = text.AppendDot(),
                 Icon = TaskDialogStandardIcon.Warning,
 
                 Controls =
                 {
-                    CreateTaskDialogCommandLink("&Yes", AppendDot(yesInstructions), TaskDialogResult.Yes, yesIsDefault),
-                    CreateTaskDialogCommandLink("&No",  AppendDot(noInstructions),  TaskDialogResult.No,  !yesIsDefault)
+                    CreateTaskDialogCommandLink("&Yes", yesInstructions.AppendDot(), TaskDialogResult.Yes, yesIsDefault),
+                    CreateTaskDialogCommandLink("&No",  noInstructions.AppendDot(),  TaskDialogResult.No,  !yesIsDefault)
                 }
             };
 
@@ -162,10 +160,5 @@ namespace CsvLINQPadDriver.Wpf
                         taskDialogCommandLink.Name));
             }
         }
-
-        private static string AppendDot(string str) =>
-            Regex.IsMatch(str, @"\p{P}\s*$")
-                ? str
-                : str + ".";
     }
 }

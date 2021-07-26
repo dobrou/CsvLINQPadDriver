@@ -2,7 +2,9 @@
 using System.Windows;
 using System.Windows.Controls;
 
-namespace CsvLINQPadDriver.Wpf
+using CsvLINQPadDriver.Extensions;
+
+namespace CsvLINQPadDriver.Wpf.Extensions
 {
     internal static class ControlExtensions
     {
@@ -63,6 +65,6 @@ namespace CsvLINQPadDriver.Wpf
             frameworkElement.GetBindingExpression(dependencyProperty)!.UpdateTarget();
 
         public static string ReplaceHotKeyChar(this ContentControl contentControl, string? newChar = null) =>
-            ((string)contentControl.Content).Replace("_", newChar);
+            ((string)contentControl.Content).ReplaceHotKeyChar(newChar);
     }
 }

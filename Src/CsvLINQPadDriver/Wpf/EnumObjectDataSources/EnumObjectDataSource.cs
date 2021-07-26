@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using System.Linq;
 
-namespace CsvLINQPadDriver.Wpf
+namespace CsvLINQPadDriver.Wpf.EnumObjectDataSources
 {
     internal abstract class EnumObjectDataSource<T> where T: Enum
     {

@@ -138,7 +138,7 @@ namespace CsvLINQPadDriver
 
         public StringComparison StringComparison
         {
-            get => GetValue(StringComparison.InvariantCulture);
+            get => GetValue(StringComparison.Ordinal);
             set => SetValue(value);
         }
 

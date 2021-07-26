@@ -12,7 +12,6 @@ using Humanizer;
 
 using CsvLINQPadDriver.DataDisplay;
 using CsvLINQPadDriver.DataModel;
-using CsvLINQPadDriver.Extensions;
 
 #if NETCOREAPP
 using System.Collections.Immutable;

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Windows.Input;
 
 using Humanizer;
 
@@ -58,8 +59,8 @@ namespace CsvLINQPadDriver
                 properties.Files =
                     $"{FileExtensions.InlineComment} Drag&drop here (from add files/folder dialogs as well). Ctrl adds files. Alt toggles * and ** masks.".JoinNewLine(
                     $"{FileExtensions.InlineComment} {ConnectionDialog.WildcardsToolTip}.",
-                    $"{FileExtensions.InlineComment} Ctrl+V (Ctrl+Alt+V) pastes from clipboard, appends {FileExtensions.DefaultMask} ({FileExtensions.DefaultRecursiveMask}) to folders.",
-                    $"{FileExtensions.InlineComment} Ctrl+Shift+V (Ctrl+Shift+Alt+V) clears, pastes from clipboard, appends {FileExtensions.DefaultMask} ({FileExtensions.DefaultRecursiveMask}) to folders and proceeds.",
+                    $"{FileExtensions.InlineComment} {((KeyGesture)ApplicationCommands.Paste.InputGestures[0]).DisplayString} ({ConnectionDialog.PasteFoldersWithSubfoldersCommand.InputGestureText}) pastes from clipboard, appends {FileExtensions.DefaultMask} ({FileExtensions.DefaultRecursiveMask}) to folders.",
+                    $"{FileExtensions.InlineComment} {ConnectionDialog.PasteFromClipboardFoldersAndProceedCommand.InputGestureText} ({ConnectionDialog.PasteFromClipboardFoldersWithSubfoldersAndProceedCommand.InputGestureText}) clears, pastes from clipboard, appends {FileExtensions.DefaultMask} ({FileExtensions.DefaultRecursiveMask}) to folders and proceeds.",
                     string.Empty, string.Empty);
             }
 

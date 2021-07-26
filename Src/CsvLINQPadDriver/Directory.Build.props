@@ -1,7 +1,10 @@
 ﻿<Project>
   <PropertyGroup>
-    <Version>6.16.0</Version>
-    <PackageReleaseNotes>Added more encodings.</PackageReleaseNotes>
+    <Version>6.17.0</Version>
+    <PackageReleaseNotes>Added folders multiselection.
+Reported ignored invalid files.
+Set default string comparison to Ordinal.
+</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -14,7 +17,6 @@
 
   <PropertyGroup>
     <UseWpf>true</UseWpf>
-    <UseWindowsForms>true</UseWindowsForms>
     <Deterministic>true</Deterministic>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <LangVersion>latest</LangVersion>
@@ -39,6 +41,7 @@
     </PackageReference>
     <PackageReference Include="LINQPad.Reference" Version="1.1.0" />
     <PackageReference Include="Microsoft-WindowsAPICodePack-Core" Version="1.1.4" />
+    <PackageReference Include="Microsoft-WindowsAPICodePack-Shell" Version="1.1.4" />
     <PackageReference Include="UnicodeCharsetDetector.Standard" Version="1.1.1" />
     <PackageReference Include="UTF.Unknown" Version="2.3.0" />
   </ItemGroup>

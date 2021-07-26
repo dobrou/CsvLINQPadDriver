@@ -276,7 +276,7 @@ namespace CsvLINQPadDriver.Extensions
             var filePaths = pathsValid.FirstOrDefault()?.Split(Path.DirectorySeparatorChar) ?? Array.Empty<string>();
 
             var directorySeparator = Path.DirectorySeparatorChar
-#if NETFRAMEWORK
+#if !NETCOREAPP
                 .ToString()
 #endif
             ;
@@ -392,7 +392,7 @@ namespace CsvLINQPadDriver.Extensions
             exceptions?.Add(file, $"processing failed: {exception.Message}");
 
         public static void Add(this ICollection<Exception>? exceptions, string file, string message) =>
-            exceptions?.Add(new Exception($"'{file}' {message}"));
+            exceptions?.Add(new Exception($"'{file}' {message}".AppendDot()));
 
         private static IEnumerable<string> EnumFiles(string path, ICollection<Exception>? exceptions = null)
         {

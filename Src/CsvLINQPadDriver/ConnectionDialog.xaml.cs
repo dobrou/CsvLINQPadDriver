@@ -12,6 +12,7 @@ using System.Windows.Input;
 
 using CsvLINQPadDriver.Extensions;
 using CsvLINQPadDriver.Wpf;
+using CsvLINQPadDriver.Wpf.Extensions;
 
 namespace CsvLINQPadDriver
 {
@@ -26,17 +27,100 @@ namespace CsvLINQPadDriver
             Visibility.Collapsed;
 #endif
 
-        public static readonly RoutedUICommand AddFilesCommand = new();
-        public static readonly RoutedUICommand AddFolderCommand = new();
-        public static readonly RoutedUICommand AddFolderAndItsSubfoldersCommand = new();
-        public static readonly RoutedUICommand PasteFromClipboardForFolderAndItsSubfoldersAndProceedCommand = new();
-        public static readonly RoutedUICommand PasteFromClipboardForFolderAndProceedCommand = new();
-        public static readonly RoutedUICommand ClearCommand = new();
-        public static readonly RoutedUICommand HelpCommand = new();
-        public static readonly RoutedUICommand BrowseCommand = new();
-        public static readonly RoutedUICommand CtrlLeftClickCommand = new();
-        public static readonly RoutedUICommand PasteWithFolderAndItsSubfoldersCommand = new();
-        public static readonly RoutedUICommand WrapFilesTextCommand = new();
+        // ReSharper disable StringLiteralTypo
+        public static readonly RoutedUICommandEx AddFilesCommand = new()
+        {
+            Text = "Add f_iles",
+            InputGestureText = "Ctrl+O",
+            ToolTip = "Add files"
+        };
+
+        public static readonly KeyGesture AddFilesCommandKeyGesture = AddFilesCommand.InputGestureAsKeyGesture;
+
+        public static readonly RoutedUICommandEx AddFoldersCommand = new()
+        {
+            Text = "Add f_olders",
+            InputGestureText = "Ctrl+Shift+O",
+            ToolTip = "Add folders"
+        };
+
+        public static readonly KeyGesture AddFoldersCommandKeyGesture = AddFoldersCommand.InputGestureAsKeyGesture;
+
+        public static readonly RoutedUICommandEx AddFoldersWithSubfoldersCommand = new()
+        {
+            Text = "Add folders with _sub-folders",
+            InputGestureText = "Ctrl+Shift+Alt+O",
+            ToolTip = "Add folders with sub-folders"
+        };
+
+        public static readonly KeyGesture AddFoldersWithSubfoldersCommandKeyGesture = AddFoldersWithSubfoldersCommand.InputGestureAsKeyGesture;
+
+        public static readonly RoutedUICommandEx ClearCommand = new()
+        {
+            Text = "Clea_r",
+            InputGestureText = "Ctrl+L",
+            ToolTip = "Clear"
+        };
+
+        public static readonly KeyGesture ClearCommandKeyGesture = ClearCommand.InputGestureAsKeyGesture;
+
+        public static readonly RoutedUICommandEx PasteFoldersWithSubfoldersCommand = new()
+        {
+            Text = "Past_e (append **.csv to folders)",
+            InputGestureText = "Ctrl+Alt+V"
+        };
+
+        public static readonly KeyGesture PasteFoldersWithSubfoldersCommandKeyGesture = PasteFoldersWithSubfoldersCommand.InputGestureAsKeyGesture;
+
+        public static readonly RoutedUICommandEx PasteFromClipboardFoldersAndProceedCommand = new()
+        {
+            Text = "Clear, paste (append *.csv to folders) a_nd proceed",
+            InputGestureText = "Ctrl+Shift+V"
+        };
+
+        public static readonly KeyGesture PasteFromClipboardFoldersAndProceedCommandKeyGesture = PasteFromClipboardFoldersAndProceedCommand.InputGestureAsKeyGesture;
+
+        public static readonly RoutedUICommandEx PasteFromClipboardFoldersWithSubfoldersAndProceedCommand = new()
+        {
+            Text = "Clear, paste (append **.csv to folders) an_d proceed",
+            InputGestureText = "Ctrl+Shift+Alt+V"
+        };
+
+        public static readonly KeyGesture PasteFromClipboardFoldersWithSubfoldersAndProceedCommandKeyGesture = PasteFromClipboardFoldersWithSubfoldersAndProceedCommand.InputGestureAsKeyGesture;
+
+        public static readonly RoutedUICommandEx WrapFilesTextCommand = new()
+        {
+            Text = "Word _wrap",
+            InputGestureText = "Ctrl+W"
+        };
+
+        public static readonly KeyGesture WrapFilesTextCommandKeyGesture = WrapFilesTextCommand.InputGestureAsKeyGesture;
+
+        public static readonly RoutedUICommandEx CtrlLeftClickCommand = new()
+        {
+            InputGestureText = "Ctrl+LeftClick"
+        };
+
+        public static readonly MouseGesture CtrlLeftClickCommandMouseGesture = CtrlLeftClickCommand.InputGestureAsMouseGesture;
+
+        public static readonly RoutedUICommandEx BrowseCommand = new()
+        {
+            Text = "_Browse",
+            InputGestureText = "Ctrl+F",
+            ToolTip = $"Browse file or folder at the current line ({{0}}) or any line ({CtrlLeftClickCommand.InputGestureText})"
+        };
+
+        public static readonly KeyGesture BrowseCommandKeyGesture = BrowseCommand.InputGestureAsKeyGesture;
+
+        public static readonly RoutedUICommandEx HelpCommand = new()
+        {
+            InputGestureText = "F1"
+        };
+
+        public static readonly KeyGesture HelpCommandKeyGesture = HelpCommand.InputGestureAsKeyGesture;
+
+        public static readonly string ConnectionHelp = $"CSV Files Connection help ({HelpCommand.InputGestureText} for driver help) on GitHub";
+        // ReSharper restore StringLiteralTypo
 
         private static T IfWin10<T>(T ifTrue, T ifFalse) =>
             Environment.OSVersion.Version.Major >= 10 ? ifTrue : ifFalse;
@@ -44,9 +128,15 @@ namespace CsvLINQPadDriver
         public static readonly string WrapText   = IfWin10("⭹", "Wrap");
         public static readonly string UnwrapText = IfWin10("⭲", "Unwrap");
 
+        private static string GetTurnWrapText(bool on) =>
+            $"Turn {(on ? "on" : "off")} word wrap ({WrapFilesTextCommand.InputGestureText})";
+
+        public static readonly string TurnOnWrapText  = GetTurnWrapText(true);
+        public static readonly string TurnOffWrapText = GetTurnWrapText(false);
+
         public static readonly string WildcardsToolTip = $"Type one file/folder per line. Wildcards ? and * are supported; {FileExtensions.DefaultRecursiveMask} searches in folder and its sub-folders";
 
-        private bool _addFolderAndItsSubfoldersDialogOpened;
+        private bool _addFoldersWithSubfoldersDialogOpened;
 
         public ConnectionDialog(ICsvDataContextDriverProperties csvDataContextDriverProperties)
         {
@@ -157,13 +247,13 @@ namespace CsvLINQPadDriver
 
             var enrichedFiles = GetEnrichedPathsFromUserInput(
                 (e.Data.GetData(DataFormats.FileDrop, true) ?? e.Data.GetData(DataFormats.StringFormat))!,
-                IsDragAndDropInFolderAndItsSubfoldersMode() ^ _addFolderAndItsSubfoldersDialogOpened);
+                IsDragAndDropInFoldersWithSubfoldersMode() ^ _addFoldersWithSubfoldersDialogOpened);
 
             AppendFiles(enrichedFiles);
 
             e.Handled = true;
 
-            bool IsDragAndDropInFolderAndItsSubfoldersMode() =>
+            bool IsDragAndDropInFoldersWithSubfoldersMode() =>
                 e.KeyStates.HasFlag(DragDropKeyStates.AltKey);
         }
 
@@ -188,7 +278,7 @@ namespace CsvLINQPadDriver
             }
         }
 
-        private void PasteWithFolderAndItsSubfoldersCommand_OnExecuted(object sender, ExecutedRoutedEventArgs e) =>
+        private void PasteFoldersWithSubfoldersCommand_OnExecuted(object sender, ExecutedRoutedEventArgs e) =>
             InsertFilesFromClipboard(true);
 
         private void InsertFilesFromClipboard(bool folderAndItsSubfolders)
@@ -224,10 +314,10 @@ namespace CsvLINQPadDriver
         private void CommandBinding_OnCanAlwaysExecute(object sender, CanExecuteRoutedEventArgs e) =>
             e.CanExecute = true;
 
-        private void PasteFromClipboardForFolderAndProceedCommandBinding_OnExecuted(object sender, ExecutedRoutedEventArgs e) =>
+        private void PasteFromClipboardFoldersAndProceedCommandBinding_OnExecuted(object sender, ExecutedRoutedEventArgs e) =>
             PasteAndGo(false);
 
-        private void PasteFromClipboardForFolderAndItsSubfoldersAndProceedCommandBinding_OnExecuted(object sender, ExecutedRoutedEventArgs e) =>
+        private void PasteFromClipboardFoldersWithSubfoldersAndProceedCommandBinding_OnExecuted(object sender, ExecutedRoutedEventArgs e) =>
             PasteAndGo(true);
 
         private string GetFilesTextFromClipboard(bool folderAndItsSubfolders) =>
@@ -266,17 +356,17 @@ namespace CsvLINQPadDriver
         {
             var fileType = TypedDataContext.FileType;
 
-            if ("Add Files".TryOpenFile(FileExtensions.Filter, fileType.GetExtension(), out var fileName, fileType.GetFilterIndex()))
+            if (this.TryOpenFiles("Add Files", FileExtensions.Filter, fileType.GetExtension(), out var files, fileType.GetFilterIndex()))
             {
-                AppendFiles(fileName);
+                AppendFiles(files);
             }
         }
 
-        private void AddFolderCommandBinding_OnExecuted(object sender, ExecutedRoutedEventArgs e) =>
-            AddFolder(false);
+        private void AddFoldersCommandBinding_OnExecuted(object sender, ExecutedRoutedEventArgs e) =>
+            AddFolders(false);
 
-        private void AddFolderAndItsSubfoldersCommandBinding_OnExecuted(object sender, ExecutedRoutedEventArgs e) =>
-            AddFolder(true);
+        private void AddFoldersWithSubfoldersCommandBinding_OnExecuted(object sender, ExecutedRoutedEventArgs e) =>
+            AddFolders(true);
 
         private void ClearCommandBinding_OnExecuted(object sender, ExecutedRoutedEventArgs e) =>
             FilesTextBox.Clear();
@@ -366,16 +456,17 @@ namespace CsvLINQPadDriver
                 !string.IsNullOrWhiteSpace(line = FilesTextBox.GetLineTextAtCaretIndex().GetInlineCommentContent().Trim());
         }
 
-        private void AddFolder(bool withSubfolders)
+        private void AddFolders(bool withSubfolders)
         {
-            _addFolderAndItsSubfoldersDialogOpened = withSubfolders;
+            _addFoldersWithSubfoldersDialogOpened = withSubfolders;
 
-            if ($"Add Folder{(withSubfolders ? " and Its Sub-folders" : string.Empty)}".TryBrowseForFolder(out var folder))
+            if (this.TryBrowseForFolders($"Add Folders{(withSubfolders ? " with Sub-folders" : string.Empty)}", out var folders))
             {
-                AppendFiles(Path.Combine(folder, GetFolderFilesMask(withSubfolders)));
+                var folderFilesMask = GetFolderFilesMask(withSubfolders);
+                AppendFiles(folders.Select(folder => Path.Combine(folder, folderFilesMask)).ToArray());
             }
 
-            _addFolderAndItsSubfoldersDialogOpened = false;
+            _addFoldersWithSubfoldersDialogOpened = false;
         }
 
         private string GetFolderFilesMask(bool withSubfolders) =>

@@ -170,7 +170,7 @@ CSV files connection can be added to LINQPad 6/5 the same way as any other conne
 
 ### CSV Files ###
 
-* CSV files: list of CSV files and folders. Can be added via files/folder dialogs, dedicated hotkeys, by typing one file/folder per line or by Drag&drop (`Ctrl` adds files, `Alt` toggles `*` and `**` masks). Wildcards `?` and `*` are supported; `**.csv` searches in folder and its sub-folders.
+* CSV files: list of CSV files and folders. Can be added via files/folder dialogs, context menu, hotkeys, by typing one file/folder per line or by Drag&drop (`Ctrl` adds files, `Alt` toggles `*` and `**` masks). Wildcards `?` and `*` are supported; `**.csv` searches in folder and its sub-folders.
   * `c:\Books\Books?.csv`: `Books.csv`, `Books1.csv`, etc. files in folder `c:\Books`
   * `c:\Books\*.csv`: all `*.csv` files in folder `c:\Books`
   * `c:\Books\**.csv`: all `*.csv` files in folder `c:\Books` and its sub-folders.
@@ -435,6 +435,7 @@ TimeSpan? ToTimeSpan(
 * [UnicodeCharsetDetector](https://github.com/i2van/UnicodeCharsetDetector)
 * [UTF.Unknown](https://www.nuget.org/packages/UTF.Unknown)
 * [Windows API Code Pack](https://github.com/contre/Windows-API-Code-Pack-1.1)
+* [Windows API Code Pack Shell](https://github.com/contre/Windows-API-Code-Pack-1.1)
 
 ## License ##
 

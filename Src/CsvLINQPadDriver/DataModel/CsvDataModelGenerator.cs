@@ -82,6 +82,7 @@ namespace CsvLINQPadDriver.DataModel
                     if (_csvDataContextDriverProperties.IgnoreInvalidFiles &&
                         !file.IsCsvFormatValid(csvSeparator, noBomEncoding, allowComments, ignoreBadData, autoDetectEncoding))
                     {
+                        exceptions.Add(file, "has invalid CSV format");
                         continue;
                     }
 
@@ -114,7 +115,7 @@ namespace CsvLINQPadDriver.DataModel
 
                     if (!columns.Any())
                     {
-                        exceptions.Add(file, "has no columns.");
+                        exceptions.Add(file, "has no columns");
                         continue;
                     }
 

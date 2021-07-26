@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 using Humanizer;
 
@@ -18,5 +19,13 @@ namespace CsvLINQPadDriver.Extensions
             collection.Count > 1
                 ? fallback ?? what.Pluralize()
                 : what;
+
+        public static string AppendDot(this string str) =>
+            Regex.IsMatch(str, @"\p{P}\s*$")
+                ? str
+                : str + ".";
+
+        public static string ReplaceHotKeyChar(this string str, string? newChar = null) =>
+            str.Replace("_", newChar);
     }
 }
