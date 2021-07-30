@@ -9,6 +9,8 @@ using CsvLINQPadDriver.Extensions;
 
 using LINQPad.Extensibility.DataContext;
 
+// ReSharper disable UnusedMember.Global
+
 namespace CsvLINQPadDriver
 {
     public class CsvDataContextDriverProperties : ICsvDataContextDriverProperties
@@ -76,6 +78,17 @@ namespace CsvLINQPadDriver
             set => SetValue(value);
         }
 
+        public string CommentChars
+        {
+            get => GetValue(string.Empty)!;
+            set => SetValue(value);
+        }
+
+        public char? CommentChar =>
+            string.IsNullOrWhiteSpace(CommentChars)
+                ? null
+                : CommentChars.TrimStart().First();
+
         public IEnumerable<string> ParsedFiles =>
             Files.GetFilesOnly();
 
@@ -100,7 +113,7 @@ namespace CsvLINQPadDriver
                 {
                     return Regex.Unescape(csvSeparator).FirstOrDefault();
                 }
-                catch (Exception exception) when(exception.CanBeHandled())
+                catch (Exception exception) when (exception.CanBeHandled())
                 {
                     var fallbackCsvSeparator = csvSeparator.First();
 
@@ -111,10 +124,21 @@ namespace CsvLINQPadDriver
             }
         }
 
+        public bool IgnoreBlankLines
+        {
+            get => GetValue(false);
+            set => SetValue(value);
+        }
+
+        public WhitespaceTrimOptions WhitespaceTrimOptions
+        {
+            get => GetValue(WhitespaceTrimOptions.None);
+            set => SetValue(value);
+        }
+
         public bool UseCsvHelperSeparatorAutoDetection
         {
             get => GetValue(false);
-            // ReSharper disable once UnusedMember.Global
             set => SetValue(value);
         }
 

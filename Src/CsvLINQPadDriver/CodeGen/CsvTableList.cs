@@ -18,8 +18,11 @@ namespace CsvLINQPadDriver.CodeGen
             char? csvSeparator,
             NoBomEncoding noBomEncoding,
             bool allowComments,
+            char? commentChar,
             bool ignoreBadData,
             bool autoDetectEncoding,
+            bool ignoreBlankLines,
+            WhitespaceTrimOptions whitespaceTrimOptions,
             string filePath,
             IEnumerable<CsvColumnInfo> propertiesInfo,
             Action<TRow> relationsInit)
@@ -29,8 +32,11 @@ namespace CsvLINQPadDriver.CodeGen
                 csvSeparator,
                 noBomEncoding,
                 allowComments,
+                commentChar,
                 ignoreBadData,
                 autoDetectEncoding,
+                ignoreBlankLines,
+                whitespaceTrimOptions,
                 filePath,
                 propertiesInfo,
                 relationsInit) =>

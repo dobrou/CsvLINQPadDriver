@@ -25,8 +25,11 @@ namespace CsvLINQPadDriver.CodeGen
         private readonly NoBomEncoding _noBomEncoding;
         private readonly StringComparer? _internStringComparer;
         private readonly bool _allowComments;
+        private readonly char? _commentChar;
         private readonly bool _ignoreBadData;
         private readonly bool _autoDetectEncoding;
+        private readonly bool _ignoreBlankLines;
+        private readonly WhitespaceTrimOptions _whitespaceTrimOptions;
 
         protected readonly string FilePath;
 
@@ -36,8 +39,11 @@ namespace CsvLINQPadDriver.CodeGen
             char? csvSeparator,
             NoBomEncoding noBomEncoding,
             bool allowComments,
+            char? commentChar,
             bool ignoreBadData,
             bool autoDetectEncoding,
+            bool ignoreBlankLines,
+            WhitespaceTrimOptions whitespaceTrimOptions,
             string filePath,
             IEnumerable<CsvColumnInfo> propertiesInfo,
             Action<TRow> relationsInit)
@@ -47,8 +53,11 @@ namespace CsvLINQPadDriver.CodeGen
             _csvSeparator = csvSeparator;
             _noBomEncoding = noBomEncoding;
             _allowComments = allowComments;
+            _commentChar = commentChar;
             _ignoreBadData = ignoreBadData;
             _autoDetectEncoding = autoDetectEncoding;
+            _ignoreBlankLines = ignoreBlankLines;
+            _whitespaceTrimOptions = whitespaceTrimOptions;
 
             FilePath = filePath;
 
@@ -62,8 +71,11 @@ namespace CsvLINQPadDriver.CodeGen
                 _internStringComparer,
                 _noBomEncoding,
                 _allowComments,
+                _commentChar,
                 _ignoreBadData,
                 _autoDetectEncoding,
+                _ignoreBlankLines,
+                _whitespaceTrimOptions,
                 _cachedCsvRowMappingBase!);
 
         // ReSharper disable once UnusedMember.Global

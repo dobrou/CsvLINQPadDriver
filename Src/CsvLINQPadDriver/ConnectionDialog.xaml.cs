@@ -55,9 +55,21 @@ namespace CsvLINQPadDriver
 
         public static readonly KeyGesture AddFoldersWithSubfoldersCommandKeyGesture = AddFoldersWithSubfoldersCommand.InputGestureAsKeyGesture;
 
+        public static readonly RoutedUICommandEx DeleteCommand = new()
+        {
+            Text = "_Delete",
+            InputGestureText = "Del"
+        };
+
+        public static readonly RoutedUICommandEx SelectAllCommand = new()
+        {
+            Text = "Select _all",
+            InputGestureText = "Ctrl+A"
+        };
+
         public static readonly RoutedUICommandEx ClearCommand = new()
         {
-            Text = "Clea_r",
+            Text = "C_lear",
             InputGestureText = "Ctrl+L",
             ToolTip = "Clear"
         };
@@ -66,7 +78,7 @@ namespace CsvLINQPadDriver
 
         public static readonly RoutedUICommandEx PasteFoldersWithSubfoldersCommand = new()
         {
-            Text = "Past_e (append **.csv to folders)",
+            Text = "_Paste (append **.csv to folders)",
             InputGestureText = "Ctrl+Alt+V"
         };
 
@@ -82,7 +94,7 @@ namespace CsvLINQPadDriver
 
         public static readonly RoutedUICommandEx PasteFromClipboardFoldersWithSubfoldersAndProceedCommand = new()
         {
-            Text = "Clear, paste (append **.csv to folders) an_d proceed",
+            Text = "Clear, paste (append **.csv to folders) a_nd proceed",
             InputGestureText = "Ctrl+Shift+Alt+V"
         };
 
@@ -134,9 +146,11 @@ namespace CsvLINQPadDriver
         public static readonly string TurnOnWrapText  = GetTurnWrapText(true);
         public static readonly string TurnOffWrapText = GetTurnWrapText(false);
 
-        public static readonly string WildcardsToolTip = $"Type one file/folder per line. Wildcards ? and * are supported; {FileExtensions.DefaultRecursiveMask} searches in folder and its sub-folders";
-
+        private object? _originalFilesTextBoxToolTip;
         private bool _addFoldersWithSubfoldersDialogOpened;
+
+        private ICsvDataContextDriverProperties TypedDataContext =>
+            (ICsvDataContextDriverProperties)DataContext;
 
         public ConnectionDialog(ICsvDataContextDriverProperties csvDataContextDriverProperties)
         {
@@ -144,7 +158,7 @@ namespace CsvLINQPadDriver
 
             OverrideDependencyPropertiesMetadata();
             InitializeComponent();
-            SetupControls();
+            UpdateInstructions();
             AddCommandManagerPreviewHandlers();
 
             static void OverrideDependencyPropertiesMetadata()
@@ -162,18 +176,40 @@ namespace CsvLINQPadDriver
                 CommandManager.AddPreviewExecutedHandler(FilesTextBox, FilesTextBox_OnPreviewExecuted);
                 CommandManager.AddPreviewCanExecuteHandler(FilesTextBox, FilesTextBox_OnPreviewCanExecute);
             }
-
-            void SetupControls() =>
-                FilesTextBox.ToolTip = $"{FilesTextBox.ToolTip} or {char.ToLower(WildcardsToolTip[0])}{WildcardsToolTip[1..]}".Replace(". ", Environment.NewLine);
         }
-
-        private ICsvDataContextDriverProperties TypedDataContext =>
-            (ICsvDataContextDriverProperties) DataContext;
 
         protected override void OnClosed(EventArgs e)
         {
             CommandManager.RemovePreviewExecutedHandler(FilesTextBox, FilesTextBox_OnPreviewExecuted);
             CommandManager.RemovePreviewCanExecuteHandler(FilesTextBox, FilesTextBox_OnPreviewCanExecute);
+        }
+
+        private void UpdateInstructions()
+        {
+            if (!IsInitialized)
+            {
+                return;
+            }
+
+            const string inlineComment = FileExtensions.InlineComment;
+
+            var fileType = TypedDataContext.FileType;
+            var mask = fileType.GetMask();
+            var recursiveMask = fileType.GetMask(true);
+
+            var wildcardsToolTip = $"Type one file/folder per line. Wildcards ? and * are supported; {recursiveMask} searches in folder and its sub-folders";
+
+            FilesInstructionsTextBox.Text = GetInstructions().Select(str => $"{inlineComment} {str}.").JoinNewLine();
+            FilesTextBox.ToolTip = $"{_originalFilesTextBoxToolTip ??= FilesTextBox.ToolTip} or {char.ToLower(wildcardsToolTip[0])}{wildcardsToolTip[1..]}".Replace(". ", Environment.NewLine);
+
+            IEnumerable<string> GetInstructions()
+            {
+                yield return "Drag&drop here (from add files/folder dialogs as well). Ctrl adds files. Alt toggles * and ** masks";
+                yield return wildcardsToolTip;
+                yield return $"{((KeyGesture)ApplicationCommands.Paste.InputGestures[0]).DisplayString} ({PasteFoldersWithSubfoldersCommand.InputGestureText}) pastes from clipboard, appends {mask} ({recursiveMask}) to folders";
+                yield return $"{PasteFromClipboardFoldersAndProceedCommand.InputGestureText} ({PasteFromClipboardFoldersWithSubfoldersAndProceedCommand.InputGestureText}) clears, pastes from clipboard, appends {mask} ({recursiveMask}) to folders and proceeds";
+                yield return $"Use '{inlineComment}' to comment line";
+            }
         }
 
         private void OkButton_Click(object sender, RoutedEventArgs e)
@@ -281,16 +317,16 @@ namespace CsvLINQPadDriver
         private void PasteFoldersWithSubfoldersCommand_OnExecuted(object sender, ExecutedRoutedEventArgs e) =>
             InsertFilesFromClipboard(true);
 
-        private void InsertFilesFromClipboard(bool folderAndItsSubfolders)
+        private void InsertFilesFromClipboard(bool foldersWithSubfolders)
         {
-            var enrichedFilesText = GetFilesTextFromClipboard(folderAndItsSubfolders);
+            var enrichedFilesText = GetFilesTextFromClipboard(foldersWithSubfolders);
 
             FilesTextBox.SelectedText = enrichedFilesText;
             FilesTextBox.SelectionLength = 0;
             FilesTextBox.SelectionStart += enrichedFilesText.Length;
         }
 
-        private string[] GetEnrichedPathsFromUserInput(object data, bool folderAndItsSubfolders)
+        private string[] GetEnrichedPathsFromUserInput(object data, bool foldersWithSubfolders)
         {
             var files = data as IEnumerable<string> ?? ((string) data).GetFilesOnly();
 
@@ -301,7 +337,7 @@ namespace CsvLINQPadDriver
                 var (isFile, enrichedPath) = path.DeduceIsFileOrFolder();
                 return isFile
                     ? enrichedPath
-                    : Path.Combine(enrichedPath, GetFolderFilesMask(folderAndItsSubfolders));
+                    : Path.Combine(enrichedPath, GetFolderFilesMask(foldersWithSubfolders));
             }
         }
 
@@ -320,14 +356,14 @@ namespace CsvLINQPadDriver
         private void PasteFromClipboardFoldersWithSubfoldersAndProceedCommandBinding_OnExecuted(object sender, ExecutedRoutedEventArgs e) =>
             PasteAndGo(true);
 
-        private string GetFilesTextFromClipboard(bool folderAndItsSubfolders) =>
-            GetEnrichedPathsFromUserInput(Clipboard.GetData(DataFormats.FileDrop) ?? Clipboard.GetText(), folderAndItsSubfolders)
+        private string GetFilesTextFromClipboard(bool foldersWithSubfolders) =>
+            GetEnrichedPathsFromUserInput(Clipboard.GetData(DataFormats.FileDrop) ?? Clipboard.GetText(), foldersWithSubfolders)
                 .Aggregate(new StringBuilder(), (result, file) => result.AppendLine(file))
                 .ToString();
 
-        private void PasteAndGo(bool folderAndItsSubfolders)
+        private void PasteAndGo(bool foldersWithSubfolders)
         {
-            var enrichedFilesText = GetFilesTextFromClipboard(folderAndItsSubfolders);
+            var enrichedFilesText = GetFilesTextFromClipboard(foldersWithSubfolders);
 
             FilesTextBox.SelectAll();
             FilesTextBox.SelectedText = enrichedFilesText;
@@ -368,8 +404,23 @@ namespace CsvLINQPadDriver
         private void AddFoldersWithSubfoldersCommandBinding_OnExecuted(object sender, ExecutedRoutedEventArgs e) =>
             AddFolders(true);
 
-        private void ClearCommandBinding_OnExecuted(object sender, ExecutedRoutedEventArgs e) =>
+        private void SelectAllCommandBinding_OnExecuted(object sender, ExecutedRoutedEventArgs e) =>
+            ApplicationCommands.SelectAll.Execute(null, FilesTextBox);
+
+        private void SelectAllCommandBinding_OnCanExecute(object sender, CanExecuteRoutedEventArgs e) =>
+            e.CanExecute = FilesTextBox.SelectionLength < FilesTextBox.Text.Length;
+
+        private void DeleteCommandBinding_OnExecuted(object sender, ExecutedRoutedEventArgs e) =>
+            EditingCommands.Delete.Execute(null, FilesTextBox);
+
+        private void DeleteCommandBinding_OnCanExecute(object sender, CanExecuteRoutedEventArgs e) =>
+            e.CanExecute = FilesTextBox.SelectionLength != 0 || FilesTextBox.CaretIndex < FilesTextBox.Text.Length;
+
+        private void ClearCommandBinding_OnExecuted(object sender, ExecutedRoutedEventArgs e)
+        {
             FilesTextBox.Clear();
+            FilesTextBox.Focus();
+        }
 
         private void ClearCommandBinding_OnCanExecute(object sender, CanExecuteRoutedEventArgs e) =>
             e.CanExecute = FilesTextBox?.Text.Any() == true;
@@ -523,5 +574,8 @@ namespace CsvLINQPadDriver
                 "Do not use",
                 false) == true;
         }
+
+        private void FileTypeComboBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e) =>
+            UpdateInstructions();
     }
 }

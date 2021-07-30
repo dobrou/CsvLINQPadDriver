@@ -13,7 +13,7 @@ var expected = new[]
 actual.Should().BeEquivalentTo(expected, Reason());
 
 Authors.ToList().ForEach(
-	author => author.Books.Should().BeEquivalentTo(Books.Where(book => book.AuthorId == author.Id), Reason()));
+	author => author.Books.Should().Equal(Books.Where(book => book.AuthorId == author.Id), Reason()));
 
 Books.ToList().ForEach(
-	book => book.Authors.Should().BeEquivalentTo(Authors.Where(author => author.Id == book.AuthorId), Reason()));
+	book => book.Authors.Should().Equal(Authors.Where(author => author.Id == book.AuthorId), Reason()));

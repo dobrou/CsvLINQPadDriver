@@ -7,11 +7,11 @@ namespace CsvLINQPadDriver.Wpf
     {
         private readonly string? _toolTip;
 
-        public string ToolTip
+        public string? ToolTip
         {
             // ReSharper disable once UnusedMember.Global
-            get => _toolTip!;
-            init => _toolTip ??= string.Format($"{value}{(value.Contains("{0}") ? string.Empty : " ({0})")}", InputGestureText);
+            get => _toolTip is null ? null : string.Format($"{_toolTip}{(_toolTip.Contains("{0}") ? string.Empty : " ({0})")}", InputGestureText);
+            init => _toolTip = value;
         }
 
         public string InputGestureText { get; init; } = null!;

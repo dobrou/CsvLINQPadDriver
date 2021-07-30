@@ -182,10 +182,12 @@ CSV files connection can be added to LINQPad 6/5 the same way as any other conne
 
 ### Format ###
 
-* CSV separator: character used to separate columns in files. Can be `,`, `\t`, etc. Auto-detected if empty.
+* Separator: characters used to separate columns in files. Can be `,`, `\t`, etc. Auto-detected if empty.
 * Use [CsvHelper](https://joshclose.github.io/CsvHelper) library separator auto-detection: use CsvHelper library separator auto-detection instead of internal one.
-* Ignore bad data: ignore malformed CSV data.
-* Allow comments: lines starting with `#` will be ignored.
+* Ignore bad data: ignore malformed files.
+* Ignore blank lines: do not process blank lines.
+* Trim whitespaces: data whitespaces trim options.
+* Allow comments: allow single-line comments - lines starting with `#` (default) will be ignored.
 
 ### Memory ###
 

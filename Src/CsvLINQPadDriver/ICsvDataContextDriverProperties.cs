@@ -47,7 +47,14 @@ namespace CsvLINQPadDriver
         /// </summary>
         bool AllowComments { get; set; }
 
-        public IEnumerable<string> ParsedFiles { get; }
+        /// <summary>
+        /// Single-line comment characters.
+        /// </summary>
+        string CommentChars { get; set; }
+
+        char? CommentChar { get; }
+
+        IEnumerable<string> ParsedFiles { get; }
 
         /// <summary>
         /// Default CSV separator. If empty or null, separator will be auto-detected.
@@ -55,6 +62,16 @@ namespace CsvLINQPadDriver
         string CsvSeparator { get; set; }
 
         char? CsvSeparatorChar { get; }
+
+        /// <summary>
+        /// Ignore blank lines.
+        /// </summary>
+        bool IgnoreBlankLines { get; }
+
+        /// <summary>
+        /// Fields whitespace trimming options.
+        /// </summary>
+        WhitespaceTrimOptions WhitespaceTrimOptions { get; }
 
         /// <summary>
         /// Use CsvHelper separator auto detection.

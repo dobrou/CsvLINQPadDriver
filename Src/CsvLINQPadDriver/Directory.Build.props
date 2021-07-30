@@ -1,10 +1,8 @@
 ﻿<Project>
   <PropertyGroup>
-    <Version>6.17.0</Version>
-    <PackageReleaseNotes>Added folders multiselection.
-Reported ignored invalid files.
-Set default string comparison to Ordinal.
-</PackageReleaseNotes>
+    <Version>6.18.0</Version>
+    <PackageReleaseNotes>Added ignore blank lines option.
+Added trim whitespaces option.</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -43,7 +41,7 @@ Set default string comparison to Ordinal.
     <PackageReference Include="Microsoft-WindowsAPICodePack-Core" Version="1.1.4" />
     <PackageReference Include="Microsoft-WindowsAPICodePack-Shell" Version="1.1.4" />
     <PackageReference Include="UnicodeCharsetDetector.Standard" Version="1.1.1" />
-    <PackageReference Include="UTF.Unknown" Version="2.3.0" />
+    <PackageReference Include="UTF.Unknown" Version="2.4.0" />
   </ItemGroup>
 
   <ItemGroup>

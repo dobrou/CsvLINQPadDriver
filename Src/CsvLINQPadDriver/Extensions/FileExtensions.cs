@@ -78,9 +78,7 @@ namespace CsvLINQPadDriver.Extensions
             FileNameComparer);
 
         private static readonly FileType DefaultFileType = SupportedFileTypes.First().FileType;
-
-        public static readonly string DefaultMask = GetMask(DefaultFileType);
-        public static readonly string DefaultRecursiveMask = GetMask(DefaultFileType, true);
+        private static readonly string DefaultMask = GetMask(DefaultFileType);
 
 #if NETCOREAPP
         static FileExtensions() =>
@@ -108,8 +106,11 @@ namespace CsvLINQPadDriver.Extensions
             StringComparer? internStringComparer,
             NoBomEncoding noBomEncoding,
             bool allowComments,
+            char? commentChar,
             bool ignoreBadData,
             bool autoDetectEncoding,
+            bool ignoreBlankLines,
+            WhitespaceTrimOptions whitespaceTrimOptions,
             CsvRowMappingBase<T> csvClassMap)
             where T : ICsvRowBase, new()
         {
@@ -117,7 +118,7 @@ namespace CsvLINQPadDriver.Extensions
                 ? new()
                 : new(internStringComparer);
 
-            return CsvReadRows(fileName, csvSeparator, noBomEncoding, allowComments, ignoreBadData, autoDetectEncoding)
+            return CsvReadRows(fileName, csvSeparator, noBomEncoding, allowComments, commentChar, ignoreBadData, autoDetectEncoding, ignoreBlankLines, whitespaceTrimOptions)
                     .Skip(1) // Skip header.
                     .Select(GetRecord);
 
@@ -140,10 +141,13 @@ namespace CsvLINQPadDriver.Extensions
             char? csvSeparator,
             NoBomEncoding noBomEncoding,
             bool allowComments,
+            char? commentChar,
             bool ignoreBadData,
-            bool autoDetectEncoding)
+            bool autoDetectEncoding,
+            bool ignoreBlankLines,
+            WhitespaceTrimOptions whitespaceTrimOptions)
         {
-            using var csvParser = CreateCsvParser(fileName, csvSeparator, noBomEncoding, allowComments, ignoreBadData, autoDetectEncoding);
+            using var csvParser = CreateCsvParser(fileName, csvSeparator, noBomEncoding, allowComments, commentChar, ignoreBadData, autoDetectEncoding, ignoreBlankLines, whitespaceTrimOptions);
 
             return csvParser.Read()
                     ? csvParser.Record
@@ -197,8 +201,11 @@ namespace CsvLINQPadDriver.Extensions
             char? csvSeparator,
             NoBomEncoding noBomEncoding,
             bool allowComments,
+            char? commentChar,
             bool ignoreBadData,
-            bool autoDetectEncoding)
+            bool autoDetectEncoding,
+            bool ignoreBlankLines,
+            WhitespaceTrimOptions whitespaceTrimOptions)
         {
             var header = $"{fileName} is not valid CSV file:";
 
@@ -211,7 +218,7 @@ namespace CsvLINQPadDriver.Extensions
 
             try
             {
-                using var csvParser = CreateCsvParser(fileName, csvSeparator, noBomEncoding, allowComments, ignoreBadData, autoDetectEncoding);
+                using var csvParser = CreateCsvParser(fileName, csvSeparator, noBomEncoding, allowComments, commentChar, ignoreBadData, autoDetectEncoding, ignoreBlankLines, whitespaceTrimOptions);
 
                 if (!csvParser.Read())
                 {
@@ -356,8 +363,11 @@ namespace CsvLINQPadDriver.Extensions
             char? csvSeparator,
             NoBomEncoding noBomEncoding,
             bool allowComments,
+            char? commentChar,
             bool ignoreBadData,
-            bool autoDetectEncoding)
+            bool autoDetectEncoding,
+            bool ignoreBlankLines,
+            WhitespaceTrimOptions whitespaceTrimOptions)
         {
             const int bufferSize = 4096 * 20;
 
@@ -367,16 +377,28 @@ namespace CsvLINQPadDriver.Extensions
                 AllowComments = allowComments,
                 HasHeaderRecord = false,
                 DetectColumnCountChanges = false,
+                IgnoreBlankLines = ignoreBlankLines,
+                TrimOptions = GetTrimOptions(),
                 BufferSize = bufferSize,
                 ProcessFieldBufferSize = bufferSize
             };
 
             csvConfiguration.Delimiter = csvSeparator?.ToString() ?? csvConfiguration.Delimiter;
+            csvConfiguration.Comment = commentChar ?? csvConfiguration.Comment;
             csvConfiguration.BadDataFound = ignoreBadData ? null : csvConfiguration.BadDataFound;
 
             var encoding = (autoDetectEncoding ? DetectEncoding(fileName) : null) ?? GetFallbackEncoding(noBomEncoding);
 
             return new CsvParser(new StreamReader(fileName, encoding, !autoDetectEncoding, bufferSize / sizeof(char)), csvConfiguration);
+
+            TrimOptions GetTrimOptions() =>
+                whitespaceTrimOptions switch
+                {
+                    WhitespaceTrimOptions.None => TrimOptions.None,
+                    WhitespaceTrimOptions.Trim => TrimOptions.Trim,
+                    WhitespaceTrimOptions.InsideQuotes => TrimOptions.InsideQuotes,
+                    _ => throw new ArgumentException($"Unknown trim option: {whitespaceTrimOptions}", nameof(whitespaceTrimOptions))
+                };
         }
 
         public record DeduceFileOrFolderResult(bool IsFile, string Path);
@@ -444,10 +466,13 @@ namespace CsvLINQPadDriver.Extensions
             char? csvSeparator,
             NoBomEncoding noBomEncoding,
             bool allowComments,
+            char? commentChar,
             bool ignoreBadData,
-            bool autoDetectEncoding)
+            bool autoDetectEncoding,
+            bool ignoreBlankLines,
+            WhitespaceTrimOptions whitespaceTrimOptions)
         {
-            using var csvParser = CreateCsvParser(fileName, csvSeparator, noBomEncoding, allowComments, ignoreBadData, autoDetectEncoding);
+            using var csvParser = CreateCsvParser(fileName, csvSeparator, noBomEncoding, allowComments, commentChar, ignoreBadData, autoDetectEncoding, ignoreBlankLines, whitespaceTrimOptions);
 
             while (csvParser.Read())
             {

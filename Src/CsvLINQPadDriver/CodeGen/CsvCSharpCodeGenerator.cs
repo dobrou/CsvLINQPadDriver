@@ -69,13 +69,16 @@ namespace CsvLINQPadDriver.CodeGen
             // Init tables data {string.Join(string.Empty, csvTables.Select(table => $@"
             this.{table.CodeName} = {typeof(CsvTableFactory).GetCodeTypeClassName()}.CreateTable<{GetClassName(table)}>(
                 {GetBoolConst(isStringInternEnabled)},
-                {(isStringInternEnabled && _properties.UseStringComparerForStringIntern ? GetStringComparer(_properties.StringComparison) : "null")},
+                {GetNullableValue(isStringInternEnabled && _properties.UseStringComparerForStringIntern, () => GetStringComparer(_properties.StringComparison))},
                 {GetBoolConst(_properties.IsCacheEnabled)},
                 {table.CsvSeparator.AsValidCSharpCode()},
                 {typeof(NoBomEncoding).GetCodeTypeClassName()}.{_properties.NoBomEncoding},
                 {GetBoolConst(_properties.AllowComments)},
+                {GetNullableValue(_properties.AllowComments && _properties.CommentChar.HasValue, () => _properties.CommentChar.AsValidCSharpCode())},
                 {GetBoolConst(_properties.IgnoreBadData)},
                 {GetBoolConst(_properties.AutoDetectEncoding)},
+                {GetBoolConst(_properties.IgnoreBlankLines)},
+                {typeof(WhitespaceTrimOptions).GetCodeTypeClassName()}.{_properties.WhitespaceTrimOptions},
                 {table.FilePath.AsValidCSharpCode()},
                 new {typeof(CsvColumnInfoList<>).GetCodeTypeClassName(GetClassName(table))} {{
                     {string.Join(string.Empty, table.Columns.Select(c => $@"{{ {c.Index}, x => x.{c.CodeName} }}, "))}
@@ -93,8 +96,11 @@ namespace CsvLINQPadDriver.CodeGen
 }} // namespace
 ", groups);
 
-            static string GetBoolConst(bool val) =>
-                val ? "true" : "false";
+            static string GetBoolConst(bool value) =>
+                value ? "true" : "false";
+
+            static string GetNullableValue(bool hasValue, Func<string> valueProvider) =>
+                hasValue ? valueProvider() : "null";
         }
 
         private static TypeCodeResult GenerateTableRowDataTypeClass(CsvTable table, bool useRecordType, StringComparison stringComparison, bool hideRelationsFromDump)

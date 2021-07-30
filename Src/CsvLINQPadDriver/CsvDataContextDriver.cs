@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Windows.Input;
 
 using Humanizer;
 
@@ -52,19 +51,7 @@ namespace CsvLINQPadDriver
 
         public override bool ShowConnectionDialog(IConnectionInfo cxInfo, ConnectionDialogOptions connectionDialogOptions)
         {
-            var properties = new CsvDataContextDriverProperties(cxInfo);
-
-            if (connectionDialogOptions.IsNewConnection)
-            {
-                properties.Files =
-                    $"{FileExtensions.InlineComment} Drag&drop here (from add files/folder dialogs as well). Ctrl adds files. Alt toggles * and ** masks.".JoinNewLine(
-                    $"{FileExtensions.InlineComment} {ConnectionDialog.WildcardsToolTip}.",
-                    $"{FileExtensions.InlineComment} {((KeyGesture)ApplicationCommands.Paste.InputGestures[0]).DisplayString} ({ConnectionDialog.PasteFoldersWithSubfoldersCommand.InputGestureText}) pastes from clipboard, appends {FileExtensions.DefaultMask} ({FileExtensions.DefaultRecursiveMask}) to folders.",
-                    $"{FileExtensions.InlineComment} {ConnectionDialog.PasteFromClipboardFoldersAndProceedCommand.InputGestureText} ({ConnectionDialog.PasteFromClipboardFoldersWithSubfoldersAndProceedCommand.InputGestureText}) clears, pastes from clipboard, appends {FileExtensions.DefaultMask} ({FileExtensions.DefaultRecursiveMask}) to folders and proceeds.",
-                    string.Empty, string.Empty);
-            }
-
-            if (new ConnectionDialog(properties).ShowDialog() != true)
+            if (new ConnectionDialog(new CsvDataContextDriverProperties(cxInfo)).ShowDialog() != true)
             {
                 return false;
             }
