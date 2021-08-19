@@ -20,6 +20,9 @@ namespace CsvLINQPadDriver
     {
         private const string HelpUri = "https://github.com/i2van/CsvLINQPadDriver/#readme";
 
+        public const string ConfirmCheck = "check";
+        public const string ConfirmUncheck = "uncheck";
+
         public const Visibility NetCoreOnlyVisibility =
 #if NETCOREAPP
             Visibility.Visible;
@@ -148,6 +151,7 @@ namespace CsvLINQPadDriver
 
         private object? _originalFilesTextBoxToolTip;
         private bool _addFoldersWithSubfoldersDialogOpened;
+        private bool _skipConfirmOption;
 
         private ICsvDataContextDriverProperties TypedDataContext =>
             (ICsvDataContextDriverProperties)DataContext;
@@ -246,8 +250,17 @@ namespace CsvLINQPadDriver
                         ValidateFilePathsCheckBox.ReplaceHotKeyChar("&"),
                         ref validateFilePaths) == false;
 
-                TypedDataContext.ValidateFilePaths = validateFilePaths;
-                ValidateFilePathsCheckBox.UpdateTargetBinding(ToggleButton.IsCheckedProperty);
+                try
+                {
+                    _skipConfirmOption = true;
+
+                    TypedDataContext.ValidateFilePaths = validateFilePaths;
+                    ValidateFilePathsCheckBox.UpdateTargetBinding(ToggleButton.IsCheckedProperty);
+                }
+                finally
+                {
+                    _skipConfirmOption = false;
+                }
 
                 if (!canClose)
                 {
@@ -553,29 +566,33 @@ namespace CsvLINQPadDriver
             }
         }
 
-        private void UnstableOption_OnChecked(object sender, RoutedEventArgs e)
-        {
-            if (!IsLoaded)
-            {
-                return;
-            }
-
-            var checkBox = e.OriginalSource as CheckBox;
-
-            if (((string?)checkBox?.Tag)?.ToBool() != true)
-            {
-                return;
-            }
-
-            checkBox.IsChecked = this.ShowYesNoDialog(
-                checkBox.ReplaceHotKeyChar(),
-                "This option might mangle CSV parsing. Would you like to use it anyway?",
-                "I understand and want to use it",
-                "Do not use",
-                false) == true;
-        }
-
         private void FileTypeComboBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e) =>
             UpdateInstructions();
+
+        private void ConfirmOption_OnChecked(object sender, RoutedEventArgs e) =>
+            ConfirmOption(e);
+
+        private void ConfirmOption_OnUnchecked(object sender, RoutedEventArgs e) =>
+            ConfirmOption(e, true);
+
+        private void ConfirmOption(RoutedEventArgs e, bool isUnchecked = false)
+        {
+            if (_skipConfirmOption ||
+                !IsLoaded ||
+                e.OriginalSource is not CheckBox { Tag: string tag } checkBox ||
+                e.RoutedEvent != (tag == ConfirmCheck ? ToggleButton.CheckedEvent : ToggleButton.UncheckedEvent))
+            {
+                return;
+            }
+
+            checkBox.IsChecked =
+                isUnchecked ^ this.ShowYesNoDialog(
+                    checkBox.ReplaceHotKeyChar(),
+                    $"This option might mangle CSV parsing if {tag}ed. Would you like to {tag} it anyway?",
+                    $"I understand and want to {tag} it",
+                    $"Do not {tag} it",
+                    false)
+                ?? isUnchecked;
+        }
     }
 }

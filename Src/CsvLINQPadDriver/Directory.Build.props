@@ -1,8 +1,7 @@
 ﻿<Project>
   <PropertyGroup>
-    <Version>6.18.0</Version>
-    <PackageReleaseNotes>Added ignore blank lines option.
-Added trim whitespaces option.</PackageReleaseNotes>
+    <Version>6.19.0</Version>
+    <PackageReleaseNotes>Improved nullable reference types handling.</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup>

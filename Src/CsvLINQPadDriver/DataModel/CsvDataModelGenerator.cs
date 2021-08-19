@@ -138,7 +138,7 @@ namespace CsvLINQPadDriver.DataModel
 
                         var key = string.Join(string.Empty, columns.Select(c => $"{c.Name}\t{c.Index}\n"));
 
-                        if (!tableCodeNames!.TryGetValue(key, out var className))
+                        if (!tableCodeNames.TryGetValue(key, out var className))
                         {
                             className = codeName;
                             tableCodeNames.Add(key, className);

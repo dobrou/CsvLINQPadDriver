@@ -96,19 +96,19 @@ public class CsvDataContext
 // record/class for LINQPad 6, class for LINQPad 5.
 public sealed record RAuthor
 {
-    public string Id { get; set; }
-    public string Name { get; set; }
+    public string? Id { get; set; }
+    public string? Name { get; set; }
 
-    public IEnumerable<RBook> Books { get; set; }
+    public IEnumerable<RBook>? Books { get; set; }
 }
 
 public sealed record RBook
 {
-    public string Id { get; set; }
-    public string Title { get; set; }
-    public string AuthorId { get; set; }
+    public string? Id { get; set; }
+    public string? Title { get; set; }
+    public string? AuthorId { get; set; }
 
-    public IEnumerable<RAuthor> Authors { get; set; }
+    public IEnumerable<RAuthor>? Authors { get; set; }
 }
 ```
 
@@ -248,24 +248,24 @@ Generated data object is sealed mutable class or [record](https://docs.microsoft
 ### Methods ##
 
 ```csharp
-string ToString();
+string? ToString();
 
-bool Equals(T obj);
-bool Equals(object obj);
+bool Equals(T? obj);
+bool Equals(object? obj);
 
-static bool operator == (T obj1, T obj2);
-static bool operator != (T obj1, T obj2);
+static bool operator == (T? obj1, T? obj2);
+static bool operator != (T? obj1, T? obj2);
 
 int GetHashCode();
 
-string this[int index] { get; set; }
-string this[string index] { get; set; }
+string? this[int index] { get; set; }
+string? this[string index] { get; set; }
 ```
 
 #### ToString ####
 
 ```csharp
-string ToString();
+string? ToString();
 ```
 
 Formats object the way PowerShell [Format-List](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/format-list) does.
@@ -291,8 +291,8 @@ Note that:
 #### Equals ####
 
 ```csharp
-bool Equals(T obj);
-bool Equals(object obj);
+bool Equals(T? obj);
+bool Equals(object? obj);
 ```
 
 > Depends on string comparison driver setting. Relations are not participated.
@@ -300,8 +300,8 @@ bool Equals(object obj);
 #### Overloaded Operators ####
 
 ```csharp
-static bool operator == (T obj1, T obj2);
-static bool operator != (T obj1, T obj2);
+static bool operator == (T? obj1, T? obj2);
+static bool operator != (T? obj1, T? obj2);
 ```
 
 > Depends on string comparison driver setting. Relations are not participated.
@@ -309,8 +309,8 @@ static bool operator != (T obj1, T obj2);
 #### Indexers ####
 
 ```csharp
-string this[int index] { get; set; }
-string this[string index] { get; set; }
+string? this[int index] { get; set; }
+string? this[string index] { get; set; }
 ```
 
 See [properties access](#properties-access) below.

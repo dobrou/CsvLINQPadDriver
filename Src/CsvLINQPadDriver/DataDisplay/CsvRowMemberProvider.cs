@@ -83,7 +83,7 @@ namespace CsvLINQPadDriver.DataDisplay
                 ProvidersDataCache.Add(objectType, providerData);
             }
 
-            return new CsvRowMemberProvider(objectToDisplay, providerData!);
+            return new CsvRowMemberProvider(objectToDisplay, providerData);
 
             static bool IsSupportedType(Type objectType) =>
                 typeof(ICsvRowBase).IsAssignableFrom(objectType);

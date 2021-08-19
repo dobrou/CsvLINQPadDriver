@@ -25,6 +25,14 @@ namespace CsvLINQPadDriver.CodeGen
     {
         private const string DefaultContextTypeName = "CsvDataContext";
 
+        private const string NullableReferenceTypeSign =
+#if NETCOREAPP
+            "?"
+#else
+            "/*?*/"
+#endif
+        ;
+
         private readonly ICsvDataContextDriverProperties _properties;
 
         private readonly string _contextNameSpace;
@@ -80,8 +88,8 @@ namespace CsvLINQPadDriver.CodeGen
                 {GetBoolConst(_properties.IgnoreBlankLines)},
                 {typeof(WhitespaceTrimOptions).GetCodeTypeClassName()}.{_properties.WhitespaceTrimOptions},
                 {table.FilePath.AsValidCSharpCode()},
-                new {typeof(CsvColumnInfoList<>).GetCodeTypeClassName(GetClassName(table))} {{
-                    {string.Join(string.Empty, table.Columns.Select(c => $@"{{ {c.Index}, x => x.{c.CodeName} }}, "))}
+                new {typeof(CsvColumnInfoList).GetCodeTypeClassName()} {{
+                    {string.Join(string.Empty, string.Join($",{Environment.NewLine}                    ", table.Columns.Select(c => $@"{{ {IntToString(c.Index)}, ""{c.CodeName}"" }}")))}
                 }},
                 r => {{{string.Join(string.Empty, table.Relations.Select(csvRelation => $@"
                     r.{csvRelation.CodeName} = new {typeof(LazyEnumerable<>).GetCodeTypeClassName(GetClassName(csvRelation.TargetTable))}(
@@ -117,7 +125,7 @@ namespace CsvLINQPadDriver.CodeGen
             return new TypeCodeResult(className, $@"
     public sealed {generatedType} {className} : {typeof(ICsvRowBase).GetCodeTypeClassName()}{interfaces}
     {{{string.Join(string.Empty, table.Columns.Select(csvColumn => $@"
-        public string {GetPropertyName(csvColumn)} {{ get; set; }}"))}
+        public string{NullableReferenceTypeSign} {GetPropertyName(csvColumn)} {{ get; set; }}"))}
 {GenerateIndexer(properties, true)}
 {GenerateIndexer(properties, false)}
 {GenerateToString(properties)}
@@ -125,7 +133,7 @@ namespace CsvLINQPadDriver.CodeGen
 
         /// <summary>{SecurityElement.Escape(csvRelation.DisplayName)}</summary> {(hideRelationsFromDump ? $@"
         [{typeof(HideFromDumpAttribute).GetCodeTypeClassName()}]" : string.Empty)}
-        public System.Collections.Generic.IEnumerable<{csvRelation.TargetTable.GetCodeRowClassName()}> {csvRelation.CodeName} {{ get; set; }}")
+        public System.Collections.Generic.IEnumerable<{csvRelation.TargetTable.GetCodeRowClassName()}>{NullableReferenceTypeSign} {csvRelation.CodeName} {{ get; set; }}")
             )}
     }}", table.CodeName!, table.FilePath);
 
@@ -137,13 +145,13 @@ namespace CsvLINQPadDriver.CodeGen
         {
             return $@"
         [{typeof(HideFromDumpAttribute).GetCodeTypeClassName()}]
-        public string this[{(intIndexer ? "int" : "string")} index]
+        public string{NullableReferenceTypeSign} this[{(intIndexer ? "int" : "string")} index]
         {{
             get
             {{
                 switch(index)
                 {{{string.Join(string.Empty, properties.Select((c, i) => $@"
-                    case {(intIndexer ? IntToStr(i) : $"\"{c}\"")}: return {c};"))}
+                    case {(intIndexer ? IntToString(i) : $"\"{c}\"")}: return {c};"))}
                     {GenerateIndexerException(intIndexer)}
                 }}
             }}
@@ -151,7 +159,7 @@ namespace CsvLINQPadDriver.CodeGen
             {{
                 switch(index)
                 {{{string.Join(string.Empty, properties.Select((c, i) => $@"
-                    case {(intIndexer ? IntToStr(i) : $"\"{c}\"")}: {c} = value; return;"))}
+                    case {(intIndexer ? IntToString(i) : $"\"{c}\"")}: {c} = value; return;"))}
                     {GenerateIndexerException(intIndexer)}
                 }}
             }}
@@ -159,48 +167,50 @@ namespace CsvLINQPadDriver.CodeGen
 
             static string GenerateIndexerException(bool intIndexer) =>
                 $@"default: throw new System.IndexOutOfRangeException(string.Format(""There is no property {(intIndexer ? "at index {0}" : "with name \\\"{0}\\\"")}"", index));";
-
-            static string IntToStr(int val) =>
-                val.ToString(CultureInfo.InvariantCulture);
         }
+
+        private static string IntToString(int val) =>
+            val.ToString(CultureInfo.InvariantCulture);
 
         private static string GenerateToString(IReadOnlyCollection<string> properties)
         {
             var namePadding = properties.Max(property => property.Length);
 
             return $@"
-        public override string ToString()
+        public override string{NullableReferenceTypeSign} ToString()
         {{
-            return string.Format(""{string.Join(string.Empty, properties.Select((v, i) => $"{v.PadRight(namePadding)} : {{{i+1}}}{{0}}"))}"", System.Environment.NewLine, {string.Join(", ", properties)});
+            return string.Format(""{string.Join(string.Empty, properties.Select((v, i) => $"{v.PadRight(namePadding)} : {{{IntToString(i+1)}}}{{0}}"))}"", System.Environment.NewLine, {string.Join(", ", properties)});
         }}";
         }
 
         private static string GenerateEqualsAndGetHashCode(string typeName, bool useRecordType, StringComparison stringComparison, IReadOnlyCollection<string> properties)
         {
+            var nullableTypeName = typeName + NullableReferenceTypeSign;
+
             var objectEquals = useRecordType
                 ? string.Empty
                 : $@"
-        public override bool Equals(object obj)
+        public override bool Equals(object{NullableReferenceTypeSign} obj)
         {{
             if(obj == null || obj.GetType() != typeof({typeName})) return false;
-            return Equals(({typeName})obj);
+            return Equals(({nullableTypeName})obj);
         }}
 
-        public static bool operator == ({typeName} obj1, {typeName} obj2)
+        public static bool operator == ({nullableTypeName} obj1, {nullableTypeName} obj2)
         {{
             return ReferenceEquals(obj1, null)
                 ? ReferenceEquals(obj2, null)
                 : obj1.Equals(obj2);
         }}
 
-        public static bool operator != ({typeName} obj1, {typeName} obj2)
+        public static bool operator != ({nullableTypeName} obj1, {nullableTypeName} obj2)
         {{
             return !(obj1 == obj2);
         }}
 ";
 
             return $@"{objectEquals}
-        public bool Equals({typeName} obj)
+        public bool Equals({nullableTypeName} obj)
         {{
             if(obj == null) return false;
             if(ReferenceEquals(this, obj)) return true;

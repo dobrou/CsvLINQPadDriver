@@ -56,7 +56,7 @@ namespace CsvLINQPadDriver.CodeGen
                 _indices.Add(propertyName, propertyIndex);
             }
 
-            var result = values.SelectMany(value => propertyIndex![value]);
+            var result = values.SelectMany(value => propertyIndex[value]);
 
             return values.Length > 1 ? result.Distinct() : result;
         }

@@ -487,7 +487,7 @@ namespace CsvLINQPadDriver.Extensions
                 NoBomEncodings.Add(noBomEncoding, encoding = GetEncoding());
             }
 
-            return encoding!;
+            return encoding;
 
             Encoding GetEncoding()
             {

@@ -1,18 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq.Expressions;
+﻿using System.Collections.Generic;
 
 namespace CsvLINQPadDriver.CodeGen
 {
-    public class CsvColumnInfoList<TRow> : List<CsvColumnInfo>
+    public class CsvColumnInfoList : List<CsvColumnInfo>
     {
         // ReSharper disable once UnusedMember.Global
-        public void Add(int csvColumnIndex, Expression<Func<TRow, string>> propertyExpression)
-        {
-            var memberExpression = propertyExpression.Body as MemberExpression ?? 
-                throw new ArgumentException($"{nameof(propertyExpression)} expression must be only property access", nameof(propertyExpression));
-
-            Add(new CsvColumnInfo(csvColumnIndex, memberExpression.Member.Name));
-        }
+        public void Add(int csvColumnIndex, string name) =>
+            Add(new CsvColumnInfo(csvColumnIndex, name));
     }
 }
