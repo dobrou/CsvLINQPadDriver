@@ -43,11 +43,11 @@ namespace CsvLINQPadDriver.Extensions
 
         private static
 #if NETCOREAPP
-            HashSet<string>
+            HashSet<string>?
 #else
-            Dictionary<string, string>
+            Dictionary<string, string>?
 #endif
-                StringInternCache = null!;
+                StringInternCache;
 
         private static readonly Dictionary<NoBomEncoding, Encoding> NoBomEncodings = new();
 
@@ -114,7 +114,7 @@ namespace CsvLINQPadDriver.Extensions
             CsvRowMappingBase<T> csvClassMap)
             where T : ICsvRowBase, new()
         {
-            StringInternCache = internStringComparer is null
+            StringInternCache ??= internStringComparer is null
                 ? new()
                 : new(internStringComparer);
 
@@ -472,7 +472,16 @@ namespace CsvLINQPadDriver.Extensions
             bool ignoreBlankLines,
             WhitespaceTrimOptions whitespaceTrimOptions)
         {
-            using var csvParser = CreateCsvParser(fileName, csvSeparator, noBomEncoding, allowComments, commentChar, ignoreBadData, autoDetectEncoding, ignoreBlankLines, whitespaceTrimOptions);
+            using var csvParser = CreateCsvParser(
+                fileName,
+                csvSeparator,
+                noBomEncoding,
+                allowComments,
+                commentChar,
+                ignoreBadData,
+                autoDetectEncoding,
+                ignoreBlankLines,
+                whitespaceTrimOptions);
 
             while (csvParser.Read())
             {
@@ -561,7 +570,7 @@ namespace CsvLINQPadDriver.Extensions
                 return null;
             }
 
-            if (StringInternCache.TryGetValue(str, out var intern))
+            if (StringInternCache!.TryGetValue(str, out var intern))
             {
                 return intern;
             }
