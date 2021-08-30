@@ -1,7 +1,8 @@
-Same.Distinct()
+new [] { Comments, Same }.SelectMany(_ => _)
+	.Distinct()
 	.Should()
 	.HaveCount(
 		context.StringComparison.ToString().EndsWith("IgnoreCase")
-			? 1
-			: 3,
+			? 2
+			: 5,
 		Reason());

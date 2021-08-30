@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 
 using static System.IO.Path;
@@ -9,10 +10,23 @@ namespace LPRun
 {
     public static class Context
     {
+        private const int MaxSupportedMajorVersion = 5;
+
         private static readonly string BaseDir = GetDirectoryName(new Uri(Assembly.GetExecutingAssembly().CodeBase).LocalPath)!;
 
         private static readonly string LpRunDir = GetFullPath("LPRun");
-        private static readonly string LpRunExe = $"LPRun6{(Environment.Is64BitProcess ? string.Empty : "-x86")}.exe";
+        private static readonly string LpRunExe =
+            FrameworkInfo.IsNetFramework
+                ? ThrowNotSupportedException("Framework")
+                : FrameworkInfo.IsNetNative
+                    ? ThrowNotSupportedException("Native")
+                    : FrameworkInfo.Version.Major > MaxSupportedMajorVersion
+                        ? throw new NotSupportedException($".NET {FrameworkInfo.Version} is not supported. Maximum supported major version is {MaxSupportedMajorVersion}")
+                        : $"LPRun6{(FrameworkInfo.Version.Major == 5 ? "-net5" : Environment.Is64BitProcess ? string.Empty : "-x86")}.exe";
+
+        [DoesNotReturn]
+        private static string ThrowNotSupportedException(string platform) =>
+            throw new NotSupportedException($".NET {platform} is not supported. .NET {platform} version is {FrameworkInfo.Version}");
 
         private static readonly string ExeDir = GetLpRunFullPath("Bin");
         private static readonly string TemplatesDir = GetLpRunFullPath("Templates");

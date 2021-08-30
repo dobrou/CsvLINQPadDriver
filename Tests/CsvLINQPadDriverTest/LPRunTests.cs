@@ -15,6 +15,8 @@ using CsvLINQPadDriver.Extensions;
 
 using LPRun;
 
+#pragma warning disable CA1416
+
 namespace CsvLINQPadDriverTest
 {
     [TestFixture]
@@ -29,7 +31,8 @@ namespace CsvLINQPadDriverTest
                 "CsvLINQPadDriver.dll",
                 "CsvHelper.dll",
                 "Humanizer.dll",
-                "UnicodeCharsetDetector.dll"
+                "UnicodeCharsetDetector.dll",
+                "UtfUnknown.dll"
             );
 
             CreateEncodingFiles();

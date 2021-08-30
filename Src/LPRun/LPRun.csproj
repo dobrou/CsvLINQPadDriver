@@ -12,7 +12,7 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>Ivan Ivon (ivan.ivon@gmail.com), LINQPad/LPRun by Joseph Albahari</Authors>
     <RepositoryType>git</RepositoryType>
-    <PackageTags>linqpad lprun tests unittests integrationtests</PackageTags>
+    <PackageTags>linqpad lprun tests unittests integrationtests windows</PackageTags>
     <PackageProjectUrl>https://github.com/i2van/CsvLINQPadDriver/tree/master/Src/LPRun</PackageProjectUrl>
     <Description>LINQPad driver LPRun unit/integration tests runner.</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -36,22 +36,37 @@
     <Content Include="LPRun\Bin\LINQPad.Runtime.dll">
       <PackageCopyToOutput>true</PackageCopyToOutput>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <PackagePath>contentFiles\any\netstandard2.1\LPRun\Bin\</PackagePath>
+      <PackagePath>contentFiles\any\netstandard2.1\LPRun\Bin</PackagePath>
     </Content>
     <Content Include="LPRun\Bin\LINQPad.Runtime.runtimeconfig.json">
       <PackageCopyToOutput>true</PackageCopyToOutput>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <PackagePath>contentFiles\any\netstandard2.1\LPRun\Bin\</PackagePath>
+      <PackagePath>contentFiles\any\netstandard2.1\LPRun\Bin</PackagePath>
     </Content>
     <Content Include="LPRun\Bin\LPRun6-x86.exe">
       <PackageCopyToOutput>true</PackageCopyToOutput>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <PackagePath>contentFiles\any\netstandard2.1\LPRun\Bin\</PackagePath>
+      <PackagePath>contentFiles\any\netstandard2.1\LPRun\Bin</PackagePath>
     </Content>
     <Content Include="LPRun\Bin\LPRun6.exe">
       <PackageCopyToOutput>true</PackageCopyToOutput>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <PackagePath>contentFiles\any\netstandard2.1\LPRun\Bin\</PackagePath>
+      <PackagePath>contentFiles\any\netstandard2.1\LPRun\Bin</PackagePath>
+    </Content>
+    <Content Include="LPRun\Bin\LPRun6-net5.runtimeconfig.json">
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <PackagePath>contentFiles\any\netstandard2.1\LPRun\Bin</PackagePath>
+    </Content>
+    <Content Include="LPRun\Bin\LPRun6-net5.exe">
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <PackagePath>contentFiles\any\netstandard2.1\LPRun\Bin</PackagePath>
+    </Content>
+    <Content Include="LPRun\Bin\LPRun6-net5.dll">
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <PackagePath>contentFiles\any\netstandard2.1\LPRun\Bin</PackagePath>
     </Content>
   </ItemGroup>
 

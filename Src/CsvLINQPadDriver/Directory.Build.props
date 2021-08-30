@@ -1,7 +1,8 @@
 ﻿<Project>
   <PropertyGroup>
-    <Version>6.19.1</Version>
-    <PackageReleaseNotes>Bugfixes.</PackageReleaseNotes>
+    <Version>6.20.0</Version>
+    <PackageReleaseNotes>.NET 5 build.
+Bugfixes.</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -29,13 +30,16 @@
     <DefineConstants />
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="CsvHelper" Version="27.1.1" />
-    <PackageReference Include="Humanizer.Core" Version="2.11.10" />
+  <ItemGroup Condition="'$(TargetFramework)'=='netcoreapp3.1' or '$(TargetFramework)'=='net461'">
     <PackageReference Include="IsExternalInit" Version="1.0.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CsvHelper" Version="27.1.1" />
+    <PackageReference Include="Humanizer.Core" Version="2.11.10" />
     <PackageReference Include="LINQPad.Reference" Version="1.1.0" />
     <PackageReference Include="Microsoft-WindowsAPICodePack-Core" Version="1.1.4" />
     <PackageReference Include="Microsoft-WindowsAPICodePack-Shell" Version="1.1.4" />

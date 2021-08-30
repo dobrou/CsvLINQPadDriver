@@ -507,7 +507,9 @@ namespace CsvLINQPadDriver.Extensions
                     NoBomEncoding.BigEndianUnicode => Encoding.BigEndianUnicode,
                     NoBomEncoding.UTF32 => Encoding.UTF32,
                     NoBomEncoding.BigEndianUTF32 => new UTF32Encoding(true, true),
+#pragma warning disable SYSLIB0001
                     NoBomEncoding.UTF7 => Encoding.UTF7,
+#pragma warning restore SYSLIB0001
                     NoBomEncoding.ASCII => Encoding.ASCII,
                     NoBomEncoding.SystemCodePage => GetCodePageEncoding(false),
                     NoBomEncoding.UserCodePage => GetCodePageEncoding(true),

@@ -1,6 +1,7 @@
 ﻿<Project>
   <PropertyGroup>
-    <Version>6.14.10</Version>
-    <PackageReleaseNotes>LPRun 6.14.10</PackageReleaseNotes>
+    <Version>6.14.11</Version>
+    <PackageReleaseNotes>LPRun 6.14.10
+Added .NET 5.0 support.</PackageReleaseNotes>
   </PropertyGroup>
 </Project>

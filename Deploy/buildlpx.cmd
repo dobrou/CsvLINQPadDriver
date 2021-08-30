@@ -1,14 +1,17 @@
 @echo off
 
-set version=6.19.1
-set fileName=CsvLINQPadDriver.%version%.lpx
+set version=6.20.0
+set fileName=CsvLINQPadDriver.%version%
+set ext=lpx
+set ext6=%ext%6
 
 set zip="%ProgramFiles%\7-Zip\7z.exe"
 
 echo on
 
-call :pack %fileName%6 netcoreapp3.1
-call :pack %fileName%  net461
+call :pack %fileName%-net5.%ext6%   net5.0-windows
+call :pack %fileName%-net3.1.%ext6% netcoreapp3.1
+call :pack %fileName%.%ext%         net461
 
 @echo off
 
