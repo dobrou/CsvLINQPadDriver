@@ -224,10 +224,10 @@ namespace CsvLINQPadDriver
             convert(_driverData.Element(callerMemberName)?.Value) ?? defaultValue;
 
         private bool GetValue(bool defaultValue, [CallerMemberName] string callerMemberName = "") =>
-            GetValue(v => v.ToBool(), defaultValue, callerMemberName)!.Value;
+            GetValue(static v => v.ToBool(), defaultValue, callerMemberName)!.Value;
 
         private string? GetValue(string defaultValue, [CallerMemberName] string callerMemberName = "") =>
-            GetValue(v => v, defaultValue, callerMemberName);
+            GetValue(static v => v, defaultValue, callerMemberName);
 
         private T GetValue<T>(T defaultValue, [CallerMemberName] string callerMemberName = "")
 #if NETCOREAPP

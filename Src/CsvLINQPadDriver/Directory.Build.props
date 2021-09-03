@@ -1,8 +1,8 @@
 ﻿<Project>
   <PropertyGroup>
-    <Version>6.20.0</Version>
-    <PackageReleaseNotes>.NET 5 build.
-Do not lock files being read option.</PackageReleaseNotes>
+    <Version>6.21.0</Version>
+    <PackageReleaseNotes>Around fields and inside quotes around fields trim option.
+Tab is trimmed.</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup>

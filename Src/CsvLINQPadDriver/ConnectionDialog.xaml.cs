@@ -167,7 +167,7 @@ namespace CsvLINQPadDriver
 
             static void OverrideDependencyPropertiesMetadata()
             {
-                Array.ForEach(new[] { typeof(Control), typeof(Hyperlink) }, type => ToolTipService.ShowOnDisabledProperty.OverrideMetadata(type, new FrameworkPropertyMetadata(true)));
+                Array.ForEach(new[] { typeof(Control), typeof(Hyperlink) }, static type => ToolTipService.ShowOnDisabledProperty.OverrideMetadata(type, new FrameworkPropertyMetadata(true)));
 
                 var showDurationPropertyType = typeof(FrameworkElement);
                 var showDurationProperty = ToolTipService.ShowDurationProperty;
@@ -203,7 +203,7 @@ namespace CsvLINQPadDriver
 
             var wildcardsToolTip = $"Type one file/folder per line. Wildcards ? and * are supported; {recursiveMask} searches in folder and its sub-folders";
 
-            FilesInstructionsTextBox.Text = GetInstructions().Select(str => $"{inlineComment} {str}.").JoinNewLine();
+            FilesInstructionsTextBox.Text = GetInstructions().Select(static str => $"{inlineComment} {str}.").JoinNewLine();
             FilesTextBox.ToolTip = $"{_originalFilesTextBoxToolTip ??= FilesTextBox.ToolTip} or {char.ToLower(wildcardsToolTip[0])}{wildcardsToolTip[1..]}".Replace(". ", Environment.NewLine);
 
             IEnumerable<string> GetInstructions()
@@ -270,7 +270,7 @@ namespace CsvLINQPadDriver
                 return canClose;
 
                 IReadOnlyCollection<string> GetInvalidFilePaths() =>
-                    FilesTextBox.Text.GetFilesOnly().Where(file => !IsPathValid(file)).ToList();
+                    FilesTextBox.Text.GetFilesOnly().Where(static file => !IsPathValid(file)).ToList();
             }
         }
 
@@ -371,7 +371,7 @@ namespace CsvLINQPadDriver
 
         private string GetFilesTextFromClipboard(bool foldersWithSubfolders) =>
             GetEnrichedPathsFromUserInput(Clipboard.GetData(DataFormats.FileDrop) ?? Clipboard.GetText(), foldersWithSubfolders)
-                .Aggregate(new StringBuilder(), (result, file) => result.AppendLine(file))
+                .Aggregate(new StringBuilder(), static (result, file) => result.AppendLine(file))
                 .ToString();
 
         private void PasteAndGo(bool foldersWithSubfolders)
@@ -398,7 +398,7 @@ namespace CsvLINQPadDriver
             (e.OriginalSource switch
             {
                 Hyperlink hyperlink => hyperlink.NavigateUri.OriginalString,
-                _ => HelpUri
+                _                   => HelpUri
             }).ShellExecute();
 
         private void AddFilesCommandBinding_OnExecuted(object sender, ExecutedRoutedEventArgs e)

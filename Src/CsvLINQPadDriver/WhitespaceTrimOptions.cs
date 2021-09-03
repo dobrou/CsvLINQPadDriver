@@ -7,6 +7,9 @@ namespace CsvLINQPadDriver
         [Description("None")]
         None,
 
+        [Description("Around fields and inside quotes around fields")]
+        All,
+
         [Description("Around fields")]
         Trim,
 

@@ -32,13 +32,13 @@ namespace CsvLINQPadDriver.DataDisplay
 
         public IEnumerable<string> GetNames() =>
             _providerData.Properties
-                .Select(propertyInfo => propertyInfo.Name)
-                .Concat(_providerData.Fields.Select(fieldInfo => fieldInfo.Name));
+                .Select(static propertyInfo => propertyInfo.Name)
+                .Concat(_providerData.Fields.Select(static fieldInfo => fieldInfo.Name));
 
         public IEnumerable<Type> GetTypes() =>
             _providerData.Properties
-                .Select(propertyInfo => propertyInfo.PropertyType)
-                .Concat(_providerData.Fields.Select(fieldInfo => fieldInfo.FieldType));
+                .Select(static propertyInfo => propertyInfo.PropertyType)
+                .Concat(_providerData.Fields.Select(static fieldInfo => fieldInfo.FieldType));
 
         public IEnumerable<object> GetValues() =>
             _providerData.ValuesGetter(_objectToDisplay);
@@ -57,7 +57,7 @@ namespace CsvLINQPadDriver.DataDisplay
                 Lambda<Func<object, object[]>>(
                     NewArrayInit(typeof(object),
                         properties
-                            .Where(propertyInfo => propertyInfo.GetIndexParameters().Length == 0)
+                            .Where(static propertyInfo => propertyInfo.GetIndexParameters().Length == 0)
                             .Select(propertyInfo => Property(TypeAs(param, objectType), propertyInfo))
                             .Concat(fields.Select(fieldInfo => Field(TypeAs(param, objectType), fieldInfo)))),
                     param)

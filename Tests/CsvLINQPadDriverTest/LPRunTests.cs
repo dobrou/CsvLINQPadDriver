@@ -67,7 +67,7 @@ namespace CsvLINQPadDriverTest
         {
             var (linqScriptName, context, driverProperties, defines) = testData;
 
-            var queryConfig = GetQueryHeaders().Aggregate(new StringBuilder(), (stringBuilder, header) =>
+            var queryConfig = GetQueryHeaders().Aggregate(new StringBuilder(), static (stringBuilder, header) =>
             {
                 if (ShouldRender(header))
                 {
@@ -95,7 +95,7 @@ namespace CsvLINQPadDriverTest
             IEnumerable<string> GetQueryHeaders()
             {
                 yield return ConnectionHeader.Get("CsvLINQPadDriver", "CsvLINQPadDriver.CsvDataContextDriver", driverProperties, "System.Runtime.CompilerServices");
-                yield return defines.Where(ShouldRender).Select(define => $"#define {define}").JoinNewLine();
+                yield return defines.Where(ShouldRender).Select(static define => $"#define {define}").JoinNewLine();
                 yield return @"string Reason([CallerLineNumber] int sourceLineNumber = 0) => $""something went wrong at line #{sourceLineNumber}"";";
                 if (ShouldRender(context))
                 {
@@ -135,20 +135,20 @@ namespace CsvLINQPadDriverTest
                      defaultCsvDataContextDriverProperties));
 
             var stringComparisonDriverPropertiesTestData = GetStringComparisons()
-                .SelectMany(stringComparison =>
+                .SelectMany(static stringComparison =>
                     new [] { "StringComparison", "Encoding" }.Select(linqFile => new ScriptWithDriverPropertiesTestData
                         (linqFile,
                          GetStringComparisonContext(stringComparison),
                          GetDefaultCsvDataContextDriverPropertiesObject(stringComparison))));
 
             var stringComparisonForInterningDriverPropertiesTestData = GetStringComparisons()
-                .Select(stringComparison => new ScriptWithDriverPropertiesTestData
+                .Select(static stringComparison => new ScriptWithDriverPropertiesTestData
                     ("StringComparisonForInterning",
                      GetStringComparisonContext(stringComparison),
                      GetDefaultCsvDataContextDriverPropertiesObject(stringComparison, useStringComparerForStringIntern: true)));
 
             var allowCommentsTestData = new[] { true, false }
-                .Select(allowComments => new ScriptWithDriverPropertiesTestData
+                .Select(static allowComments => new ScriptWithDriverPropertiesTestData
                         ("Comments",
                          $"new {{ ExpectedCount = {(allowComments ? 1 : 2)} }}",
                          GetDefaultCsvDataContextDriverPropertiesObject(defaultStringComparison, allowComments)));

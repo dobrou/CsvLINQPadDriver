@@ -55,7 +55,7 @@ namespace CsvLINQPadDriver.Extensions
         public static Guid? ToGuid(this string? str, string[] formats) =>
             formats
                 .Select(format => GetValueOrNull(Guid.TryParseExact(str, format, out var parsedValue), parsedValue))
-                .FirstOrDefault(guid => guid is not null);
+                .FirstOrDefault(static guid => guid is not null);
 
         public static bool? ToBool(this string? str, CultureInfo? cultureInfo = null)
         {

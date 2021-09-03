@@ -9,7 +9,7 @@
     Icon="Connection.ico"
     Background="{x:Static SystemColors.ControlBrush}"
     Width="660"
-    Height="780"
+    Height="790"
     WindowStartupLocation="CenterScreen"
     ShowInTaskbar="True"
     FocusManager.FocusedElement="{Binding ElementName=FilesTextBox}"

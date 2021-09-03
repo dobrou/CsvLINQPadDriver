@@ -58,7 +58,7 @@ namespace CsvLINQPadDriver.CodeGen
 
             var groups = csvTables
                     .Select(table => GenerateTableRowDataTypeClass(table, _properties.UseRecordType, _properties.StringComparison, _properties.HideRelationsFromDump))
-                    .GroupBy(typeCode => typeCode.TypeName)
+                    .GroupBy(static typeCode => typeCode.TypeName)
                     .ToImmutableList();
 
             var isStringInternEnabled = _properties.IsStringInternEnabled;
@@ -67,7 +67,7 @@ namespace CsvLINQPadDriver.CodeGen
 {{
     /// <summary>CSV Data Context</summary>
     public class {_contextTypeName} : {typeof(CsvDataContextBase).GetCodeTypeClassName()}
-    {{{string.Join(string.Empty, csvTables.Select(table => $@"
+    {{{string.Join(string.Empty, csvTables.Select(static table => $@"
         /// <summary>File: {SecurityElement.Escape(table.FilePath)}</summary>
         public {typeof(CsvTableBase<>).GetCodeTypeClassName(GetClassName(table))} {table.CodeName} {{ get; private set; }}")
                 )}
@@ -90,9 +90,9 @@ namespace CsvLINQPadDriver.CodeGen
                 {typeof(WhitespaceTrimOptions).GetCodeTypeClassName()}.{_properties.WhitespaceTrimOptions},
                 {table.FilePath.AsValidCSharpCode()},
                 new {typeof(CsvColumnInfoList).GetCodeTypeClassName()} {{
-                    {string.Join(string.Empty, string.Join($",{Environment.NewLine}                    ", table.Columns.Select(c => $@"{{ {IntToString(c.Index)}, ""{c.CodeName}"" }}")))}
+                    {string.Join(string.Empty, string.Join($",{Environment.NewLine}                    ", table.Columns.Select(static csvColumn => $@"{{ {IntToString(csvColumn.Index)}, ""{csvColumn.CodeName}"" }}")))}
                 }},
-                r => {{{string.Join(string.Empty, table.Relations.Select(csvRelation => $@"
+                r => {{{string.Join(string.Empty, table.Relations.Select(static csvRelation => $@"
                     r.{csvRelation.CodeName} = new {typeof(LazyEnumerable<>).GetCodeTypeClassName(GetClassName(csvRelation.TargetTable))}(
                         () => {csvRelation.TargetTable.CodeName}.WhereIndexed(tr => tr.{csvRelation.TargetColumn.CodeName}, {csvRelation.TargetColumn.CodeName.AsValidCSharpCode()}, r.{csvRelation.SourceColumn.CodeName}));"))}
                 }}
@@ -101,7 +101,7 @@ namespace CsvLINQPadDriver.CodeGen
         }}
     }} // context class
 
-    // Data types {string.Join(Environment.NewLine, groups.Select(grouping => grouping.OrderByDescending(code => code.Code.Length).First().Code))} // data types
+    // Data types {string.Join(Environment.NewLine, groups.Select(static grouping => grouping.OrderByDescending(code => code.Code.Length).First().Code))} // data types
 }} // namespace
 ", groups);
 
@@ -125,7 +125,7 @@ namespace CsvLINQPadDriver.CodeGen
 
             return new TypeCodeResult(className, $@"
     public sealed {generatedType} {className} : {typeof(ICsvRowBase).GetCodeTypeClassName()}{interfaces}
-    {{{string.Join(string.Empty, table.Columns.Select(csvColumn => $@"
+    {{{string.Join(string.Empty, table.Columns.Select(static csvColumn => $@"
         public string{NullableReferenceTypeSign} {GetPropertyName(csvColumn)} {{ get; set; }}"))}
 {GenerateIndexer(properties, true)}
 {GenerateIndexer(properties, false)}
@@ -175,7 +175,7 @@ namespace CsvLINQPadDriver.CodeGen
 
         private static string GenerateToString(IReadOnlyCollection<string> properties)
         {
-            var namePadding = properties.Max(property => property.Length);
+            var namePadding = properties.Max(static property => property.Length);
 
             return $@"
         public override string{NullableReferenceTypeSign} ToString()
@@ -238,13 +238,13 @@ namespace CsvLINQPadDriver.CodeGen
         private static string GetStringComparer(StringComparison stringComparison) =>
             "System.StringComparer." + stringComparison switch
             {
-                StringComparison.CurrentCulture => nameof(StringComparer.CurrentCulture), 
-                StringComparison.CurrentCultureIgnoreCase => nameof(StringComparer.CurrentCultureIgnoreCase), 
-                StringComparison.InvariantCulture => nameof(StringComparer.InvariantCulture), 
+                StringComparison.CurrentCulture             => nameof(StringComparer.CurrentCulture), 
+                StringComparison.CurrentCultureIgnoreCase   => nameof(StringComparer.CurrentCultureIgnoreCase), 
+                StringComparison.InvariantCulture           => nameof(StringComparer.InvariantCulture), 
                 StringComparison.InvariantCultureIgnoreCase => nameof(StringComparer.InvariantCultureIgnoreCase), 
-                StringComparison.Ordinal => nameof(StringComparer.Ordinal), 
-                StringComparison.OrdinalIgnoreCase => nameof(StringComparer.OrdinalIgnoreCase),
-                _ => throw new ArgumentException($"Unknown string comparison {stringComparison}", nameof(stringComparison))
+                StringComparison.Ordinal                    => nameof(StringComparer.Ordinal), 
+                StringComparison.OrdinalIgnoreCase          => nameof(StringComparer.OrdinalIgnoreCase),
+                _                                           => throw new ArgumentException($"Unknown string comparison {stringComparison}", nameof(stringComparison))
             };
     }
 

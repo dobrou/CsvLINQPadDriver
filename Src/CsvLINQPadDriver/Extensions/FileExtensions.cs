@@ -34,8 +34,9 @@ namespace CsvLINQPadDriver.Extensions
 
         private static readonly UnicodeCharsetDetector.UnicodeCharsetDetector UnicodeCharsetDetector = new();
 
-        private static readonly char[] TsvSeparators = "\t,;".ToCharArray();
-        private static readonly char[] CsvSeparators = ",;\t".ToCharArray();
+        private static readonly char[] TsvSeparators   = "\t,;".ToCharArray();
+        private static readonly char[] CsvSeparators   = ",;\t".ToCharArray();
+        private static readonly char[] WhiteSpaceChars = " \t" .ToCharArray();
 
         private static readonly char[] InlineCommentCharArray = InlineComment.ToCharArray();
 
@@ -73,8 +74,8 @@ namespace CsvLINQPadDriver.Extensions
 
         private static readonly HashSet<string> SupportedFileExtensions = new(
             SupportedFileTypes
-                .Where(supportedFileType => !string.IsNullOrWhiteSpace(supportedFileType.Extension))
-                .Select(supportedFileType => $".{supportedFileType.Extension}"),
+                .Where(static supportedFileType => !string.IsNullOrWhiteSpace(supportedFileType.Extension))
+                .Select(static supportedFileType => $".{supportedFileType.Extension}"),
             FileNameComparer);
 
         private static readonly FileType DefaultFileType = SupportedFileTypes.First().FileType;
@@ -97,7 +98,7 @@ namespace CsvLINQPadDriver.Extensions
         private static SupportedFileType GetSupportedFileType(this FileType fileType) =>
             SupportedFileTypes.FirstOrDefault(supportedFileType => supportedFileType.FileType == fileType) ?? throw new ArgumentException($"Unknown {fileType}", nameof(fileType));
 
-        public static readonly string Filter = string.Join("|", SupportedFileTypes.Select(supportedFileType => $"{supportedFileType.Description} Files (*.{supportedFileType.Mask})|*.{supportedFileType.Mask}"));
+        public static readonly string Filter = string.Join("|", SupportedFileTypes.Select(static supportedFileType => $"{supportedFileType.Description} Files (*.{supportedFileType.Mask})|*.{supportedFileType.Mask}"));
 
         public static IEnumerable<T> CsvReadRows<T>(
             this string fileName,
@@ -198,9 +199,9 @@ namespace CsvLINQPadDriver.Extensions
                 // Get most used char from separators as separator.
                 csvSeparator = GetHeaderChars()
                     .Where(defaultCsvSeparators.Contains)
-                    .GroupBy(ch => ch)
-                    .OrderByDescending(chGroup => chGroup.Count())
-                    .Select(chGroup => chGroup.Key)
+                    .GroupBy(static ch => ch)
+                    .OrderByDescending(static chGroup => chGroup.Count())
+                    .Select(static chGroup => chGroup.Key)
                     .DefaultIfEmpty(csvSeparator)
                     .First();
 
@@ -295,11 +296,11 @@ namespace CsvLINQPadDriver.Extensions
                 // Too many strange characters.
                 var charsCount = headerRow
                     .Concat(dataRow)
-                    .Sum(s => s?.Length ?? 0);
+                    .Sum(static s => s?.Length ?? 0);
 
                 var validCharsCount = headerRow
                     .Concat(dataRow)
-                    .Sum(s => Enumerable.Range(0, s?.Length ?? 0).Count(i => char.IsLetterOrDigit(s ?? string.Empty, i)));
+                    .Sum(static s => Enumerable.Range(0, s?.Length ?? 0).Count(i => char.IsLetterOrDigit(s ?? string.Empty, i)));
 
                 const double validCharsMinOkRatio = 0.5;
 
@@ -341,16 +342,16 @@ namespace CsvLINQPadDriver.Extensions
             GetHumanizedFileSize(GetFileSize(fileName));
 
         public static string GetHumanizedFileSize(this IEnumerable<string> files) =>
-            GetHumanizedFileSize(files.Select(file => file).Sum(GetFileSize));
+            GetHumanizedFileSize(files.Sum(GetFileSize));
 
         public static IEnumerable<string> GetFilesOnly(this string paths) =>
             Regex.Split(paths, @"[\r\n]+").GetFilesOnly();
 
         private static IEnumerable<string> GetFilesOnly(this IEnumerable<string> paths) =>
             paths
-                .Select(path => path.Trim())
-                .Where(path => !path.IsInlineComment())
-                .Where(path => !string.IsNullOrWhiteSpace(path))
+                .Select(static path => path.Trim())
+                .Where(static path => !path.IsInlineComment())
+                .Where(static path => !string.IsNullOrWhiteSpace(path))
                 .Distinct(FileNameComparer);
 
         public static IEnumerable<string> OrderFiles(this IEnumerable<string> files, FilesOrderBy filesOrderBy)
@@ -360,21 +361,21 @@ namespace CsvLINQPadDriver.Extensions
                 return files;
             }
 
-            var fileInfos = files.Select(file => new FileInfo(file));
+            var fileInfos = files.Select(static file => new FileInfo(file));
 
             // ReSharper disable once SwitchExpressionHandlesSomeKnownEnumValuesWithExceptionInDefault
             fileInfos = filesOrderBy switch
             {
-                FilesOrderBy.NameAsc => fileInfos.OrderBy(fileInfo => fileInfo.Name, FileNameComparer),
-                FilesOrderBy.NameDesc => fileInfos.OrderByDescending(fileInfo => fileInfo.Name, FileNameComparer),
-                FilesOrderBy.SizeAsc => fileInfos.OrderBy(fileInfo => fileInfo.Length),
-                FilesOrderBy.SizeDesc => fileInfos.OrderByDescending(fileInfo => fileInfo.Length),
-                FilesOrderBy.LastWriteTimeAsc => fileInfos.OrderBy(fileInfo => fileInfo.LastWriteTimeUtc),
-                FilesOrderBy.LastWriteTimeDesc => fileInfos.OrderByDescending(fileInfo => fileInfo.LastWriteTimeUtc),
-                _ => throw new ArgumentOutOfRangeException(nameof(filesOrderBy), filesOrderBy, $"Unknown {filesOrderBy}")
+                FilesOrderBy.NameAsc           => fileInfos.OrderBy(static fileInfo => fileInfo.Name, FileNameComparer),
+                FilesOrderBy.NameDesc          => fileInfos.OrderByDescending(static fileInfo => fileInfo.Name, FileNameComparer),
+                FilesOrderBy.SizeAsc           => fileInfos.OrderBy(static fileInfo => fileInfo.Length),
+                FilesOrderBy.SizeDesc          => fileInfos.OrderByDescending(static fileInfo => fileInfo.Length),
+                FilesOrderBy.LastWriteTimeAsc  => fileInfos.OrderBy(static fileInfo => fileInfo.LastWriteTimeUtc),
+                FilesOrderBy.LastWriteTimeDesc => fileInfos.OrderByDescending(static fileInfo => fileInfo.LastWriteTimeUtc),
+                _                              => throw new ArgumentOutOfRangeException(nameof(filesOrderBy), filesOrderBy, $"Unknown {filesOrderBy}")
             };
 
-            return fileInfos.Select(fileInfo => fileInfo.FullName);
+            return fileInfos.Select(static fileInfo => fileInfo.FullName);
         }
 
         public static string GetInlineCommentContent(this string line) =>
@@ -412,18 +413,19 @@ namespace CsvLINQPadDriver.Extensions
 
             var csvConfiguration = new CsvConfiguration(CultureInfo.InvariantCulture)
             {
-                DetectDelimiter = csvSeparator is null,
-                AllowComments = allowComments,
-                HasHeaderRecord = false,
+                DetectDelimiter          = csvSeparator is null,
+                AllowComments            = allowComments,
+                HasHeaderRecord          = false,
                 DetectColumnCountChanges = false,
-                IgnoreBlankLines = ignoreBlankLines,
-                TrimOptions = GetTrimOptions(),
-                BufferSize = bufferSize,
-                ProcessFieldBufferSize = bufferSize
+                IgnoreBlankLines         = ignoreBlankLines,
+                WhiteSpaceChars          = WhiteSpaceChars,
+                TrimOptions              = GetTrimOptions(),
+                BufferSize               = bufferSize,
+                ProcessFieldBufferSize   = bufferSize
             };
 
-            csvConfiguration.Delimiter = csvSeparator?.ToString() ?? csvConfiguration.Delimiter;
-            csvConfiguration.Comment = commentChar ?? csvConfiguration.Comment;
+            csvConfiguration.Delimiter    = csvSeparator?.ToString() ?? csvConfiguration.Delimiter;
+            csvConfiguration.Comment      = commentChar ?? csvConfiguration.Comment;
             csvConfiguration.BadDataFound = ignoreBadData ? null : csvConfiguration.BadDataFound;
 
             var encoding = (autoDetectEncoding ? DetectEncoding(fileName) : null) ?? GetFallbackEncoding(noBomEncoding);
@@ -433,10 +435,11 @@ namespace CsvLINQPadDriver.Extensions
             TrimOptions GetTrimOptions() =>
                 whitespaceTrimOptions switch
                 {
-                    WhitespaceTrimOptions.None => TrimOptions.None,
-                    WhitespaceTrimOptions.Trim => TrimOptions.Trim,
+                    WhitespaceTrimOptions.None         => TrimOptions.None,
+                    WhitespaceTrimOptions.All          => TrimOptions.Trim | TrimOptions.InsideQuotes,
+                    WhitespaceTrimOptions.Trim         => TrimOptions.Trim,
                     WhitespaceTrimOptions.InsideQuotes => TrimOptions.InsideQuotes,
-                    _ => throw new ArgumentException($"Unknown trim option: {whitespaceTrimOptions}", nameof(whitespaceTrimOptions))
+                    _                                  => throw new ArgumentException($"Unknown trim option: {whitespaceTrimOptions}", nameof(whitespaceTrimOptions))
                 };
         }
 
@@ -543,18 +546,18 @@ namespace CsvLINQPadDriver.Extensions
             {
                 return noBomEncoding switch
                 {
-                    NoBomEncoding.UTF8 => Encoding.UTF8,
-                    NoBomEncoding.Unicode => Encoding.Unicode,
+                    NoBomEncoding.UTF8             => Encoding.UTF8,
+                    NoBomEncoding.Unicode          => Encoding.Unicode,
                     NoBomEncoding.BigEndianUnicode => Encoding.BigEndianUnicode,
-                    NoBomEncoding.UTF32 => Encoding.UTF32,
-                    NoBomEncoding.BigEndianUTF32 => new UTF32Encoding(true, true),
+                    NoBomEncoding.UTF32            => Encoding.UTF32,
+                    NoBomEncoding.BigEndianUTF32   => new UTF32Encoding(true, true),
 #pragma warning disable SYSLIB0001
-                    NoBomEncoding.UTF7 => Encoding.UTF7,
+                    NoBomEncoding.UTF7             => Encoding.UTF7,
 #pragma warning restore SYSLIB0001
-                    NoBomEncoding.ASCII => Encoding.ASCII,
-                    NoBomEncoding.SystemCodePage => GetCodePageEncoding(false),
-                    NoBomEncoding.UserCodePage => GetCodePageEncoding(true),
-                    _ => Encoding.GetEncoding(FromCodePage())
+                    NoBomEncoding.ASCII            => Encoding.ASCII,
+                    NoBomEncoding.SystemCodePage   => GetCodePageEncoding(false),
+                    NoBomEncoding.UserCodePage     => GetCodePageEncoding(true),
+                    _                              => Encoding.GetEncoding(FromCodePage())
                 };
 
                 static Encoding GetCodePageEncoding(bool user) =>
@@ -591,7 +594,7 @@ namespace CsvLINQPadDriver.Extensions
                         return charset switch
                         {
                             Charset.None or Charset.Ansi or Charset.Ascii => UtfUnknown.CharsetDetector.DetectFromFile(fileName).Detected?.Encoding,
-                            _ => null
+                            _                                             => null
                         };
                     }
                     catch

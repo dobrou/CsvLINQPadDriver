@@ -54,13 +54,13 @@ namespace CsvLINQPadDriver.DataModel
 
                 foreach (var table in csvDatabase.Tables)
                 {
-                    MakeCodeNamesUnique(table.Relations, table.Columns.Select(c => c.CodeName!));
+                    MakeCodeNamesUnique(table.Relations, table.Columns.Select(static csvColumn => csvColumn.CodeName!));
                 }
             }
 
             UpdateDisplayNames(csvDatabase.Tables);
-            UpdateDisplayNames(csvDatabase.Tables.SelectMany(csvTable => csvTable.Columns));
-            UpdateDisplayNames(csvDatabase.Tables.SelectMany(csvTable => csvTable.Relations));
+            UpdateDisplayNames(csvDatabase.Tables.SelectMany(static csvTable => csvTable.Columns));
+            UpdateDisplayNames(csvDatabase.Tables.SelectMany(static csvTable => csvTable.Relations));
 
             return csvDatabase;
 
@@ -121,8 +121,8 @@ namespace CsvLINQPadDriver.DataModel
                                 ignoreBlankLines,
                                 doNotLockFiles,
                                 whitespaceTrimOptions)
-                            .Select((value, index) => (value, index))
-                            .Select(col => new CsvColumn(col.value ?? string.Empty, col.index)
+                            .Select(static (value, index) => (value, index))
+                            .Select(static col => new CsvColumn(col.value ?? string.Empty, col.index)
                             {
                                 CodeName = col.value.GetSafeCodeName(),
                                 DisplayName = string.Empty
@@ -155,7 +155,7 @@ namespace CsvLINQPadDriver.DataModel
                             return null;
                         }
 
-                        var key = string.Join(string.Empty, columns.Select(c => $"{c.Name}\t{c.Index}\n"));
+                        var key = string.Join(string.Empty, columns.Select(static csvColumn => $"{csvColumn.Name}\t{csvColumn.Index}\n"));
 
                         if (!tableCodeNames.TryGetValue(key, out var className))
                         {
@@ -190,7 +190,7 @@ namespace CsvLINQPadDriver.DataModel
                 {
                     // Get first unique name.
                     name = Enumerable.Range(1, int.MaxValue)
-                            .Select(i => i.ToString(CultureInfo.InvariantCulture))
+                            .Select(static i => i.ToString(CultureInfo.InvariantCulture))
                             .Select(s => name + s) // 1, 2, 3, 4...
                             .First(firstName => !names.Contains(firstName));
                     item.CodeName = name;
@@ -247,7 +247,10 @@ namespace CsvLINQPadDriver.DataModel
                 from csvColumn in csvTable.Columns 
                 where IsIdColumn(csvColumn.Name)
                 select (csvTable, csvColumn)
-            ).ToLookup(csvTableColumn => csvTableColumn.csvColumn.Name, tableColumn => tableColumn, IdsComparer);
+            ).ToLookup(
+                static csvTableColumn => csvTableColumn.csvColumn.Name,
+                static tableColumn => tableColumn,
+                IdsComparer);
 
             // t1.nameID -> name.ID
             // t1.nameID -> names.ID
@@ -270,14 +273,14 @@ namespace CsvLINQPadDriver.DataModel
                     from csvTableColumn in csvTableColumns.Take(maximumRelationsCount)
                     // Add reverse direction.
                     select new[] { csvTableColumn, (csvTable1: csvTableColumn.csvTable2, csvColumn1: csvTableColumn.csvColumn2, csvTable2: csvTableColumn.csvTable1, csvColumn2: csvTableColumn.csvColumn1) }
-                ).SelectMany(relation => relation).Distinct()
+                ).SelectMany(static relation => relation).Distinct()
                 select new CsvRelation(relation.csvTable1, relation.csvTable2, relation.csvColumn1, relation.csvColumn2)
                 {
                     CodeName = relation.csvTable2.CodeName
                 };
 
             // Add relations to DB structure.
-            foreach (var relationsGroup in relations.GroupBy(r => r.SourceTable))
+            foreach (var relationsGroup in relations.GroupBy(static r => r.SourceTable))
             {
                 foreach (var relation in relationsGroup)
                 {

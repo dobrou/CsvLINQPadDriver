@@ -57,7 +57,7 @@ namespace CsvLINQPadDriver
                 schema.Insert(index++, new ExplorerItem($"{exceptions.Count} {fileOrFolder} {exceptions.Pluralize("was", "were")} not processed", errorExplorerItemKind, errorExplorerIcon)
                 {
                     ToolTipText = $"Drag&drop {fileOrFolder} processing {exceptions.Pluralize("error")} to text window",
-                    DragText = exceptions.Select(exception => exception.Message).JoinNewLine()
+                    DragText = exceptions.Select(static exception => exception.Message).JoinNewLine()
                 });
             }
 
@@ -71,10 +71,10 @@ namespace CsvLINQPadDriver
             }
             else
             {
-                foreach (var tableCodeGroup in tableCodeGroups.Where(codeGroup => codeGroup.Count() > 1))
+                foreach (var tableCodeGroup in tableCodeGroups.Where(static codeGroup => codeGroup.Count() > 1))
                 {
-                    var codeNames = tableCodeGroup.Select(typeCodeResult => typeCodeResult.CodeName).ToImmutableList();
-                    var similarFilesSize = tableCodeGroup.Select(typeCodeResult => typeCodeResult.FilePath).GetHumanizedFileSize();
+                    var codeNames = tableCodeGroup.Select(static typeCodeResult => typeCodeResult.CodeName).ToImmutableList();
+                    var similarFilesSize = tableCodeGroup.Select(static typeCodeResult => typeCodeResult.FilePath).GetHumanizedFileSize();
                     var filePaths = new HashSet<string>(codeNames);
                     var similarFilesCount = codeNames.Count;
 
@@ -88,7 +88,7 @@ namespace CsvLINQPadDriver
                             $"{string.Join(Environment.NewLine, similarFilesCount <= 4 ? codeNames : codeNames.Take(2).Concat(new []{ "..." }).Concat(codeNames.Skip(similarFilesCount - 1)))}"),
                         DragText = $@"new []
 {{
-{string.Join(Environment.NewLine, codeNames.Select(n => $"\t{n},"))}
+{string.Join(Environment.NewLine, codeNames.Select(static n => $"\t{n},"))}
 }}.SelectMany(_ => _)
 "
                     });
@@ -150,13 +150,17 @@ namespace CsvLINQPadDriver
             var compilerResults = codeProvider.CompileAssemblyFromSource(compilerParameters, code);
 
             return compilerResults.Errors.HasErrors
-                ? compilerResults.Errors.OfType<CompilerError>().Where(e => !e.IsWarning).Select(e => $"{e.Line},{e.Column}: {e.ErrorText}").ToArray()
+                ? compilerResults.Errors
+                    .OfType<CompilerError>()
+                    .Where(static e => !e.IsWarning)
+                    .Select(static e => $"{e.Line},{e.Column}: {e.ErrorText}")
+                    .ToArray()
                 : Array.Empty<string>();
 #endif
         }
 
         private static List<ExplorerItem> GetSchema(CsvDatabase db) =>
-            db.Tables.Select(table =>
+            db.Tables.Select(static table =>
                 new ExplorerItem(table.DisplayName, ExplorerItemKind.QueryableObject, ExplorerIcon.Table)
                 {
                     DragText = table.CodeName,
@@ -165,14 +169,14 @@ namespace CsvLINQPadDriver
                     ToolTipText = table.FilePath,
                     Children =
                         table.Columns
-                            .Select(column =>
+                            .Select(static column =>
                                 new ExplorerItem(column.DisplayName, ExplorerItemKind.Property, ExplorerIcon.Column)
                                 {
                                     DragText = column.CodeName,
                                     ToolTipText = $"{column.Index}:{column.Name}"
                                 }
                             ).Concat(
-                                table.Relations.Select(relation =>
+                                table.Relations.Select(static relation =>
                                     new ExplorerItem(relation.DisplayName, ExplorerItemKind.CollectionLink, ExplorerIcon.ManyToMany)
                                     {
                                         DragText = relation.CodeName,

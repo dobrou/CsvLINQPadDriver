@@ -123,8 +123,8 @@ namespace CsvLINQPadDriver.Wpf.Extensions
             bool? result = taskDialog.Show() switch
             {
                 TaskDialogResult.Yes => true,
-                TaskDialogResult.No => false,
-                _ => null
+                TaskDialogResult.No  => false,
+                _                    => null
             };
 
             footerCheckBoxChecked = taskDialog.FooterCheckBoxChecked == true;
