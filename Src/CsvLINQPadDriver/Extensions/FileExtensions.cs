@@ -174,7 +174,7 @@ namespace CsvLINQPadDriver.Extensions
             try
             {
                 // Get most used char from separators as separator.
-                csvSeparator = (csvData ?? File.ReadLines(fileName).Take(1))
+                csvSeparator = (csvData ?? ReadFirstLine(fileName).Take(1))
                     .SelectMany(line => line.ToCharArray())
                     .Where(defaultCsvSeparators.Contains)
                     .GroupBy(ch => ch)
@@ -388,8 +388,9 @@ namespace CsvLINQPadDriver.Extensions
             csvConfiguration.BadDataFound = ignoreBadData ? null : csvConfiguration.BadDataFound;
 
             var encoding = (autoDetectEncoding ? DetectEncoding(fileName) : null) ?? GetFallbackEncoding(noBomEncoding);
+            var fs = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
 
-            return new CsvParser(new StreamReader(fileName, encoding, !autoDetectEncoding, bufferSize / sizeof(char)), csvConfiguration);
+            return new CsvParser(new StreamReader(fs, encoding, !autoDetectEncoding, bufferSize / sizeof(char)), csvConfiguration);
 
             TrimOptions GetTrimOptions() =>
                 whitespaceTrimOptions switch
@@ -536,7 +537,7 @@ namespace CsvLINQPadDriver.Extensions
             {
                 Charset charset;
 
-                using (var stream = File.OpenRead(fileName))
+                using (var stream = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                 {
                     charset = UnicodeCharsetDetector.Check(stream);
                 }
@@ -588,5 +589,15 @@ namespace CsvLINQPadDriver.Extensions
 
         private static bool IsInlineComment(this string line) =>
             line.TrimStart().StartsWith(InlineComment);
+
+        private static string[] ReadFirstLine(string file)
+        {
+            var fs = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+            using (var tr = new StreamReader(fs))
+            {
+                var line = tr.ReadLine();
+                return new string[] { line };
+            }
+        }
     }
 }
