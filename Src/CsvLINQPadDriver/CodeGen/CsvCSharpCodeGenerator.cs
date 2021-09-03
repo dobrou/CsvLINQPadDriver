@@ -86,6 +86,7 @@ namespace CsvLINQPadDriver.CodeGen
                 {GetBoolConst(_properties.IgnoreBadData)},
                 {GetBoolConst(_properties.AutoDetectEncoding)},
                 {GetBoolConst(_properties.IgnoreBlankLines)},
+                {GetBoolConst(_properties.DoNotLockFiles)},
                 {typeof(WhitespaceTrimOptions).GetCodeTypeClassName()}.{_properties.WhitespaceTrimOptions},
                 {table.FilePath.AsValidCSharpCode()},
                 new {typeof(CsvColumnInfoList).GetCodeTypeClassName()} {{

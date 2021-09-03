@@ -179,6 +179,7 @@ CSV files connection can be added to LINQPad 6/5 the same way as any other conne
 * Auto-detect file encodings: try to detect file encodings.
 * Validate file paths: check if file paths are valid.
 * Ignore files with invalid format: files with content which does not resemble CSV will be ignored.
+* Do not lock files being read: allow other processes to modify files being read.
 
 ### Format ###
 

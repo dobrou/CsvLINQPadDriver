@@ -398,8 +398,9 @@
                 <StackPanel Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3" Margin="0 5 0 0" Orientation="Vertical">
                     <!-- ReSharper disable once MarkupAttributeTypo -->
                     <CheckBox IsChecked="{Binding AutoDetectEncoding}" Content="Auto-detect file encodin_gs" ToolTip="Try to detect file encodings"/>
-                    <CheckBox IsChecked="{Binding ValidateFilePaths}" Content="_Validate file paths" ToolTip="Check if file paths are valid" Name="ValidateFilePathsCheckBox" Tag="{x:Static this:ConnectionDialog.ConfirmUncheck}" />
+                    <CheckBox IsChecked="{Binding ValidateFilePaths}" Content="_Validate file paths" ToolTip="Check if file paths are valid" Name="ValidateFilePathsCheckBox" Tag="{x:Static this:ConnectionDialog.ConfirmUncheck}"/>
                     <CheckBox IsChecked="{Binding IgnoreInvalidFiles}" Content="Ignore files _with invalid format" ToolTip="Ignore files with content which does not resemble CSV"/>
+                    <CheckBox IsChecked="{Binding DoNotLockFiles}" Content="Do not _lock files being read" ToolTip="Allow other processes to modify files being read" Tag="{x:Static this:ConnectionDialog.ConfirmCheck}"/>
                 </StackPanel>
             </Grid>
         </GroupBox>
@@ -434,7 +435,7 @@
                                   Tag="{x:Static this:ConnectionDialog.ConfirmCheck}"
                                   Content="_Use CsvHelper library separator auto-detection"
                                   ToolTip="Use CsvHelper library separator auto-detection instead of internal one"/>
-                        <CheckBox IsChecked="{Binding IgnoreBadData}" Tag="{x:Static this:ConnectionDialog.ConfirmCheck}" Content="Ignore b_ad data" ToolTip="Ignore malformed files"/>
+                        <CheckBox IsChecked="{Binding IgnoreBadData}" Content="Ignore b_ad data" ToolTip="Ignore malformed files" Tag="{x:Static this:ConnectionDialog.ConfirmCheck}"/>
                         <!-- ReSharper disable once MarkupAttributeTypo -->
                         <CheckBox IsChecked="{Binding IgnoreBlankLines}" Content="Ignore blan_k lines" ToolTip="Do not process blank lines"/>
                     </StackPanel>

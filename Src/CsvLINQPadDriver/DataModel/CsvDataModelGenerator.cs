@@ -73,17 +73,27 @@ namespace CsvLINQPadDriver.DataModel
                     var csvSeparator  = _csvDataContextDriverProperties.CsvSeparatorChar ?? (
                         _csvDataContextDriverProperties.UseCsvHelperSeparatorAutoDetection
                             ? null
-                            : file.CsvDetectSeparator());
+                            : file.CsvDetectSeparator(_csvDataContextDriverProperties.DoNotLockFiles));
                     var noBomEncoding = _csvDataContextDriverProperties.NoBomEncoding;
                     var allowComments = _csvDataContextDriverProperties.AllowComments;
                     var commentChar = _csvDataContextDriverProperties.CommentChar;
                     var ignoreBadData = _csvDataContextDriverProperties.IgnoreBadData;
                     var autoDetectEncoding = _csvDataContextDriverProperties.AutoDetectEncoding;
                     var ignoreBlankLines = _csvDataContextDriverProperties.IgnoreBlankLines;
+                    var doNotLockFiles = _csvDataContextDriverProperties.DoNotLockFiles;
                     var whitespaceTrimOptions = _csvDataContextDriverProperties.WhitespaceTrimOptions;
 
                     if (_csvDataContextDriverProperties.IgnoreInvalidFiles &&
-                        !file.IsCsvFormatValid(csvSeparator, noBomEncoding, allowComments, commentChar, ignoreBadData, autoDetectEncoding, ignoreBlankLines, whitespaceTrimOptions))
+                        !file.IsCsvFormatValid(
+                            csvSeparator,
+                            noBomEncoding,
+                            allowComments,
+                            commentChar,
+                            ignoreBadData,
+                            autoDetectEncoding,
+                            ignoreBlankLines,
+                            doNotLockFiles,
+                            whitespaceTrimOptions))
                     {
                         exceptions.Add(file, "has invalid CSV format");
                         continue;
@@ -101,7 +111,16 @@ namespace CsvLINQPadDriver.DataModel
 
                     try
                     {
-                        columns = file.CsvReadHeader(csvSeparator, noBomEncoding, allowComments, commentChar, ignoreBadData, autoDetectEncoding, ignoreBlankLines, whitespaceTrimOptions)
+                        columns = file.CsvReadHeader(
+                                csvSeparator,
+                                noBomEncoding,
+                                allowComments,
+                                commentChar,
+                                ignoreBadData,
+                                autoDetectEncoding,
+                                ignoreBlankLines,
+                                doNotLockFiles,
+                                whitespaceTrimOptions)
                             .Select((value, index) => (value, index))
                             .Select(col => new CsvColumn(col.value ?? string.Empty, col.index)
                             {

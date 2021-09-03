@@ -124,6 +124,11 @@ namespace CsvLINQPadDriver
         bool IgnoreInvalidFiles { get; set; }
 
         /// <summary>
+        /// Allow other processes to modify files being read.
+        /// </summary>
+        bool DoNotLockFiles { get; set; }
+
+        /// <summary>
         /// If enabled, all string values are interned. 
         /// Can significantly reduce memory consumption, when values in CSV are repeated many times. 
         /// Custom per context interning is used.

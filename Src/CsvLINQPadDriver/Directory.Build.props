@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Version>6.20.0</Version>
     <PackageReleaseNotes>.NET 5 build.
-Bugfixes.</PackageReleaseNotes>
+Do not lock files being read option.</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup>

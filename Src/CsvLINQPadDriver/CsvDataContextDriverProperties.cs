@@ -196,6 +196,12 @@ namespace CsvLINQPadDriver
             set => SetValue(value);
         }
 
+        public bool DoNotLockFiles
+        {
+            get => GetValue(false);
+            set => SetValue(value);
+        }
+
         public bool IsStringInternEnabled
         {
             get => GetValue(true);

@@ -29,6 +29,7 @@ namespace CsvLINQPadDriver.CodeGen
         private readonly bool _ignoreBadData;
         private readonly bool _autoDetectEncoding;
         private readonly bool _ignoreBlankLines;
+        private readonly bool _doNotLockFiles;
         private readonly WhitespaceTrimOptions _whitespaceTrimOptions;
 
         protected readonly string FilePath;
@@ -43,6 +44,7 @@ namespace CsvLINQPadDriver.CodeGen
             bool ignoreBadData,
             bool autoDetectEncoding,
             bool ignoreBlankLines,
+            bool doNotLockFiles,
             WhitespaceTrimOptions whitespaceTrimOptions,
             string filePath,
             IEnumerable<CsvColumnInfo> propertiesInfo,
@@ -57,6 +59,7 @@ namespace CsvLINQPadDriver.CodeGen
             _ignoreBadData = ignoreBadData;
             _autoDetectEncoding = autoDetectEncoding;
             _ignoreBlankLines = ignoreBlankLines;
+            _doNotLockFiles = doNotLockFiles;
             _whitespaceTrimOptions = whitespaceTrimOptions;
 
             FilePath = filePath;
@@ -75,6 +78,7 @@ namespace CsvLINQPadDriver.CodeGen
                 _ignoreBadData,
                 _autoDetectEncoding,
                 _ignoreBlankLines,
+                _doNotLockFiles,
                 _whitespaceTrimOptions,
                 _cachedCsvRowMappingBase!);
 
