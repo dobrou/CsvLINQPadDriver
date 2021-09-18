@@ -74,7 +74,7 @@ namespace CsvLINQPadDriver.CodeGen
 
         public {_contextTypeName}()
         {{
-            // Init tables data {string.Join(string.Empty, csvTables.Select(table => $@"
+            // Init tables data{string.Join(string.Empty, csvTables.Select(table => $@"
             this.{table.CodeName} = {typeof(CsvTableFactory).GetCodeTypeClassName()}.CreateTable<{GetClassName(table)}>(
                 {GetBoolConst(isStringInternEnabled)},
                 {GetNullableValue(isStringInternEnabled && _properties.UseStringComparerForStringIntern, () => GetStringComparer(_properties.StringComparison))},
@@ -90,7 +90,8 @@ namespace CsvLINQPadDriver.CodeGen
                 {typeof(WhitespaceTrimOptions).GetCodeTypeClassName()}.{_properties.WhitespaceTrimOptions},
                 {table.FilePath.AsValidCSharpCode()},
                 new {typeof(CsvColumnInfoList).GetCodeTypeClassName()} {{
-                    {string.Join(string.Empty, string.Join($",{Environment.NewLine}                    ", table.Columns.Select(static csvColumn => $@"{{ {IntToString(csvColumn.Index)}, ""{csvColumn.CodeName}"" }}")))}
+                    {string.Join(string.Empty, string.Join(@",
+                    ", table.Columns.Select(static csvColumn => $@"{{ {IntToString(csvColumn.Index)}, ""{csvColumn.CodeName}"" }}")))}
                 }},
                 r => {{{string.Join(string.Empty, table.Relations.Select(static csvRelation => $@"
                     r.{csvRelation.CodeName} = new {typeof(LazyEnumerable<>).GetCodeTypeClassName(GetClassName(csvRelation.TargetTable))}(
@@ -101,7 +102,7 @@ namespace CsvLINQPadDriver.CodeGen
         }}
     }} // context class
 
-    // Data types {string.Join(Environment.NewLine, groups.Select(static grouping => grouping.OrderByDescending(code => code.Code.Length).First().Code))} // data types
+    // Data types{string.Join(Environment.NewLine, groups.Select(static grouping => grouping.OrderByDescending(code => code.Code.Length).First().Code))} // data types
 }} // namespace
 ", groups);
 
@@ -127,12 +128,12 @@ namespace CsvLINQPadDriver.CodeGen
     public sealed {generatedType} {className} : {typeof(ICsvRowBase).GetCodeTypeClassName()}{interfaces}
     {{{string.Join(string.Empty, table.Columns.Select(static csvColumn => $@"
         public string{NullableReferenceTypeSign} {GetPropertyName(csvColumn)} {{ get; set; }}"))}
-{GenerateIndexer(properties, true)}
-{GenerateIndexer(properties, false)}
+{GenerateIndexer(properties, "int",    static (_, index) => IntToString(index),     "at index {0}")}
+{GenerateIndexer(properties, "string", static (property, _) => $@"""{property}""",  "with name \\\"{0}\\\"")}
 {GenerateToString(properties)}
 {GenerateEqualsAndGetHashCode(className, useRecordType, stringComparison, properties)}{string.Join(string.Empty, table.Relations.Select(csvRelation => $@"
 
-        /// <summary>{SecurityElement.Escape(csvRelation.DisplayName)}</summary> {(hideRelationsFromDump ? $@"
+        /// <summary>{SecurityElement.Escape(csvRelation.DisplayName)}</summary>{(hideRelationsFromDump ? $@"
         [{typeof(HideFromDumpAttribute).GetCodeTypeClassName()}]" : string.Empty)}
         public System.Collections.Generic.IEnumerable<{csvRelation.TargetTable.GetCodeRowClassName()}>{NullableReferenceTypeSign} {csvRelation.CodeName} {{ get; set; }}")
             )}
@@ -142,32 +143,32 @@ namespace CsvLINQPadDriver.CodeGen
                 csvColumn.CodeName!;
         }
 
-        private static string GenerateIndexer(IReadOnlyCollection<string> properties, bool intIndexer)
+        private static string GenerateIndexer(IReadOnlyCollection<string> properties, string indexerType, Func<string, int, string> caseGetter, string exceptionMessage)
         {
             return $@"
         [{typeof(HideFromDumpAttribute).GetCodeTypeClassName()}]
-        public string{NullableReferenceTypeSign} this[{(intIndexer ? "int" : "string")} index]
+        public string{NullableReferenceTypeSign} this[{indexerType} index]
         {{
             get
             {{
                 switch(index)
-                {{{string.Join(string.Empty, properties.Select((c, i) => $@"
-                    case {(intIndexer ? IntToString(i) : $"\"{c}\"")}: return {c};"))}
-                    {GenerateIndexerException(intIndexer)}
+                {{{string.Join(string.Empty, properties.Select((property, index) => $@"
+                    case {caseGetter(property, index)}: return {property};"))}
+                    {GenerateIndexerException()}
                 }}
             }}
             set
             {{
                 switch(index)
-                {{{string.Join(string.Empty, properties.Select((c, i) => $@"
-                    case {(intIndexer ? IntToString(i) : $"\"{c}\"")}: {c} = value; return;"))}
-                    {GenerateIndexerException(intIndexer)}
+                {{{string.Join(string.Empty, properties.Select((property, index) => $@"
+                    case {caseGetter(property, index)}: {property} = value; return;"))}
+                    {GenerateIndexerException()}
                 }}
             }}
         }}";
 
-            static string GenerateIndexerException(bool intIndexer) =>
-                $@"default: throw new System.IndexOutOfRangeException(string.Format(""There is no property {(intIndexer ? "at index {0}" : "with name \\\"{0}\\\"")}"", index));";
+            string GenerateIndexerException() =>
+                $@"default: throw new System.IndexOutOfRangeException(string.Format(""There is no property {exceptionMessage}"", index));";
         }
 
         private static string IntToString(int val) =>
@@ -180,7 +181,12 @@ namespace CsvLINQPadDriver.CodeGen
             return $@"
         public override string{NullableReferenceTypeSign} ToString()
         {{
-            return string.Format(""{string.Join(string.Empty, properties.Select((v, i) => $"{v.PadRight(namePadding)} : {{{IntToString(i+1)}}}{{0}}"))}"", System.Environment.NewLine, {string.Join(", ", properties)});
+            return string.Format({string.Join(" +", properties.Select((property, index) => $@"
+                ""{property.PadRight(namePadding)} : {{{IntToString(index + 1)}}}{{0}}"""
+            ))},
+                System.Environment.NewLine,
+                {string.Join(@",
+                ", properties)});
         }}";
         }
 
@@ -215,7 +221,7 @@ namespace CsvLINQPadDriver.CodeGen
         {{
             if(obj == null) return false;
             if(ReferenceEquals(this, obj)) return true;
-            return  {string.Join($" && {Environment.NewLine}{GetIndent(20)}",
+            return  {string.Join($" &&{Environment.NewLine}{GetIndent(20)}",
                 properties.Select(property => $"{GetStringComparer(stringComparison)}.Equals({property}, obj.{property})"))};
         }}
 
