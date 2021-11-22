@@ -61,7 +61,7 @@ namespace CsvLINQPadDriver
         /// </summary>
         string CsvSeparator { get; set; }
 
-        char? CsvSeparatorChar { get; }
+        string? SafeCsvSeparator { get; }
 
         /// <summary>
         /// Ignore blank lines.

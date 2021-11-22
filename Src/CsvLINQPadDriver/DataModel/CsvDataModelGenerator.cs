@@ -70,10 +70,10 @@ namespace CsvLINQPadDriver.DataModel
 
                 foreach (var file in files.Where(File.Exists))
                 {
-                    var csvSeparator  = _csvDataContextDriverProperties.CsvSeparatorChar ?? (
-                        _csvDataContextDriverProperties.UseCsvHelperSeparatorAutoDetection
+                    var csvSeparator  = _csvDataContextDriverProperties.UseCsvHelperSeparatorAutoDetection
                             ? null
-                            : file.CsvDetectSeparator(_csvDataContextDriverProperties.DoNotLockFiles));
+                            : _csvDataContextDriverProperties.SafeCsvSeparator
+                              ?? file.CsvDetectSeparator(_csvDataContextDriverProperties.DoNotLockFiles).ToString();
                     var noBomEncoding = _csvDataContextDriverProperties.NoBomEncoding;
                     var allowComments = _csvDataContextDriverProperties.AllowComments;
                     var commentChar = _csvDataContextDriverProperties.CommentChar;

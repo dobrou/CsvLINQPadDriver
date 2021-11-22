@@ -98,7 +98,7 @@ namespace CsvLINQPadDriver
             set => SetValue(value);
         }
 
-        public char? CsvSeparatorChar
+        public string? SafeCsvSeparator
         {
             get
             {
@@ -111,15 +111,13 @@ namespace CsvLINQPadDriver
 
                 try
                 {
-                    return Regex.Unescape(csvSeparator).FirstOrDefault();
+                    return Regex.Unescape(csvSeparator);
                 }
                 catch (Exception exception) when (exception.CanBeHandled())
                 {
-                    var fallbackCsvSeparator = csvSeparator.First();
+                    CsvDataContextDriver.WriteToLog($"Falling back to CSV separator '{csvSeparator}'", exception);
 
-                    CsvDataContextDriver.WriteToLog($"Falling back to CSV separator {fallbackCsvSeparator}", exception);
-
-                    return fallbackCsvSeparator;
+                    return csvSeparator;
                 }
             }
         }

@@ -10,7 +10,7 @@ namespace CsvLINQPadDriver.CodeGen
             bool isStringInternEnabled,
             StringComparer? internStringComparer,
             bool isCacheEnabled,
-            char? csvSeparator,
+            string? csvSeparator,
             NoBomEncoding noBomEncoding,
             bool allowComments,
             char? commentChar,

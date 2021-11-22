@@ -1,8 +1,7 @@
 ﻿<Project>
   <PropertyGroup>
-    <Version>6.21.0</Version>
-    <PackageReleaseNotes>Around fields and inside quotes around fields trim option.
-Tab is trimmed.</PackageReleaseNotes>
+    <Version>6.22.0</Version>
+    <PackageReleaseNotes>Improved CSV separator handling.</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -38,13 +37,13 @@ Tab is trimmed.</PackageReleaseNotes>
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="CsvHelper" Version="27.1.1" />
-    <PackageReference Include="Humanizer.Core" Version="2.11.10" />
+    <PackageReference Include="CsvHelper" Version="27.2.0" />
+    <PackageReference Include="Humanizer.Core" Version="2.13.14" />
     <PackageReference Include="LINQPad.Reference" Version="1.1.0" />
     <PackageReference Include="Microsoft-WindowsAPICodePack-Core" Version="1.1.4" />
     <PackageReference Include="Microsoft-WindowsAPICodePack-Shell" Version="1.1.4" />
     <PackageReference Include="UnicodeCharsetDetector.Standard" Version="1.1.1" />
-    <PackageReference Include="UTF.Unknown" Version="2.4.0" />
+    <PackageReference Include="UTF.Unknown" Version="2.5.0" />
   </ItemGroup>
 
   <ItemGroup>

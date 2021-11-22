@@ -10,7 +10,7 @@ namespace CsvLINQPadDriver.CodeGen
         public CsvTableEnumerable(
             bool isStringInternEnabled,
             StringComparer? internStringComparer,
-            char? csvSeparator,
+            string? csvSeparator,
             NoBomEncoding noBomEncoding,
             bool allowComments,
             char? commentChar,

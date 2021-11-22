@@ -15,7 +15,7 @@ namespace CsvLINQPadDriver.CodeGen
         public CsvTableList(
             bool isStringInternEnabled,
             StringComparer? internStringComparer,
-            char? csvSeparator,
+            string? csvSeparator,
             NoBomEncoding noBomEncoding,
             bool allowComments,
             char? commentChar,

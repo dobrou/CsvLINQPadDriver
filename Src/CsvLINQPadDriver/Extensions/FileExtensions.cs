@@ -102,7 +102,7 @@ namespace CsvLINQPadDriver.Extensions
 
         public static IEnumerable<T> CsvReadRows<T>(
             this string fileName,
-            char? csvSeparator,
+            string? csvSeparator,
             bool internString,
             StringComparer? internStringComparer,
             NoBomEncoding noBomEncoding,
@@ -150,7 +150,7 @@ namespace CsvLINQPadDriver.Extensions
 
         public static IEnumerable<string> CsvReadHeader(
             this string fileName,
-            char? csvSeparator,
+            string? csvSeparator,
             NoBomEncoding noBomEncoding,
             bool allowComments,
             char? commentChar,
@@ -226,7 +226,7 @@ namespace CsvLINQPadDriver.Extensions
 
         public static bool IsCsvFormatValid(
             this string fileName,
-            char? csvSeparator,
+            string? csvSeparator,
             NoBomEncoding noBomEncoding,
             bool allowComments,
             char? commentChar,
@@ -399,7 +399,7 @@ namespace CsvLINQPadDriver.Extensions
 
         private static CsvParser CreateCsvParser(
             string fileName,
-            char? csvSeparator,
+            string? csvSeparator,
             NoBomEncoding noBomEncoding,
             bool allowComments,
             char? commentChar,
@@ -418,15 +418,25 @@ namespace CsvLINQPadDriver.Extensions
                 HasHeaderRecord          = false,
                 DetectColumnCountChanges = false,
                 IgnoreBlankLines         = ignoreBlankLines,
-                WhiteSpaceChars          = WhiteSpaceChars,
                 TrimOptions              = GetTrimOptions(),
                 BufferSize               = bufferSize,
                 ProcessFieldBufferSize   = bufferSize
             };
 
-            csvConfiguration.Delimiter    = csvSeparator?.ToString() ?? csvConfiguration.Delimiter;
+            csvConfiguration.Delimiter    = csvSeparator ?? csvConfiguration.Delimiter;
             csvConfiguration.Comment      = commentChar ?? csvConfiguration.Comment;
             csvConfiguration.BadDataFound = ignoreBadData ? null : csvConfiguration.BadDataFound;
+
+            var whiteSpaceChars = WhiteSpaceChars
+                .Except(csvConfiguration.Delimiter.Length == 1
+                            ? new[] { csvConfiguration.Delimiter.First() }
+                            : Array.Empty<char>())
+                .ToArray();
+
+            if (whiteSpaceChars.Any())
+            {
+                csvConfiguration.WhiteSpaceChars = whiteSpaceChars;
+            }
 
             var encoding = (autoDetectEncoding ? DetectEncoding(fileName) : null) ?? GetFallbackEncoding(noBomEncoding);
 
@@ -505,7 +515,7 @@ namespace CsvLINQPadDriver.Extensions
 
         private static IEnumerable<string[]> CsvReadRows(
             string fileName,
-            char? csvSeparator,
+            string? csvSeparator,
             NoBomEncoding noBomEncoding,
             bool allowComments,
             char? commentChar,

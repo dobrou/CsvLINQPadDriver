@@ -21,7 +21,7 @@ namespace CsvLINQPadDriver.CodeGen
     {
         private static CsvRowMappingBase<TRow>? _cachedCsvRowMappingBase;
 
-        private readonly char? _csvSeparator;
+        private readonly string? _csvSeparator;
         private readonly NoBomEncoding _noBomEncoding;
         private readonly StringComparer? _internStringComparer;
         private readonly bool _allowComments;
@@ -37,7 +37,7 @@ namespace CsvLINQPadDriver.CodeGen
         protected CsvTableBase(
             bool isStringInternEnabled,
             StringComparer? internStringComparer,
-            char? csvSeparator,
+            string? csvSeparator,
             NoBomEncoding noBomEncoding,
             bool allowComments,
             char? commentChar,

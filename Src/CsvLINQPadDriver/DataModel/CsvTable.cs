@@ -5,7 +5,7 @@ namespace CsvLINQPadDriver.DataModel
     internal record CsvTable
     (
         string FilePath,
-        char? CsvSeparator,
+        string? CsvSeparator,
 
         IList<CsvColumn> Columns,
         IList<CsvRelation> Relations
