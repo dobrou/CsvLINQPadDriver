@@ -460,7 +460,7 @@
                              MaxLength="1"
                              MaxLines="1"
                              Text="{Binding CommentChars}"
-                             ToolTip="Character used as single-line comment. # if empty"
+                             ToolTip="Character used as a single-line comment. # if empty"
                              IsEnabled="{Binding IsChecked, ElementName=AllowCommentsCheckBox}"/>
                 </Grid>
             </GroupBox>
@@ -526,17 +526,12 @@
             </GroupBox>
 
             <Border Style="{StaticResource FreeBorderStyle}">
-                <CheckBox IsChecked="{Binding DebugInfo}" Content="_Debug info" ToolTip="Show additional driver debug info"/>
-            </Border>
-
-            <Separator Margin="1 6 0 1"/>
-
-            <Border Style="{StaticResource FreeBorderStyle}">
                 <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="83*"/>
+                        <ColumnDefinition Width="79*"/>
+                        <ColumnDefinition Width="40*"/>
+                        <ColumnDefinition Width="90*"/>
                     </Grid.ColumnDefinitions>
 
                     <StackPanel Style="{StaticResource CloseCheckBoxStackPanelStyle}">
@@ -548,7 +543,11 @@
                         <CheckBox IsChecked="{Binding IsProduction}" Content="Contains _production data" ToolTip="Files contain production data"/>
                     </StackPanel>
 
-                    <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right">
+                    <StackPanel Grid.Column="2" Style="{StaticResource CloseCheckBoxStackPanelStyle}">
+                        <CheckBox IsChecked="{Binding DebugInfo}" Content="_Debug info" ToolTip="Show additional driver debug info"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="3" Orientation="Horizontal" HorizontalAlignment="Right">
                         <Button Name="OkButton" Content="OK" Style="{StaticResource CloseDialogButtonStyle}" IsDefault="True" Click="OkButton_Click"/>
                         <Button Content="Cancel" Style="{StaticResource CloseDialogButtonStyle}" IsCancel="True"/>
                     </StackPanel>

@@ -31,7 +31,7 @@ Improved CSV separator handling.</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CsvHelper" Version="27.2.0" />
+    <PackageReference Include="CsvHelper" Version="27.2.1" />
     <PackageReference Include="Humanizer.Core" Version="2.13.14" />
     <PackageReference Include="LINQPad.Reference" Version="1.1.0" />
     <PackageReference Include="Microsoft-WindowsAPICodePack-Core" Version="1.1.4" />

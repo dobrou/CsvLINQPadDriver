@@ -433,6 +433,7 @@ TimeSpan? ToTimeSpan(
 * [CsvHelper](https://github.com/JoshClose/CsvHelper)
 * [Fluent Assertions](https://github.com/fluentassertions/fluentassertions)
 * [Humanizer](https://github.com/Humanizr/Humanizer)
+* [IsExternalInit](https://github.com/manuelroemer/IsExternalInit)
 * [Microsoft.Bcl.HashCode](https://www.nuget.org/packages/Microsoft.Bcl.HashCode) (for LINQPad 5 only).
 * [Moq](https://github.com/moq/moq4)
 * [NUnit](https://github.com/nunit/nunit)

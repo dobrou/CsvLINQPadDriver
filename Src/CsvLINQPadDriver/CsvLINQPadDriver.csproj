@@ -9,7 +9,7 @@
     <RepositoryType>git</RepositoryType>
     <PackageTags>linqpaddriver csv</PackageTags>
     <PackageProjectUrl>https://github.com/i2van/CsvLINQPadDriver</PackageProjectUrl>
-    <Description>LINQPad 6 CSV driver.</Description>
+    <Description>LINQPad 7/6 CSV driver.</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/i2van/CsvLINQPadDriver</RepositoryUrl>
     <PackageIcon>NuGetIcon.png</PackageIcon>
