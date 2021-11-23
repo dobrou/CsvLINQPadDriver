@@ -23,6 +23,6 @@ namespace CsvLINQPadDriver.Wpf
             InputGestureAs<MouseGesture>();
 
         private T InputGestureAs<T>() where T : InputGesture =>
-            (T)TypeDescriptor.GetConverter(typeof(T)).ConvertFrom(null!, null!, InputGestureText);
+            (T)TypeDescriptor.GetConverter(typeof(T)).ConvertFrom(null!, null!, InputGestureText)!;
     }
 }

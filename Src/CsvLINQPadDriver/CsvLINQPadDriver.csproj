@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
 
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp3.1;net5.0-windows</TargetFrameworks>
+    <TargetFrameworks>netcoreapp3.1;net5.0-windows;net6.0-windows</TargetFrameworks>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -14,6 +14,7 @@
     <RepositoryUrl>https://github.com/i2van/CsvLINQPadDriver</RepositoryUrl>
     <PackageIcon>NuGetIcon.png</PackageIcon>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <NoWarn>1701;1702;8032;NETSDK1182</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
@@ -24,13 +25,13 @@
     <None Remove="Connection.ico" />
     <Content Include="Connection.png">
       <Pack>True</Pack>
-      <PackagePath>lib\netcoreapp3.1;lib\net5.0-windows7.0</PackagePath>
+      <PackagePath>lib\netcoreapp3.1;lib\net5.0-windows7.0;lib\net6.0-windows7.0</PackagePath>
       <PackageCopyToOutput>true</PackageCopyToOutput>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="FailedConnection.png">
       <Pack>True</Pack>
-      <PackagePath>lib\netcoreapp3.1;lib\net5.0-windows7.0</PackagePath>
+      <PackagePath>lib\netcoreapp3.1;lib\net5.0-windows7.0;lib\net6.0-windows7.0</PackagePath>
       <PackageCopyToOutput>true</PackageCopyToOutput>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
