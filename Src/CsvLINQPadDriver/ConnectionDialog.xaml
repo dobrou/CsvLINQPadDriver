@@ -22,6 +22,7 @@
         <ObjectDataProvider x:Key="NoBomEncodingData" MethodName="GetValues" ObjectType="{x:Type enumObjectDataSources:NoBomEncodingEnumObjectDataSource}"/>
         <ObjectDataProvider x:Key="FilesOrderByData" MethodName="GetValues" ObjectType="{x:Type enumObjectDataSources:FilesOrderByEnumObjectDataSource}"/>
         <ObjectDataProvider x:Key="StringComparisonData" MethodName="GetValues" ObjectType="{x:Type enumObjectDataSources:StringComparisonEnumObjectDataSource}"/>
+        <ObjectDataProvider x:Key="HeaderFormatData" MethodName="GetValues" ObjectType="{x:Type enumObjectDataSources:HeaderFormatEnumObjectDataSource}"/>
         <ObjectDataProvider x:Key="WhitespaceTrimOptionsData" MethodName="GetValues" ObjectType="{x:Type enumObjectDataSources:WhitespaceTrimOptionsEnumObjectDataSource}"/>
 
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
@@ -92,7 +93,7 @@
             <Setter Property="DisplayMemberPath" Value="Item2"/>
         </Style>
 
-        <Thickness x:Key="GroupControlMarginStyle" Left="0" Right="0" Top="3" Bottom="0"/>
+        <Thickness x:Key="GroupControlMarginStyle" Left="0" Right="0" Top="2" Bottom="2"/>
 
         <Style x:Key="GroupComboBoxStyle" TargetType="{x:Type ComboBox}" BasedOn="{StaticResource EnumComboBoxStyle}">
             <Setter Property="Margin" Value="{StaticResource GroupControlMarginStyle}"/>
@@ -417,6 +418,7 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
 
                     <Label Content="_Separator (\t for tab)&#160;"
@@ -441,13 +443,17 @@
                     </StackPanel>
 
                     <!-- ReSharper disable once MarkupAttributeTypo -->
-                    <Label Grid.Row="2" Grid.Column="0" Padding="0 5 4 0" Content="Trim w_hitespaces" Target="{Binding ElementName=TrimOptionsComboBox}"/>
+                    <CheckBox Grid.Row="2" Grid.Column="0"
+                              Name="TrimSpacesCheckBox"
+                              IsChecked="{Binding TrimSpaces}"
+                              Content="Tri_m spaces"
+                              ToolTip="Trim spaces"/>
                     <ComboBox Grid.Row="2" Grid.Column="1"
-                              Name="TrimOptionsComboBox"
                               Style="{StaticResource GroupComboBoxStyle}"
-                              ToolTip="Data whitespaces trim options"
+                              ToolTip="Where to trim spaces"
                               SelectedValue="{Binding WhitespaceTrimOptions}"
-                              ItemsSource="{Binding Source={StaticResource WhitespaceTrimOptionsData}}"/>
+                              ItemsSource="{Binding Source={StaticResource WhitespaceTrimOptionsData}}"
+                              IsEnabled="{Binding IsChecked, ElementName=TrimSpacesCheckBox}"/>
 
                     <!-- ReSharper disable once MarkupAttributeTypo -->
                     <CheckBox Grid.Row="3" Grid.Column="0"
@@ -462,6 +468,17 @@
                              Text="{Binding CommentChars}"
                              ToolTip="Character used as a single-line comment. # if empty"
                              IsEnabled="{Binding IsChecked, ElementName=AllowCommentsCheckBox}"/>
+
+                    <CheckBox Grid.Row="4" Grid.Column="0"
+                              Name="HeaderFormatComboBox"
+                              IsChecked="{Binding AddHeader}"
+                              Content="Add _header" ToolTip="Add header"/>
+                    <ComboBox Grid.Row="4" Grid.Column="1"
+                              Style="{StaticResource GroupComboBoxStyle}"
+                              ToolTip="Header column name format"
+                              SelectedValue="{Binding HeaderFormat}"
+                              ItemsSource="{Binding Source={StaticResource HeaderFormatData}}"
+                              IsEnabled="{Binding IsChecked, ElementName=HeaderFormatComboBox}"/>
                 </Grid>
             </GroupBox>
 

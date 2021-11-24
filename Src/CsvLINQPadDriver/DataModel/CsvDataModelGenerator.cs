@@ -81,6 +81,8 @@ namespace CsvLINQPadDriver.DataModel
                     var autoDetectEncoding = _csvDataContextDriverProperties.AutoDetectEncoding;
                     var ignoreBlankLines = _csvDataContextDriverProperties.IgnoreBlankLines;
                     var doNotLockFiles = _csvDataContextDriverProperties.DoNotLockFiles;
+                    var addHeader = _csvDataContextDriverProperties.AddHeader;
+                    var headerFormat = _csvDataContextDriverProperties.HeaderFormat;
                     var whitespaceTrimOptions = _csvDataContextDriverProperties.WhitespaceTrimOptions;
 
                     if (_csvDataContextDriverProperties.IgnoreInvalidFiles &&
@@ -120,6 +122,8 @@ namespace CsvLINQPadDriver.DataModel
                                 autoDetectEncoding,
                                 ignoreBlankLines,
                                 doNotLockFiles,
+                                addHeader,
+                                headerFormat,
                                 whitespaceTrimOptions)
                             .Select(static (value, index) => (value, index))
                             .Select(static col => new CsvColumn(col.value ?? string.Empty, col.index)

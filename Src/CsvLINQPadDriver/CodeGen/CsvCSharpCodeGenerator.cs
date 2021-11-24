@@ -87,7 +87,8 @@ namespace CsvLINQPadDriver.CodeGen
                 {ParamName("autoDetectEncoding")}{GetBoolConst(_properties.AutoDetectEncoding)},
                 {ParamName("ignoreBlankLines")}{GetBoolConst(_properties.IgnoreBlankLines)},
                 {ParamName("doNotLockFiles")}{GetBoolConst(_properties.DoNotLockFiles)},
-                {ParamName("whitespaceTrimOptions")}{typeof(WhitespaceTrimOptions).GetCodeTypeClassName()}.{_properties.WhitespaceTrimOptions},
+                {ParamName("addHeader")}{GetBoolConst(_properties.AddHeader)},
+                {ParamName("whitespaceTrimOptions")}{GetNullableValue(_properties.TrimSpaces, () => $"{typeof(WhitespaceTrimOptions).GetCodeTypeClassName()}.{_properties.WhitespaceTrimOptions}")},
                 {ParamName("filePath")}{table.FilePath.AsValidCSharpCode()},
                 {ParamName("propertiesInfo")}new {typeof(CsvColumnInfoList).GetCodeTypeClassName()} {{
                     {string.Join(string.Empty, string.Join(@",
@@ -253,7 +254,7 @@ namespace CsvLINQPadDriver.CodeGen
                 StringComparison.InvariantCultureIgnoreCase => nameof(StringComparer.InvariantCultureIgnoreCase), 
                 StringComparison.Ordinal                    => nameof(StringComparer.Ordinal), 
                 StringComparison.OrdinalIgnoreCase          => nameof(StringComparer.OrdinalIgnoreCase),
-                _                                           => throw new ArgumentException($"Unknown string comparison {stringComparison}", nameof(stringComparison))
+                _                                           => throw new ArgumentOutOfRangeException(nameof(stringComparison), stringComparison, $"Unknown {nameof(StringComparison)}")
             };
     }
 

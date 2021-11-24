@@ -4,9 +4,6 @@ namespace CsvLINQPadDriver
 {
     public enum WhitespaceTrimOptions
     {
-        [Description("None")]
-        None,
-
         [Description("Around fields and inside quotes around fields")]
         All,
 

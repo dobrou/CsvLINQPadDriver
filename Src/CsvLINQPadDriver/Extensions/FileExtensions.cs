@@ -96,7 +96,7 @@ namespace CsvLINQPadDriver.Extensions
             Array.FindIndex(SupportedFileTypes, supportedFileType => supportedFileType.FileType == fileType) + 1;
 
         private static SupportedFileType GetSupportedFileType(this FileType fileType) =>
-            SupportedFileTypes.FirstOrDefault(supportedFileType => supportedFileType.FileType == fileType) ?? throw new ArgumentException($"Unknown {fileType}", nameof(fileType));
+            SupportedFileTypes.FirstOrDefault(supportedFileType => supportedFileType.FileType == fileType) ?? throw new ArgumentOutOfRangeException(nameof(fileType), fileType, $"Unknown {nameof(FileType)}");
 
         public static readonly string Filter = string.Join("|", SupportedFileTypes.Select(static supportedFileType => $"{supportedFileType.Description} Files (*.{supportedFileType.Mask})|*.{supportedFileType.Mask}"));
 
@@ -112,7 +112,8 @@ namespace CsvLINQPadDriver.Extensions
             bool autoDetectEncoding,
             bool ignoreBlankLines,
             bool doNotLockFiles,
-            WhitespaceTrimOptions whitespaceTrimOptions,
+            bool addHeader,
+            WhitespaceTrimOptions? whitespaceTrimOptions,
             CsvRowMappingBase<T> csvClassMap)
             where T : ICsvRowBase, new()
         {
@@ -131,7 +132,7 @@ namespace CsvLINQPadDriver.Extensions
                         ignoreBlankLines,
                         doNotLockFiles,
                         whitespaceTrimOptions)
-                    .Skip(1) // Skip header.
+                    .Skip(addHeader ? 0 : 1)
                     .Select(GetRecord);
 
             T GetRecord(string?[] rowColumns)
@@ -158,7 +159,9 @@ namespace CsvLINQPadDriver.Extensions
             bool autoDetectEncoding,
             bool ignoreBlankLines,
             bool doNotLockFiles,
-            WhitespaceTrimOptions whitespaceTrimOptions)
+            bool addHeader,
+            HeaderFormat headerFormat,
+            WhitespaceTrimOptions? whitespaceTrimOptions)
         {
             using var csvParser = CreateCsvParser(
                 fileName,
@@ -173,8 +176,41 @@ namespace CsvLINQPadDriver.Extensions
                 whitespaceTrimOptions);
 
             return csvParser.Read()
-                    ? csvParser.Record
+                    ? GetHeader()
                     : Array.Empty<string>();
+
+            string[] GetHeader()
+            {
+                var header = csvParser.Record;
+                var headerFormatFunc = GetHeaderFormatFunc();
+
+                return addHeader
+                    ? Enumerable
+                        .Range(0, header.Length)
+                        .Select(headerFormatFunc!)
+                        .ToArray()
+                    : header;
+
+                Func<int, string>? GetHeaderFormatFunc()
+                {
+                    if (!addHeader)
+                    {
+                        return null;
+                    }
+
+                    var name = Enum.GetName(typeof(HeaderFormat), headerFormat);
+                    if (name is null)
+                    {
+                        throw new ArgumentOutOfRangeException(nameof(headerFormat), headerFormat, $"Unknown {nameof(HeaderFormat)}");
+                    }
+
+                    var columnName = name[..^1];
+                    var startIndex = name[^1] == '0' ? 0 : 1;
+                    var format = $"{columnName}{{0}}";
+
+                    return i => string.Format(CultureInfo.InvariantCulture, format, i + startIndex);
+                }
+            }
         }
 
         public static char CsvDetectSeparator(this string fileName, bool doNotLockFiles)
@@ -372,7 +408,7 @@ namespace CsvLINQPadDriver.Extensions
                 FilesOrderBy.SizeDesc          => fileInfos.OrderByDescending(static fileInfo => fileInfo.Length),
                 FilesOrderBy.LastWriteTimeAsc  => fileInfos.OrderBy(static fileInfo => fileInfo.LastWriteTimeUtc),
                 FilesOrderBy.LastWriteTimeDesc => fileInfos.OrderByDescending(static fileInfo => fileInfo.LastWriteTimeUtc),
-                _                              => throw new ArgumentOutOfRangeException(nameof(filesOrderBy), filesOrderBy, $"Unknown {filesOrderBy}")
+                _                              => throw new ArgumentOutOfRangeException(nameof(filesOrderBy), filesOrderBy, $"Unknown {nameof(FilesOrderBy)}")
             };
 
             return fileInfos.Select(static fileInfo => fileInfo.FullName);
@@ -407,7 +443,7 @@ namespace CsvLINQPadDriver.Extensions
             bool autoDetectEncoding,
             bool ignoreBlankLines,
             bool doNotLockFiles,
-            WhitespaceTrimOptions whitespaceTrimOptions)
+            WhitespaceTrimOptions? whitespaceTrimOptions)
         {
             const int bufferSize = 4096 * 20;
 
@@ -445,11 +481,11 @@ namespace CsvLINQPadDriver.Extensions
             TrimOptions GetTrimOptions() =>
                 whitespaceTrimOptions switch
                 {
-                    WhitespaceTrimOptions.None         => TrimOptions.None,
+                    null                               => TrimOptions.None,
                     WhitespaceTrimOptions.All          => TrimOptions.Trim | TrimOptions.InsideQuotes,
                     WhitespaceTrimOptions.Trim         => TrimOptions.Trim,
                     WhitespaceTrimOptions.InsideQuotes => TrimOptions.InsideQuotes,
-                    _                                  => throw new ArgumentException($"Unknown trim option: {whitespaceTrimOptions}", nameof(whitespaceTrimOptions))
+                    _                                  => throw new ArgumentOutOfRangeException(nameof(whitespaceTrimOptions), whitespaceTrimOptions, $"Unknown {nameof(WhitespaceTrimOptions)}")
                 };
         }
 
@@ -523,7 +559,7 @@ namespace CsvLINQPadDriver.Extensions
             bool autoDetectEncoding,
             bool ignoreBlankLines,
             bool doNotLockFiles,
-            WhitespaceTrimOptions whitespaceTrimOptions)
+            WhitespaceTrimOptions? whitespaceTrimOptions)
         {
             using var csvParser = CreateCsvParser(
                 fileName,

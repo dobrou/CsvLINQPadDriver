@@ -8,6 +8,7 @@ namespace CsvLINQPadDriver.Extensions
         public static bool CanBeHandled(this Exception exception) =>
             exception is not (
                 NullReferenceException   or
+                ArgumentException        or
                 IndexOutOfRangeException or
                 OutOfMemoryException     or
                 AccessViolationException or

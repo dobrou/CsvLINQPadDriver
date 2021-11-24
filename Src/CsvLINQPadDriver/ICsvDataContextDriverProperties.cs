@@ -69,7 +69,22 @@ namespace CsvLINQPadDriver
         bool IgnoreBlankLines { get; }
 
         /// <summary>
-        /// Fields whitespace trimming options.
+        /// Add header.
+        /// </summary>
+        bool AddHeader { get; }
+
+        /// <summary>
+        /// Header format.
+        /// </summary>
+        HeaderFormat HeaderFormat { get; }
+
+        /// <summary>
+        /// Trim spaces.
+        /// </summary>
+        bool TrimSpaces { get; }
+
+        /// <summary>
+        /// How to trim spaces.
         /// </summary>
         WhitespaceTrimOptions WhitespaceTrimOptions { get; }
 

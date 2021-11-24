@@ -30,7 +30,8 @@ namespace CsvLINQPadDriver.CodeGen
         private readonly bool _autoDetectEncoding;
         private readonly bool _ignoreBlankLines;
         private readonly bool _doNotLockFiles;
-        private readonly WhitespaceTrimOptions _whitespaceTrimOptions;
+        private readonly bool _addHeader;
+        private readonly WhitespaceTrimOptions? _whitespaceTrimOptions;
 
         protected readonly string FilePath;
 
@@ -45,7 +46,8 @@ namespace CsvLINQPadDriver.CodeGen
             bool autoDetectEncoding,
             bool ignoreBlankLines,
             bool doNotLockFiles,
-            WhitespaceTrimOptions whitespaceTrimOptions,
+            bool addHeader,
+            WhitespaceTrimOptions? whitespaceTrimOptions,
             string filePath,
             IEnumerable<CsvColumnInfo> propertiesInfo,
             Action<TRow> relationsInit)
@@ -60,6 +62,7 @@ namespace CsvLINQPadDriver.CodeGen
             _autoDetectEncoding = autoDetectEncoding;
             _ignoreBlankLines = ignoreBlankLines;
             _doNotLockFiles = doNotLockFiles;
+            _addHeader = addHeader;
             _whitespaceTrimOptions = whitespaceTrimOptions;
 
             FilePath = filePath;
@@ -79,6 +82,7 @@ namespace CsvLINQPadDriver.CodeGen
                 _autoDetectEncoding,
                 _ignoreBlankLines,
                 _doNotLockFiles,
+                _addHeader,
                 _whitespaceTrimOptions,
                 _cachedCsvRowMappingBase!);
 

@@ -128,9 +128,27 @@ namespace CsvLINQPadDriver
             set => SetValue(value);
         }
 
+        public bool AddHeader
+        {
+            get => GetValue(false);
+            set => SetValue(value);
+        }
+
+        public HeaderFormat HeaderFormat
+        {
+            get => GetValue(HeaderFormat.c1);
+            set => SetValue(value);
+        }
+
+        public bool TrimSpaces
+        {
+            get => GetValue(false);
+            set => SetValue(value);
+        }
+
         public WhitespaceTrimOptions WhitespaceTrimOptions
         {
-            get => GetValue(WhitespaceTrimOptions.None);
+            get => GetValue(WhitespaceTrimOptions.All);
             set => SetValue(value);
         }
 
