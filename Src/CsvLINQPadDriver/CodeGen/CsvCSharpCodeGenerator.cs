@@ -254,7 +254,7 @@ namespace CsvLINQPadDriver.CodeGen
                 StringComparison.InvariantCultureIgnoreCase => nameof(StringComparer.InvariantCultureIgnoreCase), 
                 StringComparison.Ordinal                    => nameof(StringComparer.Ordinal), 
                 StringComparison.OrdinalIgnoreCase          => nameof(StringComparer.OrdinalIgnoreCase),
-                _                                           => throw new ArgumentOutOfRangeException(nameof(stringComparison), stringComparison, $"Unknown {nameof(StringComparison)}")
+                _                                           => throw new IndexOutOfRangeException($"Unknown {nameof(StringComparison)} {stringComparison}")
             };
     }
 
@@ -266,7 +266,7 @@ namespace CsvLINQPadDriver.CodeGen
 
             static string ToClassName(string? name) =>
                 string.IsNullOrWhiteSpace(name)
-                    ? throw new ArgumentNullException(nameof(name), "Name is null or empty")
+                    ? throw new NullReferenceException("Name is null or empty")
                     : $"R{(name!.Length < 3 ? name : name.Singularize())}";
         }
 

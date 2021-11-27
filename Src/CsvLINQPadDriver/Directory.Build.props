@@ -1,7 +1,7 @@
 ﻿<Project>
   <PropertyGroup>
-    <Version>7.1.0</Version>
-    <PackageReleaseNotes>Files without header support.</PackageReleaseNotes>
+    <Version>7.1.1</Version>
+    <PackageReleaseNotes>Improved error handling and logging.</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup>

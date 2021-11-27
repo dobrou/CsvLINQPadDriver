@@ -96,7 +96,7 @@ namespace CsvLINQPadDriver.Extensions
             Array.FindIndex(SupportedFileTypes, supportedFileType => supportedFileType.FileType == fileType) + 1;
 
         private static SupportedFileType GetSupportedFileType(this FileType fileType) =>
-            SupportedFileTypes.FirstOrDefault(supportedFileType => supportedFileType.FileType == fileType) ?? throw new ArgumentOutOfRangeException(nameof(fileType), fileType, $"Unknown {nameof(FileType)}");
+            SupportedFileTypes.FirstOrDefault(supportedFileType => supportedFileType.FileType == fileType) ?? throw new IndexOutOfRangeException($"Unknown {nameof(FileType)} {fileType}");
 
         public static readonly string Filter = string.Join("|", SupportedFileTypes.Select(static supportedFileType => $"{supportedFileType.Description} Files (*.{supportedFileType.Mask})|*.{supportedFileType.Mask}"));
 
@@ -201,7 +201,7 @@ namespace CsvLINQPadDriver.Extensions
                     var name = Enum.GetName(typeof(HeaderFormat), headerFormat);
                     if (name is null)
                     {
-                        throw new ArgumentOutOfRangeException(nameof(headerFormat), headerFormat, $"Unknown {nameof(HeaderFormat)}");
+                        throw new IndexOutOfRangeException($"Unknown {nameof(HeaderFormat)} {headerFormat}");
                     }
 
                     var columnName = name[..^1];
@@ -213,7 +213,7 @@ namespace CsvLINQPadDriver.Extensions
             }
         }
 
-        public static char CsvDetectSeparator(this string fileName, bool doNotLockFiles)
+        public static char CsvDetectSeparator(this string fileName, bool doNotLockFiles, bool debugInfo)
         {
             var defaultCsvSeparators = Path.GetExtension(fileName).ToLowerInvariant() switch
             {
@@ -249,12 +249,12 @@ namespace CsvLINQPadDriver.Extensions
             }
             catch (Exception exception) when (exception.CanBeHandled())
             {
-                CsvDataContextDriver.WriteToLog($"CSV separator detection failed for {fileName}", exception);
+                $"CSV separator detection failed for {fileName}".WriteToLog(debugInfo, exception);
             }
 
             if (csvSeparator != defaultCsvSeparator)
             {
-                CsvDataContextDriver.WriteToLog($"Using CSV separator '{csvSeparator}' for {fileName}");
+                $"Using CSV separator '{csvSeparator}' for {fileName}".WriteToLog(debugInfo);
             }
 
             return csvSeparator;
@@ -270,13 +270,14 @@ namespace CsvLINQPadDriver.Extensions
             bool autoDetectEncoding,
             bool ignoreBlankLines,
             bool doNotLockFiles,
+            bool debugInfo,
             WhitespaceTrimOptions whitespaceTrimOptions)
         {
             var header = $"{fileName} is not valid CSV file:";
 
             if (!File.Exists(fileName))
             {
-                CsvDataContextDriver.WriteToLog($"{header} file does not exist");
+                $"{header} file does not exist".WriteToLog(debugInfo);
 
                 return false;
             }
@@ -297,7 +298,7 @@ namespace CsvLINQPadDriver.Extensions
 
                 if (!csvParser.Read())
                 {
-                    CsvDataContextDriver.WriteToLog($"{header} could not get CSV header");
+                    $"{header} could not get CSV header".WriteToLog(debugInfo);
 
                     return false;
                 }
@@ -307,14 +308,14 @@ namespace CsvLINQPadDriver.Extensions
                 // No columns.
                 if (!headerRow.Any())
                 {
-                    CsvDataContextDriver.WriteToLog($"{header} CSV header had no columns");
+                    $"{header} CSV header had no columns".WriteToLog(debugInfo);
 
                     return false;
                 }
 
                 if (!csvParser.Read())
                 {
-                    CsvDataContextDriver.WriteToLog($"{header} CSV has header but has no data");
+                    $"{header} CSV has header but has no data".WriteToLog(debugInfo);
 
                     return false;
                 }
@@ -324,7 +325,7 @@ namespace CsvLINQPadDriver.Extensions
                 // Column count differs.
                 if (headerRow.Length != dataRow.Length)
                 {
-                    CsvDataContextDriver.WriteToLog($"{header} CSV header column count does not match data column count");
+                    $"{header} CSV header column count does not match data column count".WriteToLog(debugInfo);
 
                     return false;
                 }
@@ -344,7 +345,7 @@ namespace CsvLINQPadDriver.Extensions
             }
             catch(Exception exception) when (exception.CanBeHandled())
             {
-                CsvDataContextDriver.WriteToLog($"{header} failed with exception", exception);
+                $"{header} failed with exception".WriteToLog(debugInfo, exception);
 
                 return false;
             }
@@ -374,11 +375,11 @@ namespace CsvLINQPadDriver.Extensions
                 .Distinct(FileNameComparer)
                 .ToImmutableList();
 
-        public static string GetHumanizedFileSize(this string fileName) =>
-            GetHumanizedFileSize(GetFileSize(fileName));
+        public static string GetHumanizedFileSize(this string fileName, bool debugInfo) =>
+            GetHumanizedFileSize(GetFileSize(fileName, debugInfo));
 
-        public static string GetHumanizedFileSize(this IEnumerable<string> files) =>
-            GetHumanizedFileSize(files.Sum(GetFileSize));
+        public static string GetHumanizedFileSize(this IEnumerable<string> files, bool debugInfo) =>
+            GetHumanizedFileSize(files.Sum(fileName => GetFileSize(fileName, debugInfo)));
 
         public static IEnumerable<string> GetFilesOnly(this string paths) =>
             Regex.Split(paths, @"[\r\n]+").GetFilesOnly();
@@ -408,7 +409,7 @@ namespace CsvLINQPadDriver.Extensions
                 FilesOrderBy.SizeDesc          => fileInfos.OrderByDescending(static fileInfo => fileInfo.Length),
                 FilesOrderBy.LastWriteTimeAsc  => fileInfos.OrderBy(static fileInfo => fileInfo.LastWriteTimeUtc),
                 FilesOrderBy.LastWriteTimeDesc => fileInfos.OrderByDescending(static fileInfo => fileInfo.LastWriteTimeUtc),
-                _                              => throw new ArgumentOutOfRangeException(nameof(filesOrderBy), filesOrderBy, $"Unknown {nameof(FilesOrderBy)}")
+                _                              => throw new IndexOutOfRangeException($"Unknown {nameof(FilesOrderBy)} {filesOrderBy}")
             };
 
             return fileInfos.Select(static fileInfo => fileInfo.FullName);
@@ -417,7 +418,7 @@ namespace CsvLINQPadDriver.Extensions
         public static string GetInlineCommentContent(this string line) =>
             line.Trim().TrimStart(InlineCommentCharArray);
 
-        private static long GetFileSize(string fileName)
+        private static long GetFileSize(string fileName, bool debugInfo)
         {
             try
             {
@@ -425,7 +426,7 @@ namespace CsvLINQPadDriver.Extensions
             }
             catch (Exception exception) when (exception.CanBeHandled())
             {
-                CsvDataContextDriver.WriteToLog($"Failed to get {fileName} size", exception);
+                $"Failed to get {fileName} size".WriteToLog(debugInfo, exception);
                 return 0;
             }
         }
@@ -485,7 +486,7 @@ namespace CsvLINQPadDriver.Extensions
                     WhitespaceTrimOptions.All          => TrimOptions.Trim | TrimOptions.InsideQuotes,
                     WhitespaceTrimOptions.Trim         => TrimOptions.Trim,
                     WhitespaceTrimOptions.InsideQuotes => TrimOptions.InsideQuotes,
-                    _                                  => throw new ArgumentOutOfRangeException(nameof(whitespaceTrimOptions), whitespaceTrimOptions, $"Unknown {nameof(WhitespaceTrimOptions)}")
+                    _                                  => throw new IndexOutOfRangeException($"Unknown {nameof(WhitespaceTrimOptions)} {whitespaceTrimOptions}")
                 };
         }
 

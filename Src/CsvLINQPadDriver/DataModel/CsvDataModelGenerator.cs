@@ -70,17 +70,18 @@ namespace CsvLINQPadDriver.DataModel
 
                 foreach (var file in files.Where(File.Exists))
                 {
+                    var doNotLockFiles = _csvDataContextDriverProperties.DoNotLockFiles;
+                    var debugInfo = _csvDataContextDriverProperties.DebugInfo;
                     var csvSeparator  = _csvDataContextDriverProperties.UseCsvHelperSeparatorAutoDetection
                             ? null
                             : _csvDataContextDriverProperties.SafeCsvSeparator
-                              ?? file.CsvDetectSeparator(_csvDataContextDriverProperties.DoNotLockFiles).ToString();
+                              ?? file.CsvDetectSeparator(doNotLockFiles, debugInfo).ToString();
                     var noBomEncoding = _csvDataContextDriverProperties.NoBomEncoding;
                     var allowComments = _csvDataContextDriverProperties.AllowComments;
                     var commentChar = _csvDataContextDriverProperties.CommentChar;
                     var ignoreBadData = _csvDataContextDriverProperties.IgnoreBadData;
                     var autoDetectEncoding = _csvDataContextDriverProperties.AutoDetectEncoding;
                     var ignoreBlankLines = _csvDataContextDriverProperties.IgnoreBlankLines;
-                    var doNotLockFiles = _csvDataContextDriverProperties.DoNotLockFiles;
                     var addHeader = _csvDataContextDriverProperties.AddHeader;
                     var headerFormat = _csvDataContextDriverProperties.HeaderFormat;
                     var whitespaceTrimOptions = _csvDataContextDriverProperties.WhitespaceTrimOptions;
@@ -95,6 +96,7 @@ namespace CsvLINQPadDriver.DataModel
                             autoDetectEncoding,
                             ignoreBlankLines,
                             doNotLockFiles,
+                            debugInfo,
                             whitespaceTrimOptions))
                     {
                         exceptions.Add(file, "has invalid CSV format");
@@ -149,7 +151,7 @@ namespace CsvLINQPadDriver.DataModel
                     {
                         CodeName    = codeName,
                         ClassName   = GetClassName(),
-                        DisplayName = $"{fileName}{(string.IsNullOrWhiteSpace(fileDir) ? string.Empty : $" in {fileDir}")} {file.GetHumanizedFileSize()}"
+                        DisplayName = $"{fileName}{(string.IsNullOrWhiteSpace(fileDir) ? string.Empty : $" in {fileDir}")} {file.GetHumanizedFileSize(debugInfo)}"
                     };
 
                     string? GetClassName()

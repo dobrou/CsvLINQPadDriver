@@ -115,7 +115,7 @@ namespace CsvLINQPadDriver
                 }
                 catch (Exception exception) when (exception.CanBeHandled())
                 {
-                    CsvDataContextDriver.WriteToLog($"Falling back to CSV separator '{csvSeparator}'", exception);
+                    $"Falling back to CSV separator '{csvSeparator}'".WriteToLog(DebugInfo, exception);
 
                     return csvSeparator;
                 }

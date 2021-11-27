@@ -74,7 +74,7 @@ namespace CsvLINQPadDriver
                 foreach (var tableCodeGroup in tableCodeGroups.Where(static codeGroup => codeGroup.Count() > 1))
                 {
                     var codeNames = tableCodeGroup.Select(static typeCodeResult => typeCodeResult.CodeName).ToImmutableList();
-                    var similarFilesSize = tableCodeGroup.Select(static typeCodeResult => typeCodeResult.FilePath).GetHumanizedFileSize();
+                    var similarFilesSize = tableCodeGroup.Select(static typeCodeResult => typeCodeResult.FilePath).GetHumanizedFileSize(csvDataContextDriverProperties.DebugInfo);
                     var filePaths = new HashSet<string>(codeNames);
                     var similarFilesCount = codeNames.Count;
 
