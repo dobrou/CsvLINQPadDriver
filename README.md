@@ -180,7 +180,7 @@ CSV files connection can be added to LINQPad 7/6/5 the same way as any other con
 * Auto-detect file encodings: try to detect file encodings.
 * Validate file paths: check if file paths are valid.
 * Ignore files with invalid format: files with content which does not resemble CSV will be ignored.
-* Do not lock files being read: allow other processes to modify files being read.
+* Do not lock files being read: allow other processes to modify files being read. Note that driver does not track files changes.
 
 ### Format ###
 
@@ -188,9 +188,11 @@ CSV files connection can be added to LINQPad 7/6/5 the same way as any other con
 * Use [CsvHelper](https://joshclose.github.io/CsvHelper) library separator auto-detection: use CsvHelper library separator auto-detection instead of internal one.
 * Ignore bad data: ignore malformed files.
 * Ignore blank lines: do not process blank lines.
-* Trim spaces around fields and/or inside quotes around fields.
+* Trim spaces: allow trimming spaces around fields and/or inside quotes around fields.
 * Allow comments: allow single-line comments - lines starting with `#` (default) will be ignored.
-* Add header with specific header column name format.
+* Header detection: detect or add header with specific column fallback name format if header could not be detected.
+  * Header detection approach: specify whether header is present or not, or how to detect it by symbols it consists of.
+  * Header column fallback name format: define generated columns names if there is no header.
 
 ### Memory ###
 
@@ -214,7 +216,7 @@ CSV files connection can be added to LINQPad 7/6/5 the same way as any other con
 
 ### Misc ##
 
-* Debug info: show additional driver debug info, e.g. generated data context source.
+* Debug info: show additional driver debug info, e.g. generated data context source, and enable logging.
 * Remember this connection: connection will be available on next run.
 * Contains production data: files contain production data.
 
@@ -437,6 +439,7 @@ TimeSpan? ToTimeSpan(
 * [IsExternalInit](https://github.com/manuelroemer/IsExternalInit)
 * [Microsoft.Bcl.HashCode](https://www.nuget.org/packages/Microsoft.Bcl.HashCode) (for LINQPad 5 only).
 * [Moq](https://github.com/moq/moq4)
+* [Nullable](https://github.com/manuelroemer/Nullable)
 * [NUnit](https://github.com/nunit/nunit)
 * [UnicodeCharsetDetector](https://github.com/i2van/UnicodeCharsetDetector)
 * [UTF.Unknown](https://www.nuget.org/packages/UTF.Unknown)

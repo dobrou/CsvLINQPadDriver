@@ -74,6 +74,11 @@ namespace CsvLINQPadDriver
         bool AddHeader { get; }
 
         /// <summary>
+        /// Header detection method.
+        /// </summary>
+        HeaderDetection HeaderDetection { get; }
+
+        /// <summary>
         /// Header format.
         /// </summary>
         HeaderFormat HeaderFormat { get; }

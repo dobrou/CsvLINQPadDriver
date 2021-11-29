@@ -88,6 +88,7 @@ namespace CsvLINQPadDriver.CodeGen
                 {ParamName("ignoreBlankLines")}{GetBoolConst(_properties.IgnoreBlankLines)},
                 {ParamName("doNotLockFiles")}{GetBoolConst(_properties.DoNotLockFiles)},
                 {ParamName("addHeader")}{GetBoolConst(_properties.AddHeader)},
+                {ParamName("headerDetection")}{GetNullableValue(_properties.AddHeader, () => $"{typeof(HeaderDetection).GetCodeTypeClassName()}.{_properties.HeaderDetection}")},
                 {ParamName("whitespaceTrimOptions")}{GetNullableValue(_properties.TrimSpaces, () => $"{typeof(WhitespaceTrimOptions).GetCodeTypeClassName()}.{_properties.WhitespaceTrimOptions}")},
                 {ParamName("filePath")}{table.FilePath.AsValidCSharpCode()},
                 {ParamName("propertiesInfo")}new {typeof(CsvColumnInfoList).GetCodeTypeClassName()} {{

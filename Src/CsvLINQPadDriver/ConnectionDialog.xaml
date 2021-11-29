@@ -18,12 +18,27 @@
     Loaded="ConnectionDialog_OnLoaded">
 
     <Window.Resources>
-        <ObjectDataProvider x:Key="FileTypeData" MethodName="GetValues" ObjectType="{x:Type enumObjectDataSources:FileTypeEnumObjectDataSource }"/>
-        <ObjectDataProvider x:Key="NoBomEncodingData" MethodName="GetValues" ObjectType="{x:Type enumObjectDataSources:NoBomEncodingEnumObjectDataSource}"/>
-        <ObjectDataProvider x:Key="FilesOrderByData" MethodName="GetValues" ObjectType="{x:Type enumObjectDataSources:FilesOrderByEnumObjectDataSource}"/>
-        <ObjectDataProvider x:Key="StringComparisonData" MethodName="GetValues" ObjectType="{x:Type enumObjectDataSources:StringComparisonEnumObjectDataSource}"/>
-        <ObjectDataProvider x:Key="HeaderFormatData" MethodName="GetValues" ObjectType="{x:Type enumObjectDataSources:HeaderFormatEnumObjectDataSource}"/>
-        <ObjectDataProvider x:Key="WhitespaceTrimOptionsData" MethodName="GetValues" ObjectType="{x:Type enumObjectDataSources:WhitespaceTrimOptionsEnumObjectDataSource}"/>
+        <ObjectDataProvider x:Key="FileTypeData"
+                            ObjectType="{x:Type enumObjectDataSources:FileTypeEnumObjectDataSource }"
+                            MethodName="GetValues"/>
+        <ObjectDataProvider x:Key="NoBomEncodingData"
+                            ObjectType="{x:Type enumObjectDataSources:NoBomEncodingEnumObjectDataSource}"
+                            MethodName="GetValues"/>
+        <ObjectDataProvider x:Key="FilesOrderByData"
+                            ObjectType="{x:Type enumObjectDataSources:FilesOrderByEnumObjectDataSource}"
+                            MethodName="GetValues"/>
+        <ObjectDataProvider x:Key="StringComparisonData"
+                            ObjectType="{x:Type enumObjectDataSources:StringComparisonEnumObjectDataSource}"
+                            MethodName="GetValues"/>
+        <ObjectDataProvider x:Key="HeaderFormatData"
+                            ObjectType="{x:Type enumObjectDataSources:HeaderFormatEnumObjectDataSource}"
+                            MethodName="GetValues"/>
+        <ObjectDataProvider x:Key="HeaderDetectionData"
+                            ObjectType="{x:Type enumObjectDataSources:HeaderDetectionEnumObjectDataSource}"
+                            MethodName="GetValues"/>
+        <ObjectDataProvider x:Key="WhitespaceTrimOptionsData"
+                            ObjectType="{x:Type enumObjectDataSources:WhitespaceTrimOptionsEnumObjectDataSource}"
+                            MethodName="GetValues"/>
 
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
 
@@ -91,6 +106,7 @@
         <Style x:Key="EnumComboBoxStyle" TargetType="{x:Type ComboBox}">
             <Setter Property="SelectedValuePath" Value="Item1"/>
             <Setter Property="DisplayMemberPath" Value="Item2"/>
+            <Setter Property="MaxDropDownHeight" Value="Auto"/>
         </Style>
 
         <Thickness x:Key="GroupControlMarginStyle" Left="0" Right="0" Top="2" Bottom="2"/>
@@ -103,9 +119,10 @@
             <Setter Property="Margin" Value="{StaticResource GroupControlMarginStyle}"/>
         </Style>
 
-        <Style x:Key="CloseCheckBoxStackPanelStyle" TargetType="{x:Type StackPanel}">
-            <Setter Property="HorizontalAlignment" Value="Left"/>
+        <Style x:Key="CheckBoxStackPanelStyle" TargetType="{x:Type StackPanel}">
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="0 1 2 0"/>
         </Style>
 
         <Style x:Key="CloseDialogButtonStyle" TargetType="{x:Type Button}">
@@ -345,7 +362,7 @@
                                 <Separator/>
                                 <MenuItem Command="ApplicationCommands.Cut" Header="Cu_t"/>
                                 <MenuItem Command="ApplicationCommands.Copy" Header="_Copy"/>
-                                <MenuItem Command="ApplicationCommands.Paste" Header="_Paste (append *.csv to folders)"/>
+                                <MenuItem Command="ApplicationCommands.Paste" Header="_Paste (append * active file type mask to folders)"/>
                                 <MenuItem Style="{StaticResource CommandMenuItem}" Command="{x:Static this:ConnectionDialog.PasteFoldersWithSubfoldersCommand}"/>
                                 <MenuItem Style="{StaticResource CommandMenuItem}" Command="{x:Static this:ConnectionDialog.DeleteCommand}"/>
                                 <Separator/>
@@ -421,7 +438,7 @@
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
 
-                    <Label Content="_Separator (\t for tab)&#160;"
+                    <Label Content="_Separator (\t for tab)"
                            Padding="0"
                            IsEnabled="{Binding IsChecked, ElementName=UseCsvHelperSeparatorAutoDetectionCheckBox, Converter={StaticResource InvertedBooleanConverter}}"/>
                     <TextBox Grid.Row="0" Grid.Column="1"
@@ -443,11 +460,13 @@
                     </StackPanel>
 
                     <!-- ReSharper disable once MarkupAttributeTypo -->
-                    <CheckBox Grid.Row="2" Grid.Column="0"
+                    <StackPanel Grid.Row="2" Grid.Column="0" Style="{StaticResource CheckBoxStackPanelStyle}">
+                        <CheckBox
                               Name="TrimSpacesCheckBox"
                               IsChecked="{Binding TrimSpaces}"
                               Content="Tri_m spaces"
                               ToolTip="Trim spaces"/>
+                    </StackPanel>
                     <ComboBox Grid.Row="2" Grid.Column="1"
                               Style="{StaticResource GroupComboBoxStyle}"
                               ToolTip="Where to trim spaces"
@@ -456,11 +475,13 @@
                               IsEnabled="{Binding IsChecked, ElementName=TrimSpacesCheckBox}"/>
 
                     <!-- ReSharper disable once MarkupAttributeTypo -->
-                    <CheckBox Grid.Row="3" Grid.Column="0"
+                    <StackPanel Grid.Row="3" Grid.Column="0" Style="{StaticResource CheckBoxStackPanelStyle}">
+                        <CheckBox
                               Name="AllowCommentsCheckBox"
                               IsChecked="{Binding AllowComments}"
-                              Content="Allow co_mments&#160;"
+                              Content="Allow co_mments"
                               ToolTip="Allow single-line comments"/>
+                    </StackPanel>
                     <TextBox Grid.Row="3" Grid.Column="1"
                              Style="{StaticResource GroupTextBoxStyle}"
                              MaxLength="1"
@@ -469,16 +490,33 @@
                              ToolTip="Character used as a single-line comment. # if empty"
                              IsEnabled="{Binding IsChecked, ElementName=AllowCommentsCheckBox}"/>
 
-                    <CheckBox Grid.Row="4" Grid.Column="0"
-                              Name="HeaderFormatComboBox"
-                              IsChecked="{Binding AddHeader}"
-                              Content="Add _header" ToolTip="Add header"/>
-                    <ComboBox Grid.Row="4" Grid.Column="1"
-                              Style="{StaticResource GroupComboBoxStyle}"
-                              ToolTip="Header column name format"
-                              SelectedValue="{Binding HeaderFormat}"
-                              ItemsSource="{Binding Source={StaticResource HeaderFormatData}}"
-                              IsEnabled="{Binding IsChecked, ElementName=HeaderFormatComboBox}"/>
+                    <StackPanel Grid.Row="4" Grid.Column="0" Style="{StaticResource CheckBoxStackPanelStyle}">
+                        <CheckBox
+                            Name="HeaderFormatCheckBox"
+                            IsChecked="{Binding AddHeader}"
+                            Content="_Header detection" ToolTip="Detect or add header"/>
+                    </StackPanel>
+                    <Grid Grid.Row="4" Grid.Column="1" IsEnabled="{Binding IsChecked, ElementName=HeaderFormatCheckBox}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="56*" MinWidth="20"/>
+                            <ColumnDefinition Width="4"/>
+                            <ColumnDefinition Width="44*" MinWidth="20"/>
+                        </Grid.ColumnDefinitions>
+
+                        <ComboBox
+                            Style="{StaticResource GroupComboBoxStyle}"
+                            ToolTip="Header detection approach"
+                            SelectedValue="{Binding HeaderDetection}"
+                            ItemsSource="{Binding Source={StaticResource HeaderDetectionData}}"/>
+
+                        <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch"/>
+
+                        <ComboBox Grid.Column="2"
+                                  Style="{StaticResource GroupComboBoxStyle}"
+                                  ToolTip="Header column fallback name format"
+                                  SelectedValue="{Binding HeaderFormat}"
+                                  ItemsSource="{Binding Source={StaticResource HeaderFormatData}}"/>
+                    </Grid>
                 </Grid>
             </GroupBox>
 
@@ -551,16 +589,16 @@
                         <ColumnDefinition Width="90*"/>
                     </Grid.ColumnDefinitions>
 
-                    <StackPanel Style="{StaticResource CloseCheckBoxStackPanelStyle}">
+                    <StackPanel Style="{StaticResource CheckBoxStackPanelStyle}">
                         <!-- ReSharper disable once MarkupAttributeTypo -->
                         <CheckBox IsChecked="{Binding Persist}" Content="Remember this c_onnection" ToolTip="Connection will be available on next run"/>
                     </StackPanel>
 
-                    <StackPanel Grid.Column="1" Style="{StaticResource CloseCheckBoxStackPanelStyle}">
+                    <StackPanel Grid.Column="1" Style="{StaticResource CheckBoxStackPanelStyle}">
                         <CheckBox IsChecked="{Binding IsProduction}" Content="Contains _production data" ToolTip="Files contain production data"/>
                     </StackPanel>
 
-                    <StackPanel Grid.Column="2" Style="{StaticResource CloseCheckBoxStackPanelStyle}">
+                    <StackPanel Grid.Column="2" Style="{StaticResource CheckBoxStackPanelStyle}">
                         <CheckBox IsChecked="{Binding DebugInfo}" Content="_Debug info" ToolTip="Show additional driver debug info"/>
                     </StackPanel>
 

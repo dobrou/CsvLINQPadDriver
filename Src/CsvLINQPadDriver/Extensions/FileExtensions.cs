@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -113,6 +114,7 @@ namespace CsvLINQPadDriver.Extensions
             bool ignoreBlankLines,
             bool doNotLockFiles,
             bool addHeader,
+            HeaderDetection? headerDetection,
             WhitespaceTrimOptions? whitespaceTrimOptions,
             CsvRowMappingBase<T> csvClassMap)
             where T : ICsvRowBase, new()
@@ -121,7 +123,9 @@ namespace CsvLINQPadDriver.Extensions
                 ? new()
                 : new(internStringComparer);
 
-            return CsvReadRows(
+            return
+                SkipHeader(
+                    CsvReadRows(
                         fileName,
                         csvSeparator,
                         noBomEncoding,
@@ -131,9 +135,28 @@ namespace CsvLINQPadDriver.Extensions
                         autoDetectEncoding,
                         ignoreBlankLines,
                         doNotLockFiles,
-                        whitespaceTrimOptions)
-                    .Skip(addHeader ? 0 : 1)
-                    .Select(GetRecord);
+                        whitespaceTrimOptions))
+                .Select(GetRecord);
+
+            IEnumerable<string[]> SkipHeader(IEnumerable<string[]> rows)
+            {
+                using var enumerator = rows.GetEnumerator();
+
+                if (enumerator.MoveNext())
+                {
+                    var columnHeader = enumerator.Current;
+
+                    if (addHeader && !columnHeader.IsPresent(true, headerDetection ?? default))
+                    {
+                        yield return columnHeader;
+                    }
+                }
+
+                while(enumerator.MoveNext())
+                {
+                    yield return enumerator.Current;
+                }
+            }
 
             T GetRecord(string?[] rowColumns)
             {
@@ -160,6 +183,7 @@ namespace CsvLINQPadDriver.Extensions
             bool ignoreBlankLines,
             bool doNotLockFiles,
             bool addHeader,
+            HeaderDetection headerDetection,
             HeaderFormat headerFormat,
             WhitespaceTrimOptions? whitespaceTrimOptions)
         {
@@ -182,6 +206,12 @@ namespace CsvLINQPadDriver.Extensions
             string[] GetHeader()
             {
                 var header = csvParser.Record;
+
+                if (header.IsPresent(addHeader, headerDetection))
+                {
+                    return header;
+                }
+
                 var headerFormatFunc = GetHeaderFormatFunc();
 
                 return addHeader
@@ -578,6 +608,28 @@ namespace CsvLINQPadDriver.Extensions
             {
                 yield return csvParser.Record;
             }
+        }
+
+        private static bool IsPresent(this IEnumerable<string> header, bool addHeader, HeaderDetection headerDetection)
+        {
+            return
+                addHeader &&
+                TryGetHeaderDetectionRegex(headerDetection, out var headerDetectionRegex) &&
+                header.All(columnHeader => Regex.IsMatch(columnHeader, headerDetectionRegex, RegexOptions.ExplicitCapture));
+
+            static bool TryGetHeaderDetectionRegex(HeaderDetection headerDetection, [NotNullWhen(true)] out string? headerDetectionRegex) =>
+                (headerDetectionRegex = headerDetection switch
+                {
+                    HeaderDetection.NoHeader                       => null,
+                    HeaderDetection.HasHeader                      => @".",
+                    HeaderDetection.AllLettersNumbersPunctuation   => @"^(\p{L}\p{M}*|[0-9_\-. ])+$",
+                    HeaderDetection.AllLettersNumbers              => @"^(\p{L}\p{M}*|[0-9])+$",
+                    HeaderDetection.AllLetters                     => @"^(\p{L}\p{M}*)+$",
+                    HeaderDetection.LatinLettersNumbersPunctuation => @"^[a-zA-Z0-9_\-. ]+$",
+                    HeaderDetection.LatinLettersNumbers            => @"^[a-zA-Z0-9]+$",
+                    HeaderDetection.LatinLetters                   => @"^[a-zA-Z]+$",
+                    _                                              => throw new IndexOutOfRangeException($"Unknown {nameof(HeaderDetection)} {headerDetection}")
+                }) is not null;
         }
 
         private static Encoding GetFallbackEncoding(NoBomEncoding noBomEncoding)

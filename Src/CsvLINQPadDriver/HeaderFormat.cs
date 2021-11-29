@@ -1,5 +1,7 @@
 ﻿using System.ComponentModel;
 
+// ReSharper disable UnusedMember.Global
+
 namespace CsvLINQPadDriver
 {
     public enum HeaderFormat

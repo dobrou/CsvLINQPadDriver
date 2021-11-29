@@ -81,7 +81,7 @@ namespace CsvLINQPadDriver
 
         public static readonly RoutedUICommandEx PasteFoldersWithSubfoldersCommand = new()
         {
-            Text = "_Paste (append **.csv to folders)",
+            Text = "_Paste (append ** active file type mask to folders)",
             InputGestureText = "Ctrl+Alt+V"
         };
 
@@ -89,7 +89,7 @@ namespace CsvLINQPadDriver
 
         public static readonly RoutedUICommandEx PasteFromClipboardFoldersAndProceedCommand = new()
         {
-            Text = "Clear, paste (append *.csv to folders) a_nd proceed",
+            Text = "Clear, paste (append * active file type mask to folders) a_nd proceed",
             InputGestureText = "Ctrl+Shift+V"
         };
 
@@ -97,7 +97,7 @@ namespace CsvLINQPadDriver
 
         public static readonly RoutedUICommandEx PasteFromClipboardFoldersWithSubfoldersAndProceedCommand = new()
         {
-            Text = "Clear, paste (append **.csv to folders) a_nd proceed",
+            Text = "Clear, paste (append ** active file type mask to folders) a_nd proceed",
             InputGestureText = "Ctrl+Shift+Alt+V"
         };
 

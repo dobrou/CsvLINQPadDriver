@@ -130,7 +130,13 @@ namespace CsvLINQPadDriver
 
         public bool AddHeader
         {
-            get => GetValue(false);
+            get => GetValue(true);
+            set => SetValue(value);
+        }
+
+        public HeaderDetection HeaderDetection
+        {
+            get => GetValue(HeaderDetection.AllLettersNumbersPunctuation);
             set => SetValue(value);
         }
 

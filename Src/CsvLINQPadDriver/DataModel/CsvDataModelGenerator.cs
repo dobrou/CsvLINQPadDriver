@@ -83,6 +83,7 @@ namespace CsvLINQPadDriver.DataModel
                     var autoDetectEncoding = _csvDataContextDriverProperties.AutoDetectEncoding;
                     var ignoreBlankLines = _csvDataContextDriverProperties.IgnoreBlankLines;
                     var addHeader = _csvDataContextDriverProperties.AddHeader;
+                    var headerDetection = _csvDataContextDriverProperties.HeaderDetection;
                     var headerFormat = _csvDataContextDriverProperties.HeaderFormat;
                     var whitespaceTrimOptions = _csvDataContextDriverProperties.WhitespaceTrimOptions;
 
@@ -125,6 +126,7 @@ namespace CsvLINQPadDriver.DataModel
                                 ignoreBlankLines,
                                 doNotLockFiles,
                                 addHeader,
+                                headerDetection,
                                 headerFormat,
                                 whitespaceTrimOptions)
                             .Select(static (value, index) => (value, index))
@@ -213,16 +215,16 @@ namespace CsvLINQPadDriver.DataModel
                 yield break;
             }
 
-            // item -> itemID
+            // car -> carID
             yield return $"{fileName}id";
 
-            // items -> itemID
+            // cars -> carID
             if (GetIdName("s", out var idsName))
             {
                 yield return idsName!;
             }
 
-            // fishes -> fishID
+            // buses -> busID
             if (GetIdName("es", out var idesName))
             {
                 yield return idesName!;
