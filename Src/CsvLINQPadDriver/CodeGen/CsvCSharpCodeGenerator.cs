@@ -74,12 +74,12 @@ namespace CsvLINQPadDriver.CodeGen
 
         public {_contextTypeName}()
         {{
-            // Init tables data{string.Join(string.Empty, csvTables.Select(table => $@"
-            this.{table.CodeName} = {typeof(CsvTableFactory).GetCodeTypeClassName()}.CreateTable<{GetClassName(table)}>(
+            // Init tables data{string.Join(string.Empty, csvTables.Select(table => (Table: table, ClassName: GetClassName(table))).Select(context => $@"
+            this.{context.Table.CodeName} = {typeof(CsvTableFactory).GetCodeTypeClassName()}.CreateTable<{context.ClassName}>(
                 {ParamName("isStringInternEnabled")}{GetBoolConst(isStringInternEnabled)},
                 {ParamName("internStringComparer")}{GetNullableValue(isStringInternEnabled && _properties.UseStringComparerForStringIntern, () => GetStringComparer(_properties.StringComparison))},
                 {ParamName("isCacheEnabled")}{GetBoolConst(_properties.IsCacheEnabled)},
-                {ParamName("csvSeparator")}{table.CsvSeparator.AsValidCSharpCode()},
+                {ParamName("csvSeparator")}{context.Table.CsvSeparator.AsValidCSharpCode()},
                 {ParamName("noBomEncoding")}{typeof(NoBomEncoding).GetCodeTypeClassName()}.{_properties.NoBomEncoding},
                 {ParamName("allowComments")}{GetBoolConst(_properties.AllowComments)},
                 {ParamName("commentChar")}{GetNullableValue(_properties.AllowComments && _properties.CommentChar.HasValue, () => _properties.CommentChar.AsValidCSharpCode())},
@@ -90,14 +90,14 @@ namespace CsvLINQPadDriver.CodeGen
                 {ParamName("addHeader")}{GetBoolConst(_properties.AddHeader)},
                 {ParamName("headerDetection")}{GetNullableValue(_properties.AddHeader, () => $"{typeof(HeaderDetection).GetCodeTypeClassName()}.{_properties.HeaderDetection}")},
                 {ParamName("whitespaceTrimOptions")}{GetNullableValue(_properties.TrimSpaces, () => $"{typeof(WhitespaceTrimOptions).GetCodeTypeClassName()}.{_properties.WhitespaceTrimOptions}")},
-                {ParamName("filePath")}{table.FilePath.AsValidCSharpCode()},
+                {ParamName("filePath")}{context.Table.FilePath.AsValidCSharpCode()},
                 {ParamName("propertiesInfo")}new {typeof(CsvColumnInfoList).GetCodeTypeClassName()} {{
                     {string.Join(string.Empty, string.Join(@",
-                    ", table.Columns.Select(static csvColumn => $@"{{ {IntToString(csvColumn.Index)}, ""{csvColumn.CodeName}"" }}")))}
+                    ", context.Table.Columns.Select(csvColumn => $@"{{ {IntToString(csvColumn.Index)}, {NameOf(context.ClassName, csvColumn.CodeName!)} }}")))}
                 }},
-                {ParamName("relationsInit")}r => {{{string.Join(string.Empty, table.Relations.Select(static csvRelation => $@"
-                    r.{csvRelation.CodeName} = new {typeof(LazyEnumerable<>).GetCodeTypeClassName(GetClassName(csvRelation.TargetTable))}(
-                        () => {csvRelation.TargetTable.CodeName}.WhereIndexed(tr => tr.{csvRelation.TargetColumn.CodeName}, {csvRelation.TargetColumn.CodeName.AsValidCSharpCode()}, r.{csvRelation.SourceColumn.CodeName}));"))}
+                {ParamName("relationsInit")}r => {{{string.Join(string.Empty, context.Table.Relations.Select(csvRelation => (Relation: csvRelation, ClassName: GetClassName(csvRelation.TargetTable))).Select(static context => $@"
+                    r.{context.Relation.CodeName} = new {typeof(LazyEnumerable<>).GetCodeTypeClassName(context.ClassName)}(
+                        () => {context.Relation.TargetTable.CodeName}.WhereIndexed(tr => tr.{context.Relation.TargetColumn.CodeName}, {NameOf(context.ClassName, context.Relation.TargetColumn.CodeName!)}, r.{context.Relation.SourceColumn.CodeName}));"))}
                 }}
             );")
                 )}
@@ -116,6 +116,13 @@ namespace CsvLINQPadDriver.CodeGen
 
             static string ParamName(string name) =>
                 $"{name}: ";
+
+            static string NameOf(string tableName, string name) =>
+#if NETCOREAPP
+                $"nameof({tableName}.{name})";
+#else
+                $@"""{name}"" /* {tableName}.{name} */";
+#endif
         }
 
         private static TypeCodeResult GenerateTableRowDataTypeClass(CsvTable table, bool useRecordType, StringComparison stringComparison, bool hideRelationsFromDump)
@@ -133,8 +140,8 @@ namespace CsvLINQPadDriver.CodeGen
     public sealed {generatedType} {className} : {typeof(ICsvRowBase).GetCodeTypeClassName()}{interfaces}
     {{{string.Join(string.Empty, table.Columns.Select(static csvColumn => $@"
         public string{NullableReferenceTypeSign} {GetPropertyName(csvColumn)} {{ get; set; }}"))}
-{GenerateIndexer(properties, "int",    static (_, index) => IntToString(index),     "at index {0}")}
-{GenerateIndexer(properties, "string", static (property, _) => $@"""{property}""",  "with name \\\"{0}\\\"")}
+{GenerateIndexer(properties, "int",    static (_, index) => IntToString(index),  "at index {0}")}
+{GenerateIndexer(properties, "string", static (property, _) => NameOf(property), "with name \\\"{0}\\\"")}
 {GenerateToString(properties)}
 {GenerateEqualsAndGetHashCode(className, useRecordType, stringComparison, properties)}{string.Join(string.Empty, table.Relations.Select(csvRelation => $@"
 
@@ -146,6 +153,13 @@ namespace CsvLINQPadDriver.CodeGen
 
             static string GetPropertyName(ICsvNames csvColumn) =>
                 csvColumn.CodeName!;
+
+            static string NameOf(string name) =>
+#if NETCOREAPP
+                $"nameof({name})";
+#else
+                $@"""{name}""";
+#endif
         }
 
         private static string GenerateIndexer(IReadOnlyCollection<string> properties, string indexerType, Func<string, int, string> caseGetter, string exceptionMessage)

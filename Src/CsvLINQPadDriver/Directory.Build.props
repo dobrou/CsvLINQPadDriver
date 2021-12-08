@@ -1,7 +1,7 @@
 ﻿<Project>
   <PropertyGroup>
-    <Version>7.2.0</Version>
-    <PackageReleaseNotes>Added header detection.</PackageReleaseNotes>
+    <Version>7.3.0</Version>
+    <PackageReleaseNotes>Improved code generation.</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup>
