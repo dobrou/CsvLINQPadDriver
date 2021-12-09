@@ -615,7 +615,7 @@ namespace CsvLINQPadDriver.Extensions
             return
                 addHeader &&
                 TryGetHeaderDetectionRegex(headerDetection, out var headerDetectionRegex) &&
-                header.All(columnHeader => Regex.IsMatch(columnHeader, headerDetectionRegex, RegexOptions.ExplicitCapture));
+                header.All(columnHeader => string.IsNullOrEmpty(columnHeader) || Regex.IsMatch(columnHeader, headerDetectionRegex, RegexOptions.ExplicitCapture));
 
             static bool TryGetHeaderDetectionRegex(HeaderDetection headerDetection, [NotNullWhen(true)] out string? headerDetectionRegex) =>
                 (headerDetectionRegex = headerDetection switch

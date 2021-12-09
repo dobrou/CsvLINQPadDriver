@@ -1,7 +1,8 @@
 ﻿<Project>
   <PropertyGroup>
     <Version>7.3.0</Version>
-    <PackageReleaseNotes>Improved code generation.</PackageReleaseNotes>
+    <PackageReleaseNotes>Improved code generation.
+Fixed header detection.</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup>
