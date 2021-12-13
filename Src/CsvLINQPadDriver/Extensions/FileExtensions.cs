@@ -7,7 +7,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
-
+using System.Threading;
 using Humanizer;
 
 using UnicodeCharsetDetector;
@@ -206,28 +206,38 @@ namespace CsvLINQPadDriver.Extensions
             string[] GetHeader()
             {
                 var header = csvParser.Record;
+                var headerFormatFunc = GetHeaderFormatFunc();
 
-                if (header.IsPresent(addHeader, headerDetection))
+                if (!header.IsPresent(addHeader, headerDetection))
                 {
+                    return
+                        addHeader
+                            ? Enumerable
+                                .Range(0, header.Length)
+                                .Select(headerFormatFunc)
+                                .ToArray()
+                            : header;
+                }
+
+                var getUniqueFallbackColumnNameFunc = GetUniqueFallbackColumnNameGenerator();
+
+                return AdjustColumnNames();
+
+                string[] AdjustColumnNames()
+                {
+                    for (var i = 0; i < header.Length; i++)
+                    {
+                        if (string.IsNullOrWhiteSpace(header[i]))
+                        {
+                            header[i] = getUniqueFallbackColumnNameFunc();
+                        }
+                    }
+
                     return header;
                 }
 
-                var headerFormatFunc = GetHeaderFormatFunc();
-
-                return addHeader
-                    ? Enumerable
-                        .Range(0, header.Length)
-                        .Select(headerFormatFunc!)
-                        .ToArray()
-                    : header;
-
-                Func<int, string>? GetHeaderFormatFunc()
+                Func<int, string> GetHeaderFormatFunc()
                 {
-                    if (!addHeader)
-                    {
-                        return null;
-                    }
-
                     var name = Enum.GetName(typeof(HeaderFormat), headerFormat);
                     if (name is null)
                     {
@@ -239,6 +249,29 @@ namespace CsvLINQPadDriver.Extensions
                     var format = $"{columnName}{{0}}";
 
                     return i => string.Format(CultureInfo.InvariantCulture, format, i + startIndex);
+                }
+
+                Func<string> GetUniqueFallbackColumnNameGenerator()
+                {
+                    var enumerator = Enumerable.Range(0, int.MaxValue).GetEnumerator();
+                    var lookup = new Lazy<HashSet<string>>(() => new HashSet<string>(header), LazyThreadSafetyMode.None);
+
+                    return GetUniqueFallbackColumnName;
+
+                    string GetUniqueFallbackColumnName()
+                    {
+                        while (enumerator.MoveNext())
+                        {
+                            var current = enumerator.Current;
+                            var columnName = headerFormatFunc(current);
+                            if (lookup.Value.Add(columnName))
+                            {
+                                return columnName;
+                            }
+                        }
+
+                        throw new InvalidOperationException("Unexpected error occurred");
+                    }
                 }
             }
         }
@@ -615,7 +648,7 @@ namespace CsvLINQPadDriver.Extensions
             return
                 addHeader &&
                 TryGetHeaderDetectionRegex(headerDetection, out var headerDetectionRegex) &&
-                header.All(columnHeader => string.IsNullOrEmpty(columnHeader) || Regex.IsMatch(columnHeader, headerDetectionRegex, RegexOptions.ExplicitCapture));
+                header.All(columnHeader => string.IsNullOrWhiteSpace(columnHeader) || Regex.IsMatch(columnHeader, headerDetectionRegex, RegexOptions.ExplicitCapture));
 
             static bool TryGetHeaderDetectionRegex(HeaderDetection headerDetection, [NotNullWhen(true)] out string? headerDetectionRegex) =>
                 (headerDetectionRegex = headerDetection switch

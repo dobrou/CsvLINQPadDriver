@@ -199,7 +199,7 @@ namespace CsvLINQPadDriver.DataModel
                     // Get first unique name.
                     name = Enumerable.Range(1, int.MaxValue)
                             .Select(static i => i.ToString(CultureInfo.InvariantCulture))
-                            .Select(s => name + s) // 1, 2, 3, 4...
+                            .Select(s => $"{name}_{s}") // 1, 2, 3, 4...
                             .First(firstName => !names.Contains(firstName));
                     item.CodeName = name;
                 }
