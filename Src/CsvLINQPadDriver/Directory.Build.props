@@ -1,7 +1,7 @@
 ﻿<Project>
   <PropertyGroup>
-    <Version>7.3.1</Version>
-    <PackageReleaseNotes>Improved header fallback naming.</PackageReleaseNotes>
+    <Version>7.3.2</Version>
+    <PackageReleaseNotes>Improved UI.</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup>

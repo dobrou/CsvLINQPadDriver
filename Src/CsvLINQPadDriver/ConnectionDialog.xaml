@@ -583,27 +583,30 @@
             <Border Style="{StaticResource FreeBorderStyle}">
                 <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="83*"/>
-                        <ColumnDefinition Width="79*"/>
-                        <ColumnDefinition Width="40*"/>
-                        <ColumnDefinition Width="90*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="25*"></ColumnDefinition>
+                            <ColumnDefinition Width="24*"></ColumnDefinition>
+                            <ColumnDefinition Width="15*"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Style="{StaticResource CheckBoxStackPanelStyle}">
+                            <!-- ReSharper disable once MarkupAttributeTypo -->
+                            <CheckBox IsChecked="{Binding Persist}" Content="Remember this c_onnection" ToolTip="Connection will be available on next run"/>
+                        </StackPanel>
 
-                    <StackPanel Style="{StaticResource CheckBoxStackPanelStyle}">
-                        <!-- ReSharper disable once MarkupAttributeTypo -->
-                        <CheckBox IsChecked="{Binding Persist}" Content="Remember this c_onnection" ToolTip="Connection will be available on next run"/>
-                    </StackPanel>
+                        <StackPanel Grid.Column="1" Style="{StaticResource CheckBoxStackPanelStyle}">
+                            <CheckBox IsChecked="{Binding IsProduction}" Content="Contains _production data" ToolTip="Files contain production data"/>
+                        </StackPanel>
 
-                    <StackPanel Grid.Column="1" Style="{StaticResource CheckBoxStackPanelStyle}">
-                        <CheckBox IsChecked="{Binding IsProduction}" Content="Contains _production data" ToolTip="Files contain production data"/>
-                    </StackPanel>
-
-                    <StackPanel Grid.Column="2" Style="{StaticResource CheckBoxStackPanelStyle}">
-                        <CheckBox IsChecked="{Binding DebugInfo}" Content="_Debug info" ToolTip="Show additional driver debug info"/>
-                    </StackPanel>
-
-                    <StackPanel Grid.Column="3" Orientation="Horizontal" HorizontalAlignment="Right">
-                        <Button Name="OkButton" Content="OK" Style="{StaticResource CloseDialogButtonStyle}" IsDefault="True" Click="OkButton_Click"/>
+                        <StackPanel Grid.Column="2" Style="{StaticResource CheckBoxStackPanelStyle}">
+                            <CheckBox IsChecked="{Binding DebugInfo}" Content="_Debug info" ToolTip="Show additional driver debug info"/>
+                        </StackPanel>
+                    </Grid>
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+                        <Button Name="OkButton" Content="OK" Margin="1 0 0 0" Style="{StaticResource CloseDialogButtonStyle}" IsDefault="True" Click="OkButton_Click"/>
                         <Button Content="Cancel" Style="{StaticResource CloseDialogButtonStyle}" IsCancel="True"/>
                     </StackPanel>
                 </Grid>
