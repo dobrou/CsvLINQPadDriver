@@ -655,11 +655,11 @@ namespace CsvLINQPadDriver.Extensions
                 {
                     HeaderDetection.NoHeader                       => null,
                     HeaderDetection.HasHeader                      => @".",
-                    HeaderDetection.AllLettersNumbersPunctuation   => @"^(\p{L}\p{M}*|[0-9_\-. ])+$",
-                    HeaderDetection.AllLettersNumbers              => @"^(\p{L}\p{M}*|[0-9])+$",
+                    HeaderDetection.AllLettersNumbersPunctuation   => @"^\p{L}\p{M}*(\p{L}\p{M}*|[0-9_\-. ])*$",
+                    HeaderDetection.AllLettersNumbers              => @"^\p{L}\p{M}*(\p{L}\p{M}*|[0-9])*$",
                     HeaderDetection.AllLetters                     => @"^(\p{L}\p{M}*)+$",
-                    HeaderDetection.LatinLettersNumbersPunctuation => @"^[a-zA-Z0-9_\-. ]+$",
-                    HeaderDetection.LatinLettersNumbers            => @"^[a-zA-Z0-9]+$",
+                    HeaderDetection.LatinLettersNumbersPunctuation => @"^[a-zA-Z][a-zA-Z0-9_\-. ]*$",
+                    HeaderDetection.LatinLettersNumbers            => @"^[a-zA-Z][a-zA-Z0-9]*$",
                     HeaderDetection.LatinLetters                   => @"^[a-zA-Z]+$",
                     _                                              => throw new IndexOutOfRangeException($"Unknown {nameof(HeaderDetection)} {headerDetection}")
                 }) is not null;

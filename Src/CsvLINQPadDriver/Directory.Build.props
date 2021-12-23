@@ -1,7 +1,8 @@
 ﻿<Project>
   <PropertyGroup>
     <Version>7.3.2</Version>
-    <PackageReleaseNotes>Improved UI.</PackageReleaseNotes>
+    <PackageReleaseNotes>Improved header detection.
+Improved UI.</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup>
