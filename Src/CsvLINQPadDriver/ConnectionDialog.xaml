@@ -451,7 +451,6 @@
                     <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
                         <CheckBox Name="UseCsvHelperSeparatorAutoDetectionCheckBox"
                                   IsChecked="{Binding UseCsvHelperSeparatorAutoDetection}"
-                                  Tag="{x:Static this:ConnectionDialog.ConfirmCheck}"
                                   Content="_Use CsvHelper library separator auto-detection"
                                   ToolTip="Use CsvHelper library separator auto-detection instead of internal one"/>
                         <CheckBox IsChecked="{Binding IgnoreBadData}" Content="Ignore b_ad data" ToolTip="Ignore malformed files" Tag="{x:Static this:ConnectionDialog.ConfirmCheck}"/>
