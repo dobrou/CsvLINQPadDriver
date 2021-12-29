@@ -1,8 +1,8 @@
 ﻿<Project>
   <PropertyGroup>
-    <Version>7.3.2</Version>
-    <PackageReleaseNotes>Improved header detection.
-Improved UI.</PackageReleaseNotes>
+    <Version>7.3.3</Version>
+    <PackageReleaseNotes>Made UI font crispier.
+Removed CsvHelper auto-detect separator usage warning.</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup>

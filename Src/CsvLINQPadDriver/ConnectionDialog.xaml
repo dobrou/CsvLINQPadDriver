@@ -12,6 +12,9 @@
     Height="790"
     WindowStartupLocation="CenterScreen"
     ShowInTaskbar="True"
+    SnapsToDevicePixels="True"
+    TextOptions.TextFormattingMode="Display"
+    RenderOptions.ClearTypeHint="Enabled"
     FocusManager.FocusedElement="{Binding ElementName=FilesTextBox}"
     CheckBox.Checked="ConfirmOption_OnChecked"
     CheckBox.Unchecked="ConfirmOption_OnUnchecked"
@@ -19,7 +22,7 @@
 
     <Window.Resources>
         <ObjectDataProvider x:Key="FileTypeData"
-                            ObjectType="{x:Type enumObjectDataSources:FileTypeEnumObjectDataSource }"
+                            ObjectType="{x:Type enumObjectDataSources:FileTypeEnumObjectDataSource}"
                             MethodName="GetValues"/>
         <ObjectDataProvider x:Key="NoBomEncodingData"
                             ObjectType="{x:Type enumObjectDataSources:NoBomEncodingEnumObjectDataSource}"
