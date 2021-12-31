@@ -8,7 +8,7 @@ Removed CsvHelper auto-detect separator usage warning.</PackageReleaseNotes>
   <PropertyGroup>
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
     <Authors>Martin Dobroucký (dobrou@gmail.com), Ivan Ivon (ivan.ivon@gmail.com)</Authors>
-    <Copyright>Copyright © Martin Dobroucký 2013-2014, Ivan Ivon 2021</Copyright>
+    <Copyright>Copyright © Martin Dobroucký 2013-2014, Ivan Ivon 2021-$([System.DateTime]::Now.Year)</Copyright>
     <ApplicationIcon>Connection.ico</ApplicationIcon>
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
