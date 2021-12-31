@@ -1,5 +1,6 @@
 ﻿using System;
 using System.CodeDom;
+using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -134,7 +135,7 @@ namespace CsvLINQPadDriver.CodeGen
 #if NETCOREAPP
                 useRecordType ? ("record", string.Empty) :
 #endif
-                ("class", $", System.IEquatable<{className}>");
+                ("class", $", {nameof(System)}.{nameof(IEquatable<object>)}<{className}>");
 
             return new TypeCodeResult(className, $@"
     public sealed {generatedType} {className} : {typeof(ICsvRowBase).GetCodeTypeClassName()}{interfaces}
@@ -147,7 +148,7 @@ namespace CsvLINQPadDriver.CodeGen
 
         /// <summary>{SecurityElement.Escape(csvRelation.DisplayName)}</summary>{(hideRelationsFromDump ? $@"
         [{typeof(HideFromDumpAttribute).GetCodeTypeClassName()}]" : string.Empty)}
-        public System.Collections.Generic.IEnumerable<{csvRelation.TargetTable.GetCodeRowClassName()}>{NullableReferenceTypeSign} {csvRelation.CodeName} {{ get; set; }}")
+        public {nameof(System)}.{nameof(System.Collections)}.{nameof(System.Collections.Generic)}.{nameof(IEnumerable)}<{csvRelation.TargetTable.GetCodeRowClassName()}>{NullableReferenceTypeSign} {csvRelation.CodeName} {{ get; set; }}")
             )}
     }}", table.CodeName!, table.FilePath);
 
@@ -187,7 +188,7 @@ namespace CsvLINQPadDriver.CodeGen
         }}";
 
             string GenerateIndexerException() =>
-                $@"default: throw new System.IndexOutOfRangeException(string.Format(""There is no property {exceptionMessage}"", index));";
+                $@"default: throw new {nameof(System)}.{nameof(IndexOutOfRangeException)}(string.Format(""There is no property {exceptionMessage}"", index));";
         }
 
         private static string IntToString(int val) =>
@@ -203,7 +204,7 @@ namespace CsvLINQPadDriver.CodeGen
             return string.Format({string.Join(" +", properties.Select((property, index) => $@"
                 ""{property.PadRight(namePadding)} : {{{IntToString(index + 1)}}}{{0}}"""
             ))},
-                System.Environment.NewLine,
+                {nameof(System)}.{nameof(Environment)}.{nameof(Environment.NewLine)},
                 {string.Join(@",
                 ", properties)});
         }}";
@@ -246,7 +247,7 @@ namespace CsvLINQPadDriver.CodeGen
 
         public override int GetHashCode()
         {{
-            var hashCode = new System.HashCode();
+            var hashCode = new {nameof(System)}.{nameof(HashCode)}();
 
 {string.Join(Environment.NewLine, properties.Select(property => $"{GetIndent(12)}hashCode.Add({property}, {GetStringComparer(stringComparison)});"))}
 
@@ -261,7 +262,7 @@ namespace CsvLINQPadDriver.CodeGen
             new(' ', count);
 
         private static string GetStringComparer(StringComparison stringComparison) =>
-            "System.StringComparer." + stringComparison switch
+            $"{nameof(System)}.{nameof(StringComparer)}." + stringComparison switch
             {
                 StringComparison.CurrentCulture             => nameof(StringComparer.CurrentCulture), 
                 StringComparison.CurrentCultureIgnoreCase   => nameof(StringComparer.CurrentCultureIgnoreCase), 
