@@ -158,4 +158,4 @@ $RECYCLE.BIN/
 *.ide
 *.lpx6
 
-!Tests/CsvLINQPadDriverTest/LPRun/Bin
+!Src/LPRun/LPRun/Bin

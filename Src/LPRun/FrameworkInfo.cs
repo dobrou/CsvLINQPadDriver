@@ -13,6 +13,8 @@ namespace LPRun
         public static bool IsNet { get; }
         public static bool IsNetCore { get; }
         public static bool IsNetNative { get; }
+        public static bool IsSupportedCpu { get; }
+        public static bool Is64Bit { get; }
 
         public static Version Version { get; }
 
@@ -22,6 +24,8 @@ namespace LPRun
             IsNetCore      = Is(".NET Core");
             IsNetNative    = Is(".NET Native");
             IsNet          = Is(".NET"); // Should be last.
+            IsSupportedCpu = RuntimeInformation.ProcessArchitecture is Architecture.X86 or Architecture.X64;
+            Is64Bit        = Environment.Is64BitProcess;
 
             Version = Environment.Version;
 

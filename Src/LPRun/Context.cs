@@ -10,23 +10,32 @@ namespace LPRun
 {
     public static class Context
     {
-        private const int MaxSupportedMajorVersion = 5;
-
         private static readonly string BaseDir = GetDirectoryName(new Uri(Assembly.GetExecutingAssembly().CodeBase).LocalPath)!;
 
         private static readonly string LpRunDir = GetFullPath("LPRun");
         private static readonly string LpRunExe =
-            FrameworkInfo.IsNetFramework
-                ? ThrowNotSupportedException("Framework")
-                : FrameworkInfo.IsNetNative
-                    ? ThrowNotSupportedException("Native")
-                    : FrameworkInfo.Version.Major > MaxSupportedMajorVersion
-                        ? throw new NotSupportedException($".NET {FrameworkInfo.Version} is not supported. Maximum supported major version is {MaxSupportedMajorVersion}")
-                        : $"LPRun6{(FrameworkInfo.Version.Major == 5 ? "-net5" : Environment.Is64BitProcess ? string.Empty : "-x86")}.exe";
+            ThrowNotSupportedCpuException() ??
+            ThrowNotSupportedFrameworkException(FrameworkInfo.IsNetFramework, "Framework") ??
+            ThrowNotSupportedFrameworkException(FrameworkInfo.IsNetNative, "Native") ??
+            FrameworkInfo.Version.Major switch
+            {
+                3 or 5 or 6 => $"LPRun7-x{(FrameworkInfo.Is64Bit ? "64" : "86")}.exe",
+                _           => ThrowNotSupportedNetVersionException()
+            };
+
+        private static string? ThrowNotSupportedFrameworkException(bool isNotSupported, string platform) =>
+            isNotSupported
+                ? throw new NotSupportedException($".NET {platform} is not supported. .NET {platform} version is {FrameworkInfo.Version}")
+                : null;
+
+        private static string? ThrowNotSupportedCpuException() =>
+            FrameworkInfo.IsSupportedCpu
+                ? null
+                : throw new NotSupportedException("CPU architecture is not supported");
 
         [DoesNotReturn]
-        private static string ThrowNotSupportedException(string platform) =>
-            throw new NotSupportedException($".NET {platform} is not supported. .NET {platform} version is {FrameworkInfo.Version}");
+        private static string ThrowNotSupportedNetVersionException() =>
+            throw new NotSupportedException($".NET {FrameworkInfo.Version} is not supported");
 
         private static readonly string ExeDir = GetLpRunFullPath("Bin");
         private static readonly string TemplatesDir = GetLpRunFullPath("Templates");
