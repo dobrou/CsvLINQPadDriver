@@ -6,6 +6,8 @@ env:
   SLN:  CsvLINQPadDriver.sln
   SLN5: CsvLINQPadDriver5.sln
   SLN_CONFIG: Release
+  BIN_POSTFIX: .Bin
+  RETENTION_DAYS: 1
 
 jobs:
   build:
@@ -58,3 +60,27 @@ jobs:
 
     - name: ${{env.SLN5}} ${{ env.SLN_CONFIG }} build
       run: msbuild ${{ env.SLN5 }} /p:Configuration=${{ env.SLN_CONFIG }}
+
+    # Create LPX
+
+    - name: Build LPX
+      run: Deploy/buildlpx.cmd
+
+    # Upload artifacts
+
+    - name: Publish CsvLINQPadDriver
+      uses: actions/upload-artifact@v2
+      with:
+        name: CsvLINQPadDriver${{ env.BIN_POSTFIX }}
+        path: |
+          bin/${{ env.SLN_CONFIG }}/CsvLINQPadDriver.*.nupkg
+          Deploy/*.lpx
+          Deploy/*.lpx?
+        retention-days: ${{ env.RETENTION_DAYS }}
+
+    - name: Publish LPRun
+      uses: actions/upload-artifact@v2
+      with:
+        name: LPRun${{ env.BIN_POSTFIX }}
+        path: bin/${{ env.SLN_CONFIG }}/LPRun.*.nupkg
+        retention-days: ${{ env.RETENTION_DAYS }}

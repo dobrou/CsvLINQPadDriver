@@ -4,6 +4,8 @@ set version=7.3.4
 set fileName=CsvLINQPadDriver.%version%
 set ext=lpx
 set ext6=%ext%6
+set rootDir=%~dp0
+set rootDir=%rootDir:~0,-1%
 
 set zip="%ProgramFiles%\7-Zip\7z.exe"
 
@@ -16,16 +18,17 @@ call :pack %fileName%.%ext%         net461
 
 @echo off
 
-echo.
-pause
+@echo.
 
-exit /b 0
+if not %errorlevel%==0 echo ERROR: Packaging has failed. See log for details.
+
+exit /b %errorlevel%
 
 :pack
 @echo off
 
-set lpx=%1
-set folder=..\bin\Release\%2
+set lpx=%rootDir%\%1
+set folder=%rootDir%\..\bin\Release\%2
 
 set additional=
 
@@ -36,9 +39,9 @@ if exist %folder%\Microsoft.Bcl.*.dll set additional=^
 echo on
 
 %zip% a -tzip -mx=9 %lpx% ^
-header.xml ^
-..\README.md ^
-..\LICENSE ^
+%rootDir%\header.xml ^
+%rootDir%\..\README.md ^
+%rootDir%\..\LICENSE ^
 %folder%\*Connection.png ^
 %folder%\CsvHelper.dll ^
 %folder%\CsvLINQPadDriver.dll ^
@@ -47,6 +50,6 @@ header.xml ^
 %folder%\Microsoft.WindowsAPICodePack.Shell.dll ^
 %folder%\UnicodeCharsetDetector.dll ^
 %folder%\UtfUnknown.dll ^
-%additional%
+%additional% || exit /b 1
 
 @exit /b 0
