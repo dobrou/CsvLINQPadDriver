@@ -23,11 +23,11 @@ namespace CsvLINQPadDriver.CodeGen
                 Lambda<Action<TRow, string?[]>>(
                     Block(propertiesInfo.Select(property =>
                         Assign(
-                        PropertyOrField(paramRow, property.PropertyName),
-                        Condition(
-                            LessThan(Constant(property.CsvColumnIndex), ArrayLength(paramValues)),
-                            ArrayIndex(paramValues, Constant(property.CsvColumnIndex)),
-                            Constant(null, typeof(string))
+                            PropertyOrField(paramRow, property.PropertyName),
+                            Condition(
+                                LessThan(Constant(property.CsvColumnIndex), ArrayLength(paramValues)),
+                                ArrayIndex(paramValues, Constant(property.CsvColumnIndex)),
+                                Constant(null, typeof(string))
                             )
                         )
                     )),

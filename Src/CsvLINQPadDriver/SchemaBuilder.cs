@@ -23,7 +23,7 @@ using CsvLINQPadDriver.Bcl.Extensions;
 
 namespace CsvLINQPadDriver
 {
-    internal class SchemaBuilder
+    internal static class SchemaBuilder
     {
         internal static List<ExplorerItem> GetSchemaAndBuildAssembly(ICsvDataContextDriverProperties csvDataContextDriverProperties, AssemblyName assemblyToBuild, ref string nameSpace, ref string typeName)
         {
@@ -71,6 +71,18 @@ namespace CsvLINQPadDriver
             }
             else
             {
+                AddFiles();
+            }
+
+            if (!csvDatabase.Tables.Any())
+            {
+                schema.Insert(0, new ExplorerItem("No files found", ExplorerItemKind.Schema, ExplorerIcon.Box));
+            }
+
+            return schema;
+
+            void AddFiles()
+            {
                 foreach (var tableCodeGroup in tableCodeGroups.Where(static codeGroup => codeGroup.Count() > 1))
                 {
                     var codeNames = tableCodeGroup.Select(static typeCodeResult => typeCodeResult.CodeName).ToImmutableList();
@@ -102,19 +114,14 @@ namespace CsvLINQPadDriver
                         filePaths.Contains(explorerItem.Tag);
                 }
             }
-
-            if (!csvDatabase.Tables.Any())
-            {
-                schema.Insert(0, new ExplorerItem("No files found", ExplorerItemKind.Schema, ExplorerIcon.Box));
-            }
-
-            return schema;
         }
 
         private static string[] BuildAssembly(string code, AssemblyName name)
         {
 #if NETCOREAPP
+#pragma warning disable CS0618
             var referencedAssemblies = DataContextDriver.GetCoreFxReferenceAssemblies().Concat(new []
+#pragma warning restore CS0618
             {
                 typeof(SchemaBuilder).Assembly.Location,
                 typeof(CsvReader).Assembly.Location
