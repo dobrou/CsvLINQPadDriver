@@ -50,7 +50,7 @@ namespace CsvLINQPadDriver.Extensions
 #else
             Dictionary<string, string>?
 #endif
-                StringInternCache;
+                _stringInternCache;
 
         private static readonly Dictionary<NoBomEncoding, Encoding> NoBomEncodings = new();
 
@@ -120,7 +120,7 @@ namespace CsvLINQPadDriver.Extensions
             CsvRowMappingBase<T> csvClassMap)
             where T : ICsvRowBase, new()
         {
-            StringInternCache ??= internStringComparer is null
+            _stringInternCache ??= internStringComparer is null
                 ? new()
                 : new(internStringComparer);
 
@@ -749,16 +749,16 @@ namespace CsvLINQPadDriver.Extensions
                 return null;
             }
 
-            if (StringInternCache!.TryGetValue(str, out var intern))
+            if (_stringInternCache!.TryGetValue(str, out var intern))
             {
                 return intern;
             }
 
-#if NETCOREAPP
-            StringInternCache.Add(str);
-#else
-            StringInternCache.Add(str, str);
+            _stringInternCache.Add(str
+#if !NETCOREAPP
+                , str
 #endif
+            );
 
             return str;
         }

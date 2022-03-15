@@ -38,6 +38,11 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <PackagePath>contentFiles\any\netstandard2.1\LPRun\Bin</PackagePath>
     </Content>
+    <Content Include="LPRun\Bin\LPRun7-arm64.exe">
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <PackagePath>contentFiles\any\netstandard2.1\LPRun\Bin</PackagePath>
+    </Content>
     <Content Include="LPRun\Bin\LPRun7-x86.exe">
       <PackageCopyToOutput>true</PackageCopyToOutput>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

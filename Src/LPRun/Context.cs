@@ -3,6 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 
 using static System.IO.Path;
+using static LPRun.FrameworkInfo;
 
 // ReSharper disable once UnusedMember.Global
 
@@ -14,13 +15,14 @@ namespace LPRun
 
         private static readonly string LpRunDir = GetFullPath("LPRun");
         private static readonly string LpRunExe =
-            ThrowNotSupportedCpuException() ??
-            ThrowNotSupportedFrameworkException(FrameworkInfo.IsNetFramework, "Framework") ??
-            ThrowNotSupportedFrameworkException(FrameworkInfo.IsNetNative, "Native") ??
+            ThrowNotSupportedExceptionIfNot(IsSupportedCpu, "CPU architecture") ??
+            ThrowNotSupportedExceptionIfNot(IsSupportedOs, "OS") ??
+            ThrowNotSupportedFrameworkException(IsNetFramework, "Framework") ??
+            ThrowNotSupportedFrameworkException(IsNetNative, "Native") ??
             FrameworkInfo.Version.Major switch
             {
-                3 or 5 or 6 => $"LPRun7-x{(FrameworkInfo.Is64Bit ? "64" : "86")}.exe",
-                _           => ThrowNotSupportedNetVersionException()
+                >= 5 and <= 7 or 3 => $"LPRun7-{(IsArm ? "arm" : "x")}{(Is64Bit ? "64" : "86")}.exe",
+                _                  => ThrowNotSupportedNetVersionException()
             };
 
         private static string? ThrowNotSupportedFrameworkException(bool isNotSupported, string platform) =>
@@ -28,10 +30,10 @@ namespace LPRun
                 ? throw new NotSupportedException($".NET {platform} is not supported. .NET {platform} version is {FrameworkInfo.Version}")
                 : null;
 
-        private static string? ThrowNotSupportedCpuException() =>
-            FrameworkInfo.IsSupportedCpu
+        private static string? ThrowNotSupportedExceptionIfNot(bool isSupported, string what) =>
+            isSupported
                 ? null
-                : throw new NotSupportedException("CPU architecture is not supported");
+                : throw new NotSupportedException($"{what} is not supported");
 
         [DoesNotReturn]
         private static string ThrowNotSupportedNetVersionException() =>
