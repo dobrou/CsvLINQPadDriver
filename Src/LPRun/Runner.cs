@@ -2,8 +2,11 @@
 using System.Diagnostics;
 using System.Text;
 
+using static LPRun.Context;
+
 // ReSharper disable UnusedType.Global
-// ReSharper disable once UnusedMember.Global
+// ReSharper disable UnusedMember.Global
+// ReSharper disable NotAccessedPositionalProperty.Global
 
 namespace LPRun
 {
@@ -18,7 +21,7 @@ namespace LPRun
 
             using var process = new Process
             {
-                StartInfo = new ProcessStartInfo(Context.Exe, Context.GetFullPath(linqFile))
+                StartInfo = new ProcessStartInfo(Exe, GetArguments())
                 {
                     CreateNoWindow = true,
                     UseShellExecute = false,
@@ -35,7 +38,7 @@ namespace LPRun
             process.BeginOutputReadLine();
             process.BeginErrorReadLine();
 
-            var completed = process.WaitForExit((int) waitForExit.TotalMilliseconds);
+            var completed = process.WaitForExit((int)waitForExit.TotalMilliseconds);
 
             process.CancelOutputRead();
             process.CancelErrorRead();
@@ -50,7 +53,10 @@ namespace LPRun
 
             process.Kill();
 
-            throw new TimeoutException($"LPRun timed out for {waitForExit}");
+            throw new TimeoutException($"LPRun timed out after {waitForExit}");
+
+            string GetArguments() =>
+                $@"-fx={FrameworkInfo.Version.Major}.{FrameworkInfo.Version.Minor} ""{GetFullPath(linqFile)}""";
 
             void OutputDataReceivedHandler(object _, DataReceivedEventArgs e) =>
                 output.Append(e.Data);
