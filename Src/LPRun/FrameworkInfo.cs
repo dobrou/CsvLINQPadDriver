@@ -9,17 +9,63 @@ using static System.Runtime.InteropServices.RuntimeInformation;
 
 namespace LPRun
 {
+    /// <summary>
+    /// Provides collection of .NET information related properties.
+    /// </summary>
     public static class FrameworkInfo
     {
+        /// <summary>
+        /// Indicates that .NET is classic .NET Framework.
+        /// </summary>
+        /// <returns><see langword="true" /> if .NET is classic .NET Framework; otherwise, <see langword="false" />.</returns>
         public static bool IsNetFramework { get; }
+
+        /// <summary>
+        /// Indicates that .NET is modern .NET.
+        /// </summary>
+        /// <returns><see langword="true" /> if .NET is modern .NET; otherwise, <see langword="false" />.</returns>
         public static bool IsNet { get; }
+
+        /// <summary>
+        /// Indicates that .NET is .NET Core.
+        /// </summary>
+        /// <returns><see langword="true" /> if .NET is .NET Core; otherwise, <see langword="false" />.</returns>
         public static bool IsNetCore { get; }
+
+        /// <summary>
+        /// Indicates that .NET is .NET Native.
+        /// </summary>
+        /// <returns><see langword="true" /> if .NET is .NET Native; otherwise, <see langword="false" />.</returns>
         public static bool IsNetNative { get; }
+
+        /// <summary>
+        /// Indicates that CPU is supported.
+        /// </summary>
+        /// <returns><see langword="true" /> if CPU is supported; otherwise, <see langword="false" />.</returns>
         public static bool IsSupportedCpu { get; }
+
+        /// <summary>
+        /// Indicates that OS is supported.
+        /// </summary>
+        /// <returns><see langword="true" /> if OS is supported; otherwise, <see langword="false" />.</returns>
         public static bool IsSupportedOs { get; }
+
+        /// <summary>
+        /// Indicates that platform is ARM.
+        /// </summary>
+        /// <returns><see langword="true" /> if platform is ARM; otherwise, <see langword="false" />.</returns>
         public static bool IsArm { get; }
+
+        /// <summary>
+        /// Indicates that platform is 64-bit.
+        /// </summary>
+        /// <returns><see langword="true" /> if platform is 64-bit; otherwise, <see langword="false" />.</returns>
         public static bool Is64Bit { get; }
 
+        /// <summary>
+        /// Gets .NET version.
+        /// </summary>
+        /// <returns>The .NET version.</returns>
         public static Version Version { get; }
 
         static FrameworkInfo()

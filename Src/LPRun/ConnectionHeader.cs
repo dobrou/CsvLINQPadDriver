@@ -5,15 +5,31 @@ using System.Linq;
 using System.Reflection;
 using System.Security;
 
+using static LPRun.LPRunException;
+
 // ReSharper disable UnusedType.Global
 // ReSharper disable once UnusedMember.Global
 
 namespace LPRun
 {
+    /// <summary>
+    /// Provides method for getting the LINQPad script connection header.
+    /// </summary>
     public static class ConnectionHeader
     {
+        /// <summary>
+        /// Gets the LINQPad script connection header.
+        /// </summary>
+        /// <typeparam name="T">The type of driver configuration object.</typeparam>
+        /// <param name="driverAssemblyName">The driver assembly name.</param>
+        /// <param name="driverNamespace">The driver namespace.</param>
+        /// <param name="driverConfig">The driver configuration object.</param>
+        /// <param name="additionalNamespaces">Optional additional namespaces.</param>
+        /// <returns>The XML LINQPad connection header.</returns>
+        /// <exception cref="LPRunException">Keeps original exception as <see cref="P:System.Exception.InnerException"/>.</exception>
         public static string Get<T>(string driverAssemblyName, string driverNamespace, T driverConfig, params string[] additionalNamespaces)
             where T : notnull =>
+            Wrap(() =>
             $@"<Query Kind=""Statements"">
   <Connection>
     <Driver Assembly=""{driverAssemblyName}"">{driverNamespace}</Driver>
@@ -23,7 +39,7 @@ namespace LPRun
   </Connection>
   <NuGetReference>FluentAssertions</NuGetReference>
 {string.Join(Environment.NewLine, new[] { "FluentAssertions" }.Concat(additionalNamespaces).Select(additionalNamespace => $"  <Namespace>{additionalNamespace}</Namespace>"))}
-</Query>";
+</Query>");
 
         private static IEnumerable<(string Key, string Value)> GetKeyValues<T>(T driverConfig)
             where T : notnull
@@ -35,13 +51,10 @@ namespace LPRun
             string ValueToString(PropertyInfo propertyInfo) =>
                 propertyInfo.GetValue(driverConfig) switch
                 {
-                    null => string.Empty,
-                    string v => v,
-                    char v => v.ToString(),
-                    Enum v => v.ToString(),
-                    int v => v.ToString(CultureInfo.InvariantCulture),
-                    bool v => v ? "true" : "false",
-                    _ => throw new NotSupportedException($"Could not convert {propertyInfo.Name} of type {propertyInfo.PropertyType} to string")
+                    null           => string.Empty,
+                    bool v         => v ? "true" : "false",
+                    IConvertible v => v.ToString(CultureInfo.InvariantCulture),
+                    _              => throw new NotSupportedException($"Could not convert {propertyInfo.Name} of type {propertyInfo.PropertyType} to string")
                 };
         }
     }

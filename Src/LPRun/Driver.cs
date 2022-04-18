@@ -2,40 +2,61 @@
 using System.IO;
 using System.Linq;
 
+using static System.IO.Directory;
+using static System.IO.File;
+using static System.IO.Path;
+
+using static LPRun.Context;
+using static LPRun.LPRunException;
+
 // ReSharper disable UnusedType.Global
 // ReSharper disable once UnusedMember.Global
 
 namespace LPRun
 {
+    /// <summary>
+    /// Provides method for the LINQPad driver installation.
+    /// </summary>
     public static class Driver
     {
+        /// <summary>
+        /// Installs the LINQPad driver and related driver files.
+        /// </summary>
+        /// <param name="driverDir">The directory to copy driver <paramref name="files"/> to.</param>
+        /// <param name="files">The LINQPad driver files.</param>
+        /// <exception cref="LPRunException">Keeps original exception as <see cref="P:System.Exception.InnerException"/>.</exception>
         public static void Install(string driverDir, params string[] files)
         {
-            var driverPath = Path.Combine(Context.GetExeFullPath(@"drivers\DataContext\NetCore"), driverDir);
+            Wrap(Execute);
 
-            Directory.CreateDirectory(driverPath);
-
-            if (!files.Any())
+            void Execute()
             {
-                throw new ArgumentException("At least one file should be specified", nameof(files));
-            }
+                var driverPath = Combine(GetExeFullPath(@"drivers\DataContext\NetCore"), driverDir);
 
-            Array.ForEach(files, CopyFile);
+                CreateDirectory(driverPath);
 
-            void CopyFile(string file) =>
-                ExecIfFileIsNewer(file, (srcFile, dstFile) => File.Copy(srcFile, dstFile, true));
-
-            void ExecIfFileIsNewer(string file, Action<string, string> action)
-            {
-                var srcFile = Path.GetFullPath(file);
-                var dstFile = Path.Combine(driverPath, Path.GetFileName(file));
-
-                var srcFileInfo = new FileInfo(srcFile);
-                var dstFileInfo = new FileInfo(dstFile);
-
-                if (!dstFileInfo.Exists || dstFileInfo.LastWriteTime < srcFileInfo.LastWriteTime)
+                if (!files.Any())
                 {
-                    action(srcFile, dstFile);
+                    throw new ArgumentException("At least one file should be specified", nameof(files));
+                }
+
+                Array.ForEach(files, CopyFile);
+
+                void CopyFile(string file) =>
+                ExecIfFileIsNewer(file, (srcFile, dstFile) => Copy(srcFile, dstFile, true));
+
+                void ExecIfFileIsNewer(string file, Action<string, string> action)
+                {
+                    var srcFile = Path.GetFullPath(file);
+                    var dstFile = Combine(driverPath, GetFileName(file));
+
+                    var srcFileInfo = new FileInfo(srcFile);
+                    var dstFileInfo = new FileInfo(dstFile);
+
+                    if (!dstFileInfo.Exists || dstFileInfo.LastWriteTime < srcFileInfo.LastWriteTime)
+                    {
+                        action(srcFile, dstFile);
+                    }
                 }
             }
         }

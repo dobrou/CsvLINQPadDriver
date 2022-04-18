@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Text;
 
 using static LPRun.Context;
+using static LPRun.LPRunException;
 
 // ReSharper disable UnusedType.Global
 // ReSharper disable UnusedMember.Global
@@ -10,63 +11,88 @@ using static LPRun.Context;
 
 namespace LPRun
 {
+    /// <summary>
+    /// Provides method for executing the LINQPad script.
+    /// </summary>
     public static class Runner
     {
+        private static readonly TimeSpan DefaultTimeout = TimeSpan.FromSeconds(30);
+
+        /// <summary>
+        /// The LINQPad script execution result.
+        /// </summary>
+        /// <param name="Output">The LINQPad script execution captured output stream.</param>
+        /// <param name="Error">The LINQPad script execution captured error stream.</param>
+        /// <param name="ExitCode">The LINQPad script execution exit code.</param>
         public record Result(string Output, string Error, int ExitCode);
 
-        public static Result Execute(string linqFile, TimeSpan waitForExit)
+        /// <summary>
+        /// Executes LINQPad script using LPRun with optional timeout specified.
+        /// </summary>
+        /// <param name="linqFile">The LINQPad script file to execute.</param>
+        /// <param name="waitForExit">The LINQPad script execution timeout. 30 seconds is the default.</param>
+        /// <returns>The LINQPad script execution <see cref="Result"/>.</returns>
+        /// <exception cref="LPRunException">Keeps original exception as <see cref="P:System.Exception.InnerException"/>.</exception>
+        public static Result Execute(string linqFile, TimeSpan? waitForExit = default)
         {
-            var output = new StringBuilder();
-            var error = new StringBuilder();
+            return Wrap(ExecuteInternal);
 
-            using var process = new Process
+            Result ExecuteInternal()
             {
-                StartInfo = new ProcessStartInfo(Exe, GetArguments())
+                waitForExit ??= DefaultTimeout;
+
+                var output = new StringBuilder();
+                var error = new StringBuilder();
+
+                using var process = new Process
                 {
-                    CreateNoWindow = true,
-                    UseShellExecute = false,
-                    RedirectStandardOutput = true,
-                    RedirectStandardError = true
+                    StartInfo = new ProcessStartInfo(Exe, GetArguments())
+                    {
+                        CreateNoWindow = true,
+                        UseShellExecute = false,
+                        RedirectStandardOutput = true,
+                        RedirectStandardError = true
+                    }
+                };
+
+                process.OutputDataReceived += OutputDataReceivedHandler;
+                process.ErrorDataReceived += ErrorDataReceivedHandler;
+
+                process.Start();
+
+                process.BeginOutputReadLine();
+                process.BeginErrorReadLine();
+
+                var completed = process.WaitForExit((int)waitForExit?.TotalMilliseconds!);
+
+                process.CancelOutputRead();
+                process.CancelErrorRead();
+
+                process.OutputDataReceived -= OutputDataReceivedHandler;
+                process.ErrorDataReceived -= ErrorDataReceivedHandler;
+
+                if (completed)
+                {
+                    return new Result(output.ToString(), error.ToString(), process.ExitCode);
                 }
-            };
 
-            process.OutputDataReceived += OutputDataReceivedHandler;
-            process.ErrorDataReceived += ErrorDataReceivedHandler;
+                process.Kill();
 
-            process.Start();
+                throw new TimeoutException($"LPRun timed out after {waitForExit}");
 
-            process.BeginOutputReadLine();
-            process.BeginErrorReadLine();
+                string GetArguments() =>
+                    $@"-fx={FrameworkInfo.Version.Major}.{FrameworkInfo.Version.Minor} ""{GetFullPath(linqFile)}""";
 
-            var completed = process.WaitForExit((int)waitForExit.TotalMilliseconds);
+                void OutputDataReceivedHandler(object _, DataReceivedEventArgs e) =>
+                    output.Append(e.Data);
 
-            process.CancelOutputRead();
-            process.CancelErrorRead();
-
-            process.OutputDataReceived -= OutputDataReceivedHandler;
-            process.ErrorDataReceived -= ErrorDataReceivedHandler;
-
-            if (completed)
-            {
-                return new Result(output.ToString(), error.ToString(), process.ExitCode);
-            }
-
-            process.Kill();
-
-            throw new TimeoutException($"LPRun timed out after {waitForExit}");
-
-            string GetArguments() =>
-                $@"-fx={FrameworkInfo.Version.Major}.{FrameworkInfo.Version.Minor} ""{GetFullPath(linqFile)}""";
-
-            void OutputDataReceivedHandler(object _, DataReceivedEventArgs e) =>
-                output.Append(e.Data);
-
-            void ErrorDataReceivedHandler(object _, DataReceivedEventArgs e)
-            {
-                if (e.Data?.StartsWith("Downloading NuGet package") == false &&
-                    e.Data?.StartsWith("Restoring package") == false)
+                void ErrorDataReceivedHandler(object _, DataReceivedEventArgs e)
                 {
-                    error.Append(e.Data);
+                    if (e.Data?.StartsWith("Downloading NuGet package") == false &&
+                        e.Data?.StartsWith("Restoring package") == false)
+                    {
+                        error.Append(e.Data);
+                    }
                 }
             }
         }

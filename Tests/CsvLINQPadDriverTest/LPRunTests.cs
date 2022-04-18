@@ -82,7 +82,7 @@ namespace CsvLINQPadDriverTest
 
             Console.Write($"{linqScript}{Environment.NewLine}{Environment.NewLine}{queryConfig}");
 
-            var (output, error, exitCode) = Runner.Execute(linqScript, TimeSpan.FromMinutes(2));
+            var (output, error, exitCode) = Runner.Execute(linqScript, TimeSpan.FromMinutes(1));
 
             if (ShouldRender(output))
             {
