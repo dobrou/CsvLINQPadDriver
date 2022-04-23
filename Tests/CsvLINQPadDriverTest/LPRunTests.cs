@@ -109,55 +109,60 @@ namespace CsvLINQPadDriverTest
 
         private static IEnumerable<ScriptWithDriverPropertiesTestData> ScriptWithDriverPropertiesTestDataTestsData()
         {
-            const string? noContext = null;
             const StringComparison defaultStringComparison = StringComparison.InvariantCulture;
 
             var defaultCsvDataContextDriverProperties = GetDefaultCsvDataContextDriverPropertiesObject(defaultStringComparison);
 
-            var linqScriptNames = new[]
+            return GetTestData().SelectMany(_ => _);
+
+            IEnumerable<IEnumerable<ScriptWithDriverPropertiesTestData>> GetTestData()
             {
-                "Generation",
-                "Relations"
-            };
+                const string? noContext = null;
 
-            var multipleDriverPropertiesTestData = GetCsvDataContextDriverProperties()
-                .SelectMany(driverProperties =>
-                    linqScriptNames.Select(linqScriptName => new ScriptWithDriverPropertiesTestData
-                        (linqScriptName, 
-                         $"new {{ {nameof(driverProperties.UseSingleClassForSameFiles)} = {driverProperties.UseSingleClassForSameFiles.ToString().ToLowerInvariant()} }}",
-                         driverProperties,
-                         driverProperties.UseRecordType ? "USE_RECORD_TYPE" : null)));
+                var linqScriptNames = new[]
+                {
+                    "Generation",
+                    "Relations"
+                };
 
-            var singleDriverPropertiesTestData = new[] { "Extensions", "SimilarFilesRelations" }
-                .Select(linqFile => new ScriptWithDriverPropertiesTestData
-                    (linqFile, 
-                     noContext,
-                     defaultCsvDataContextDriverProperties));
+                // Multiple driver properties.
+                yield return GetCsvDataContextDriverProperties()
+                    .SelectMany(driverProperties =>
+                        linqScriptNames.Select(linqScriptName => new ScriptWithDriverPropertiesTestData
+                            (linqScriptName,
+                             $"new {{ {nameof(driverProperties.UseSingleClassForSameFiles)} = {driverProperties.UseSingleClassForSameFiles.ToString().ToLowerInvariant()} }}",
+                             driverProperties,
+                             driverProperties.UseRecordType ? "USE_RECORD_TYPE" : null)));
 
-            var stringComparisonDriverPropertiesTestData = GetStringComparisons()
-                .SelectMany(static stringComparison =>
-                    new [] { "StringComparison", "Encoding" }.Select(linqFile => new ScriptWithDriverPropertiesTestData
+                // Single driver properties.
+                yield return new[] { "Extensions", "SimilarFilesRelations" }
+                    .Select(linqFile => new ScriptWithDriverPropertiesTestData
                         (linqFile,
+                         noContext,
+                         defaultCsvDataContextDriverProperties));
+
+                // String comparison.
+                yield return GetStringComparisons()
+                    .SelectMany(static stringComparison =>
+                        new[] { "StringComparison", "Encoding" }.Select(linqFile => new ScriptWithDriverPropertiesTestData
+                           (linqFile,
+                            GetStringComparisonContext(stringComparison),
+                            GetDefaultCsvDataContextDriverPropertiesObject(stringComparison))));
+
+                // String comparison for interning.
+                yield return GetStringComparisons()
+                    .Select(static stringComparison => new ScriptWithDriverPropertiesTestData
+                        ("StringComparisonForInterning",
                          GetStringComparisonContext(stringComparison),
-                         GetDefaultCsvDataContextDriverPropertiesObject(stringComparison))));
+                         GetDefaultCsvDataContextDriverPropertiesObject(stringComparison, useStringComparerForStringIntern: true)));
 
-            var stringComparisonForInterningDriverPropertiesTestData = GetStringComparisons()
-                .Select(static stringComparison => new ScriptWithDriverPropertiesTestData
-                    ("StringComparisonForInterning",
-                     GetStringComparisonContext(stringComparison),
-                     GetDefaultCsvDataContextDriverPropertiesObject(stringComparison, useStringComparerForStringIntern: true)));
-
-            var allowCommentsTestData = new[] { true, false }
-                .Select(static allowComments => new ScriptWithDriverPropertiesTestData
+                // Allow comments.
+                yield return new[] { true, false }
+                    .Select(static allowComments => new ScriptWithDriverPropertiesTestData
                         ("Comments",
                          $"new {{ ExpectedCount = {(allowComments ? 1 : 2)} }}",
                          GetDefaultCsvDataContextDriverPropertiesObject(defaultStringComparison, allowComments)));
-
-            return multipleDriverPropertiesTestData
-                    .Concat(singleDriverPropertiesTestData)
-                    .Concat(allowCommentsTestData)
-                    .Concat(stringComparisonDriverPropertiesTestData)
-                    .Concat(stringComparisonForInterningDriverPropertiesTestData);
+            }
 
             IEnumerable<ICsvDataContextDriverProperties> GetCsvDataContextDriverProperties()
             {

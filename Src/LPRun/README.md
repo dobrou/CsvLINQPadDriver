@@ -23,11 +23,11 @@
 
 ## Description ##
 
-LINQPad driver [LPRun](https://www.linqpad.net/lprun.aspx) unit/integration tests runner. Can be used for testing [LINQPad 6](https://www.linqpad.net/LINQPad6.aspx) drivers using LPRun or for running LINQPad scripts.
+LINQPad driver [LPRun](https://www.linqpad.net/lprun.aspx) unit/integration tests runner. Can be used for testing [LINQPad 7](https://www.linqpad.net/LINQPad7.aspx)/[LINQPad 6](https://www.linqpad.net/LINQPad6.aspx) drivers using LPRun or for running LINQPad scripts.
 
 ## Website ##
 
-LPRun is a part of [CsvLINQPadDriver for LINQPad 6](https://github.com/i2van/CsvLINQPadDriver). LPRun source code can be found [here](https://github.com/i2van/CsvLINQPadDriver/tree/master/Src/LPRun).
+LPRun is a part of [CsvLINQPadDriver for LINQPad 7/6/5](https://github.com/i2van/CsvLINQPadDriver). LPRun source code can be found [here](https://github.com/i2van/CsvLINQPadDriver/tree/master/Src/LPRun).
 
 ## Download ##
 
@@ -112,7 +112,7 @@ public class LPRunTests
 
         // Act: Execute test LNQPad script.
         var (output, error, exitCode) =
-            Runner.Execute(linqScript, TimeSpan.FromMinutes(2));
+            Runner.Execute(linqScript, TimeSpan.FromMinutes(1));
 
         // Assert.
         error.Should().BeNullOrWhiteSpace();
@@ -163,7 +163,7 @@ public class LPRunTests
 
 ### Tools ###
 
-* [LINQPad 6](https://www.linqpad.net/LINQPad6.aspx)
+* [LINQPad 7](https://www.linqpad.net/LINQPad7.aspx)/[LINQPad 6](https://www.linqpad.net/LINQPad6.aspx)
 * [LINQPad Command-Line and Scripting](https://www.linqpad.net/lprun.aspx)
 
 ### NuGet ###

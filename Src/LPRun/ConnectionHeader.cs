@@ -24,9 +24,25 @@ namespace LPRun
         /// <param name="driverAssemblyName">The driver assembly name.</param>
         /// <param name="driverNamespace">The driver namespace.</param>
         /// <param name="driverConfig">The driver configuration object.</param>
-        /// <param name="additionalNamespaces">Optional additional namespaces.</param>
+        /// <param name="additionalNamespaces">The optional additional namespaces.</param>
         /// <returns>The XML LINQPad connection header.</returns>
         /// <exception cref="LPRunException">Keeps original exception as <see cref="P:System.Exception.InnerException"/>.</exception>
+        /// <example>
+        /// This shows how to get the LINQPad script connection header:
+        /// <code>
+        /// var connectionHeader = ConnectionHeader.Get(
+        ///     // The driver assembly name.
+        ///     "CsvLINQPadDriver",
+        ///     // The driver namespace.
+        ///     "CsvLINQPadDriver.CsvDataContextDriver",
+        ///     // The driver configuration object.
+        ///     driverProperties,
+        ///     // The optional additional namespaces.
+        ///     "System.Globalization",
+        ///     "System.Runtime.CompilerServices"
+        /// );
+        /// </code>
+        /// </example>
         public static string Get<T>(string driverAssemblyName, string driverNamespace, T driverConfig, params string[] additionalNamespaces)
             where T : notnull =>
             Wrap(() =>

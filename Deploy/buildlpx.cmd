@@ -30,11 +30,17 @@ exit /b %errorlevel%
 set lpx=%rootDir%\%1
 set folder=%rootDir%\..\bin\Release\%2
 
-set additional=
+set additional=%folder%\CsvLINQPadDriver.deps.json
 
 if exist %lpx% del %lpx%
 if exist %folder%\Microsoft.Bcl.*.dll set additional=^
-%folder%\Microsoft.Bcl.HashCode.dll
+%folder%\Microsoft.Bcl.HashCode.dll ^
+%folder%\CsvHelper.dll ^
+%folder%\Humanizer.dll ^
+%folder%\Microsoft.WindowsAPICodePack.dll ^
+%folder%\Microsoft.WindowsAPICodePack.Shell.dll ^
+%folder%\UnicodeCharsetDetector.dll ^
+%folder%\UtfUnknown.dll
 
 echo on
 
@@ -43,13 +49,7 @@ echo on
 %rootDir%\..\README.md ^
 %rootDir%\..\LICENSE ^
 %folder%\*Connection.png ^
-%folder%\CsvHelper.dll ^
 %folder%\CsvLINQPadDriver.dll ^
-%folder%\Humanizer.dll ^
-%folder%\Microsoft.WindowsAPICodePack.dll ^
-%folder%\Microsoft.WindowsAPICodePack.Shell.dll ^
-%folder%\UnicodeCharsetDetector.dll ^
-%folder%\UtfUnknown.dll ^
 %additional% || exit /b 1
 
 @exit /b 0
