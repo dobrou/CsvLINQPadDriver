@@ -357,7 +357,7 @@ Authors.First()
 
 ### Extension Methods ###
 
-Driver provides extension methods for converting string to `T?`. `CultureInfo.InvariantCulture` is used by default.
+Driver provides extension methods for converting `string` (and `ReadOnlySpan<char>` for .NET Core/.NET) to `T?`. `CultureInfo.InvariantCulture` is used by default.
 
 ```csharp
 // Bool.
@@ -393,7 +393,34 @@ DateTime? ToDateTime(
     DateTimeStyles dateTimeStyles = DateTimeStyles.None,
     CultureInfo? cultureInfo = null);
 
+// .NET Core/.NET only.
 DateTime? ToDateTime(
+    ReadOnlySpan<char> format,
+    DateTimeStyles dateTimeStyles = DateTimeStyles.None,
+    CultureInfo? cultureInfo = null);
+
+DateTime? ToDateTime(
+    string[] formats,
+    DateTimeStyles dateTimeStyles = DateTimeStyles.None,
+    CultureInfo? cultureInfo = null);
+
+// DateTimeOffset.
+DateTimeOffset? ToDateTimeOffset(
+    DateTimeStyles dateTimeStyles = DateTimeStyles.None,
+    CultureInfo? cultureInfo = null);
+
+DateTimeOffset? ToDateTimeOffset(
+    string format,
+    DateTimeStyles dateTimeStyles = DateTimeStyles.None,
+    CultureInfo? cultureInfo = null);
+
+// .NET Core/.NET only.
+DateTimeOffset? ToDateTimeOffset(
+    ReadOnlySpan<char> format,
+    DateTimeStyles dateTimeStyles = DateTimeStyles.None,
+    CultureInfo? cultureInfo = null);
+
+DateTimeOffset? ToDateTimeOffset(
     string[] formats,
     DateTimeStyles dateTimeStyles = DateTimeStyles.None,
     CultureInfo? cultureInfo = null);
@@ -406,9 +433,57 @@ TimeSpan? ToTimeSpan(
     TimeSpanStyles timeSpanStyles = TimeSpanStyles.None,
     CultureInfo? cultureInfo = null);
 
+// .NET Core/.NET only.
+TimeSpan? ToTimeSpan(
+    ReadOnlySpan<char> format,
+    TimeSpanStyles timeSpanStyles = TimeSpanStyles.None,
+    CultureInfo? cultureInfo = null);
+
 TimeSpan? ToTimeSpan(
     string[] formats,
     TimeSpanStyles timeSpanStyles = TimeSpanStyles.None,
+    CultureInfo? cultureInfo = null);
+
+// .NET 6+: DateOnly.
+DateOnly? ToDateOnly(
+    DateTimeStyles dateTimeStyles = DateTimeStyles.None,
+    CultureInfo? cultureInfo = null);
+
+DateOnly? ToDateOnly(
+    string format,
+    DateTimeStyles dateTimeStyles = DateTimeStyles.None,
+    CultureInfo? cultureInfo = null);
+
+// .NET Core/.NET only.
+DateOnly? ToDateOnly(
+    ReadOnlySpan<char> format,
+    DateTimeStyles dateTimeStyles = DateTimeStyles.None,
+    CultureInfo? cultureInfo = null);
+
+DateOnly? ToDateOnly(
+    string[] formats,
+    DateTimeStyles dateTimeStyles = DateTimeStyles.None,
+    CultureInfo? cultureInfo = null);
+
+// .NET 6+: TimeOnly.
+TimeOnly? ToTimeOnly(
+    DateTimeStyles dateTimeStyles = DateTimeStyles.None,
+    CultureInfo? cultureInfo = null);
+
+TimeOnly? ToTimeOnly(
+    string format,
+    DateTimeStyles dateTimeStyles = DateTimeStyles.None,
+    CultureInfo? cultureInfo = null);
+
+// .NET Core/.NET only.
+TimeOnly? ToTimeOnly(
+    ReadOnlySpan<char> format,
+    DateTimeStyles dateTimeStyles = DateTimeStyles.None,
+    CultureInfo? cultureInfo = null);
+
+TimeOnly? ToTimeOnly(
+    string[] formats,
+    DateTimeStyles dateTimeStyles = DateTimeStyles.None,
     CultureInfo? cultureInfo = null);
 ```
 

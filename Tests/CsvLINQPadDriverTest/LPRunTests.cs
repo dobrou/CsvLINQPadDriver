@@ -119,49 +119,47 @@ namespace CsvLINQPadDriverTest
             {
                 const string? noContext = null;
 
-                var linqScriptNames = new[]
-                {
-                    "Generation",
-                    "Relations"
-                };
-
                 // Multiple driver properties.
                 yield return GetCsvDataContextDriverProperties()
-                    .SelectMany(driverProperties =>
-                        linqScriptNames.Select(linqScriptName => new ScriptWithDriverPropertiesTestData
-                            (linqScriptName,
-                             $"new {{ {nameof(driverProperties.UseSingleClassForSameFiles)} = {driverProperties.UseSingleClassForSameFiles.ToString().ToLowerInvariant()} }}",
-                             driverProperties,
-                             driverProperties.UseRecordType ? "USE_RECORD_TYPE" : null)));
+                    .SelectMany(static driverProperties => new[] { "Generation", "Relations"}
+                        .Select(linqScriptName => new ScriptWithDriverPropertiesTestData(
+                            linqScriptName,
+                            $"new {{ {nameof(driverProperties.UseSingleClassForSameFiles)} = {driverProperties.UseSingleClassForSameFiles.ToString().ToLowerInvariant()} }}",
+                            driverProperties,
+                            driverProperties.UseRecordType ? "USE_RECORD_TYPE" : null)));
 
                 // Single driver properties.
                 yield return new[] { "Extensions", "SimilarFilesRelations" }
-                    .Select(linqFile => new ScriptWithDriverPropertiesTestData
-                        (linqFile,
-                         noContext,
-                         defaultCsvDataContextDriverProperties));
+                    .Select(linqFile => new ScriptWithDriverPropertiesTestData(
+                            linqFile,
+                            noContext,
+                            defaultCsvDataContextDriverProperties
+#if NET6_0_OR_GREATER
+                            , "NET6_0_OR_GREATER"
+#endif
+                           ));
 
                 // String comparison.
                 yield return GetStringComparisons()
-                    .SelectMany(static stringComparison =>
-                        new[] { "StringComparison", "Encoding" }.Select(linqFile => new ScriptWithDriverPropertiesTestData
-                           (linqFile,
+                    .SelectMany(static stringComparison => new[] { "StringComparison", "Encoding" }
+                        .Select(linqFile => new ScriptWithDriverPropertiesTestData(
+                            linqFile,
                             GetStringComparisonContext(stringComparison),
                             GetDefaultCsvDataContextDriverPropertiesObject(stringComparison))));
 
                 // String comparison for interning.
                 yield return GetStringComparisons()
-                    .Select(static stringComparison => new ScriptWithDriverPropertiesTestData
-                        ("StringComparisonForInterning",
-                         GetStringComparisonContext(stringComparison),
-                         GetDefaultCsvDataContextDriverPropertiesObject(stringComparison, useStringComparerForStringIntern: true)));
+                    .Select(static stringComparison => new ScriptWithDriverPropertiesTestData(
+                            "StringComparisonForInterning",
+                            GetStringComparisonContext(stringComparison),
+                            GetDefaultCsvDataContextDriverPropertiesObject(stringComparison, useStringComparerForStringIntern: true)));
 
                 // Allow comments.
                 yield return new[] { true, false }
-                    .Select(static allowComments => new ScriptWithDriverPropertiesTestData
-                        ("Comments",
-                         $"new {{ ExpectedCount = {(allowComments ? 1 : 2)} }}",
-                         GetDefaultCsvDataContextDriverPropertiesObject(defaultStringComparison, allowComments)));
+                    .Select(static allowComments => new ScriptWithDriverPropertiesTestData(
+                            "Comments",
+                            $"new {{ ExpectedCount = {(allowComments ? 1 : 2)} }}",
+                            GetDefaultCsvDataContextDriverPropertiesObject(defaultStringComparison, allowComments)));
             }
 
             IEnumerable<ICsvDataContextDriverProperties> GetCsvDataContextDriverProperties()

@@ -1,7 +1,7 @@
 ﻿<Project>
   <PropertyGroup>
     <Version>7.3.4</Version>
-    <PackageReleaseNotes>Update Humanizer.Core.</PackageReleaseNotes>
+    <PackageReleaseNotes>Added DateTimeOffset, DateOnly/TimeOnly (.NET6+) types conversion support.</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup>
