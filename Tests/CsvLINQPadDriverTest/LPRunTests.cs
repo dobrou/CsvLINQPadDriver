@@ -27,13 +27,11 @@ namespace CsvLINQPadDriverTest
         [OneTimeSetUp]
         public void Init()
         {
-            Driver.Install("CsvLINQPadDriver",
-                "CsvLINQPadDriver.dll",
-                "CsvHelper.dll",
-                "Humanizer.dll",
-                "UnicodeCharsetDetector.dll",
-                "UtfUnknown.dll"
-            );
+            const string driverFileName = "CsvLINQPadDriver";
+
+            Driver.Install(driverFileName,
+                $"{driverFileName}.dll",  
+                Context.GetDepsJsonRelativePath(driverFileName, "Tests"));
 
             CreateEncodingFiles();
 

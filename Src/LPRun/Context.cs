@@ -7,6 +7,7 @@ using static System.IO.Path;
 using static LPRun.FrameworkInfo;
 using static LPRun.LPRunException;
 
+// ReSharper disable once MemberCanBePrivate.Global
 // ReSharper disable once UnusedMember.Global
 
 namespace LPRun
@@ -16,7 +17,7 @@ namespace LPRun
     /// </summary>
     public static class Context
     {
-        private static readonly string BaseDir  = GetDirectoryName(new Uri(Assembly.GetExecutingAssembly().CodeBase).LocalPath)!;
+        private static readonly string BaseDir  = GetDirectoryName(new Uri(Assembly.GetExecutingAssembly().Location).LocalPath)!;
 
         private static readonly string LpRunDir = GetFullPath("LPRun");
         private static readonly string LpRunExe =
@@ -106,6 +107,37 @@ namespace LPRun
         /// <exception cref="LPRunException">Keeps original exception as <see cref="P:System.Exception.InnerException"/>.</exception>
         public static string GetFullPath(string path) =>
             WrapCombine(BaseDir, path);
+
+        /// <summary>
+        /// Gets the driver dependencies JSON path relative to the tests build folder.
+        /// </summary>
+        /// <param name="driverFileName">The file driver name.</param>
+        /// <param name="testsFolderPath">The test folder path which resides into the driver build folder.</param>
+        /// <returns>The driver dependencies JSON path relative to the tests build folder.</returns>
+        /// <exception cref="LPRunException">Keeps original exception as <see cref="P:System.Exception.InnerException"/>.</exception>
+        /// <remarks>Use this method if the tests folder name is used in path only once. Otherwise use the overloaded method <see cref="GetDepsJsonRelativePath(string, Func{string, string})"/>.</remarks>
+        /// <seealso cref="GetDepsJsonRelativePath(string, Func{string, string})"/>
+        public static string GetDepsJsonRelativePath(string driverFileName, string testsFolderPath) =>
+            Wrap(() => GetDepsJsonRelativePath(
+                driverFileName,
+                baseDir => baseDir.Replace(testsFolderPath, string.Empty, StringComparison.OrdinalIgnoreCase)));
+
+        /// <summary>
+        /// Gets the driver dependencies JSON path relative to the tests build folder.
+        /// </summary>
+        /// <param name="driverFileName">The driver file name.</param>
+        /// <param name="getDepsJsonFileFullPath">The function which returns the absolute driver dependencies JSON path based on the tests build folder path.</param>
+        /// <returns>The driver dependencies JSON path relative to the tests build folder.</returns>
+        /// <exception cref="LPRunException">Keeps original exception as <see cref="P:System.Exception.InnerException"/>.</exception>
+        /// <remarks>Use this method if the tests folder name is used in path multiple times. Otherwise use the overloaded method <see cref="GetDepsJsonRelativePath(string, string)"/>.</remarks>
+        /// <seealso cref="GetDepsJsonRelativePath(string, string)"/>
+        public static string GetDepsJsonRelativePath(string driverFileName, Func<string, string> getDepsJsonFileFullPath) =>
+            Wrap(() => Combine(
+                GetRelativePath(
+                    BaseDir,
+                    Combine(
+                        getDepsJsonFileFullPath(BaseDir),
+                        ChangeExtension(driverFileName, ".deps.json")))));
 
         private static string GetLpRunFullPath(string path) =>
             WrapCombine(LpRunDir, path);

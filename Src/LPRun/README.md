@@ -84,9 +84,7 @@ public class LPRunTests
         // Copy driver to LPRun drivers folder.
         Driver.Install("CsvLINQPadDriver",
             "CsvLINQPadDriver.dll",
-            "CsvHelper.dll",
-            "Humanizer.dll"
-        );
+            Context.GetDepsJsonRelativePath("CsvLINQPadDriver", "Tests"));
 
     [Test]
     [TestCaseSource(nameof(TestsData))]

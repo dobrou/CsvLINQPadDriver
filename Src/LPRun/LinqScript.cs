@@ -33,6 +33,7 @@ namespace LPRun
         /// );
         /// </code>
         /// </example>
+        /// <seealso cref="ConnectionHeader.Get{T}"/>
         public static string Create(string file, string connection)
         {
             return Wrap(Execute);

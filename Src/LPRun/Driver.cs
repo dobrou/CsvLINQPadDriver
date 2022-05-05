@@ -26,20 +26,19 @@ namespace LPRun
         /// <param name="files">The LINQPad driver files.</param>
         /// <exception cref="LPRunException">Keeps original exception as <see cref="P:System.Exception.InnerException"/>.</exception>
         /// <example>
-        /// This shows how to install the LINQPad driver and related driver files:
+        /// This shows how to install the LINQPad driver and specify the driver dependencies JSON:
         /// <code>
         /// Driver.Install(
         ///     // The directory to copy driver files to.
         ///     "CsvLINQPadDriver",
         ///     // The LINQPad driver files.
         ///     "CsvLINQPadDriver.dll",
-        ///     "CsvHelper.dll",
-        ///     "Humanizer.dll",
-        ///     "UnicodeCharsetDetector.dll",
-        ///     "UtfUnknown.dll"
+        ///     Context.GetDepsJsonRelativePath("CsvLINQPadDriver", "Tests")
         /// );
         /// </code>
         /// </example>
+        /// <seealso cref="GetDepsJsonRelativePath(string, string)"/>
+        /// <seealso cref="GetDepsJsonRelativePath(string, Func{string, string})"/>
         public static void Install(string driverDir, params string[] files)
         {
             Wrap(Execute);
