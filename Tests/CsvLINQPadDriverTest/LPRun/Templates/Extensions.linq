@@ -86,6 +86,25 @@ nullString.ToDateTime().Should().BeNull(Reason());
 nullString.ToDateTime(dateTimeFormat).Should().BeNull(Reason());
 nullString.ToDateTime(dateTimeFormats).Should().BeNull(Reason());
 
+var utcNow = DateTime.UtcNow;
+var expectedUtcNow = new DateTime(utcNow.Year, utcNow.Month, utcNow.Day, utcNow.Hour, utcNow.Minute, utcNow.Second).AddHours(-1).AddMinutes(-30);
+utcNow.ToString("yyyy-MM-ddTHH:mm:ss+01:30").ToUtcDateTime().Should().Be(expectedUtcNow, Reason()).And.Subject?.Kind.Should().Be(DateTimeKind.Utc, Reason());
+
+var isoTimes = new []
+{
+	"2022-05-11T10:13:19",
+	"2022-05-11T10:13:19Z",
+	"2022-05-11T10:13:19+01:00"
+};
+
+foreach(var isoTime in isoTimes)
+{
+	isoTime.ToUtcDateTime().Should().NotBeNull(Reason()).And.Subject?.Kind.Should().Be(DateTimeKind.Utc, Reason());
+	((ReadOnlySpan<char>)isoTime).ToUtcDateTime().Should().NotBeNull(Reason()).And.Subject?.Kind.Should().Be(DateTimeKind.Utc, Reason());
+}
+
+nullString.ToUtcDateTime().Should().BeNull(Reason());
+
 // DateTimeOffset.
 ((ReadOnlySpan<char>)expectedDateTime.ToString()).ToDateTimeOffset().Should().Be(expectedDateTime, Reason());
 expectedDateTime.ToString().ToDateTimeOffset().Should().Be(expectedDateTime, Reason());

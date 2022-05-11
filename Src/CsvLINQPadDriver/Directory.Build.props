@@ -1,7 +1,7 @@
 ﻿<Project>
   <PropertyGroup>
-    <Version>7.3.4</Version>
-    <PackageReleaseNotes>Added DateTimeOffset, DateOnly/TimeOnly (.NET6+) types conversion support.</PackageReleaseNotes>
+    <Version>7.3.5</Version>
+    <PackageReleaseNotes>Added ToUtcDateTime string extension method.</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup>

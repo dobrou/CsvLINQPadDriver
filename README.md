@@ -404,6 +404,8 @@ DateTime? ToDateTime(
     DateTimeStyles dateTimeStyles = DateTimeStyles.None,
     CultureInfo? cultureInfo = null);
 
+DateTime? ToUtcDateTime(CultureInfo? cultureInfo = null);
+
 // DateTimeOffset.
 DateTimeOffset? ToDateTimeOffset(
     DateTimeStyles dateTimeStyles = DateTimeStyles.None,

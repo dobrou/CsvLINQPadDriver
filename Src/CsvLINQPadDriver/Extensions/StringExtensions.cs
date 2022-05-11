@@ -76,6 +76,16 @@ namespace CsvLINQPadDriver.Extensions
             GetValueOrNull(DateTime.TryParseExact(str, formats, SelectCulture(cultureInfo), dateTimeStyles, out var parsedValue), parsedValue);
 #endif
 
+        private const DateTimeStyles UtcDateTimeStyles = DateTimeStyles.AdjustToUniversal | DateTimeStyles.AssumeUniversal;
+
+        public static DateTime? ToUtcDateTime(this string? str, CultureInfo? cultureInfo = null) =>
+            GetValueOrNull(DateTime.TryParse(str, SelectCulture(cultureInfo), UtcDateTimeStyles, out var parsedValue), parsedValue);
+
+#if NETCOREAPP
+        public static DateTime? ToUtcDateTime(this ReadOnlySpan<char> str, CultureInfo? cultureInfo = null) =>
+            GetValueOrNull(DateTime.TryParse(str, SelectCulture(cultureInfo), UtcDateTimeStyles, out var parsedValue), parsedValue);
+#endif
+
         public static DateTimeOffset? ToDateTimeOffset(this string? str, DateTimeStyles dateTimeStyles = DateTimeStyles.None, CultureInfo? cultureInfo = null) =>
             GetValueOrNull(DateTimeOffset.TryParse(str, SelectCulture(cultureInfo), dateTimeStyles, out var parsedValue), parsedValue);
 
