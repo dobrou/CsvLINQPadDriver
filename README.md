@@ -381,6 +381,7 @@ decimal? ToDecimal(CultureInfo? cultureInfo = null);
 // Guid.
 Guid? ToGuid();
 Guid? ToGuid(string format);
+Guid? ToGuid(ReadOnlySpan<char> format);
 Guid? ToGuid(string[] formats);
 
 // DateTime.
