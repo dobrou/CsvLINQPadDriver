@@ -12,16 +12,22 @@
 
   <PropertyGroup>
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+    <Product>LINQPad Driver LPRun Unit/Integration Tests Runner</Product>
+    <AssemblyTitle>LINQPad driver LPRun unit/integration tests runner</AssemblyTitle>
+    <Description>$(AssemblyTitle).</Description>
+  </PropertyGroup>
+
+  <PropertyGroup>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <Authors>Ivan Ivon (ivan.ivon@gmail.com), LINQPad/LPRun by Joseph Albahari</Authors>
     <RepositoryType>git</RepositoryType>
     <PackageTags>linqpad lprun tests unittests integrationtests windows</PackageTags>
     <PackageProjectUrl>https://github.com/i2van/CsvLINQPadDriver/tree/master/Src/LPRun</PackageProjectUrl>
-    <Description>LINQPad driver LPRun unit/integration tests runner.</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/i2van/CsvLINQPadDriver</RepositoryUrl>
     <Copyright>Copyright © 2021-$([System.DateTime]::Now.Year) Ivan Ivon, LINQPad/LPRun by Joseph Albahari</Copyright>
-    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -44,6 +50,10 @@
       <PackageCopyToOutput>true</PackageCopyToOutput>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <PackagePath>contentFiles\any\netstandard2.1\LPRun\Bin</PackagePath>
+    </Content>
+    <Content Include="README.md">
+      <Pack>true</Pack>
+      <PackagePath/>
     </Content>
   </ItemGroup>
 

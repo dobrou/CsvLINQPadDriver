@@ -13,7 +13,9 @@ using LINQPad.Extensibility.DataContext;
 
 namespace CsvLINQPadDriver
 {
-    public class CsvDataContextDriverProperties : ICsvDataContextDriverProperties
+    public class CsvDataContextDriverProperties :
+        ICsvDataContextDriverProperties,
+        IEquatable<CsvDataContextDriverProperties>
     {
         private readonly IConnectionInfo _connectionInfo;
         private readonly XElement _driverData;
@@ -90,7 +92,7 @@ namespace CsvLINQPadDriver
                 : CommentChars.TrimStart().First();
 
         public IEnumerable<string> ParsedFiles =>
-            Files.GetFilesOnly();
+            Files.GetFiles();
 
         public string CsvSeparator
         {
@@ -241,6 +243,81 @@ namespace CsvLINQPadDriver
             get => GetValue(true);
             set => SetValue(value);
         }
+
+        public override bool Equals(object? obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            return obj.GetType() == GetType() && Equals((CsvDataContextDriverProperties) obj);
+        }
+
+        public bool Equals(CsvDataContextDriverProperties? other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+
+            return PropertiesEqual().All(static _ => _);
+
+            IEnumerable<bool> PropertiesEqual()
+            {
+                yield return GetFiles(ParsedFiles).SequenceEqual(GetFiles(other.ParsedFiles), FileExtensions.FileNameComparer);
+
+                yield return FilesOrderBy == other.FilesOrderBy;
+                yield return NoBomEncoding == other.NoBomEncoding;
+                yield return AutoDetectEncoding == other.AutoDetectEncoding;
+                yield return IgnoreInvalidFiles == other.IgnoreInvalidFiles;
+
+                yield return UseCsvHelperSeparatorAutoDetection == other.UseCsvHelperSeparatorAutoDetection;
+                if (UseCsvHelperSeparatorAutoDetection && other.UseCsvHelperSeparatorAutoDetection)
+                {
+                    yield return SafeCsvSeparator == other.SafeCsvSeparator;
+                }
+
+                yield return IgnoreBadData == other.IgnoreBadData;
+                yield return IgnoreBlankLines == other.IgnoreBlankLines;
+
+                yield return TrimSpaces == other.TrimSpaces;
+                if (TrimSpaces && other.TrimSpaces)
+                {
+                    yield return WhitespaceTrimOptions == other.WhitespaceTrimOptions;
+                }
+
+                yield return AllowComments == other.AllowComments;
+                if (AllowComments && other.AllowComments)
+                {
+                    yield return CommentChar == other.CommentChar;
+                }
+
+                yield return AddHeader == other.AddHeader;
+                if (AddHeader && other.AddHeader)
+                {
+                    yield return HeaderDetection == other.HeaderDetection &&
+                                 HeaderFormat == other.HeaderFormat;
+                }
+
+                yield return IsCacheEnabled == other.IsCacheEnabled;
+
+                yield return IsStringInternEnabled == other.IsStringInternEnabled;
+                if (IsStringInternEnabled && other.IsStringInternEnabled)
+                {
+                    yield return UseStringComparerForStringIntern == other.UseStringComparerForStringIntern;
+                }
+
+                yield return UseRecordType == other.UseRecordType;
+                yield return UseSingleClassForSameFiles == other.UseSingleClassForSameFiles;
+                yield return StringComparison == other.StringComparison;
+
+                yield return DetectRelations == other.DetectRelations;
+
+                IEnumerable<string> GetFiles(IEnumerable<string> files) =>
+                    FilesOrderBy == FilesOrderBy.None
+                        ? files
+                        : files.OrderBy(static _ => _, FileExtensions.FileNameComparer);
+            }
+        }
+
+        public override int GetHashCode() =>
+            HashCode.Combine(_connectionInfo, _driverData);
 
         private T GetValue<T>(Func<string?, T> convert, T defaultValue, [CallerMemberName] string callerMemberName = "") =>
             convert(_driverData.Element(callerMemberName)?.Value) ?? defaultValue;

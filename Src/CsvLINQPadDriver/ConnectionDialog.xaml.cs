@@ -270,7 +270,7 @@ namespace CsvLINQPadDriver
                 return canClose;
 
                 IReadOnlyCollection<string> GetInvalidFilePaths() =>
-                    FilesTextBox.Text.GetFilesOnly().Where(static file => !IsPathValid(file)).ToList();
+                    FilesTextBox.Text.GetFiles().Where(static file => !IsPathValid(file)).ToList();
             }
         }
 
@@ -341,7 +341,7 @@ namespace CsvLINQPadDriver
 
         private string[] GetEnrichedPathsFromUserInput(object data, bool foldersWithSubfolders)
         {
-            var files = data as IEnumerable<string> ?? ((string) data).GetFilesOnly();
+            var files = data as IEnumerable<string> ?? ((string) data).GetFiles();
 
             return files.Select(GetEnrichedPath).ToArray();
 

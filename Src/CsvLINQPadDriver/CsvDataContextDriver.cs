@@ -32,6 +32,9 @@ namespace CsvLINQPadDriver
             "Martin Dobroucký (dobrou@gmail.com), Ivan Ivon (ivan.ivon@gmail.com)";
             // ReSharper restore StringLiteralTypo
 
+        public override bool AreRepositoriesEquivalent(IConnectionInfo c1, IConnectionInfo c2) =>
+            new CsvDataContextDriverProperties(c1).Equals(new CsvDataContextDriverProperties(c2));
+
         public override string GetConnectionDescription(IConnectionInfo cxInfo)
         {
             var csvDataContextDriverProperties = new CsvDataContextDriverProperties(cxInfo);
@@ -51,7 +54,7 @@ namespace CsvLINQPadDriver
                 };
         }
 
-        public override bool ShowConnectionDialog(IConnectionInfo cxInfo, ConnectionDialogOptions connectionDialogOptions)
+        public override bool ShowConnectionDialog(IConnectionInfo cxInfo, ConnectionDialogOptions dialogOptions)
         {
             if (new ConnectionDialog(new CsvDataContextDriverProperties(cxInfo)).ShowDialog() != true)
             {

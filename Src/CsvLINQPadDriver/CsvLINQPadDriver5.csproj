@@ -8,7 +8,10 @@
 
   <PropertyGroup>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <Description>LINQPad 5 CSV driver.</Description>
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+    <Product>LINQPad 5 CSV Driver</Product>
+    <AssemblyTitle>LINQPad 5 CSV driver</AssemblyTitle>
+    <Description>$(AssemblyTitle).</Description>
   </PropertyGroup>
 
   <ItemGroup>

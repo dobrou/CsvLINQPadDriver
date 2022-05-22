@@ -2,19 +2,26 @@
 
   <PropertyGroup>
     <TargetFrameworks>netcoreapp3.1;net5.0-windows;net6.0-windows</TargetFrameworks>
+    <NoWarn>1701;1702;8032;NETSDK1182</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+    <Product>LINQPad 7/6 CSV Driver</Product>
+    <AssemblyTitle>LINQPad 7/6 CSV driver</AssemblyTitle>
+    <Description>$(AssemblyTitle).</Description>
   </PropertyGroup>
 
   <PropertyGroup>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <RepositoryType>git</RepositoryType>
     <PackageTags>linqpaddriver csv</PackageTags>
     <PackageProjectUrl>https://github.com/i2van/CsvLINQPadDriver</PackageProjectUrl>
-    <Description>LINQPad 7/6 CSV driver.</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/i2van/CsvLINQPadDriver</RepositoryUrl>
     <PackageIcon>NuGetIcon.png</PackageIcon>
-    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <NoWarn>1701;1702;8032;NETSDK1182</NoWarn>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -37,9 +44,13 @@
     </Content>
     <Content Include="NuGetIcon.png">
       <Pack>True</Pack>
-      <PackagePath></PackagePath>
+      <PackagePath/>
       <PackageCopyToOutput>true</PackageCopyToOutput>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="../../README.md">
+      <Pack>true</Pack>
+      <PackagePath/>
     </Content>
   </ItemGroup>
 

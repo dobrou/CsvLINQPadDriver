@@ -82,9 +82,13 @@ public class LPRunTests
     [OneTimeSetUp]
     public void Init() =>
         // Copy driver to LPRun drivers folder.
-        Driver.Install("CsvLINQPadDriver",
+        Driver.InstallWithDepsJson(
+            // The directory to copy driver files to.
+            "CsvLINQPadDriver",
+            // The LINQPad driver files.
             "CsvLINQPadDriver.dll",
-            Context.GetDepsJsonRelativePath("CsvLINQPadDriver", "Tests"));
+            // The test folder path.
+            "Tests");
 
     [Test]
     [TestCaseSource(nameof(TestsData))]

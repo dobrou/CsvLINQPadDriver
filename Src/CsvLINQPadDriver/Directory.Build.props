@@ -1,7 +1,7 @@
 ﻿<Project>
   <PropertyGroup>
-    <Version>7.3.5</Version>
-    <PackageReleaseNotes>Added ToUtcDateTime string extension method.</PackageReleaseNotes>
+    <Version>7.3.6</Version>
+    <PackageReleaseNotes>Added README.md</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -27,7 +27,7 @@
     <PackageReference Include="LINQPad.Reference" Version="1.3.0" />
     <PackageReference Include="Microsoft-WindowsAPICodePack-Core" Version="1.1.4" />
     <PackageReference Include="Microsoft-WindowsAPICodePack-Shell" Version="1.1.4" />
-    <PackageReference Include="UnicodeCharsetDetector.Standard" Version="1.1.1" />
+    <PackageReference Include="UnicodeCharsetDetector.Standard" Version="1.1.4" />
     <PackageReference Include="UTF.Unknown" Version="2.5.0" />
   </ItemGroup>
 

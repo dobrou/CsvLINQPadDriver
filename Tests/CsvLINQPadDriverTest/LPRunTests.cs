@@ -29,9 +29,7 @@ namespace CsvLINQPadDriverTest
         {
             const string driverFileName = "CsvLINQPadDriver";
 
-            Driver.Install(driverFileName,
-                $"{driverFileName}.dll",  
-                Context.GetDepsJsonRelativePath(driverFileName, "Tests"));
+            Driver.InstallWithDepsJson(driverFileName, $"{driverFileName}.dll", "Tests");
 
             CreateEncodingFiles();
 

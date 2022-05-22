@@ -30,6 +30,8 @@ namespace CsvLINQPadDriver.Extensions
     {
         public const string InlineComment = "#";
 
+        public static readonly StringComparer FileNameComparer = StringComparer.OrdinalIgnoreCase;
+
         private const string RecursiveMaskMarker = "**";
 
         private const StringComparison FileNameComparison = StringComparison.OrdinalIgnoreCase;
@@ -41,8 +43,6 @@ namespace CsvLINQPadDriver.Extensions
         private static readonly char[] WhiteSpaceChars = " \t" .ToCharArray();
 
         private static readonly char[] InlineCommentCharArray = InlineComment.ToCharArray();
-
-        private static readonly StringComparer FileNameComparer = StringComparer.OrdinalIgnoreCase;
 
         private static
 #if NETCOREAPP
@@ -417,7 +417,7 @@ namespace CsvLINQPadDriver.Extensions
 
         public static string GetLongestCommonPrefixPath(this IEnumerable<string> paths)
         {
-            var pathsValid = paths.GetFilesOnly().ToImmutableList();
+            var pathsValid = paths.GetFiles().ToImmutableList();
 
             // Get longest common path prefix.
             var filePaths = pathsValid.FirstOrDefault()?.Split(Path.DirectorySeparatorChar) ?? Array.Empty<string>();
@@ -434,7 +434,8 @@ namespace CsvLINQPadDriver.Extensions
         }
 
         public static IEnumerable<string> EnumFiles(this IEnumerable<string> paths, ICollection<Exception>? exceptions = null) =>
-            GetFilesOnly(paths)
+            paths
+                .GetFiles()
                 .SelectMany(files => EnumFiles(files, exceptions))
                 .Distinct(FileNameComparer)
                 .ToImmutableList();
@@ -445,10 +446,10 @@ namespace CsvLINQPadDriver.Extensions
         public static string GetHumanizedFileSize(this IEnumerable<string> files, bool debugInfo) =>
             GetHumanizedFileSize(files.Sum(fileName => GetFileSize(fileName, debugInfo)));
 
-        public static IEnumerable<string> GetFilesOnly(this string paths) =>
-            Regex.Split(paths, @"[\r\n]+").GetFilesOnly();
+        public static IEnumerable<string> GetFiles(this string paths) =>
+            Regex.Split(paths, @"[\r\n]+").GetFiles();
 
-        private static IEnumerable<string> GetFilesOnly(this IEnumerable<string> paths) =>
+        private static IEnumerable<string> GetFiles(this IEnumerable<string> paths) =>
             paths
                 .Select(static path => path.Trim())
                 .Where(static path => !path.IsInlineComment())
