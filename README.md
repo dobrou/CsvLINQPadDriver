@@ -512,7 +512,7 @@ TimeOnly? ToTimeOnly(
 ### Tools ###
 
 * [LINQPad 7](https://www.linqpad.net/LINQPad7.aspx)/[LINQPad 6](https://www.linqpad.net/LINQPad6.aspx)/[LINQPad 5](https://www.linqpad.net/LINQPad5.aspx)
-* [LINQPad Command-Line and Scripting](https://www.linqpad.net/lprun.aspx)
+* [LINQPad Command-Line and Scripting (LPRun)](https://www.linqpad.net/lprun.aspx)
 
 ### Libraries ###
 
@@ -520,9 +520,9 @@ TimeOnly? ToTimeOnly(
 * [Fluent Assertions](https://github.com/fluentassertions/fluentassertions)
 * [Humanizer](https://github.com/Humanizr/Humanizer)
 * [IsExternalInit](https://github.com/manuelroemer/IsExternalInit)
-* [Microsoft.Bcl.HashCode](https://www.nuget.org/packages/Microsoft.Bcl.HashCode) (for LINQPad 5 only).
+* [Microsoft.Bcl.HashCode](https://www.nuget.org/packages/Microsoft.Bcl.HashCode) (for LINQPad 5 only)
 * [Moq](https://github.com/moq/moq4)
-* [Nullable](https://github.com/manuelroemer/Nullable)
+* [Nullable](https://github.com/manuelroemer/Nullable) (for LINQPad 5 only)
 * [NUnit](https://github.com/nunit/nunit)
 * [UnicodeCharsetDetector](https://github.com/i2van/UnicodeCharsetDetector)
 * [UTF.Unknown](https://www.nuget.org/packages/UTF.Unknown)
