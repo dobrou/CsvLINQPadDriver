@@ -16,7 +16,7 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <RepositoryType>git</RepositoryType>
-    <PackageTags>linqpaddriver csv</PackageTags>
+    <PackageTags>linqpaddriver csv tsv</PackageTags>
     <PackageProjectUrl>https://github.com/i2van/CsvLINQPadDriver</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/i2van/CsvLINQPadDriver</RepositoryUrl>

@@ -209,410 +209,416 @@
             Gesture="{x:Static this:ConnectionDialog.AddFoldersWithSubfoldersCommandKeyGesture}"/>
     </Window.InputBindings>
 
-    <Grid Margin="7 6 7 7" Grid.IsSharedSizeScope="True">
+    <Grid Margin="7 6 7 7">
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <GroupBox>
-            <GroupBox.Header>
-                <StackPanel Margin="-1 1 0 0" Orientation="Horizontal">
-                    <ComboBox
-                        Style="{StaticResource EnumComboBoxStyle}"
-                        ToolTip="Active file type"
-                        SelectedValue="{Binding FileType}"
-                        MinWidth="47"
-                        Padding="4 2 4 3"
-                        ItemsSource="{Binding Source={StaticResource FileTypeData}}"
-                        SelectionChanged="FileTypeComboBox_OnSelectionChanged"
-                    />
-                    <Label Padding="3 2 0 3" Content="_Files" Target="{Binding ElementName=FilesTextBox}"/>
-                    <TextBlock Margin="3 0 0 0" VerticalAlignment="Center">
-                        <Hyperlink NavigateUri="https://github.com/i2van/CsvLINQPadDriver/#csv-files" ToolTip="{x:Static this:ConnectionDialog.ConnectionHelp}" Style="{StaticResource HelpHyperlink}">
-                            <TextBlock Style="{StaticResource HelpTextBlock}"/>
-                        </Hyperlink>
-                    </TextBlock>
-                </StackPanel>
-            </GroupBox.Header>
-            <Grid Style="{StaticResource GroupGridStyle}">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" SharedSizeGroup="ComboBoxLabel"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
+        <Grid Grid.IsSharedSizeScope="True">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
 
-                <Grid Grid.ColumnSpan="3">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
-
-                    <WrapPanel Grid.Column="0" Margin="0 0 0 2" Orientation="Horizontal" HorizontalAlignment="Stretch">
-                        <TextBlock Style="{StaticResource WrappedTextBlock}">
-                            <TextBlock Style="{StaticResource TextBlockHyperlinkContainer}">
-                                <Hyperlink Style="{StaticResource CommandHyperlink}" Command="{x:Static this:ConnectionDialog.AddFilesCommand}"><Run Style="{StaticResource HyperlinkCommandRun}"/></Hyperlink>
-                            </TextBlock>
-                            <TextBlock Style="{StaticResource TextBlockHyperlinkContainer}">
-                                <Hyperlink Style="{StaticResource CommandHyperlink}" Command="{x:Static this:ConnectionDialog.AddFoldersCommand}"><Run Style="{StaticResource HyperlinkCommandRun}"/></Hyperlink>
-                            </TextBlock>
-                            <TextBlock Style="{StaticResource TextBlockHyperlinkContainer}">
-                                <Hyperlink Style="{StaticResource CommandHyperlink}" Command="{x:Static this:ConnectionDialog.AddFoldersWithSubfoldersCommand}"><Run Style="{StaticResource HyperlinkCommandRun}"/></Hyperlink>
-                            </TextBlock>
-                            <TextBlock Style="{StaticResource TextBlockHyperlinkContainer}">
-                                <Hyperlink Style="{StaticResource CommandHyperlink}" Command="{x:Static this:ConnectionDialog.BrowseCommand}"><Run Style="{StaticResource HyperlinkCommandRun}"/></Hyperlink>
-                            </TextBlock>
-                            <TextBlock Style="{StaticResource TextBlockHyperlinkContainer}">
-                                <Hyperlink Style="{StaticResource CommandHyperlink}" Command="{x:Static this:ConnectionDialog.ClearCommand}"><Run Style="{StaticResource HyperlinkCommandRun}"/></Hyperlink>
-                            </TextBlock>
-                        </TextBlock>
-                    </WrapPanel>
-
-                    <Grid Grid.Column="1">
-                        <TextBlock Style="{StaticResource TextBlockHyperlinkSingleContainer}">
-                            <Hyperlink Command="{x:Static this:ConnectionDialog.WrapFilesTextCommand}">
-                                <TextBlock>
-                                    <TextBlock.Style>
-                                        <Style TargetType="{x:Type TextBlock}">
-                                            <Setter Property="Text" Value="{x:Static this:ConnectionDialog.WrapText}"/>
-                                            <Setter Property="ToolTip" Value="{x:Static this:ConnectionDialog.TurnOnWrapText}"/>
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding TextWrapping, ElementName=FilesTextBox}" Value="Wrap">
-                                                    <Setter Property="Text" Value="{x:Static this:ConnectionDialog.UnwrapText}"/>
-                                                    <Setter Property="ToolTip" Value="{x:Static this:ConnectionDialog.TurnOffWrapText}"/>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </TextBlock.Style>
-                                </TextBlock>
+            <GroupBox>
+                <GroupBox.Header>
+                    <StackPanel Margin="-1 1 0 0" Orientation="Horizontal">
+                        <ComboBox
+                            Style="{StaticResource EnumComboBoxStyle}"
+                            ToolTip="Active file type"
+                            SelectedValue="{Binding FileType}"
+                            MinWidth="47"
+                            Padding="4 2 4 3"
+                            ItemsSource="{Binding Source={StaticResource FileTypeData}}"
+                            SelectionChanged="FileTypeComboBox_OnSelectionChanged"/>
+                        <Label Padding="3 2 0 3" Content="_Files" Target="{Binding ElementName=FilesTextBox}"/>
+                        <TextBlock Margin="3 0 0 0" VerticalAlignment="Center">
+                            <Hyperlink NavigateUri="https://github.com/i2van/CsvLINQPadDriver/#csv-files" ToolTip="{x:Static this:ConnectionDialog.ConnectionHelp}" Style="{StaticResource HelpHyperlink}">
+                                <TextBlock Style="{StaticResource HelpTextBlock}"/>
                             </Hyperlink>
                         </TextBlock>
-                    </Grid>
-                </Grid>
-
-                <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Background="{x:Static SystemColors.WindowBrush}">
-                    <!-- ReSharper disable once Xaml.BindingWithContextNotResolved -->
-                    <TextBox
-                         Name="FilesInstructionsTextBox"
-                         Focusable="False"
-                         IsHitTestVisible="False"
-                         TextWrapping="Wrap"
-                         Foreground="{x:Static SystemColors.GrayTextBrush}"
-                         Visibility="{Binding Text.IsEmpty, ElementName=FilesTextBox, Converter={StaticResource BooleanToVisibilityConverter}}"
-                         AcceptsReturn="{Binding AcceptsReturn, ElementName=FilesTextBox}"
-                         Background="{Binding Background, ElementName=FilesTextBox}"
-                         VerticalAlignment="{Binding VerticalAlignment, ElementName=FilesTextBox}"
-                         HorizontalAlignment="{Binding HorizontalAlignment, ElementName=FilesTextBox}"/>
-
-                    <TextBox
-                        Name="FilesTextBox"
-                        AcceptsReturn="True"
-                        Background="Transparent"
-                        VerticalAlignment="Stretch"
-                        HorizontalAlignment="Stretch"
-                        HorizontalScrollBarVisibility="Auto"
-                        VerticalScrollBarVisibility="Auto"
-                        Text="{Binding Files, UpdateSourceTrigger=PropertyChanged}"
-                        ToolTip="Drag&amp;drop (Ctrl adds files, Alt toggles * and ** masks)"
-                        AllowDrop="True"
-                        PreviewDragEnter="FilesTextBox_DragEnter"
-                        PreviewDragOver="FilesTextBox_DragEnter"
-                        PreviewDrop="FilesTextBox_DragDrop">
-                        <TextBox.InputBindings>
-                            <MouseBinding
-                                Command="{x:Static this:ConnectionDialog.CtrlLeftClickCommand}"
-                                Gesture="{x:Static this:ConnectionDialog.CtrlLeftClickCommandMouseGesture}"/>
-                            <KeyBinding
-                                Command="{x:Static this:ConnectionDialog.PasteFoldersWithSubfoldersCommand}"
-                                Gesture="{x:Static this:ConnectionDialog.PasteFoldersWithSubfoldersCommandKeyGesture}"/>
-                            <KeyBinding 
-                                Command="{x:Static this:ConnectionDialog.BrowseCommand}"
-                                Gesture="{x:Static this:ConnectionDialog.BrowseCommandKeyGesture}"/>
-                            <KeyBinding
-                                Command="{x:Static this:ConnectionDialog.ClearCommand}"
-                                Gesture="{x:Static this:ConnectionDialog.ClearCommandKeyGesture}"/>
-                            <KeyBinding
-                                Command="{x:Static this:ConnectionDialog.WrapFilesTextCommand}"
-                                Gesture="{x:Static this:ConnectionDialog.WrapFilesTextCommandKeyGesture}"/>
-                            <KeyBinding
-                                Command="{x:Static this:ConnectionDialog.PasteFromClipboardFoldersAndProceedCommand}"
-                                Gesture="{x:Static this:ConnectionDialog.PasteFromClipboardFoldersAndProceedCommandKeyGesture}"/>
-                            <KeyBinding
-                                Command="{x:Static this:ConnectionDialog.PasteFromClipboardFoldersWithSubfoldersAndProceedCommand}"
-                                Gesture="{x:Static this:ConnectionDialog.PasteFromClipboardFoldersWithSubfoldersAndProceedCommandKeyGesture}"/>
-                        </TextBox.InputBindings>
-                        <TextBox.ContextMenu>
-                            <ContextMenu>
-                                <!-- TODO: Sync with link bar above. -->
-                                <!-- ReSharper disable once MarkupAttributeTypo -->
-                                <MenuItem Style="{StaticResource CommandMenuItem}" Command="{x:Static this:ConnectionDialog.AddFilesCommand}"/>
-                                <!-- ReSharper disable once MarkupAttributeTypo -->
-                                <MenuItem Style="{StaticResource CommandMenuItem}" Command="{x:Static this:ConnectionDialog.AddFoldersCommand}"/>
-                                <!-- ReSharper disable once MarkupAttributeTypo -->
-                                <MenuItem Style="{StaticResource CommandMenuItem}" Command="{x:Static this:ConnectionDialog.AddFoldersWithSubfoldersCommand}"/>
-                                <Separator/>
-                                <MenuItem Style="{StaticResource CommandMenuItem}" Command="{x:Static this:ConnectionDialog.BrowseCommand}"/>
-                                <Separator/>
-                                <MenuItem Command="ApplicationCommands.Undo" Header="_Undo"/>
-                                <MenuItem Command="ApplicationCommands.Redo" Header="_Redo"/>
-                                <Separator/>
-                                <MenuItem Command="ApplicationCommands.Cut" Header="Cu_t"/>
-                                <MenuItem Command="ApplicationCommands.Copy" Header="_Copy"/>
-                                <MenuItem Command="ApplicationCommands.Paste" Header="_Paste (append * active file type mask to folders)"/>
-                                <MenuItem Style="{StaticResource CommandMenuItem}" Command="{x:Static this:ConnectionDialog.PasteFoldersWithSubfoldersCommand}"/>
-                                <MenuItem Style="{StaticResource CommandMenuItem}" Command="{x:Static this:ConnectionDialog.DeleteCommand}"/>
-                                <Separator/>
-                                <MenuItem Style="{StaticResource CommandMenuItem}" Command="{x:Static this:ConnectionDialog.SelectAllCommand}"/>
-                                <!-- ReSharper disable once MarkupAttributeTypo -->
-                                <MenuItem Style="{StaticResource CommandMenuItem}" Command="{x:Static this:ConnectionDialog.ClearCommand}"/>
-                                <Separator/>
-                                <MenuItem Style="{StaticResource CommandMenuItem}" Command="{x:Static this:ConnectionDialog.PasteFromClipboardFoldersAndProceedCommand}"/>
-                                <MenuItem Style="{StaticResource CommandMenuItem}" Command="{x:Static this:ConnectionDialog.PasteFromClipboardFoldersWithSubfoldersAndProceedCommand}"/>
-                                <Separator/>
-                                <MenuItem Command="{x:Static this:ConnectionDialog.WrapFilesTextCommand}" IsCheckable="True">
-                                    <MenuItem.Style>
-                                        <Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource CommandMenuItem}">
-                                            <Setter Property="IsChecked" Value="False"/>
-                                            <Style.Triggers>
-                                                <!-- ReSharper disable once Xaml.BindingWithContextNotResolved -->
-                                                <DataTrigger Binding="{Binding PlacementTarget.TextWrapping, RelativeSource={RelativeSource AncestorType=ContextMenu}}" Value="Wrap">
-                                                    <Setter Property="IsChecked" Value="True"/>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </MenuItem.Style>
-                                </MenuItem>
-                            </ContextMenu>
-                        </TextBox.ContextMenu>
-                    </TextBox>
-                </Grid>
-
-                <!-- ReSharper disable once MarkupAttributeTypo -->
-                <Label Grid.Row="2" Grid.Column="0" Padding="0 6 4 0" Content="Order f_iles by" Target="{Binding ElementName=FilesOrderByComboBox}"/>
-                <ComboBox Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2"
-                    Name="FilesOrderByComboBox"
-                    Style="{StaticResource GroupComboBoxStyle}"
-                    ToolTip="Files sort order. Affects similar files order"
-                    SelectedValue="{Binding FilesOrderBy}"
-                    ItemsSource="{Binding Source={StaticResource FilesOrderByData}}"/>
-
-                <Label Grid.Row="3" Grid.Column="0" Padding="0 5 4 0" Content="Fall_back encoding" Target="{Binding ElementName=NoBomEncodingComboBox}"/>
-                <ComboBox Grid.Row="3" Grid.Column="1"
-                    Name="NoBomEncodingComboBox"
-                    Style="{StaticResource GroupComboBoxStyle}"
-                    ToolTip="Encoding to use if file encoding could not be detected"
-                    SelectedValue="{Binding NoBomEncoding}"
-                    ItemsSource="{Binding Source={StaticResource NoBomEncodingData}}"/>
-                <TextBlock Grid.Row="3" Grid.Column="2" Padding="5 5 0 0">
-                    <Hyperlink NavigateUri="https://docs.microsoft.com/en-us/windows/win32/intl/code-page-identifiers" ToolTip="Code Page Identifiers on Microsoft Docs" Style="{StaticResource HelpHyperlink}">
-                        <TextBlock Style="{StaticResource HelpTextBlock}"/>
-                    </Hyperlink>
-                </TextBlock>
-
-                <StackPanel Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3" Margin="0 5 0 0" Orientation="Vertical">
-                    <!-- ReSharper disable once MarkupAttributeTypo -->
-                    <CheckBox IsChecked="{Binding AutoDetectEncoding}" Content="Auto-detect file encodin_gs" ToolTip="Try to detect file encodings"/>
-                    <CheckBox IsChecked="{Binding ValidateFilePaths}" Content="_Validate file paths" ToolTip="Check if file paths are valid" Name="ValidateFilePathsCheckBox" Tag="{x:Static this:ConnectionDialog.ConfirmUncheck}"/>
-                    <CheckBox IsChecked="{Binding IgnoreInvalidFiles}" Content="Ignore files _with invalid format" ToolTip="Ignore files with content which does not resemble CSV"/>
-                    <CheckBox IsChecked="{Binding DoNotLockFiles}" Content="Do not _lock files being read" ToolTip="Allow other processes to modify files being read" Tag="{x:Static this:ConnectionDialog.ConfirmCheck}"/>
-                </StackPanel>
-            </Grid>
-        </GroupBox>
-
-        <StackPanel Grid.Row="1">
-            <GroupBox Header="Format">
+                    </StackPanel>
+                </GroupBox.Header>
                 <Grid Style="{StaticResource GroupGridStyle}">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" SharedSizeGroup="ComboBoxLabel"/>
                         <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
 
-                    <Label Content="_Separator (\t for tab)"
-                           Padding="0"
-                           IsEnabled="{Binding IsChecked, ElementName=UseCsvHelperSeparatorAutoDetectionCheckBox, Converter={StaticResource InvertedBooleanConverter}}"/>
-                    <TextBox Grid.Row="0" Grid.Column="1"
-                             MaxLength="260"
-                             MaxLines="1"
-                             Text="{Binding CsvSeparator}"
-                             ToolTip="Characters used to separate columns in file. Separator is auto-detected for each file if empty"
-                             IsEnabled="{Binding IsChecked, ElementName=UseCsvHelperSeparatorAutoDetectionCheckBox, Converter={StaticResource InvertedBooleanConverter}}"/>
-
-                    <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
-                        <CheckBox Name="UseCsvHelperSeparatorAutoDetectionCheckBox"
-                                  IsChecked="{Binding UseCsvHelperSeparatorAutoDetection}"
-                                  Content="_Use CsvHelper library separator auto-detection"
-                                  ToolTip="Use CsvHelper library separator auto-detection instead of internal one"/>
-                        <CheckBox IsChecked="{Binding IgnoreBadData}" Content="Ignore b_ad data" ToolTip="Ignore malformed files" Tag="{x:Static this:ConnectionDialog.ConfirmCheck}"/>
-                        <!-- ReSharper disable once MarkupAttributeTypo -->
-                        <CheckBox IsChecked="{Binding IgnoreBlankLines}" Content="Ignore blan_k lines" ToolTip="Do not process blank lines"/>
-                    </StackPanel>
-
-                    <!-- ReSharper disable once MarkupAttributeTypo -->
-                    <StackPanel Grid.Row="2" Grid.Column="0" Style="{StaticResource CheckBoxStackPanelStyle}">
-                        <CheckBox
-                              Name="TrimSpacesCheckBox"
-                              IsChecked="{Binding TrimSpaces}"
-                              Content="Tri_m spaces"
-                              ToolTip="Trim spaces"/>
-                    </StackPanel>
-                    <ComboBox Grid.Row="2" Grid.Column="1"
-                              Style="{StaticResource GroupComboBoxStyle}"
-                              ToolTip="Where to trim spaces"
-                              SelectedValue="{Binding WhitespaceTrimOptions}"
-                              ItemsSource="{Binding Source={StaticResource WhitespaceTrimOptionsData}}"
-                              IsEnabled="{Binding IsChecked, ElementName=TrimSpacesCheckBox}"/>
-
-                    <!-- ReSharper disable once MarkupAttributeTypo -->
-                    <StackPanel Grid.Row="3" Grid.Column="0" Style="{StaticResource CheckBoxStackPanelStyle}">
-                        <CheckBox
-                              Name="AllowCommentsCheckBox"
-                              IsChecked="{Binding AllowComments}"
-                              Content="Allow co_mments"
-                              ToolTip="Allow single-line comments"/>
-                    </StackPanel>
-                    <TextBox Grid.Row="3" Grid.Column="1"
-                             Style="{StaticResource GroupTextBoxStyle}"
-                             MaxLength="1"
-                             MaxLines="1"
-                             Text="{Binding CommentChars}"
-                             ToolTip="Character used as a single-line comment. # if empty"
-                             IsEnabled="{Binding IsChecked, ElementName=AllowCommentsCheckBox}"/>
-
-                    <StackPanel Grid.Row="4" Grid.Column="0" Style="{StaticResource CheckBoxStackPanelStyle}">
-                        <CheckBox
-                            Name="HeaderFormatCheckBox"
-                            IsChecked="{Binding AddHeader}"
-                            Content="_Header detection" ToolTip="Detect or add header"/>
-                    </StackPanel>
-                    <Grid Grid.Row="4" Grid.Column="1" IsEnabled="{Binding IsChecked, ElementName=HeaderFormatCheckBox}">
+                    <Grid Grid.ColumnSpan="3">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="56*" MinWidth="20"/>
-                            <ColumnDefinition Width="4"/>
-                            <ColumnDefinition Width="44*" MinWidth="20"/>
-                        </Grid.ColumnDefinitions>
-
-                        <ComboBox
-                            Style="{StaticResource GroupComboBoxStyle}"
-                            ToolTip="Header detection approach"
-                            SelectedValue="{Binding HeaderDetection}"
-                            ItemsSource="{Binding Source={StaticResource HeaderDetectionData}}"/>
-
-                        <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch"/>
-
-                        <ComboBox Grid.Column="2"
-                                  Style="{StaticResource GroupComboBoxStyle}"
-                                  ToolTip="Header column fallback name format"
-                                  SelectedValue="{Binding HeaderFormat}"
-                                  ItemsSource="{Binding Source={StaticResource HeaderFormatData}}"/>
-                    </Grid>
-                </Grid>
-            </GroupBox>
-
-            <GroupBox Header="Memory">
-                <StackPanel Style="{StaticResource GroupStackPanelStyle}">
-                    <CheckBox IsChecked="{Binding IsCacheEnabled}" Content="_Cache data in memory" ToolTip="Cache parsed rows. This cache survives multiple query runs, even when query is changed"/>
-                    <!-- ReSharper disable once MarkupAttributeTypo -->
-                    <CheckBox IsChecked="{Binding IsStringInternEnabled}" Content="I_ntern strings" ToolTip="Intern strings. Significantly reduce memory consumption when CSV contains repeatable values"/>
-                    <CheckBox IsChecked="{Binding UseStringComparerForStringIntern}"
-                              IsEnabled="{Binding IsStringInternEnabled}"
-                              Content="{Binding ElementName=StringComparisonComboBox, Path=SelectedValue}"
-                              ContentStringFormat="Use {0} generation string comparison"
-                              ToolTip="Compare interned strings using generation string comparison"
-                              Style="{StaticResource DependentCheckBoxStyle}"/>
-                </StackPanel>
-            </GroupBox>
-
-            <GroupBox Header="Generation">
-                <StackPanel Style="{StaticResource GroupStackPanelStyle}">
-                    <CheckBox IsChecked="{Binding UseRecordType}" Visibility="{x:Static this:ConnectionDialog.NetCoreOnlyVisibility}" Content="Use record t_ype" ToolTip="Generate records instead of classes"/>
-                    <!-- ReSharper disable once MarkupAttributeTypo -->
-                    <CheckBox IsChecked="{Binding UseSingleClassForSameFiles}" Content="G_enerate single type for similar files" ToolTip="Single type generation allows to join similar files and query over them. Relations support is limited"/>
-                    <CheckBox IsChecked="{Binding ShowSameFilesNonGrouped}"
-                              IsEnabled="{Binding UseSingleClassForSameFiles}"
-                              Content="Also show similar files non-grouped"
-                              ToolTip="Show similar files non-grouped in addition to similar files groups"
-                              Style="{StaticResource DependentCheckBoxStyle}"/>
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" SharedSizeGroup="ComboBoxLabel"/>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
 
+                        <WrapPanel Grid.Column="0" Margin="0 0 0 2" Orientation="Horizontal" HorizontalAlignment="Stretch">
+                            <TextBlock Style="{StaticResource WrappedTextBlock}">
+                                <TextBlock Style="{StaticResource TextBlockHyperlinkContainer}">
+                                    <Hyperlink Style="{StaticResource CommandHyperlink}" Command="{x:Static this:ConnectionDialog.AddFilesCommand}"><Run Style="{StaticResource HyperlinkCommandRun}"/></Hyperlink>
+                                </TextBlock>
+                                <TextBlock Style="{StaticResource TextBlockHyperlinkContainer}">
+                                    <Hyperlink Style="{StaticResource CommandHyperlink}" Command="{x:Static this:ConnectionDialog.AddFoldersCommand}"><Run Style="{StaticResource HyperlinkCommandRun}"/></Hyperlink>
+                                </TextBlock>
+                                <TextBlock Style="{StaticResource TextBlockHyperlinkContainer}">
+                                    <Hyperlink Style="{StaticResource CommandHyperlink}" Command="{x:Static this:ConnectionDialog.AddFoldersWithSubfoldersCommand}"><Run Style="{StaticResource HyperlinkCommandRun}"/></Hyperlink>
+                                </TextBlock>
+                                <TextBlock Style="{StaticResource TextBlockHyperlinkContainer}">
+                                    <Hyperlink Style="{StaticResource CommandHyperlink}" Command="{x:Static this:ConnectionDialog.BrowseCommand}"><Run Style="{StaticResource HyperlinkCommandRun}"/></Hyperlink>
+                                </TextBlock>
+                                <TextBlock Style="{StaticResource TextBlockHyperlinkContainer}">
+                                    <Hyperlink Style="{StaticResource CommandHyperlink}" Command="{x:Static this:ConnectionDialog.ClearCommand}"><Run Style="{StaticResource HyperlinkCommandRun}"/></Hyperlink>
+                                </TextBlock>
+                            </TextBlock>
+                        </WrapPanel>
+
+                        <Grid Grid.Column="1">
+                            <TextBlock Style="{StaticResource TextBlockHyperlinkSingleContainer}">
+                                <Hyperlink Command="{x:Static this:ConnectionDialog.WrapFilesTextCommand}">
+                                    <TextBlock>
+                                        <TextBlock.Style>
+                                            <Style TargetType="{x:Type TextBlock}">
+                                                <Setter Property="Text" Value="{x:Static this:ConnectionDialog.WrapText}"/>
+                                                <Setter Property="ToolTip" Value="{x:Static this:ConnectionDialog.TurnOnWrapText}"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding TextWrapping, ElementName=FilesTextBox}" Value="Wrap">
+                                                        <Setter Property="Text" Value="{x:Static this:ConnectionDialog.UnwrapText}"/>
+                                                        <Setter Property="ToolTip" Value="{x:Static this:ConnectionDialog.TurnOffWrapText}"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                </Hyperlink>
+                            </TextBlock>
+                        </Grid>
+                    </Grid>
+
+                    <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Background="{x:Static SystemColors.WindowBrush}">
+                        <!-- ReSharper disable once Xaml.BindingWithContextNotResolved -->
+                        <TextBox
+                             Name="FilesInstructionsTextBox"
+                             Focusable="False"
+                             IsHitTestVisible="False"
+                             TextWrapping="Wrap"
+                             Foreground="{x:Static SystemColors.GrayTextBrush}"
+                             Visibility="{Binding Text.IsEmpty, ElementName=FilesTextBox, Converter={StaticResource BooleanToVisibilityConverter}}"
+                             AcceptsReturn="{Binding AcceptsReturn, ElementName=FilesTextBox}"
+                             Background="{Binding Background, ElementName=FilesTextBox}"
+                             VerticalAlignment="{Binding VerticalAlignment, ElementName=FilesTextBox}"
+                             HorizontalAlignment="{Binding HorizontalAlignment, ElementName=FilesTextBox}"/>
+
+                        <TextBox
+                            Name="FilesTextBox"
+                            AcceptsReturn="True"
+                            Background="Transparent"
+                            VerticalAlignment="Stretch"
+                            HorizontalAlignment="Stretch"
+                            HorizontalScrollBarVisibility="Auto"
+                            VerticalScrollBarVisibility="Auto"
+                            Text="{Binding Files, UpdateSourceTrigger=PropertyChanged}"
+                            ToolTip="Drag&amp;drop (Ctrl adds files, Alt toggles * and ** masks)"
+                            AllowDrop="True"
+                            PreviewDragEnter="FilesTextBox_DragEnter"
+                            PreviewDragOver="FilesTextBox_DragEnter"
+                            PreviewDrop="FilesTextBox_DragDrop">
+                            <TextBox.InputBindings>
+                                <MouseBinding
+                                    Command="{x:Static this:ConnectionDialog.CtrlLeftClickCommand}"
+                                    Gesture="{x:Static this:ConnectionDialog.CtrlLeftClickCommandMouseGesture}"/>
+                                <KeyBinding
+                                    Command="{x:Static this:ConnectionDialog.PasteFoldersWithSubfoldersCommand}"
+                                    Gesture="{x:Static this:ConnectionDialog.PasteFoldersWithSubfoldersCommandKeyGesture}"/>
+                                <KeyBinding 
+                                    Command="{x:Static this:ConnectionDialog.BrowseCommand}"
+                                    Gesture="{x:Static this:ConnectionDialog.BrowseCommandKeyGesture}"/>
+                                <KeyBinding
+                                    Command="{x:Static this:ConnectionDialog.ClearCommand}"
+                                    Gesture="{x:Static this:ConnectionDialog.ClearCommandKeyGesture}"/>
+                                <KeyBinding
+                                    Command="{x:Static this:ConnectionDialog.WrapFilesTextCommand}"
+                                    Gesture="{x:Static this:ConnectionDialog.WrapFilesTextCommandKeyGesture}"/>
+                                <KeyBinding
+                                    Command="{x:Static this:ConnectionDialog.PasteFromClipboardFoldersAndProceedCommand}"
+                                    Gesture="{x:Static this:ConnectionDialog.PasteFromClipboardFoldersAndProceedCommandKeyGesture}"/>
+                                <KeyBinding
+                                    Command="{x:Static this:ConnectionDialog.PasteFromClipboardFoldersWithSubfoldersAndProceedCommand}"
+                                    Gesture="{x:Static this:ConnectionDialog.PasteFromClipboardFoldersWithSubfoldersAndProceedCommandKeyGesture}"/>
+                            </TextBox.InputBindings>
+                            <TextBox.ContextMenu>
+                                <ContextMenu>
+                                    <!-- TODO: Sync with link bar above. -->
+                                    <!-- ReSharper disable once MarkupAttributeTypo -->
+                                    <MenuItem Style="{StaticResource CommandMenuItem}" Command="{x:Static this:ConnectionDialog.AddFilesCommand}"/>
+                                    <!-- ReSharper disable once MarkupAttributeTypo -->
+                                    <MenuItem Style="{StaticResource CommandMenuItem}" Command="{x:Static this:ConnectionDialog.AddFoldersCommand}"/>
+                                    <!-- ReSharper disable once MarkupAttributeTypo -->
+                                    <MenuItem Style="{StaticResource CommandMenuItem}" Command="{x:Static this:ConnectionDialog.AddFoldersWithSubfoldersCommand}"/>
+                                    <Separator/>
+                                    <MenuItem Style="{StaticResource CommandMenuItem}" Command="{x:Static this:ConnectionDialog.BrowseCommand}"/>
+                                    <Separator/>
+                                    <MenuItem Command="ApplicationCommands.Undo" Header="_Undo"/>
+                                    <MenuItem Command="ApplicationCommands.Redo" Header="_Redo"/>
+                                    <Separator/>
+                                    <MenuItem Command="ApplicationCommands.Cut" Header="Cu_t"/>
+                                    <MenuItem Command="ApplicationCommands.Copy" Header="_Copy"/>
+                                    <MenuItem Command="ApplicationCommands.Paste" Header="_Paste (append * active file type mask to folders)"/>
+                                    <MenuItem Style="{StaticResource CommandMenuItem}" Command="{x:Static this:ConnectionDialog.PasteFoldersWithSubfoldersCommand}"/>
+                                    <MenuItem Style="{StaticResource CommandMenuItem}" Command="{x:Static this:ConnectionDialog.DeleteCommand}"/>
+                                    <Separator/>
+                                    <MenuItem Style="{StaticResource CommandMenuItem}" Command="{x:Static this:ConnectionDialog.SelectAllCommand}"/>
+                                    <!-- ReSharper disable once MarkupAttributeTypo -->
+                                    <MenuItem Style="{StaticResource CommandMenuItem}" Command="{x:Static this:ConnectionDialog.ClearCommand}"/>
+                                    <Separator/>
+                                    <MenuItem Style="{StaticResource CommandMenuItem}" Command="{x:Static this:ConnectionDialog.PasteFromClipboardFoldersAndProceedCommand}"/>
+                                    <MenuItem Style="{StaticResource CommandMenuItem}" Command="{x:Static this:ConnectionDialog.PasteFromClipboardFoldersWithSubfoldersAndProceedCommand}"/>
+                                    <Separator/>
+                                    <MenuItem Command="{x:Static this:ConnectionDialog.WrapFilesTextCommand}" IsCheckable="True">
+                                        <MenuItem.Style>
+                                            <Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource CommandMenuItem}">
+                                                <Setter Property="IsChecked" Value="False"/>
+                                                <Style.Triggers>
+                                                    <!-- ReSharper disable once Xaml.BindingWithContextNotResolved -->
+                                                    <DataTrigger Binding="{Binding PlacementTarget.TextWrapping, RelativeSource={RelativeSource AncestorType=ContextMenu}}" Value="Wrap">
+                                                        <Setter Property="IsChecked" Value="True"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </MenuItem.Style>
+                                    </MenuItem>
+                                </ContextMenu>
+                            </TextBox.ContextMenu>
+                        </TextBox>
+                    </Grid>
+
+                    <!-- ReSharper disable once MarkupAttributeTypo -->
+                    <Label Grid.Row="2" Grid.Column="0" Padding="0 6 4 0" Content="Order f_iles by" Target="{Binding ElementName=FilesOrderByComboBox}"/>
+                    <ComboBox Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2"
+                        Name="FilesOrderByComboBox"
+                        Style="{StaticResource GroupComboBoxStyle}"
+                        ToolTip="Files sort order. Affects similar files order"
+                        SelectedValue="{Binding FilesOrderBy}"
+                        ItemsSource="{Binding Source={StaticResource FilesOrderByData}}"/>
+
+                    <Label Grid.Row="3" Grid.Column="0" Padding="0 5 4 0" Content="Fall_back encoding" Target="{Binding ElementName=NoBomEncodingComboBox}"/>
+                    <ComboBox Grid.Row="3" Grid.Column="1"
+                        Name="NoBomEncodingComboBox"
+                        Style="{StaticResource GroupComboBoxStyle}"
+                        ToolTip="Encoding to use if file encoding could not be detected"
+                        SelectedValue="{Binding NoBomEncoding}"
+                        ItemsSource="{Binding Source={StaticResource NoBomEncodingData}}"/>
+                    <TextBlock Grid.Row="3" Grid.Column="2" Padding="5 5 0 0">
+                        <Hyperlink NavigateUri="https://docs.microsoft.com/en-us/windows/win32/intl/code-page-identifiers" ToolTip="Code Page Identifiers on Microsoft Docs" Style="{StaticResource HelpHyperlink}">
+                            <TextBlock Style="{StaticResource HelpTextBlock}"/>
+                        </Hyperlink>
+                    </TextBlock>
+
+                    <StackPanel Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3" Margin="0 5 0 0" Orientation="Vertical">
                         <!-- ReSharper disable once MarkupAttributeTypo -->
-                        <Label Grid.Column="0" Padding="0 3 4 0" Content="S_tring comparison" Target="{Binding ElementName=StringComparisonComboBox}"/>
-                        <ComboBox Grid.Column="1"
-                                  Name="StringComparisonComboBox"
-                                  Style="{StaticResource EnumComboBoxStyle}"
-                                  ToolTip="String comparison for Equals and GetHashCode methods"
-                                  Margin="0 1 0 0"
-                                  SelectedValue="{Binding Path=StringComparison}"
-                                  ItemsSource="{Binding Source={StaticResource StringComparisonData}}"/>
-                        <TextBlock Grid.Row="0" Grid.Column="2" Padding="5 3 0 0">
-                            <Hyperlink NavigateUri="https://docs.microsoft.com/en-us/dotnet/api/system.stringcomparison#fields" ToolTip="StringComparison on Microsoft Docs" Style="{StaticResource HelpHyperlink}">
-                                <TextBlock Style="{StaticResource HelpTextBlock}"/>
-                            </Hyperlink>
-                        </TextBlock>
-                    </Grid>
-                </StackPanel>
-            </GroupBox>
-
-            <GroupBox Header="Relations">
-                <StackPanel Style="{StaticResource GroupStackPanelStyle}">
-                    <CheckBox IsChecked="{Binding DetectRelations}" Content="Detect _relations" ToolTip="Detect relations between CSV files/tables (based on files and column names)"/>
-                    <CheckBox IsChecked="{Binding HideRelationsFromDump}"
-                              IsEnabled="{Binding DetectRelations}"
-                              Content="Hide relations from Dump()"
-                              ToolTip="LINQPad will not show relations content when Dump()ed. This prevents from loading too many data"
-                              Style="{StaticResource DependentCheckBoxStyle}"/>
-                </StackPanel>
-            </GroupBox>
-
-            <Border Style="{StaticResource FreeBorderStyle}">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="25*"></ColumnDefinition>
-                            <ColumnDefinition Width="24*"></ColumnDefinition>
-                            <ColumnDefinition Width="15*"></ColumnDefinition>
-                        </Grid.ColumnDefinitions>
-                        <StackPanel Style="{StaticResource CheckBoxStackPanelStyle}">
-                            <!-- ReSharper disable once MarkupAttributeTypo -->
-                            <CheckBox IsChecked="{Binding Persist}" Content="Remember this c_onnection" ToolTip="Connection will be available on next run"/>
-                        </StackPanel>
-
-                        <StackPanel Grid.Column="1" Style="{StaticResource CheckBoxStackPanelStyle}">
-                            <CheckBox IsChecked="{Binding IsProduction}" Content="Contains _production data" ToolTip="Files contain production data"/>
-                        </StackPanel>
-
-                        <StackPanel Grid.Column="2" Style="{StaticResource CheckBoxStackPanelStyle}">
-                            <CheckBox IsChecked="{Binding DebugInfo}" Content="_Debug info" ToolTip="Show additional driver debug info"/>
-                        </StackPanel>
-                    </Grid>
-                    <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
-                        <Button Name="OkButton" Content="OK" Margin="1 0 0 0" Style="{StaticResource CloseDialogButtonStyle}" IsDefault="True" Click="OkButton_Click"/>
-                        <Button Content="Cancel" Style="{StaticResource CloseDialogButtonStyle}" IsCancel="True"/>
+                        <CheckBox IsChecked="{Binding AutoDetectEncoding}" Content="Auto-detect file encodin_gs" ToolTip="Try to detect file encodings"/>
+                        <CheckBox IsChecked="{Binding ValidateFilePaths}" Content="_Validate file paths" ToolTip="Check if file paths are valid" Name="ValidateFilePathsCheckBox" Tag="{x:Static this:ConnectionDialog.ConfirmUncheck}"/>
+                        <CheckBox IsChecked="{Binding IgnoreInvalidFiles}" Content="Ignore files _with invalid format" ToolTip="Ignore files with content which does not resemble CSV"/>
+                        <CheckBox IsChecked="{Binding DoNotLockFiles}" Content="Do not _lock files being read" ToolTip="Allow other processes to modify files being read" Tag="{x:Static this:ConnectionDialog.ConfirmCheck}"/>
                     </StackPanel>
                 </Grid>
-            </Border>
-        </StackPanel>
+            </GroupBox>
+
+            <StackPanel Grid.Row="1">
+                <GroupBox Header="Format">
+                    <Grid Style="{StaticResource GroupGridStyle}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="ComboBoxLabel"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <Label Content="_Separator (\t for tab)"
+                               Padding="0"
+                               IsEnabled="{Binding IsChecked, ElementName=UseCsvHelperSeparatorAutoDetectionCheckBox, Converter={StaticResource InvertedBooleanConverter}}"/>
+                        <TextBox Grid.Row="0" Grid.Column="1"
+                                 MaxLength="260"
+                                 MaxLines="1"
+                                 Text="{Binding CsvSeparator}"
+                                 ToolTip="Characters used to separate columns in file. Separator is auto-detected for each file if empty"
+                                 IsEnabled="{Binding IsChecked, ElementName=UseCsvHelperSeparatorAutoDetectionCheckBox, Converter={StaticResource InvertedBooleanConverter}}"/>
+
+                        <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
+                            <CheckBox Name="UseCsvHelperSeparatorAutoDetectionCheckBox"
+                                      IsChecked="{Binding UseCsvHelperSeparatorAutoDetection}"
+                                      Content="_Use CsvHelper library separator auto-detection"
+                                      ToolTip="Use CsvHelper library separator auto-detection instead of internal one"/>
+                            <CheckBox IsChecked="{Binding IgnoreBadData}" Content="Ignore b_ad data" ToolTip="Ignore malformed files" Tag="{x:Static this:ConnectionDialog.ConfirmCheck}"/>
+                            <!-- ReSharper disable once MarkupAttributeTypo -->
+                            <CheckBox IsChecked="{Binding IgnoreBlankLines}" Content="Ignore blan_k lines" ToolTip="Do not process blank lines"/>
+                        </StackPanel>
+
+                        <!-- ReSharper disable once MarkupAttributeTypo -->
+                        <StackPanel Grid.Row="2" Grid.Column="0" Style="{StaticResource CheckBoxStackPanelStyle}">
+                            <CheckBox
+                                  Name="TrimSpacesCheckBox"
+                                  IsChecked="{Binding TrimSpaces}"
+                                  Content="Tri_m spaces"
+                                  ToolTip="Trim spaces"/>
+                        </StackPanel>
+                        <ComboBox Grid.Row="2" Grid.Column="1"
+                                  Style="{StaticResource GroupComboBoxStyle}"
+                                  ToolTip="Where to trim spaces"
+                                  SelectedValue="{Binding WhitespaceTrimOptions}"
+                                  ItemsSource="{Binding Source={StaticResource WhitespaceTrimOptionsData}}"
+                                  IsEnabled="{Binding IsChecked, ElementName=TrimSpacesCheckBox}"/>
+
+                        <!-- ReSharper disable once MarkupAttributeTypo -->
+                        <StackPanel Grid.Row="3" Grid.Column="0" Style="{StaticResource CheckBoxStackPanelStyle}">
+                            <CheckBox
+                                  Name="AllowCommentsCheckBox"
+                                  IsChecked="{Binding AllowComments}"
+                                  Content="Allow co_mments"
+                                  ToolTip="Allow single-line comments"/>
+                        </StackPanel>
+                        <TextBox Grid.Row="3" Grid.Column="1"
+                                 Style="{StaticResource GroupTextBoxStyle}"
+                                 MaxLength="1"
+                                 MaxLines="1"
+                                 Text="{Binding CommentChars}"
+                                 ToolTip="Character used as a single-line comment. # if empty"
+                                 IsEnabled="{Binding IsChecked, ElementName=AllowCommentsCheckBox}"/>
+
+                        <StackPanel Grid.Row="4" Grid.Column="0" Style="{StaticResource CheckBoxStackPanelStyle}">
+                            <CheckBox
+                                Name="HeaderFormatCheckBox"
+                                IsChecked="{Binding AddHeader}"
+                                Content="_Header detection" ToolTip="Detect or add header"/>
+                        </StackPanel>
+                        <Grid Grid.Row="4" Grid.Column="1" IsEnabled="{Binding IsChecked, ElementName=HeaderFormatCheckBox}">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="56*" MinWidth="20"/>
+                                <ColumnDefinition Width="4"/>
+                                <ColumnDefinition Width="44*" MinWidth="20"/>
+                            </Grid.ColumnDefinitions>
+
+                            <ComboBox
+                                Style="{StaticResource GroupComboBoxStyle}"
+                                ToolTip="Header detection approach"
+                                SelectedValue="{Binding HeaderDetection}"
+                                ItemsSource="{Binding Source={StaticResource HeaderDetectionData}}"/>
+
+                            <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch"/>
+
+                            <ComboBox Grid.Column="2"
+                                      Style="{StaticResource GroupComboBoxStyle}"
+                                      ToolTip="Header column fallback name format"
+                                      SelectedValue="{Binding HeaderFormat}"
+                                      ItemsSource="{Binding Source={StaticResource HeaderFormatData}}"/>
+                        </Grid>
+                    </Grid>
+                </GroupBox>
+
+                <GroupBox Header="Memory">
+                    <StackPanel Style="{StaticResource GroupStackPanelStyle}">
+                        <CheckBox IsChecked="{Binding IsCacheEnabled}" Content="_Cache data in memory" ToolTip="Cache parsed rows. This cache survives multiple query runs, even when query is changed"/>
+                        <!-- ReSharper disable once MarkupAttributeTypo -->
+                        <CheckBox IsChecked="{Binding IsStringInternEnabled}" Content="I_ntern strings" ToolTip="Intern strings. Significantly reduce memory consumption when CSV contains repeatable values"/>
+                        <CheckBox IsChecked="{Binding UseStringComparerForStringIntern}"
+                                  IsEnabled="{Binding IsStringInternEnabled}"
+                                  Content="{Binding ElementName=StringComparisonComboBox, Path=SelectedValue}"
+                                  ContentStringFormat="Use {0} generation string comparison"
+                                  ToolTip="Compare interned strings using generation string comparison"
+                                  Style="{StaticResource DependentCheckBoxStyle}"/>
+                    </StackPanel>
+                </GroupBox>
+
+                <GroupBox Header="Generation">
+                    <StackPanel Style="{StaticResource GroupStackPanelStyle}">
+                        <CheckBox IsChecked="{Binding UseRecordType}" Visibility="{x:Static this:ConnectionDialog.NetCoreOnlyVisibility}" Content="Use record t_ype" ToolTip="Generate records instead of classes"/>
+                        <!-- ReSharper disable once MarkupAttributeTypo -->
+                        <CheckBox IsChecked="{Binding UseSingleClassForSameFiles}" Content="G_enerate single type for similar files" ToolTip="Single type generation allows to join similar files and query over them. Relations support is limited"/>
+                        <CheckBox IsChecked="{Binding ShowSameFilesNonGrouped}"
+                                  IsEnabled="{Binding UseSingleClassForSameFiles}"
+                                  Content="Also show similar files non-grouped"
+                                  ToolTip="Show similar files non-grouped in addition to similar files groups"
+                                  Style="{StaticResource DependentCheckBoxStyle}"/>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" SharedSizeGroup="ComboBoxLabel"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- ReSharper disable once MarkupAttributeTypo -->
+                            <Label Grid.Column="0" Padding="0 3 4 0" Content="S_tring comparison" Target="{Binding ElementName=StringComparisonComboBox}"/>
+                            <ComboBox Grid.Column="1"
+                                      Name="StringComparisonComboBox"
+                                      Style="{StaticResource EnumComboBoxStyle}"
+                                      ToolTip="String comparison for Equals and GetHashCode methods"
+                                      Margin="0 1 0 0"
+                                      SelectedValue="{Binding Path=StringComparison}"
+                                      ItemsSource="{Binding Source={StaticResource StringComparisonData}}"/>
+                            <TextBlock Grid.Row="0" Grid.Column="2" Padding="5 3 0 0">
+                                <Hyperlink NavigateUri="https://docs.microsoft.com/en-us/dotnet/api/system.stringcomparison#fields" ToolTip="StringComparison on Microsoft Docs" Style="{StaticResource HelpHyperlink}">
+                                    <TextBlock Style="{StaticResource HelpTextBlock}"/>
+                                </Hyperlink>
+                            </TextBlock>
+                        </Grid>
+                    </StackPanel>
+                </GroupBox>
+
+                <GroupBox Header="Relations">
+                    <StackPanel Style="{StaticResource GroupStackPanelStyle}">
+                        <CheckBox IsChecked="{Binding DetectRelations}" Content="Detect _relations" ToolTip="Detect relations between CSV files/tables (based on files and column names)"/>
+                        <CheckBox IsChecked="{Binding HideRelationsFromDump}"
+                                  IsEnabled="{Binding DetectRelations}"
+                                  Content="Hide relations from Dump()"
+                                  ToolTip="LINQPad will not show relations content when Dump()ed. This prevents from loading too many data"
+                                  Style="{StaticResource DependentCheckBoxStyle}"/>
+                    </StackPanel>
+                </GroupBox>
+            </StackPanel>
+        </Grid>
+
+        <Border Grid.Row="1" Style="{StaticResource FreeBorderStyle}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="25*"></ColumnDefinition>
+                        <ColumnDefinition Width="24*"></ColumnDefinition>
+                        <ColumnDefinition Width="15*"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Style="{StaticResource CheckBoxStackPanelStyle}">
+                        <!-- ReSharper disable once MarkupAttributeTypo -->
+                        <CheckBox IsChecked="{Binding Persist}" Content="Remember this c_onnection" ToolTip="Connection will be available on next run"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="1" Style="{StaticResource CheckBoxStackPanelStyle}">
+                        <CheckBox IsChecked="{Binding IsProduction}" Content="Contains _production data" ToolTip="Files contain production data"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="2" Style="{StaticResource CheckBoxStackPanelStyle}">
+                        <CheckBox IsChecked="{Binding DebugInfo}" Content="_Debug info" ToolTip="Show additional driver debug info"/>
+                    </StackPanel>
+                </Grid>
+                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button Name="OkButton" Content="OK" Margin="1 0 0 0" Style="{StaticResource CloseDialogButtonStyle}" IsDefault="True" Click="OkButton_Click"/>
+                    <Button Content="Cancel" Style="{StaticResource CloseDialogButtonStyle}" IsCancel="True"/>
+                </StackPanel>
+            </Grid>
+        </Border>
     </Grid>
 </Window>

@@ -1,7 +1,7 @@
 ﻿<Project>
   <PropertyGroup>
-    <Version>7.3.6</Version>
-    <PackageReleaseNotes>Added AreRepositoriesEquivalent.</PackageReleaseNotes>
+    <Version>7.3.7</Version>
+    <PackageReleaseNotes>Fixed AreRepositoriesEquivalent.</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup>

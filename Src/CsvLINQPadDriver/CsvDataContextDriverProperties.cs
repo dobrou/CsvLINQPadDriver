@@ -268,7 +268,7 @@ namespace CsvLINQPadDriver
                 yield return IgnoreInvalidFiles == other.IgnoreInvalidFiles;
 
                 yield return UseCsvHelperSeparatorAutoDetection == other.UseCsvHelperSeparatorAutoDetection;
-                if (UseCsvHelperSeparatorAutoDetection && other.UseCsvHelperSeparatorAutoDetection)
+                if (!UseCsvHelperSeparatorAutoDetection && !other.UseCsvHelperSeparatorAutoDetection)
                 {
                     yield return SafeCsvSeparator == other.SafeCsvSeparator;
                 }
