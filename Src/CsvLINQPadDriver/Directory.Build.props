@@ -1,7 +1,7 @@
 ﻿<Project>
   <PropertyGroup>
-    <Version>7.3.7</Version>
-    <PackageReleaseNotes>Fixed AreRepositoriesEquivalent.</PackageReleaseNotes>
+    <Version>7.3.8</Version>
+    <PackageReleaseNotes>Updated dependencies.</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -28,7 +28,7 @@
     <PackageReference Include="Microsoft-WindowsAPICodePack-Core" Version="1.1.4" />
     <PackageReference Include="Microsoft-WindowsAPICodePack-Shell" Version="1.1.4" />
     <PackageReference Include="UnicodeCharsetDetector.Standard" Version="1.1.4" />
-    <PackageReference Include="UTF.Unknown" Version="2.5.0" />
+    <PackageReference Include="UTF.Unknown" Version="2.5.1" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net461' or '$(TargetFramework)' == 'netcoreapp3.1'">
