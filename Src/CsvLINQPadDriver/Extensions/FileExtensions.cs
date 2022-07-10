@@ -209,15 +209,15 @@ namespace CsvLINQPadDriver.Extensions
                 var header = csvParser.Record;
                 var headerFormatFunc = GetHeaderFormatFunc();
 
-                if (!header.IsPresent(addHeader, headerDetection))
+                if (!header!.IsPresent(addHeader, headerDetection))
                 {
                     return
                         addHeader
                             ? Enumerable
-                                .Range(0, header.Length)
+                                .Range(0, header!.Length)
                                 .Select(headerFormatFunc)
                                 .ToArray()
-                            : header;
+                            : header!;
                 }
 
                 var getUniqueFallbackColumnNameFunc = GetUniqueFallbackColumnNameGenerator();
@@ -226,7 +226,7 @@ namespace CsvLINQPadDriver.Extensions
 
                 string[] AdjustColumnNames()
                 {
-                    for (var i = 0; i < header.Length; i++)
+                    for (var i = 0; i < header!.Length; i++)
                     {
                         if (string.IsNullOrWhiteSpace(header[i]))
                         {
@@ -255,7 +255,7 @@ namespace CsvLINQPadDriver.Extensions
                 Func<string> GetUniqueFallbackColumnNameGenerator()
                 {
                     var enumerator = Enumerable.Range(0, int.MaxValue).GetEnumerator();
-                    var lookup = new Lazy<HashSet<string>>(() => new HashSet<string>(header), LazyThreadSafetyMode.None);
+                    var lookup = new Lazy<HashSet<string>>(() => new HashSet<string>(header!), LazyThreadSafetyMode.None);
 
                     return GetUniqueFallbackColumnName;
 
@@ -370,7 +370,7 @@ namespace CsvLINQPadDriver.Extensions
                 var headerRow = csvParser.Record;
 
                 // No columns.
-                if (!headerRow.Any())
+                if (!headerRow!.Any())
                 {
                     $"{header} CSV header had no columns".WriteToLog(debugInfo);
 
@@ -387,7 +387,7 @@ namespace CsvLINQPadDriver.Extensions
                 var dataRow = csvParser.Record;
 
                 // Column count differs.
-                if (headerRow.Length != dataRow.Length)
+                if (headerRow!.Length != dataRow!.Length)
                 {
                     $"{header} CSV header column count does not match data column count".WriteToLog(debugInfo);
 
@@ -527,7 +527,7 @@ namespace CsvLINQPadDriver.Extensions
 
             csvConfiguration.Delimiter    = csvSeparator ?? csvConfiguration.Delimiter;
             csvConfiguration.Comment      = commentChar ?? csvConfiguration.Comment;
-            csvConfiguration.BadDataFound = ignoreBadData ? null : csvConfiguration.BadDataFound;
+            csvConfiguration.BadDataFound = ignoreBadData ? null! : csvConfiguration.BadDataFound;
 
             var whiteSpaceChars = WhiteSpaceChars
                 .Except(csvConfiguration.Delimiter.Length == 1
@@ -641,7 +641,7 @@ namespace CsvLINQPadDriver.Extensions
 
             while (csvParser.Read())
             {
-                yield return csvParser.Record;
+                yield return csvParser.Record!;
             }
         }
 
