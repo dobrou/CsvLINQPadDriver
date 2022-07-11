@@ -198,9 +198,9 @@ CSV files connection can be added to LINQPad 7/6/5 the same way as any other con
 ### Memory ###
 
 * Cache data in memory:
-  * if checked: parsed rows from file are cached in memory. This cache survives multiple query runs, even when query is changed. Cache is cleared as soon as LINQPad clears query data.
-  * if unchecked: disable cache. Multiple enumerations of file content results in multiple reads and parsing of file. Can be significantly slower for complex queries. Significantly reduces memory usage.  Useful when reading very large files.
-* Intern strings: intern strings. Significantly reduce memory consumption when CSV contains repeatable values.
+  * if checked: parsed rows are cached in memory. Cache survives multiple query runs, even when query is changed. Cache is cleared as soon as LINQPad clears query data. **May significantly increase** memory usage.
+  * if unchecked: disable cache. Multiple enumerations of file content results in multiple reads and parsing of file. Can be significantly slower for complex queries. **Significantly reduces** memory usage. Useful when reading very large files.
+* Intern strings: intern strings. **May significantly reduce** memory consumption when CSV contains repeatable values; **may significantly increase** memory usage otherwise.
   * Use [generation](#generation) string comparison: compare interned strings using generation string comparison.
 
 ### Generation ###

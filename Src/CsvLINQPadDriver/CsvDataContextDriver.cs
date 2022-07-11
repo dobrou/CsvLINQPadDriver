@@ -33,7 +33,9 @@ namespace CsvLINQPadDriver
             // ReSharper restore StringLiteralTypo
 
         public override bool AreRepositoriesEquivalent(IConnectionInfo c1, IConnectionInfo c2) =>
-            new CsvDataContextDriverProperties(c1).Equals(new CsvDataContextDriverProperties(c2));
+            CsvDataContextDriverPropertiesEqualityComparer.Default.Equals(
+                new CsvDataContextDriverProperties(c1),
+                new CsvDataContextDriverProperties(c2));
 
         public override string GetConnectionDescription(IConnectionInfo cxInfo)
         {

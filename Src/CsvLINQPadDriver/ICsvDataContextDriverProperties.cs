@@ -8,166 +8,193 @@ namespace CsvLINQPadDriver
 {
     public interface ICsvDataContextDriverProperties
     {
+        /// <summary>
+        /// The data is the production one.
+        /// </summary>
         bool IsProduction { get; set; }
 
+        /// <summary>
+        /// The connection is the persistent one.
+        /// </summary>
         bool Persist { get; set; }
 
         /// <summary>
-        /// Path to directory with CSV files or directly to CSV file.
+        /// The path to the directory with the CSV files or to the CSV file.
         /// </summary>
         string Files { get; set; }
 
         /// <summary>
-        /// Default file type.
+        /// The default file type.
         /// </summary>
         FileType FileType { get; set; }
 
         /// <summary>
-        /// Files order by.
+        /// The files order.
         /// </summary>
         FilesOrderBy FilesOrderBy { get; set; }
 
         /// <summary>
-        /// Files without BOM encoding.
+        /// The encoding for the files without BOM.
         /// </summary>
         NoBomEncoding NoBomEncoding { get; set; }
 
         /// <summary>
-        /// Ignore malformed CSV data.
+        /// Indicates that the malformed CSV data should be ignored.
         /// </summary>
         bool IgnoreBadData { get; set; }
 
         /// <summary>
-        /// Auto-detect encoding.
+        /// Indicates that the encoding should be auto-detected.
         /// </summary>
         bool AutoDetectEncoding { get; set; }
 
         /// <summary>
-        /// Allow CSV comments.
+        /// Indicates that the CSV comments should be processed.
         /// </summary>
         bool AllowComments { get; set; }
 
         /// <summary>
-        /// Single-line comment characters.
+        /// The single-line comment characters.
         /// </summary>
         string CommentChars { get; set; }
 
+        /// <summary>
+        /// The single-line comment character.
+        /// </summary>
         char? CommentChar { get; }
 
+        /// <summary>
+        /// The parsed files.
+        /// </summary>
         IEnumerable<string> ParsedFiles { get; }
 
         /// <summary>
-        /// Default CSV separator. If empty or null, separator will be auto-detected.
+        /// The default CSV separator. If empty or <c>null</c>, the separator will be auto-detected.
         /// </summary>
         string CsvSeparator { get; set; }
 
+        /// <summary>
+        /// The safe CSV separator.
+        /// </summary>
         string? SafeCsvSeparator { get; }
 
         /// <summary>
-        /// Ignore blank lines.
+        /// Indicates that the blank lines should be ignored.
         /// </summary>
         bool IgnoreBlankLines { get; }
 
         /// <summary>
-        /// Add header.
+        /// Indicates that the header should be added.
         /// </summary>
         bool AddHeader { get; }
 
         /// <summary>
-        /// Header detection method.
+        /// The header detection method.
         /// </summary>
         HeaderDetection HeaderDetection { get; }
 
         /// <summary>
-        /// Header format.
+        /// The header format.
         /// </summary>
         HeaderFormat HeaderFormat { get; }
 
         /// <summary>
-        /// Trim spaces.
+        /// Indicates that the spaces should be trimmed.
         /// </summary>
         bool TrimSpaces { get; }
 
         /// <summary>
-        /// How to trim spaces.
+        /// The spaces trimming method.
         /// </summary>
         WhitespaceTrimOptions WhitespaceTrimOptions { get; }
 
         /// <summary>
-        /// Use CsvHelper separator auto detection.
+        /// Indicates that the CsvHelper separator auto detection should be used.
         /// </summary>
         bool UseCsvHelperSeparatorAutoDetection { get; }
 
         /// <summary>
-        /// Create records instead of classes.
+        /// Indicates that the records should be created instead of the classes.
         /// </summary>
         bool UseRecordType { get; set; }
 
         /// <summary>
-        /// If <c>true</c> - generates single class for similar CSV files.
+        /// Indicates that the single class should be generated for the similar CSV files.
         /// </summary>
         bool UseSingleClassForSameFiles { get; set; }
 
         /// <summary>
-        /// If <c>true</c> - shows similar files non-grouped in addition to similar files groups.
+        /// Indicates that the similar files should be shown non-grouped in addition to the similar files groups.
         /// </summary>
         bool ShowSameFilesNonGrouped { get; set; }
 
         /// <summary>
-        /// Generated class methods string comparison.
+        /// The generated class string comparison.
         /// </summary>
         StringComparison StringComparison { get; set; }
 
         /// <summary>
-        /// If <c>true</c> - relations between CSV files/tables will be detected and created. (based on files and column names).
+        /// Indicates that relations based on the files and the column names between the CSV files should be detected and created.
         /// </summary>
         bool DetectRelations { get; set; }
 
         /// <summary>
-        /// If <c>true</c> - LINQPad will not show relations content in .Dump(). This prevents loading too many data.
+        /// Indicates that the LINQPad should not show the relations content in .Dump()
         /// </summary>
+        /// <remarks>
+        /// Prevents from loading too many data.
+        /// </remarks>>
         bool HideRelationsFromDump { get; set; }
 
         /// <summary>
-        /// If <c>true</c> - some additional debug info is accessible.
+        /// Indicates that the debug info should be generated.
         /// </summary>
         bool DebugInfo { get; set; }
 
         /// <summary>
-        /// If <c>true</c> - check if file paths are valid.
+        /// Indicates that the file paths should be validated.
         /// </summary>
         bool ValidateFilePaths { get; set; }
 
         /// <summary>
-        /// Beginning of every file will be scanned and suspicious files with format not similar to CSV will be ignored
+        /// Indicates that the beginning of every file should be scanned and the suspicious files with the format not similar to CSV should be ignored.
         /// </summary>
         bool IgnoreInvalidFiles { get; set; }
 
         /// <summary>
-        /// Allow other processes to modify files being read.
+        /// Indicates that the other processes can modify the files being read.
         /// </summary>
         bool DoNotLockFiles { get; set; }
 
         /// <summary>
-        /// If enabled, all string values are interned. 
-        /// Can significantly reduce memory consumption, when values in CSV are repeated many times. 
-        /// Custom per context interning is used.
+        /// Indicates that all the strings are interned.
         /// </summary>
+        /// <remarks>
+        /// <b>May significantly reduce</b> memory consumption, especially when values in CSV are repeated many times; <b>may significantly increase</b> memory usage otherwise.
+        /// Custom per context interning is used.
+        /// </remarks>>
         bool IsStringInternEnabled { get; set; }
 
         /// <summary>
-        /// Compare interned strings using generation string comparer.
+        /// Indicates that the strings interning uses the generation string comparer.
         /// </summary>
         bool UseStringComparerForStringIntern { get; set; }
 
         /// <summary>
-        /// <c>true</c> - Parsed rows from file are cached.
-        /// This cache survives multiple query runs, even when query is changed.
-        /// Cache is cleared as soon as LINQPad clears Application Domain of query.
-        /// False - disable cache. Multiple enumerations of file content results in multiple reads and parsing of file.
-        /// Can be significantly slower for complex queries.
-        /// Significantly reduces memory usage. Useful when reading very large files.
+        /// Indicates that the parsed rows are cached. 
         /// </summary>
+        /// <remarks>
+        /// <para>
+        /// Cache survives multiple query runs, even when query is changed.
+        /// Cache is cleared as soon as LINQPad clears Application Domain of query.
+        /// <b>May significantly increase</b> memory usage.
+        /// </para>
+        /// <para>
+        /// When disabled multiple enumerations of file content results in multiple reads and parsing of file.
+        /// Can be significantly slower for complex queries.
+        /// <b>Significantly reduces</b> memory usage. Useful when reading very large files.
+        /// </para>
+        /// </remarks>
         bool IsCacheEnabled { get; set; }
     }
 }
