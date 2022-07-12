@@ -18,7 +18,7 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
 
-    # LINQPad 6
+    # LINQPad 7/6
 
     - name: Setup .NET Core 6.0 SDK
       uses: actions/setup-dotnet@v1
