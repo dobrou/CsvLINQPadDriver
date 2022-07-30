@@ -58,12 +58,15 @@ namespace CsvLINQPadDriver
 
         public override bool ShowConnectionDialog(IConnectionInfo cxInfo, ConnectionDialogOptions dialogOptions)
         {
-            if (new ConnectionDialog(new CsvDataContextDriverProperties(cxInfo)).ShowDialog() != true)
+            var csvDataContextDriverProperties = new CsvDataContextDriverProperties(cxInfo);
+            if (new ConnectionDialog(csvDataContextDriverProperties).ShowDialog() != true)
             {
                 return false;
             }
 
-            cxInfo.DisplayName = GetConnectionDescription(cxInfo);
+            cxInfo.Persist      = csvDataContextDriverProperties.Persist;
+            cxInfo.IsProduction = csvDataContextDriverProperties.IsProduction;
+            cxInfo.DisplayName  = GetConnectionDescription(cxInfo);
 
             return true;
         }

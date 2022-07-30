@@ -10,25 +10,21 @@ namespace CsvLINQPadDriver
 {
     public class CsvDataContextDriverProperties : CsvDataContextDriverPropertiesBase
     {
-        private readonly IConnectionInfo _connectionInfo;
         private readonly XElement _driverData;
 
-        public CsvDataContextDriverProperties(IConnectionInfo connectionInfo)
-        {
-            _connectionInfo = connectionInfo;
+        public CsvDataContextDriverProperties(IConnectionInfo connectionInfo) =>
             _driverData = connectionInfo.DriverData;
-        }
 
         public override bool IsProduction
         {
-            get => _connectionInfo.IsProduction;
-            set => _connectionInfo.IsProduction = value;
+            get => GetValue(false);
+            set => SetValue(value);
         }
 
         public override bool Persist
         {
-            get => _connectionInfo.Persist;
-            set => _connectionInfo.Persist = value;
+            get => GetValue(true);
+            set => SetValue(value);
         }
 
         public override string Files
