@@ -114,7 +114,7 @@ public class LPRunTests
 
         // Act: Execute test LNQPad script.
         var (output, error, exitCode) =
-            Runner.Execute(linqScript, TimeSpan.FromMinutes(1));
+            Runner.Execute(linqScript);
 
         // Assert.
         error.Should().BeNullOrWhiteSpace();

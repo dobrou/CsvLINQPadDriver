@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Text;
 
 using static LPRun.Context;
@@ -16,7 +17,14 @@ namespace LPRun
     /// </summary>
     public static class Runner
     {
-        private static readonly TimeSpan DefaultTimeout = TimeSpan.FromSeconds(30);
+        private static readonly string[] IgnoredErrorMessages =
+        {
+            "Downloading package",
+            "Downloading NuGet package",
+            "Restoring package"
+        };
+
+        private static readonly TimeSpan DefaultTimeout = TimeSpan.FromMinutes(1);
 
         /// <summary>
         /// The LINQPad script execution result.
@@ -30,7 +38,7 @@ namespace LPRun
         /// Executes LINQPad script using LPRun with optional timeout specified.
         /// </summary>
         /// <param name="linqFile">The LINQPad script file to execute.</param>
-        /// <param name="waitForExit">The LINQPad script execution timeout. 30 seconds is the default.</param>
+        /// <param name="waitForExit">The LINQPad script execution timeout. 1 minute is the default.</param>
         /// <returns>The LINQPad script execution <see cref="Result"/>.</returns>
         /// <exception cref="LPRunException">Keeps original exception as <see cref="P:System.Exception.InnerException"/>.</exception>
         public static Result Execute(string linqFile, TimeSpan? waitForExit = default)
@@ -88,8 +96,7 @@ namespace LPRun
 
                 void ErrorDataReceivedHandler(object _, DataReceivedEventArgs e)
                 {
-                    if (e.Data?.StartsWith("Downloading NuGet package") == false &&
-                        e.Data?.StartsWith("Restoring package") == false)
+                    if (IgnoredErrorMessages.All(message => e.Data?.StartsWith(message) == false))
                     {
                         error.Append(e.Data);
                     }
