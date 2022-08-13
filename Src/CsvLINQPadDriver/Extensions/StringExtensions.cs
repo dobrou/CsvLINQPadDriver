@@ -10,7 +10,7 @@ namespace CsvLINQPadDriver.Extensions
 {
     public static class StringExtensions
     {
-        private static readonly CultureInfo DefaultCultureInfo = CultureInfo.InvariantCulture;
+        public static readonly CultureInfo DefaultCultureInfo = CultureInfo.InvariantCulture;
 
         public static int? ToInt(this string? str, CultureInfo? cultureInfo = null) =>
             GetValueOrNull(int.TryParse(str, NumberStyles.Integer, SelectCulture(cultureInfo), out var parsedValue), parsedValue);

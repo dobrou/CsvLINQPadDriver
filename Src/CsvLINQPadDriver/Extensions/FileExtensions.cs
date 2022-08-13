@@ -117,6 +117,8 @@ namespace CsvLINQPadDriver.Extensions
             bool addHeader,
             HeaderDetection? headerDetection,
             WhitespaceTrimOptions? whitespaceTrimOptions,
+            bool allowSkipLeadingRows,
+            int skipLeadingRowsCount,
             CsvRowMappingBase<T> csvClassMap)
             where T : ICsvRowBase, new()
         {
@@ -136,7 +138,9 @@ namespace CsvLINQPadDriver.Extensions
                         autoDetectEncoding,
                         ignoreBlankLines,
                         doNotLockFiles,
-                        whitespaceTrimOptions))
+                        whitespaceTrimOptions,
+                        allowSkipLeadingRows,
+                        skipLeadingRowsCount))
                 .Select(GetRecord);
 
             IEnumerable<string[]> SkipHeader(IEnumerable<string[]> rows)
@@ -186,7 +190,9 @@ namespace CsvLINQPadDriver.Extensions
             bool addHeader,
             HeaderDetection headerDetection,
             HeaderFormat headerFormat,
-            WhitespaceTrimOptions? whitespaceTrimOptions)
+            WhitespaceTrimOptions? whitespaceTrimOptions,
+            bool allowSkipLeadingRows,
+            int skipLeadingRowsCount)
         {
             using var csvParser = CreateCsvParser(
                 fileName,
@@ -198,7 +204,9 @@ namespace CsvLINQPadDriver.Extensions
                 autoDetectEncoding,
                 ignoreBlankLines,
                 doNotLockFiles,
-                whitespaceTrimOptions);
+                whitespaceTrimOptions,
+                allowSkipLeadingRows,
+                skipLeadingRowsCount);
 
             return csvParser.Read()
                     ? GetHeader()
@@ -335,7 +343,9 @@ namespace CsvLINQPadDriver.Extensions
             bool ignoreBlankLines,
             bool doNotLockFiles,
             bool debugInfo,
-            WhitespaceTrimOptions whitespaceTrimOptions)
+            WhitespaceTrimOptions whitespaceTrimOptions,
+            bool allowSkipLeadingRows,
+            int skipLeadingRowsCount)
         {
             var header = $"{fileName} is not valid CSV file:";
 
@@ -358,7 +368,9 @@ namespace CsvLINQPadDriver.Extensions
                     autoDetectEncoding,
                     ignoreBlankLines,
                     doNotLockFiles,
-                    whitespaceTrimOptions);
+                    whitespaceTrimOptions,
+                    allowSkipLeadingRows,
+                    skipLeadingRowsCount);
 
                 if (!csvParser.Read())
                 {
@@ -509,7 +521,9 @@ namespace CsvLINQPadDriver.Extensions
             bool autoDetectEncoding,
             bool ignoreBlankLines,
             bool doNotLockFiles,
-            WhitespaceTrimOptions? whitespaceTrimOptions)
+            WhitespaceTrimOptions? whitespaceTrimOptions,
+            bool allowSkipLeadingRows,
+            int skipLeadingRowsCount)
         {
             const int bufferSize = 4096 * 20;
 
@@ -542,7 +556,11 @@ namespace CsvLINQPadDriver.Extensions
 
             var encoding = (autoDetectEncoding ? DetectEncoding(fileName) : null) ?? GetFallbackEncoding(noBomEncoding);
 
-            return new CsvParser(new StreamReader(OpenFile(fileName, doNotLockFiles), encoding, !autoDetectEncoding, bufferSize / sizeof(char)), csvConfiguration);
+            var csvParser = new CsvParser(new StreamReader(OpenFile(fileName, doNotLockFiles), encoding, !autoDetectEncoding, bufferSize / sizeof(char)), csvConfiguration);
+
+            SkipLeadingRows();
+
+            return csvParser;
 
             TrimOptions GetTrimOptions() =>
                 whitespaceTrimOptions switch
@@ -553,6 +571,19 @@ namespace CsvLINQPadDriver.Extensions
                     WhitespaceTrimOptions.InsideQuotes => TrimOptions.InsideQuotes,
                     _                                  => throw new IndexOutOfRangeException($"Unknown {nameof(WhitespaceTrimOptions)} {whitespaceTrimOptions}")
                 };
+
+            void SkipLeadingRows()
+            {
+                if (!allowSkipLeadingRows)
+                {
+                    return;
+                }
+
+                while (skipLeadingRowsCount-- > 0 && csvParser.Read())
+                {
+                    // Skip row.
+                }
+            }
         }
 
         public record DeduceFileOrFolderResult(bool IsFile, string Path);
@@ -625,7 +656,9 @@ namespace CsvLINQPadDriver.Extensions
             bool autoDetectEncoding,
             bool ignoreBlankLines,
             bool doNotLockFiles,
-            WhitespaceTrimOptions? whitespaceTrimOptions)
+            WhitespaceTrimOptions? whitespaceTrimOptions,
+            bool allowSkipLeadingRows,
+            int skipLeadingRowsCount)
         {
             using var csvParser = CreateCsvParser(
                 fileName,
@@ -637,7 +670,9 @@ namespace CsvLINQPadDriver.Extensions
                 autoDetectEncoding,
                 ignoreBlankLines,
                 doNotLockFiles,
-                whitespaceTrimOptions);
+                whitespaceTrimOptions,
+                allowSkipLeadingRows,
+                skipLeadingRowsCount);
 
             while (csvParser.Read())
             {

@@ -60,6 +60,8 @@ namespace CsvLINQPadDriver
         public abstract bool AddHeader { get; set; }
         public abstract HeaderDetection HeaderDetection { get; set; }
         public abstract HeaderFormat HeaderFormat { get; set; }
+        public abstract bool AllowSkipLeadingRows { get; set; }
+        public abstract int SkipLeadingRowsCount { get; set; }
         public abstract bool TrimSpaces { get; set; }
         public abstract WhitespaceTrimOptions WhitespaceTrimOptions { get; set; }
         public abstract bool UseCsvHelperSeparatorAutoDetection { get; set; }

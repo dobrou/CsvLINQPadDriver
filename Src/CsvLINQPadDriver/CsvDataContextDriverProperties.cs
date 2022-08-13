@@ -105,6 +105,24 @@ namespace CsvLINQPadDriver
             set => SetValue(value);
         }
 
+        public override bool AllowSkipLeadingRows
+        {
+            get => GetValue(false);
+            set => SetValue(value);
+        }
+
+        private const int DefaultSkipLeadingRowsCount = 0;
+        private const int MaxSkipLeadingRowsCount     = 999;
+
+        public override int SkipLeadingRowsCount
+        {
+            get => GetValue(DefaultSkipLeadingRowsCount,
+                            static v => v is >= DefaultSkipLeadingRowsCount and <= MaxSkipLeadingRowsCount
+                                            ? v
+                                            : DefaultSkipLeadingRowsCount);
+            set => SetValue(value);
+        }
+
         public override bool TrimSpaces
         {
             get => GetValue(false);
@@ -206,6 +224,9 @@ namespace CsvLINQPadDriver
 
         private bool GetValue(bool defaultValue, [CallerMemberName] string callerMemberName = "") =>
             GetValue(static v => v.ToBool(), defaultValue, callerMemberName)!.Value;
+
+        private int GetValue(int defaultValue, Func<int, int> adjustValueFunc, [CallerMemberName] string callerMemberName = "") =>
+            adjustValueFunc(GetValue(static v => v.ToInt(), defaultValue, callerMemberName)!.Value);
 
         private string? GetValue(string defaultValue, [CallerMemberName] string callerMemberName = "") =>
             GetValue(static v => v, defaultValue, callerMemberName);

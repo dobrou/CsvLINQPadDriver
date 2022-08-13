@@ -156,6 +156,13 @@ namespace CsvLINQPadDriverTest
                             "Comments",
                             $"new {{ ExpectedCount = {(allowComments ? 1 : 2)} }}",
                             GetDefaultCsvDataContextDriverPropertiesObject(defaultStringComparison, allowComments)));
+
+                // Skip leading rows.
+                yield return new (string LinqScriptName, int Count)[] { ("SkipLeadingRows", 3), ("SkipLeadingRowsAll", 100) }
+                    .Select(static skip => new ScriptWithDriverPropertiesTestData(
+                            skip.LinqScriptName,
+                            noContext,
+                            GetDefaultCsvDataContextDriverPropertiesObject(defaultStringComparison, skipLeadingRowsCount: skip.Count)));
             }
 
             IEnumerable<ICsvDataContextDriverProperties> GetCsvDataContextDriverProperties()
@@ -183,7 +190,8 @@ namespace CsvLINQPadDriverTest
             static ICsvDataContextDriverProperties GetDefaultCsvDataContextDriverPropertiesObject(
                 StringComparison stringComparison,
                 bool allowComments = false,
-                bool useStringComparerForStringIntern = false) =>
+                bool useStringComparerForStringIntern = false,
+                int skipLeadingRowsCount = 0) =>
                 Mock.Of<ICsvDataContextDriverProperties>(csvDataContextDriverProperties =>
                     csvDataContextDriverProperties.Files == Files &&
                     csvDataContextDriverProperties.DebugInfo &&
@@ -197,7 +205,9 @@ namespace CsvLINQPadDriverTest
                     csvDataContextDriverProperties.IgnoreInvalidFiles &&
                     csvDataContextDriverProperties.IsCacheEnabled &&
                     csvDataContextDriverProperties.HideRelationsFromDump &&
-                    csvDataContextDriverProperties.Persist);
+                    csvDataContextDriverProperties.Persist &&
+                    csvDataContextDriverProperties.AllowSkipLeadingRows &&
+                    csvDataContextDriverProperties.SkipLeadingRowsCount == skipLeadingRowsCount);
 
             static IEnumerable<StringComparison> GetStringComparisons() =>
                 Enum.GetValues(typeof(StringComparison)).Cast<StringComparison>();

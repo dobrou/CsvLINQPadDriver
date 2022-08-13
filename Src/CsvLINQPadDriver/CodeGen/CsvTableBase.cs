@@ -33,6 +33,8 @@ namespace CsvLINQPadDriver.CodeGen
         private readonly bool _addHeader;
         private readonly HeaderDetection? _headerDetection;
         private readonly WhitespaceTrimOptions? _whitespaceTrimOptions;
+        private readonly bool _allowSkipLeadingRows;
+        private readonly int _skipLeadingRowsCount;
 
         protected readonly string FilePath;
 
@@ -50,6 +52,8 @@ namespace CsvLINQPadDriver.CodeGen
             bool addHeader,
             HeaderDetection? headerDetection,
             WhitespaceTrimOptions? whitespaceTrimOptions,
+            bool allowSkipLeadingRows,
+            int skipLeadingRowsCount,
             string filePath,
             IEnumerable<CsvColumnInfo> propertiesInfo,
             Action<TRow> relationsInit)
@@ -67,6 +71,8 @@ namespace CsvLINQPadDriver.CodeGen
             _addHeader = addHeader;
             _headerDetection = headerDetection;
             _whitespaceTrimOptions = whitespaceTrimOptions;
+            _allowSkipLeadingRows = allowSkipLeadingRows;
+            _skipLeadingRowsCount = skipLeadingRowsCount;
 
             FilePath = filePath;
 
@@ -88,6 +94,8 @@ namespace CsvLINQPadDriver.CodeGen
                 _addHeader,
                 _headerDetection,
                 _whitespaceTrimOptions,
+                _allowSkipLeadingRows,
+                _skipLeadingRowsCount,
                 _cachedCsvRowMappingBase!);
 
         // ReSharper disable once UnusedMember.Global

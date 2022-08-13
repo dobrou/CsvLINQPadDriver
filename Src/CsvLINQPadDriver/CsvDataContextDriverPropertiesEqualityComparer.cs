@@ -34,6 +34,12 @@ namespace CsvLINQPadDriver
                 yield return x.IgnoreBadData    == y.IgnoreBadData;
                 yield return x.IgnoreBlankLines == y.IgnoreBlankLines;
 
+                yield return x.AllowSkipLeadingRows == y.AllowSkipLeadingRows;
+                if (x.AllowSkipLeadingRows && y.AllowSkipLeadingRows)
+                {
+                    yield return x.SkipLeadingRowsCount == y.SkipLeadingRowsCount;
+                }
+
                 yield return x.TrimSpaces == y.TrimSpaces;
                 if (x.TrimSpaces && y.TrimSpaces)
                 {

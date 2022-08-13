@@ -99,6 +99,16 @@ namespace CsvLINQPadDriver
         HeaderFormat HeaderFormat { get; }
 
         /// <summary>
+        /// Indicates that the leading rows should be skipped.
+        /// </summary>
+        bool AllowSkipLeadingRows { get; set; }
+
+        /// <summary>
+        /// The number of leading rows to skip.
+        /// </summary>
+        int SkipLeadingRowsCount { get; set; }
+
+        /// <summary>
         /// Indicates that the spaces should be trimmed.
         /// </summary>
         bool TrimSpaces { get; }

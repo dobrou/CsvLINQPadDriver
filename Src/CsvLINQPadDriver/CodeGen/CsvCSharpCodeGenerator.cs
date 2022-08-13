@@ -91,6 +91,8 @@ namespace CsvLINQPadDriver.CodeGen
                 {ParamName("addHeader")}{GetBoolConst(_properties.AddHeader)},
                 {ParamName("headerDetection")}{GetNullableValue(_properties.AddHeader, () => $"{typeof(HeaderDetection).GetCodeTypeClassName()}.{_properties.HeaderDetection}")},
                 {ParamName("whitespaceTrimOptions")}{GetNullableValue(_properties.TrimSpaces, () => $"{typeof(WhitespaceTrimOptions).GetCodeTypeClassName()}.{_properties.WhitespaceTrimOptions}")},
+                {ParamName("allowSkipLeadingRows")}{GetBoolConst(_properties.AllowSkipLeadingRows)},
+                {ParamName("skipLeadingRowsCount")}{IntToStr(_properties.SkipLeadingRowsCount)},
                 {ParamName("filePath")}{context.Table.FilePath.AsValidCSharpCode()},
                 {ParamName("propertiesInfo")}new {typeof(CsvColumnInfoList).GetCodeTypeClassName()} {{
                     {string.Join(string.Empty, string.Join(@",
@@ -114,6 +116,9 @@ namespace CsvLINQPadDriver.CodeGen
 
             static string GetNullableValue(bool hasValue, Func<string> valueProvider) =>
                 hasValue ? valueProvider() : "null";
+
+            static string IntToStr(int value) =>
+                value.ToString(Extensions.StringExtensions.DefaultCultureInfo);
 
             static string ParamName(string name) =>
                 $"{name}: ";

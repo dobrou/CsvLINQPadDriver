@@ -21,6 +21,8 @@ namespace CsvLINQPadDriver.CodeGen
             bool addHeader,
             HeaderDetection? headerDetection,
             WhitespaceTrimOptions? whitespaceTrimOptions,
+            bool allowSkipLeadingRows,
+            int skipLeadingRowsCount,
             string filePath,
             IEnumerable<CsvColumnInfo> propertiesInfo,
             Action<TRow> relationsInit)
@@ -38,6 +40,8 @@ namespace CsvLINQPadDriver.CodeGen
                 addHeader,
                 headerDetection,
                 whitespaceTrimOptions,
+                allowSkipLeadingRows,
+                skipLeadingRowsCount,
                 filePath,
                 propertiesInfo,
                 relationsInit)

@@ -189,7 +189,8 @@ CSV files connection can be added to LINQPad 7/6/5 the same way as any other con
 * Use [CsvHelper](https://joshclose.github.io/CsvHelper) library separator auto-detection: use CsvHelper library separator auto-detection instead of internal one.
 * Ignore bad data: ignore malformed files.
 * Ignore blank lines: do not process blank lines.
-* Trim spaces: allow trimming spaces around fields and/or inside quotes around fields.
+* Skip leading rows: allow to skip the specified number of leading rows.
+* Trim spaces: allow to trim spaces around fields and/or inside quotes around fields.
 * Allow comments: allow single-line comments - lines starting with `#` (default) will be ignored.
 * Header detection: detect or add header with specific column fallback name format if header could not be detected.
   * Header detection approach: specify whether header is present or not, or how to detect it by symbols it consists of.

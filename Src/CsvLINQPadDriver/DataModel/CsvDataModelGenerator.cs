@@ -86,6 +86,8 @@ namespace CsvLINQPadDriver.DataModel
                     var headerDetection = _csvDataContextDriverProperties.HeaderDetection;
                     var headerFormat = _csvDataContextDriverProperties.HeaderFormat;
                     var whitespaceTrimOptions = _csvDataContextDriverProperties.WhitespaceTrimOptions;
+                    var allowSkipLeadingRows = _csvDataContextDriverProperties.AllowSkipLeadingRows;
+                    var skipLeadingRowsCount = _csvDataContextDriverProperties.SkipLeadingRowsCount;
 
                     if (_csvDataContextDriverProperties.IgnoreInvalidFiles &&
                         !file.IsCsvFormatValid(
@@ -98,7 +100,9 @@ namespace CsvLINQPadDriver.DataModel
                             ignoreBlankLines,
                             doNotLockFiles,
                             debugInfo,
-                            whitespaceTrimOptions))
+                            whitespaceTrimOptions,
+                            allowSkipLeadingRows,
+                            skipLeadingRowsCount))
                     {
                         exceptions.Add(file, "has invalid CSV format");
                         continue;
@@ -128,7 +132,9 @@ namespace CsvLINQPadDriver.DataModel
                                 addHeader,
                                 headerDetection,
                                 headerFormat,
-                                whitespaceTrimOptions)
+                                whitespaceTrimOptions,
+                                allowSkipLeadingRows,
+                                skipLeadingRowsCount)
                             .Select(static (value, index) => (value, index))
                             .Select(static col => new CsvColumn(col.value ?? string.Empty, col.index)
                             {

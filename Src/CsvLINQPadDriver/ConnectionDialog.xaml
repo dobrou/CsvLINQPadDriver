@@ -46,7 +46,8 @@
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
 
         <converters:RemoveHotKeyCharValueConverter x:Key="RemoveHotKeyCharValueConverter"/>
-        <converters:InvertedBooleanConverter x:Key="InvertedBooleanConverter"/>
+        <converters:InvertedBooleanConverter       x:Key="InvertedBooleanConverter"/>
+        <converters:SkipLeadingRowsCountConverter  x:Key="SkipLeadingRowsCountConverter"/>
 
         <Style TargetType="{x:Type CheckBox}">
             <Setter Property="VerticalContentAlignment" Value="Center"/>
@@ -444,6 +445,7 @@
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
 
                         <Label Content="_Separator (\t for tab)"
@@ -466,15 +468,30 @@
                             <CheckBox IsChecked="{Binding IgnoreBlankLines}" Content="Ignore blan_k lines" ToolTip="Do not process blank lines"/>
                         </StackPanel>
 
-                        <!-- ReSharper disable once MarkupAttributeTypo -->
                         <StackPanel Grid.Row="2" Grid.Column="0" Style="{StaticResource CheckBoxStackPanelStyle}">
+                            <CheckBox
+                                Name="AllowSkipLeadingRowsCheckBox"
+                                IsChecked="{Binding AllowSkipLeadingRows}"
+                                Content="S_kip leading rows"
+                                ToolTip="Skip the specified number of leading rows"/>
+                        </StackPanel>
+                        <TextBox Grid.Row="2" Grid.Column="1"
+                                 Style="{StaticResource GroupTextBoxStyle}"
+                                 MaxLength="3"
+                                 MaxLines="1"
+                                 Text="{Binding SkipLeadingRowsCount, Converter={StaticResource SkipLeadingRowsCountConverter}}"
+                                 ToolTip="Number of leading rows to skip. 0 if empty"
+                                 IsEnabled="{Binding IsChecked, ElementName=AllowSkipLeadingRowsCheckBox}"/>
+
+                        <!-- ReSharper disable once MarkupAttributeTypo -->
+                        <StackPanel Grid.Row="3" Grid.Column="0" Style="{StaticResource CheckBoxStackPanelStyle}">
                             <CheckBox
                                   Name="TrimSpacesCheckBox"
                                   IsChecked="{Binding TrimSpaces}"
                                   Content="Tri_m spaces"
                                   ToolTip="Trim spaces"/>
                         </StackPanel>
-                        <ComboBox Grid.Row="2" Grid.Column="1"
+                        <ComboBox Grid.Row="3" Grid.Column="1"
                                   Style="{StaticResource GroupComboBoxStyle}"
                                   ToolTip="Where to trim spaces"
                                   SelectedValue="{Binding WhitespaceTrimOptions}"
@@ -482,14 +499,14 @@
                                   IsEnabled="{Binding IsChecked, ElementName=TrimSpacesCheckBox}"/>
 
                         <!-- ReSharper disable once MarkupAttributeTypo -->
-                        <StackPanel Grid.Row="3" Grid.Column="0" Style="{StaticResource CheckBoxStackPanelStyle}">
+                        <StackPanel Grid.Row="4" Grid.Column="0" Style="{StaticResource CheckBoxStackPanelStyle}">
                             <CheckBox
                                   Name="AllowCommentsCheckBox"
                                   IsChecked="{Binding AllowComments}"
                                   Content="Allow co_mments"
                                   ToolTip="Allow single-line comments"/>
                         </StackPanel>
-                        <TextBox Grid.Row="3" Grid.Column="1"
+                        <TextBox Grid.Row="4" Grid.Column="1"
                                  Style="{StaticResource GroupTextBoxStyle}"
                                  MaxLength="1"
                                  MaxLines="1"
@@ -497,13 +514,13 @@
                                  ToolTip="Character used as a single-line comment. # if empty"
                                  IsEnabled="{Binding IsChecked, ElementName=AllowCommentsCheckBox}"/>
 
-                        <StackPanel Grid.Row="4" Grid.Column="0" Style="{StaticResource CheckBoxStackPanelStyle}">
+                        <StackPanel Grid.Row="5" Grid.Column="0" Style="{StaticResource CheckBoxStackPanelStyle}">
                             <CheckBox
                                 Name="HeaderFormatCheckBox"
                                 IsChecked="{Binding AddHeader}"
                                 Content="_Header detection" ToolTip="Detect or add header"/>
                         </StackPanel>
-                        <Grid Grid.Row="4" Grid.Column="1" IsEnabled="{Binding IsChecked, ElementName=HeaderFormatCheckBox}">
+                        <Grid Grid.Row="5" Grid.Column="1" IsEnabled="{Binding IsChecked, ElementName=HeaderFormatCheckBox}">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="56*" MinWidth="20"/>
                                 <ColumnDefinition Width="4"/>

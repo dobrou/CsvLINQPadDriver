@@ -1,7 +1,7 @@
 ﻿<Project>
   <PropertyGroup>
     <Version>7.3.9</Version>
-    <PackageReleaseNotes>CsvHelper 28.0.1</PackageReleaseNotes>
+    <PackageReleaseNotes>Allow to skip leading rows.</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup>
