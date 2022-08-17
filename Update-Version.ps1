@@ -15,8 +15,8 @@ Gets project version from Directory.Build.props and updates it for dependent fil
 [CmdletBinding()]
 param()
 
-#Requires -Version 7
-Set-StrictMode -Version Latest
+#requires -Version 7
+Set-StrictMode -Version 3
 
 $ErrorActionPreference = 'Stop'
 $Verbose = $VerbosePreference -ne 'SilentlyContinue'
