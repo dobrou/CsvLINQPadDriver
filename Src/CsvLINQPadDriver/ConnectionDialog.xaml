@@ -9,7 +9,7 @@
     Icon="Connection.ico"
     Background="{x:Static SystemColors.ControlBrush}"
     Width="660"
-    Height="790"
+    Height="800"
     WindowStartupLocation="CenterScreen"
     ShowInTaskbar="True"
     SnapsToDevicePixels="True"
