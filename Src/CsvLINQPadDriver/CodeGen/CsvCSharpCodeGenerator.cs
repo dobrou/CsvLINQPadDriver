@@ -247,7 +247,7 @@ namespace CsvLINQPadDriver.CodeGen
             if(obj == null) return false;
             if(ReferenceEquals(this, obj)) return true;
             return  {string.Join($" &&{Environment.NewLine}{GetIndent(20)}",
-                properties.Select(property => $"{GetStringComparer(stringComparison)}.Equals({property}, obj.{property})"))};
+                properties.Select(GetStringEquals))};
         }}
 
         public override int GetHashCode()
@@ -258,6 +258,13 @@ namespace CsvLINQPadDriver.CodeGen
 
             return hashCode.ToHashCode();
         }}";
+
+            string GetStringEquals(string property) =>
+#if NETCOREAPP
+                $"{GetStringComparer(stringComparison)}.Equals({property}, obj.{property})";
+#else
+                $"string.Equals({property}, obj.{property}, {nameof(System)}.{nameof(StringComparison)}.{stringComparison})";
+#endif
         }
 
         private static string GetClassName(CsvTable table) =>
