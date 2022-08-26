@@ -1,6 +1,6 @@
 ﻿<Project>
   <PropertyGroup>
-    <Version>7.4.9.1</Version>
+    <Version>7.5.1</Version>
     <PackageReleaseNotes>LPRun $(Version)</PackageReleaseNotes>
   </PropertyGroup>
 </Project>
