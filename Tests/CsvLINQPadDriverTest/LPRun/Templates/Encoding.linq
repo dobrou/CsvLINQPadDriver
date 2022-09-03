@@ -1,16 +1,8 @@
-﻿var properties = new []
-{
-	"encoding", "кодировка", "الترميز", "编码", "コーディング"
-};
+﻿var data = context.SelectMany(_ => _).ToList();
 
-var data = new []
-{
-	Utf16BomCp1200_Encoding,
-	Utf16BomCp1201_Encoding,
-	Utf8BomCp65001_Encoding,
-	Utf8Cp65001_Encoding,
-	Utf32Bom_Encoding
-}.SelectMany(_ => _).ToList();
+var properties = data.First().GetType().GetProperties()
+	.Where(property => property.Name != "Item")
+	.Select(property => property.Name);
 
 data.Should().HaveCount(5, Reason());
 data.Distinct().Should().HaveCount(1, Reason());

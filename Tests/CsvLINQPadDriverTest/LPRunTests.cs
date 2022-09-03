@@ -24,34 +24,40 @@ namespace CsvLINQPadDriverTest
     {
         private static readonly string Files = Context.GetDataFullPath("**.csv");
 
+        private record FileEncoding(string FileName, Encoding Encoding);
+
         [OneTimeSetUp]
         public void Init()
         {
             const string driverFileName = "CsvLINQPadDriver";
 
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+
             Driver.InstallWithDepsJson(driverFileName, $"{driverFileName}.dll", "Tests");
 
-            CreateEncodingFiles();
+            CreateFileEncodings(@"Encoding\Utf8Cp65001",   Encoding.Default);
+            CreateFileEncodings(@"Encoding\German\Cp1252", Encoding.GetEncoding("Windows-1252"));
 
-            static void CreateEncodingFiles()
+            static void CreateFileEncodings(string baseFile, Encoding encoding)
             {
-                var contents = File.ReadAllText(GetFilePath("Utf8Cp65001"), Encoding.Default);
+                var directory = Path.GetDirectoryName(baseFile);
+                var content = File.ReadAllText(GetFilePath(baseFile), encoding);
 
-                Array.ForEach(GetEncodings().ToArray(), WriteFiles);
+                Array.ForEach(GetFileEncodings().ToArray(), WriteFiles);
 
-                void WriteFiles((string FileName, Encoding Encoding) fileEncoding) =>
-                    File.WriteAllText(GetFilePath(fileEncoding.FileName), contents, fileEncoding.Encoding);
-
-                static IEnumerable<(string FileName, Encoding Encoding)> GetEncodings()
+                static IEnumerable<FileEncoding> GetFileEncodings()
                 {
-                    yield return ("Utf16BomCp1200", Encoding.Unicode);
-                    yield return ("Utf16BomCp1201", Encoding.BigEndianUnicode);
-                    yield return ("Utf8BomCp65001", Encoding.UTF8);
-                    yield return ("Utf32Bom",       Encoding.UTF32);
+                    yield return new("Utf16BomCp1200", Encoding.Unicode);
+                    yield return new("Utf16BomCp1201", Encoding.BigEndianUnicode);
+                    yield return new("Utf8BomCp65001", Encoding.UTF8);
+                    yield return new("Utf32Bom",       Encoding.UTF32);
                 }
 
-                static string GetFilePath(string fileName) =>
-                    Context.GetDataFullPath(Path.Combine("Encoding", $"{fileName}.csv"));
+                void WriteFiles(FileEncoding fileEncoding) =>
+                    File.WriteAllText(GetFilePath(fileEncoding.FileName), content, fileEncoding.Encoding);
+
+                string GetFilePath(string fileName) =>
+                    Context.GetDataFullPath(Path.Combine(directory!, $"{Path.GetFileName(fileName)}.csv"));
             }
         }
 
@@ -137,11 +143,19 @@ namespace CsvLINQPadDriverTest
 
                 // String comparison.
                 yield return GetStringComparisons()
-                    .SelectMany(static stringComparison => new[] { "StringComparison", "Encoding" }
+                    .SelectMany(static stringComparison => new[] { "StringComparison" }
                         .Select(linqFile => new ScriptWithDriverPropertiesTestData(
                             linqFile,
                             GetStringComparisonContext(stringComparison),
                             GetDefaultCsvDataContextDriverPropertiesObject(stringComparison))));
+
+                // Encoding detection.
+                yield return GetFileEncodings()
+                    .SelectMany(static fileEncodings => new[] { "Encoding" }
+                        .Select(linqFile => new ScriptWithDriverPropertiesTestData(
+                            linqFile,
+                            GetEncodingContext(fileEncodings),
+                            GetDefaultCsvDataContextDriverPropertiesObject(defaultStringComparison))));
 
                 // String comparison for interning.
                 yield return GetStringComparisons()
@@ -175,6 +189,7 @@ namespace CsvLINQPadDriverTest
                 static ICsvDataContextDriverProperties GetCsvDataContextDriverPropertiesWithUseRecordType(bool useRecordType) =>
                     Mock.Of<ICsvDataContextDriverProperties>(csvDataContextDriverProperties =>
                         csvDataContextDriverProperties.Files == Files &&
+                        csvDataContextDriverProperties.AutoDetectEncoding &&
                         csvDataContextDriverProperties.DebugInfo &&
                         csvDataContextDriverProperties.DetectRelations &&
                         csvDataContextDriverProperties.UseRecordType == useRecordType &&
@@ -194,6 +209,7 @@ namespace CsvLINQPadDriverTest
                 int skipLeadingRowsCount = 0) =>
                 Mock.Of<ICsvDataContextDriverProperties>(csvDataContextDriverProperties =>
                     csvDataContextDriverProperties.Files == Files &&
+                    csvDataContextDriverProperties.AutoDetectEncoding &&
                     csvDataContextDriverProperties.DebugInfo &&
                     csvDataContextDriverProperties.DetectRelations &&
                     csvDataContextDriverProperties.UseRecordType &&
@@ -214,6 +230,38 @@ namespace CsvLINQPadDriverTest
 
             static string GetStringComparisonContext(StringComparison stringComparison) =>
                 $"new {{ StringComparison = StringComparison.{stringComparison} }}";
+
+            static string GetEncodingContext(IEnumerable<string> objects)
+            {
+                return $@"new[]
+{{
+{string.Join($",{Environment.NewLine}", objects.Select(static obj => $"\t{obj}"))}
+}}";
+            }
+
+            static IEnumerable<IEnumerable<string>> GetFileEncodings()
+            {
+                yield return GetBomFiles();
+                yield return GetEncodingDetectionFiles();
+
+                static IEnumerable<string> GetBomFiles()
+                {
+                    yield return "Utf8Cp65001_Encoding";
+                    yield return "Utf16BomCp1200_Encoding";
+                    yield return "Utf16BomCp1201_Encoding";
+                    yield return "Utf8BomCp65001_Encoding";
+                    yield return "Utf32Bom_Encoding";
+                }
+
+                static IEnumerable<string> GetEncodingDetectionFiles()
+                {
+                    yield return "Cp1252_Encoding_German";
+                    yield return "Utf16BomCp1200_Encoding_German";
+                    yield return "Utf16BomCp1201_Encoding_German";
+                    yield return "Utf8BomCp65001_Encoding_German";
+                    yield return "Utf32Bom_Encoding_German";
+                }
+            }
         }
     }
 }

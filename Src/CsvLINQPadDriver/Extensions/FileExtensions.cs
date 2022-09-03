@@ -554,9 +554,13 @@ namespace CsvLINQPadDriver.Extensions
                 csvConfiguration.WhiteSpaceChars = whiteSpaceChars;
             }
 
-            var encoding = (autoDetectEncoding ? DetectEncoding(fileName) : null) ?? GetFallbackEncoding(noBomEncoding);
+            var stream = OpenFile(fileName, doNotLockFiles);
 
-            var csvParser = new CsvParser(new StreamReader(OpenFile(fileName, doNotLockFiles), encoding, !autoDetectEncoding, bufferSize / sizeof(char)), csvConfiguration);
+            var encoding = (autoDetectEncoding ? DetectEncoding(stream) : null) ?? GetFallbackEncoding(noBomEncoding);
+
+            stream.Position = 0;
+
+            var csvParser = new CsvParser(new StreamReader(stream, encoding, !autoDetectEncoding, bufferSize / sizeof(char)), csvConfiguration);
 
             SkipLeadingRows();
 
@@ -743,38 +747,62 @@ namespace CsvLINQPadDriver.Extensions
             }
         }
 
-        private static Encoding? DetectEncoding(string fileName)
+        private static Encoding? DetectEncoding(Stream fileStream)
         {
             try
             {
-                Charset charset;
-
-                using (var stream = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
-                {
-                    charset = UnicodeCharsetDetector.Check(stream);
-                }
-
-                return DetectAsciiEncoding() ?? charset.ToEncoding();
-
-                Encoding? DetectAsciiEncoding()
-                {
-                    try
-                    {
-                        return charset switch
-                        {
-                            Charset.None or Charset.Ansi or Charset.Ascii => UtfUnknown.CharsetDetector.DetectFromFile(fileName).Detected?.Encoding,
-                            _                                             => null
-                        };
-                    }
-                    catch
-                    {
-                        return null;
-                    }
-                }
+                return DetectEncodingInternal();
             }
             catch
             {
                 return null;
+            }
+
+            Encoding? DetectEncodingInternal()
+            {
+                var stream = GetStream();
+
+                if (stream is null)
+                {
+                    return null;
+                }
+
+                using (stream)
+                {
+                    var charset = UnicodeCharsetDetector.Check(stream);
+
+                    stream.Position = 0;
+
+                    return DetectAsciiEncoding() ?? charset.ToEncoding();
+
+                    Encoding? DetectAsciiEncoding()
+                    {
+                        try
+                        {
+                            return charset switch
+                            {
+                                Charset.None  or
+                                Charset.Ansi  or
+                                Charset.Ascii => UtfUnknown.CharsetDetector.DetectFromStream(stream).Detected?.Encoding,
+                                _ => null
+                            };
+                        }
+                        catch
+                        {
+                            return null;
+                        }
+                    }
+                }
+
+                Stream? GetStream()
+                {
+                    var buffer = new byte[4096];
+                    var bufferSize = fileStream.Read(buffer, 0, buffer.Length);
+
+                    return bufferSize > 0
+                        ? new MemoryStream(buffer, 0, bufferSize, false)
+                        : null;
+                }
             }
         }
 

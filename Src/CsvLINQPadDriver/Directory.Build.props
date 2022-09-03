@@ -1,7 +1,7 @@
 ﻿<Project>
   <PropertyGroup>
     <Version>7.3.10</Version>
-    <PackageReleaseNotes>Fix string comparison for .NET Framework.</PackageReleaseNotes>
+    <PackageReleaseNotes>Improved encoding detection.</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup>
