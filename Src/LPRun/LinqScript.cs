@@ -6,7 +6,7 @@ using static LPRun.Context;
 using static LPRun.LPRunException;
 
 // ReSharper disable UnusedType.Global
-// ReSharper disable once UnusedMember.Global
+// ReSharper disable UnusedMember.Global
 
 namespace LPRun
 {
@@ -20,6 +20,7 @@ namespace LPRun
         /// </summary>
         /// <param name="file">The LINQPad script file which content will be appended to <paramref name="connection"/> header.</param>
         /// <param name="connection">The LINQPad script connection header created by call to <see cref="ConnectionHeader"/>.<see cref="ConnectionHeader.Get{T}"/> method.</param>
+        /// <param name="scriptFileName">The expected script file name without extension. <paramref name="file"/> by default.</param>
         /// <returns>The path to LINQPad script file created by combining the script <paramref name="file"/> content and the <paramref name="connection"/> header.</returns>
         /// <exception cref="LPRunException">Keeps original exception as <see cref="P:System.Exception.InnerException"/>.</exception>
         /// <example>
@@ -34,7 +35,7 @@ namespace LPRun
         /// </code>
         /// </example>
         /// <seealso cref="ConnectionHeader.Get{T}"/>
-        public static string Create(string file, string connection)
+        public static string Create(string file, string connection, string? scriptFileName = null)
         {
             return Wrap(Execute);
 
@@ -44,7 +45,7 @@ namespace LPRun
 
                 file = GetTemplatesFullPath(file);
 
-                var outFile = GetFilesFullPath(GetFileName(file));
+                var outFile = GetFilesFullPath(GetFileName(scriptFileName is not null ? $"{scriptFileName}{GetExtension(file)}" : file));
 
                 using var textWriter = CreateText(outFile);
 

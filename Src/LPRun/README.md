@@ -110,7 +110,9 @@ public class LPRunTests
         }).ToString();
 
         // Arrange: Create test LNQPad script.
-        var linqScript = LinqScript.Create($"{linqScriptName}.linq", queryConfig);
+        var linqScript = LinqScript.Create(
+            $"{linqScriptName}.linq",
+            queryConfig);
 
         // Act: Execute test LNQPad script.
         var (output, error, exitCode) =
@@ -150,6 +152,53 @@ public class LPRunTests
     {
         // Omitted for brevity.
     }
+}
+```
+
+Tests can also be run in parallel:
+
+```csharp
+[TestFixture]
+public class LPRunTests
+{
+    [Test]
+    [Parallelizable(ParallelScope.Children)]
+    [TestCaseSource(nameof(ParallelizableTestsData))]
+    public void Execute_ScriptWithDriverProperties_Success(
+        (string linqScriptName,
+         string? context,
+         ICsvDataContextDriverProperties driverProperties,
+         int index) testData)
+    {
+        // ...
+
+        // Arrange: Create test LNQPad script.
+        var linqScript = LinqScript.Create(
+            $"{linqScriptName}.linq",
+            queryConfig,
+            $"{linqScriptName}_{testData.index}");
+
+        // ...
+    }
+
+    private static IEnumerable<
+        (string linqScriptName,
+         string? context,
+         ICsvDataContextDriverProperties driverProperties,
+         int index)> TestsData()
+    {
+        // Omitted for brevity.
+    }
+
+    // Parallelized tests data.
+    private static IEnumerable<
+        (string linqScriptName,
+         string? context,
+         ICsvDataContextDriverProperties driverProperties,
+         int index)> ParallelizableTestsData() =>
+        TestsData().AugmentWithFileIndex(
+            static testData => testData.linqScriptName,
+            static (testData, index) => { testData.index = index; return testData; });
 }
 ```
 

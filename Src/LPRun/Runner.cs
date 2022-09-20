@@ -8,7 +8,6 @@ using static LPRun.LPRunException;
 
 // ReSharper disable UnusedType.Global
 // ReSharper disable UnusedMember.Global
-// ReSharper disable NotAccessedPositionalProperty.Global
 
 namespace LPRun
 {

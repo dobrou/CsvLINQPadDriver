@@ -7,8 +7,7 @@ using static System.IO.Path;
 using static LPRun.FrameworkInfo;
 using static LPRun.LPRunException;
 
-// ReSharper disable once MemberCanBePrivate.Global
-// ReSharper disable once UnusedMember.Global
+// ReSharper disable UnusedMember.Global
 
 namespace LPRun
 {

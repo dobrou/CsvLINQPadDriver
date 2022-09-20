@@ -8,7 +8,7 @@ using System.Security;
 using static LPRun.LPRunException;
 
 // ReSharper disable UnusedType.Global
-// ReSharper disable once UnusedMember.Global
+// ReSharper disable UnusedMember.Global
 
 namespace LPRun
 {

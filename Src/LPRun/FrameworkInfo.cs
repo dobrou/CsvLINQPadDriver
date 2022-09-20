@@ -5,7 +5,6 @@ using static System.Runtime.InteropServices.RuntimeInformation;
 
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable UnusedAutoPropertyAccessor.Global
-// ReSharper disable UnusedMember.Global
 
 namespace LPRun
 {

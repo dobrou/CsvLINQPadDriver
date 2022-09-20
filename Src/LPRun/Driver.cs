@@ -10,7 +10,8 @@ using static LPRun.Context;
 using static LPRun.LPRunException;
 
 // ReSharper disable UnusedType.Global
-// ReSharper disable once UnusedMember.Global
+// ReSharper disable UnusedMember.Global
+// ReSharper disable MemberCanBePrivate.Global
 
 namespace LPRun
 {

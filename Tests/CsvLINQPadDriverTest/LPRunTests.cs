@@ -61,10 +61,14 @@ namespace CsvLINQPadDriverTest
             }
         }
 
-        public record ScriptWithDriverPropertiesTestData(string LinqScriptName, string? Context, ICsvDataContextDriverProperties DriverProperties, params string?[] Defines);
+        public record ScriptWithDriverPropertiesTestData(string LinqScriptName, string? Context, ICsvDataContextDriverProperties DriverProperties, params string?[] Defines)
+        {
+            public int Index { get; init; }
+        }
 
         [Test]
-        [TestCaseSource(nameof(ScriptWithDriverPropertiesTestDataTestsData))]
+        [Parallelizable(ParallelScope.Children)]
+        [TestCaseSource(nameof(ParallelizableScriptWithDriverPropertiesTestDataTestsData))]
         public void Execute_ScriptWithDriverProperties_Success(ScriptWithDriverPropertiesTestData testData)
         {
             var (linqScriptName, context, driverProperties, defines) = testData;
@@ -80,7 +84,7 @@ namespace CsvLINQPadDriverTest
                 return stringBuilder;
             }).ToString();
 
-            var linqScript = LinqScript.Create($"{linqScriptName}.linq", queryConfig);
+            var linqScript = LinqScript.Create($"{linqScriptName}.linq", queryConfig, $"{linqScriptName}_{testData.Index}");
 
             Console.Write($"{linqScript}{Environment.NewLine}{Environment.NewLine}{queryConfig}");
 
@@ -108,6 +112,11 @@ namespace CsvLINQPadDriverTest
             static bool ShouldRender(string? str) =>
                 !string.IsNullOrWhiteSpace(str);
         }
+
+        private static IEnumerable<ScriptWithDriverPropertiesTestData> ParallelizableScriptWithDriverPropertiesTestDataTestsData() =>
+            ScriptWithDriverPropertiesTestDataTestsData().AugmentWithFileIndex(
+                static testData => testData.LinqScriptName,
+                static (testData, index) => testData with { Index = index });
 
         private static IEnumerable<ScriptWithDriverPropertiesTestData> ScriptWithDriverPropertiesTestDataTestsData()
         {
