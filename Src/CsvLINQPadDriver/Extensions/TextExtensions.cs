@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 
 using Humanizer;
 
 namespace CsvLINQPadDriver.Extensions
 {
-    internal static class TextExtensions
+    internal static partial class TextExtensions
     {
         public static string JoinNewLine(this string? first, params string?[] other) =>
             JoinNewLine(new[] { first }.Concat(other));
@@ -21,7 +20,7 @@ namespace CsvLINQPadDriver.Extensions
                 : what;
 
         public static string AppendDot(this string str) =>
-            Regex.IsMatch(str, @"\p{P}\s*$")
+            AppendDotRegex().IsMatch(str)
                 ? str
                 : str + ".";
 

@@ -1,0 +1,7 @@
+﻿<Project>
+  <ItemGroup>
+    <Compile Update="**\.Regex.cs">
+      <DependentUpon>%(Filename).Replace('.Regex.', '.'))</DependentUpon>
+    </Compile>
+  </ItemGroup>
+</Project>

@@ -26,7 +26,7 @@ using CsvLINQPadDriver.Bcl.Extensions;
 
 namespace CsvLINQPadDriver.Extensions
 {
-    internal static class FileExtensions
+    internal static partial class FileExtensions
     {
         public const string InlineComment = "#";
 
@@ -459,7 +459,7 @@ namespace CsvLINQPadDriver.Extensions
             GetHumanizedFileSize(files.Sum(fileName => GetFileSize(fileName, debugInfo)));
 
         public static IEnumerable<string> GetFiles(this string paths) =>
-            Regex.Split(paths, @"[\r\n]+").GetFiles();
+            GetFilesRegex().Split(paths).GetFiles();
 
         private static IEnumerable<string> GetFiles(this IEnumerable<string> paths) =>
             paths
@@ -593,9 +593,9 @@ namespace CsvLINQPadDriver.Extensions
         public record DeduceFileOrFolderResult(bool IsFile, string Path);
 
         public static DeduceFileOrFolderResult DeduceIsFileOrFolder(this string path, bool removeMask = false) =>
-            Regex.IsMatch(path, @"[\\/]$")
+            MatchDeduceIsFileOrFolderRegex().IsMatch(path)
                 ? new DeduceFileOrFolderResult(false, path)
-                : Regex.IsMatch(Path.GetFileName(path), @"[?*]")
+                : DeduceIsFileOrFolderRegex().IsMatch(Path.GetFileName(path))
                     ? new DeduceFileOrFolderResult(true, removeMask ? Path.GetDirectoryName(path) ?? path : path)
                     : new DeduceFileOrFolderResult(SupportedFileExtensions.Contains(Path.GetExtension(path)), path);
 
@@ -689,19 +689,19 @@ namespace CsvLINQPadDriver.Extensions
             return
                 addHeader &&
                 TryGetHeaderDetectionRegex(headerDetection, out var headerDetectionRegex) &&
-                header.All(columnHeader => string.IsNullOrWhiteSpace(columnHeader) || Regex.IsMatch(columnHeader, headerDetectionRegex, RegexOptions.ExplicitCapture));
+                header.All(columnHeader => string.IsNullOrWhiteSpace(columnHeader) || headerDetectionRegex.IsMatch(columnHeader));
 
-            static bool TryGetHeaderDetectionRegex(HeaderDetection headerDetection, [NotNullWhen(true)] out string? headerDetectionRegex) =>
+            static bool TryGetHeaderDetectionRegex(HeaderDetection headerDetection, [NotNullWhen(true)] out Regex? headerDetectionRegex) =>
                 (headerDetectionRegex = headerDetection switch
                 {
                     HeaderDetection.NoHeader                       => null,
-                    HeaderDetection.HasHeader                      => @".",
-                    HeaderDetection.AllLettersNumbersPunctuation   => @"^\p{L}\p{M}*(\p{L}\p{M}*|[0-9_\-. ])*$",
-                    HeaderDetection.AllLettersNumbers              => @"^\p{L}\p{M}*(\p{L}\p{M}*|[0-9])*$",
-                    HeaderDetection.AllLetters                     => @"^(\p{L}\p{M}*)+$",
-                    HeaderDetection.LatinLettersNumbersPunctuation => @"^[a-zA-Z][a-zA-Z0-9_\-. ]*$",
-                    HeaderDetection.LatinLettersNumbers            => @"^[a-zA-Z][a-zA-Z0-9]*$",
-                    HeaderDetection.LatinLetters                   => @"^[a-zA-Z]+$",
+                    HeaderDetection.HasHeader                      => HeaderDetectionHasHeaderRegex(),
+                    HeaderDetection.AllLettersNumbersPunctuation   => HeaderDetectionAllLettersNumbersPunctuationRegex(),
+                    HeaderDetection.AllLettersNumbers              => HeaderDetectionAllLettersNumbersRegex(),
+                    HeaderDetection.AllLetters                     => HeaderDetectionAllLettersRegex(),
+                    HeaderDetection.LatinLettersNumbersPunctuation => HeaderDetectionLatinLettersNumbersPunctuationRegex(),
+                    HeaderDetection.LatinLettersNumbers            => HeaderDetectionLatinLettersNumbersRegex(),
+                    HeaderDetection.LatinLetters                   => HeaderDetectionLatinLettersRegex(),
                     _                                              => throw new IndexOutOfRangeException($"Unknown {nameof(HeaderDetection)} {headerDetection}")
                 }) is not null;
         }
