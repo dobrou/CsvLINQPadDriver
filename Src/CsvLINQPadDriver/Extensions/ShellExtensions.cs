@@ -2,11 +2,10 @@
 using System.ComponentModel;
 using System.IO;
 using System.Runtime.InteropServices;
-using System.Text.RegularExpressions;
 
 namespace CsvLINQPadDriver.Extensions
 {
-    internal static class ShellExtensions
+    internal static partial class ShellExtensions
     {
         public record ShellResult(string Message)
         {
@@ -22,14 +21,14 @@ namespace CsvLINQPadDriver.Extensions
         }
 
         public static void ShellExecute(this string what) =>
-            ShellExecute("open", what);
+            DoShellExecute("open", what);
 
         public static ShellResult Explore(this string path, bool doSelect = true) =>
             doSelect
                 ? SelectFile(path)
-                : ShellExecute("explore", path);
+                : DoShellExecute("explore", path);
 
-        private static ShellResult ShellExecute(string verb, string what)
+        private static ShellResult DoShellExecute(string verb, string what)
         {
             var errorCode = ShellExecute(IntPtr.Zero, verb, what, null, null, SW_SHOW).ToInt32();
             return new ShellResult(errorCode > 32 ? string.Empty : new Win32Exception(errorCode).Message);
@@ -52,7 +51,7 @@ namespace CsvLINQPadDriver.Extensions
             }
             catch (Exception exception) when (exception.CanBeHandled())
             {
-                return new ShellResult(Regex.Replace(exception.Message, @"\s+\([^)]+?\)$", string.Empty));
+                return new ShellResult(SelectFileRegex().Replace(exception.Message, string.Empty));
             }
             finally
             {
