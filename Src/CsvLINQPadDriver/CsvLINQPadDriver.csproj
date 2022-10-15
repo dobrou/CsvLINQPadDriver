@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
 
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp3.1;net5.0-windows;net6.0-windows</TargetFrameworks>
-    <NoWarn>1701;1702;8032;NETSDK1182</NoWarn>
+    <TargetFrameworks>netcoreapp3.1;net5.0-windows;net6.0-windows;net7.0-windows</TargetFrameworks>
+    <NoWarn>1701;1702;8032;NETSDK1182;NETSDK1138</NoWarn>
   </PropertyGroup>
 
   <PropertyGroup>

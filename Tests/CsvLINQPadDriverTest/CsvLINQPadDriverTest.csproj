@@ -1,12 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp3.1;net5.0-windows;net6.0-windows</TargetFrameworks>
+    <TargetFrameworks>netcoreapp3.1;net5.0-windows;net6.0-windows;net7.0-windows</TargetFrameworks>
     <Deterministic>true</Deterministic>
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <OutputPath>..\..\bin\$(Configuration)\Tests</OutputPath>
+    <NoWarn>NETSDK1138</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

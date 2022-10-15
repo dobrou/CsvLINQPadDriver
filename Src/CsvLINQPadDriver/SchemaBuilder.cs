@@ -130,7 +130,9 @@ namespace CsvLINQPadDriver
             var result = DataContextDriver.CompileSource(new CompilationInput
             {
                 FilePathsToReference = referencedAssemblies.ToArray(),
+#pragma warning disable SYSLIB0044
                 OutputPath = name.CodeBase,
+#pragma warning restore SYSLIB0044
                 SourceCode = new[] { code }
             });
 
