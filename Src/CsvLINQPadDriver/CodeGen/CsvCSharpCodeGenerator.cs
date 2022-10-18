@@ -2,6 +2,7 @@
 using System.CodeDom;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -50,10 +51,10 @@ namespace CsvLINQPadDriver.CodeGen
         public record Result(string Code, IReadOnlyCollection<IGrouping<string, TypeCodeResult>> CodeGroups);
 
         // ReSharper disable once RedundantAssignment
-        public static Result GenerateCode(CsvDatabase db, ref string nameSpace, ref string typeName, ICsvDataContextDriverProperties properties) =>
-            new CsvCSharpCodeGenerator(nameSpace, typeName = DefaultContextTypeName, properties).GenerateSrcFile(db);
+        public static Result GenerateCode(CsvDatabase db, ref string nameSpace, ref string typeName, ICsvDataContextDriverProperties properties, Stopwatch stopwatch) =>
+            new CsvCSharpCodeGenerator(nameSpace, typeName = DefaultContextTypeName, properties).GenerateSrcFile(db, stopwatch);
 
-        private Result GenerateSrcFile(CsvDatabase csvDatabase)
+        private Result GenerateSrcFile(CsvDatabase csvDatabase, Stopwatch stopwatch)
         {
             var csvTables = csvDatabase.Tables;
 
@@ -109,6 +110,7 @@ namespace CsvLINQPadDriver.CodeGen
 
     // Data types{string.Join(Environment.NewLine, groups.Select(static grouping => grouping.OrderByDescending(code => code.Code.Length).First().Code))} // data types
 }} // namespace
+// {stopwatch.Elapsed}
 ", groups);
 
             static string GetBoolConst(bool value) =>

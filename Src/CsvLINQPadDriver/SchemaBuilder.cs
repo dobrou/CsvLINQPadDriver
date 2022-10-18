@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 
@@ -30,9 +31,12 @@ namespace CsvLINQPadDriver
             const ExplorerItemKind errorExplorerItemKind = ExplorerItemKind.ReferenceLink;
             const ExplorerIcon errorExplorerIcon = ExplorerIcon.Box;
 
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+
             var csvDatabase = CsvDataModelGenerator.CreateModel(csvDataContextDriverProperties);
 
-            var (code, tableCodeGroups) = CsvCSharpCodeGenerator.GenerateCode(csvDatabase, ref nameSpace, ref typeName, csvDataContextDriverProperties);
+            var (code, tableCodeGroups) = CsvCSharpCodeGenerator.GenerateCode(csvDatabase, ref nameSpace, ref typeName, csvDataContextDriverProperties, stopwatch);
 
             var compileErrors = BuildAssembly(code, assemblyToBuild);
             var hasCompilationErrors = compileErrors.Any();
