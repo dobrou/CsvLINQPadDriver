@@ -16,22 +16,22 @@ jobs:
     steps:
 
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     # LINQPad 7/6
 
     - name: Setup .NET Core 6.0 SDK
-      uses: actions/setup-dotnet@v1
+      uses: actions/setup-dotnet@v3
       with:
           dotnet-version: '6.0.x'
 
     - name: Setup .NET Core 5.0 SDK
-      uses: actions/setup-dotnet@v1
+      uses: actions/setup-dotnet@v3
       with:
           dotnet-version: '5.0.x'
 
     - name: Setup .NET Core 3.1 SDK
-      uses: actions/setup-dotnet@v1
+      uses: actions/setup-dotnet@v3
       with:
           dotnet-version: '3.1.x'
 
@@ -53,7 +53,7 @@ jobs:
       uses: microsoft/setup-msbuild@v1.1
 
     - name: Setup NuGet
-      uses: NuGet/setup-nuget@v1.0.5
+      uses: NuGet/setup-nuget@v1.1.1
 
     - name: ${{env.SLN5}} restore dependencies
       run: nuget restore ${{ env.SLN5 }}
@@ -69,7 +69,7 @@ jobs:
     # Upload artifacts
 
     - name: Publish CsvLINQPadDriver
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: CsvLINQPadDriver${{ env.BIN_POSTFIX }}
         path: |
@@ -79,7 +79,7 @@ jobs:
         retention-days: ${{ env.RETENTION_DAYS }}
 
     - name: Publish LPRun
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: LPRun${{ env.BIN_POSTFIX }}
         path: bin/${{ env.SLN_CONFIG }}/LPRun.*.nupkg
