@@ -527,8 +527,8 @@ TimeOnly? ToTimeOnly(
 * [NUnit](https://github.com/nunit/nunit)
 * [UnicodeCharsetDetector](https://github.com/i2van/UnicodeCharsetDetector)
 * [UTF.Unknown](https://www.nuget.org/packages/UTF.Unknown)
-* [Windows API Code Pack](https://github.com/contre/Windows-API-Code-Pack-1.1)
-* [Windows API Code Pack Shell](https://github.com/contre/Windows-API-Code-Pack-1.1)
+* [Windows API Code Pack](https://github.com/samypr100/Windows-API-Code-Pack-1.1)
+* [Windows API Code Pack Shell](https://github.com/samypr100/Windows-API-Code-Pack-1.1)
 
 ## License ##
 
