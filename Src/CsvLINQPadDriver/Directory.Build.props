@@ -1,7 +1,7 @@
 ﻿<Project>
   <PropertyGroup>
     <Version>7.3.13</Version>
-    <PackageReleaseNotes>Dependencies update.</PackageReleaseNotes>
+    <PackageReleaseNotes>.NET 7 build.</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup>
