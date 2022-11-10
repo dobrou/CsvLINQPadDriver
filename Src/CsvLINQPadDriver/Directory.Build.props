@@ -1,7 +1,8 @@
 ﻿<Project>
   <PropertyGroup>
     <Version>7.3.13</Version>
-    <PackageReleaseNotes>.NET 7 build.</PackageReleaseNotes>
+    <PackageReleaseNotes>.NET 7 build.
+More numeric conversion extension methods.</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup>

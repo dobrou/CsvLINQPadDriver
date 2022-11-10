@@ -477,7 +477,6 @@ namespace CsvLINQPadDriver.Extensions
 
             var fileInfos = files.Select(static file => new FileInfo(file));
 
-            // ReSharper disable once SwitchExpressionHandlesSomeKnownEnumValuesWithExceptionInDefault
             fileInfos = filesOrderBy switch
             {
                 FilesOrderBy.NameAsc           => fileInfos.OrderBy(static fileInfo => fileInfo.Name, FileNameComparer),
@@ -594,10 +593,10 @@ namespace CsvLINQPadDriver.Extensions
 
         public static DeduceFileOrFolderResult DeduceIsFileOrFolder(this string path, bool removeMask = false) =>
             MatchDeduceIsFileOrFolderRegex().IsMatch(path)
-                ? new DeduceFileOrFolderResult(false, path)
+                ? new (false, path)
                 : DeduceIsFileOrFolderRegex().IsMatch(Path.GetFileName(path))
-                    ? new DeduceFileOrFolderResult(true, removeMask ? Path.GetDirectoryName(path) ?? path : path)
-                    : new DeduceFileOrFolderResult(SupportedFileExtensions.Contains(Path.GetExtension(path)), path);
+                    ? new (true, removeMask ? Path.GetDirectoryName(path) ?? path : path)
+                    : new (SupportedFileExtensions.Contains(Path.GetExtension(path)), path);
 
         public static void Add(this ICollection<Exception>? exceptions, string file, Exception exception) =>
             exceptions?.Add(file, $"processing failed: {exception.Message}");

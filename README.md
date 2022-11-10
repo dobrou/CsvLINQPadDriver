@@ -361,133 +361,238 @@ Authors.First()
 Driver provides extension methods for converting `string` (and `ReadOnlySpan<char>` for .NET Core/.NET) to `T?`. `CultureInfo.InvariantCulture` is used by default.
 
 ```csharp
-// Bool.
-bool? ToBool(CultureInfo? cultureInfo = null);
+public static class Styles
+{
+    public const NumberStyles Integer          =
+        NumberStyles.Integer |
+        NumberStyles.AllowThousands;
 
-// Int.
-int? ToInt(CultureInfo? cultureInfo = null);
+    public const NumberStyles Float            =
+        NumberStyles.Float   |
+        NumberStyles.AllowThousands;
 
-// Long.
-long? ToLong(CultureInfo? cultureInfo = null);
+    public const NumberStyles Decimal          =
+        NumberStyles.Number;
 
-// Float.
-float? ToFloat(CultureInfo? cultureInfo = null);
+    public const DateTimeStyles DateTimeOffset =
+        DateTimeStyles.None;
 
-// Double.
-double? ToDouble(CultureInfo? cultureInfo = null);
+    public const DateTimeStyles DateTime       =
+        DateTimeStyles.None;
 
-// Decimal.
-decimal? ToDecimal(CultureInfo? cultureInfo = null);
+    public const DateTimeStyles UtcDateTime    =
+        DateTimeStyles.AdjustToUniversal |
+        DateTimeStyles.AssumeUniversal;
 
-// Guid.
+    public const TimeSpanStyles TimeSpan       =
+        TimeSpanStyles.None;
+
+    // .NET 6+
+    public const DateTimeStyles DateOnly       =
+        DateTimeStyles.None;
+
+    // .NET 6+
+    public const DateTimeStyles TimeOnly       =
+        DateTimeStyles.None;
+}
+
+// Bool
+bool? ToBool(
+    NumberStyles style = Styles.Integer,
+    CultureInfo? cultureInfo = null);
+
+// SByte
+sbyte? ToSByte(
+    NumberStyles style = Styles.Integer,
+    CultureInfo? cultureInfo = null);
+
+// Byte
+byte? ToByte(
+    NumberStyles style = Styles.Integer,
+    CultureInfo? cultureInfo = null);
+
+// Short
+short? ToShort(
+    NumberStyles style = Styles.Integer,
+    CultureInfo? cultureInfo = null);
+
+// UShort
+ushort? ToUShort(
+    NumberStyles style = Styles.Integer,
+    CultureInfo? cultureInfo = null);
+
+// Int
+int? ToInt(
+    NumberStyles style = Styles.Integer,
+    CultureInfo? cultureInfo = null);
+
+// UInt
+uint? ToUInt(
+    NumberStyles style = Styles.Integer,
+    CultureInfo? cultureInfo = null);
+
+// Long
+long? ToLong(
+    NumberStyles style = Styles.Integer,
+    CultureInfo? cultureInfo = null);
+
+// ULong
+ulong? ToULong(
+    NumberStyles style = Styles.Integer,
+    CultureInfo? cultureInfo = null);
+
+// NInt: .NET 5+
+nint? ToNInt(
+    NumberStyles style = Styles.Integer,
+    CultureInfo? cultureInfo = null);
+
+// NUInt: .NET 5+
+nuint? ToNUInt(
+    NumberStyles style = Styles.Integer,
+    CultureInfo? cultureInfo = null);
+
+// Float
+float? ToFloat(
+    NumberStyles style = Styles.Float,
+    CultureInfo? cultureInfo = null);
+
+// Double
+double? ToDouble(
+    NumberStyles style = Styles.Float,
+    CultureInfo? cultureInfo = null);
+
+// Decimal
+decimal? ToDecimal(
+    NumberStyles style = Styles.Decimal,
+    CultureInfo? cultureInfo = null);
+
+// Half: .NET 5+
+Half? ToHalf(
+    NumberStyles style = Styles.Float,
+    CultureInfo? cultureInfo = null);
+
+// Int128: .NET 7+
+static Int128? ToInt128(
+    NumberStyles style = Styles.Integer,
+    CultureInfo? cultureInfo = null);
+
+// UInt128: .NET 7+
+static UInt128? ToUInt128(
+    NumberStyles style = Styles.Integer,
+    CultureInfo? cultureInfo = null);
+
+// Guid
 Guid? ToGuid();
 Guid? ToGuid(string format);
 Guid? ToGuid(ReadOnlySpan<char> format);
 Guid? ToGuid(string[] formats);
 
-// DateTime.
+// DateTime
 DateTime? ToDateTime(
-    DateTimeStyles dateTimeStyles = DateTimeStyles.None,
+    DateTimeStyles style = Styles.DateTime,
     CultureInfo? cultureInfo = null);
 
 DateTime? ToDateTime(
     string format,
-    DateTimeStyles dateTimeStyles = DateTimeStyles.None,
+    DateTimeStyles style = Styles.DateTime,
     CultureInfo? cultureInfo = null);
 
-// .NET Core/.NET only.
+// .NET Core/.NET
 DateTime? ToDateTime(
     ReadOnlySpan<char> format,
-    DateTimeStyles dateTimeStyles = DateTimeStyles.None,
+    DateTimeStyles style = Styles.DateTime,
     CultureInfo? cultureInfo = null);
 
 DateTime? ToDateTime(
     string[] formats,
-    DateTimeStyles dateTimeStyles = DateTimeStyles.None,
+    DateTimeStyles style = Styles.DateTime,
     CultureInfo? cultureInfo = null);
 
-DateTime? ToUtcDateTime(CultureInfo? cultureInfo = null);
+DateTime? ToUtcDateTime(
+    DateTimeStyles style = Styles.UtcDateTime,
+    CultureInfo? cultureInfo = null);
 
-// DateTimeOffset.
+// DateTimeOffset
 DateTimeOffset? ToDateTimeOffset(
-    DateTimeStyles dateTimeStyles = DateTimeStyles.None,
+    DateTimeStyles style = Styles.DateTimeOffset,
     CultureInfo? cultureInfo = null);
 
 DateTimeOffset? ToDateTimeOffset(
     string format,
-    DateTimeStyles dateTimeStyles = DateTimeStyles.None,
+    DateTimeStyles style = Styles.DateTimeOffset,
     CultureInfo? cultureInfo = null);
 
-// .NET Core/.NET only.
+// .NET Core/.NET
 DateTimeOffset? ToDateTimeOffset(
     ReadOnlySpan<char> format,
-    DateTimeStyles dateTimeStyles = DateTimeStyles.None,
+    DateTimeStyles style = Styles.DateTimeOffset,
     CultureInfo? cultureInfo = null);
 
 DateTimeOffset? ToDateTimeOffset(
     string[] formats,
-    DateTimeStyles dateTimeStyles = DateTimeStyles.None,
+    DateTimeStyles style = Styles.DateTimeOffset,
     CultureInfo? cultureInfo = null);
 
-// TimeSpan.
-TimeSpan? ToTimeSpan(CultureInfo? cultureInfo = null);
+// TimeSpan
+TimeSpan? ToTimeSpan(
+    CultureInfo? cultureInfo = null);
 
 TimeSpan? ToTimeSpan(
     string format,
-    TimeSpanStyles timeSpanStyles = TimeSpanStyles.None,
+    TimeSpanStyles style = Styles.TimeSpan,
     CultureInfo? cultureInfo = null);
 
-// .NET Core/.NET only.
+// .NET Core/.NET
 TimeSpan? ToTimeSpan(
     ReadOnlySpan<char> format,
-    TimeSpanStyles timeSpanStyles = TimeSpanStyles.None,
+    TimeSpanStyles style = Styles.TimeSpan,
     CultureInfo? cultureInfo = null);
 
 TimeSpan? ToTimeSpan(
     string[] formats,
-    TimeSpanStyles timeSpanStyles = TimeSpanStyles.None,
+    TimeSpanStyles style = Styles.TimeSpan,
     CultureInfo? cultureInfo = null);
 
-// .NET 6+: DateOnly.
+// DateOnly: .NET 6+
 DateOnly? ToDateOnly(
-    DateTimeStyles dateTimeStyles = DateTimeStyles.None,
+    DateTimeStyles style = Styles.DateOnly,
     CultureInfo? cultureInfo = null);
 
 DateOnly? ToDateOnly(
     string format,
-    DateTimeStyles dateTimeStyles = DateTimeStyles.None,
+    DateTimeStyles style = Styles.DateOnly,
     CultureInfo? cultureInfo = null);
 
-// .NET Core/.NET only.
+// .NET Core/.NET
 DateOnly? ToDateOnly(
     ReadOnlySpan<char> format,
-    DateTimeStyles dateTimeStyles = DateTimeStyles.None,
+    DateTimeStyles style = Styles.DateOnly,
     CultureInfo? cultureInfo = null);
 
 DateOnly? ToDateOnly(
     string[] formats,
-    DateTimeStyles dateTimeStyles = DateTimeStyles.None,
+    DateTimeStyles style = Styles.DateOnly,
     CultureInfo? cultureInfo = null);
 
-// .NET 6+: TimeOnly.
+// TimeOnly: .NET 6+
 TimeOnly? ToTimeOnly(
-    DateTimeStyles dateTimeStyles = DateTimeStyles.None,
+    DateTimeStyles style = Styles.TimeOnly,
     CultureInfo? cultureInfo = null);
 
 TimeOnly? ToTimeOnly(
     string format,
-    DateTimeStyles dateTimeStyles = DateTimeStyles.None,
+    DateTimeStyles style = Styles.TimeOnly,
     CultureInfo? cultureInfo = null);
 
-// .NET Core/.NET only.
+// .NET Core/.NET
 TimeOnly? ToTimeOnly(
     ReadOnlySpan<char> format,
-    DateTimeStyles dateTimeStyles = DateTimeStyles.None,
+    DateTimeStyles style = Styles.TimeOnly,
     CultureInfo? cultureInfo = null);
 
 TimeOnly? ToTimeOnly(
     string[] formats,
-    DateTimeStyles dateTimeStyles = DateTimeStyles.None,
+    DateTimeStyles style = Styles.TimeOnly,
     CultureInfo? cultureInfo = null);
 ```
 

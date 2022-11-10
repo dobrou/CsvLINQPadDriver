@@ -13,17 +13,93 @@ string nullString = null;
 invalidString.ToBool().Should().BeNull(Reason());
 nullString.ToBool().Should().BeNull(Reason());
 
+// SByte.
+((ReadOnlySpan<char>)"1").ToSByte().Should().Be((sbyte)1, Reason());
+"1".ToSByte().Should().Be((sbyte)1, Reason());
+invalidString.ToSByte().Should().BeNull(Reason());
+nullString.ToSByte().Should().BeNull(Reason());
+
+// Byte.
+((ReadOnlySpan<char>)"1").ToByte().Should().Be((byte)1, Reason());
+"1".ToByte().Should().Be((byte)1, Reason());
+invalidString.ToByte().Should().BeNull(Reason());
+nullString.ToByte().Should().BeNull(Reason());
+
+// Short.
+((ReadOnlySpan<char>)"1").ToShort().Should().Be((short)1, Reason());
+"1".ToShort().Should().Be((short)1, Reason());
+invalidString.ToShort().Should().BeNull(Reason());
+nullString.ToShort().Should().BeNull(Reason());
+
+// UShort.
+((ReadOnlySpan<char>)"1").ToUShort().Should().Be((ushort)1, Reason());
+"1".ToUShort().Should().Be((ushort)1, Reason());
+invalidString.ToUShort().Should().BeNull(Reason());
+nullString.ToUShort().Should().BeNull(Reason());
+
 // Int.
 ((ReadOnlySpan<char>)"1").ToInt().Should().Be(1, Reason());
 "1".ToInt().Should().Be(1, Reason());
 invalidString.ToInt().Should().BeNull(Reason());
 nullString.ToInt().Should().BeNull(Reason());
 
+// UInt.
+((ReadOnlySpan<char>)"1").ToUInt().Should().Be(1u, Reason());
+"1".ToUInt().Should().Be(1u, Reason());
+invalidString.ToUInt().Should().BeNull(Reason());
+nullString.ToUInt().Should().BeNull(Reason());
+
 // Long.
 ((ReadOnlySpan<char>)"1").ToLong().Should().Be(1L, Reason());
 "1".ToLong().Should().Be(1L, Reason());
 invalidString.ToLong().Should().BeNull(Reason());
 nullString.ToLong().Should().BeNull(Reason());
+
+// ULong.
+((ReadOnlySpan<char>)"1").ToULong().Should().Be(1UL, Reason());
+"1".ToULong().Should().Be(1UL, Reason());
+invalidString.ToULong().Should().BeNull(Reason());
+nullString.ToULong().Should().BeNull(Reason());
+
+#if NET5_0_OR_GREATER
+// NInt.
+#if NET6_0_OR_GREATER
+((ReadOnlySpan<char>)"1").ToNInt().Should().Be((nint)1, Reason());
+#endif
+"1".ToNInt().Should().Be((nint)1, Reason());
+invalidString.ToNInt().Should().BeNull(Reason());
+nullString.ToNInt().Should().BeNull(Reason());
+
+// NUInt.
+#if NET6_0_OR_GREATER
+((ReadOnlySpan<char>)"1").ToNUInt().Should().Be((nuint)1, Reason());
+#endif
+"1".ToNUInt().Should().Be((nuint)1, Reason());
+invalidString.ToNUInt().Should().BeNull(Reason());
+nullString.ToNUInt().Should().BeNull(Reason());
+#endif
+
+#if NET7_0_OR_GREATER
+// Int128.
+((ReadOnlySpan<char>)"1").ToInt128().Should().Be((Int128)1, Reason());
+"1".ToInt128().Should().Be((Int128)1, Reason());
+invalidString.ToInt128().Should().BeNull(Reason());
+nullString.ToInt128().Should().BeNull(Reason());
+
+// UInt128.
+((ReadOnlySpan<char>)"1").ToUInt128().Should().Be((UInt128)1, Reason());
+"1".ToUInt128().Should().Be((UInt128)1, Reason());
+invalidString.ToUInt128().Should().BeNull(Reason());
+nullString.ToUInt128().Should().BeNull(Reason());
+#endif
+
+#if NET5_0_OR_GREATER
+// Half.
+((ReadOnlySpan<char>)"1.23").ToHalf().Should().Be((Half)1.23, Reason());
+"1.23".ToHalf().Should().Be((Half)1.23, Reason());
+invalidString.ToHalf().Should().BeNull(Reason());
+nullString.ToHalf().Should().BeNull(Reason());
+#endif
 
 // Float.
 ((ReadOnlySpan<char>)"1.23").ToFloat().Should().Be(1.23f, Reason());

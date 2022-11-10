@@ -145,8 +145,14 @@ namespace CsvLINQPadDriverTest
                             linqFile,
                             noContext,
                             defaultCsvDataContextDriverProperties
+#if NET5_0_OR_GREATER
+                            , "NET5_0_OR_GREATER"
+#endif
 #if NET6_0_OR_GREATER
                             , "NET6_0_OR_GREATER"
+#endif
+#if NET7_0_OR_GREATER
+                            , "NET7_0_OR_GREATER"
 #endif
                            ));
 

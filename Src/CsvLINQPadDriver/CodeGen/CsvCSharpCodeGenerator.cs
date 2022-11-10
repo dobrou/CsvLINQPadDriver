@@ -296,7 +296,7 @@ namespace CsvLINQPadDriver.CodeGen
 
             static string ToClassName(string? name) =>
                 string.IsNullOrWhiteSpace(name)
-                    ? throw new NullReferenceException("Name is null or empty")
+                    ? throw new NullReferenceException("Class name is null or whitespace")
                     : $"R{(name!.Length < 3 ? name : name.Singularize())}";
         }
 
