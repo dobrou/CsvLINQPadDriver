@@ -20,20 +20,10 @@ jobs:
 
     # LINQPad 7/6
 
-    - name: Setup .NET Core 6.0 SDK
+    - name: Setup .NET 7.0 SDK
       uses: actions/setup-dotnet@v3
       with:
-          dotnet-version: '6.0.x'
-
-    - name: Setup .NET Core 5.0 SDK
-      uses: actions/setup-dotnet@v3
-      with:
-          dotnet-version: '5.0.x'
-
-    - name: Setup .NET Core 3.1 SDK
-      uses: actions/setup-dotnet@v3
-      with:
-          dotnet-version: '3.1.x'
+          dotnet-version: '7.0.x'
 
     - name: ${{env.SLN}} ${{ env.SLN_CONFIG }} clean
       run: dotnet clean ${{ env.SLN }} --configuration ${{ env.SLN_CONFIG }} && dotnet nuget locals all --clear
