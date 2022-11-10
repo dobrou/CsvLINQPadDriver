@@ -123,7 +123,7 @@ select new { author.Name, book.Title }
 
 ## Prerequisites ##
 
-* [LINQPad 7](https://www.linqpad.net/LINQPad7.aspx): [.NET 6](https://dotnet.microsoft.com/download/dotnet/6.0)
+* [LINQPad 7](https://www.linqpad.net/LINQPad7.aspx): [.NET 7](https://dotnet.microsoft.com/download/dotnet/7.0)/[.NET 6](https://dotnet.microsoft.com/download/dotnet/6.0)/[.NET 5](https://dotnet.microsoft.com/download/dotnet/5.0)/[.NET Core 3.1](https://dotnet.microsoft.com/download/dotnet-core/3.1)
 * [LINQPad 6](https://www.linqpad.net/LINQPad6.aspx): [.NET 5](https://dotnet.microsoft.com/download/dotnet/5.0)/[.NET Core 3.1](https://dotnet.microsoft.com/download/dotnet-core/3.1)
 * [LINQPad 5](https://www.linqpad.net/LINQPad5.aspx): [.NET Framework 4.6.1](https://www.microsoft.com/en-us/download/details.aspx?id=49981)
 

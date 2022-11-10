@@ -35,7 +35,7 @@ jobs:
       run: dotnet build ${{ env.SLN }} --configuration ${{ env.SLN_CONFIG }} --no-restore
 
     - name: ${{env.SLN}} ${{ env.SLN_CONFIG }} test
-      run: dotnet test ${{ env.SLN }} --configuration ${{ env.SLN_CONFIG }} --no-build --verbosity normal --framework net6.0-windows
+      run: dotnet test ${{ env.SLN }} --configuration ${{ env.SLN_CONFIG }} --no-build --verbosity normal --framework net7.0-windows
 
     # LINQPad 5
 
