@@ -63,7 +63,7 @@ jobs:
       with:
         name: CsvLINQPadDriver${{ env.BIN_POSTFIX }}
         path: |
-          bin/${{ env.SLN_CONFIG }}/CsvLINQPadDriver.*.nupkg
+          bin/${{ env.SLN_CONFIG }}/CsvLINQPadDriver.*.*nupkg
           Deploy/*.lpx
           Deploy/*.lpx?
         retention-days: ${{ env.RETENTION_DAYS }}
@@ -72,5 +72,5 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: LPRun${{ env.BIN_POSTFIX }}
-        path: bin/${{ env.SLN_CONFIG }}/LPRun.*.nupkg
+        path: bin/${{ env.SLN_CONFIG }}/LPRun.*.*nupkg
         retention-days: ${{ env.RETENTION_DAYS }}
