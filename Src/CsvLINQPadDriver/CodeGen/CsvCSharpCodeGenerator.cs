@@ -278,11 +278,11 @@ namespace CsvLINQPadDriver.CodeGen
         private static string GetStringComparer(StringComparison stringComparison) =>
             $"{nameof(System)}.{nameof(StringComparer)}." + stringComparison switch
             {
-                StringComparison.CurrentCulture             => nameof(StringComparer.CurrentCulture), 
-                StringComparison.CurrentCultureIgnoreCase   => nameof(StringComparer.CurrentCultureIgnoreCase), 
-                StringComparison.InvariantCulture           => nameof(StringComparer.InvariantCulture), 
-                StringComparison.InvariantCultureIgnoreCase => nameof(StringComparer.InvariantCultureIgnoreCase), 
-                StringComparison.Ordinal                    => nameof(StringComparer.Ordinal), 
+                StringComparison.CurrentCulture             => nameof(StringComparer.CurrentCulture),
+                StringComparison.CurrentCultureIgnoreCase   => nameof(StringComparer.CurrentCultureIgnoreCase),
+                StringComparison.InvariantCulture           => nameof(StringComparer.InvariantCulture),
+                StringComparison.InvariantCultureIgnoreCase => nameof(StringComparer.InvariantCultureIgnoreCase),
+                StringComparison.Ordinal                    => nameof(StringComparer.Ordinal),
                 StringComparison.OrdinalIgnoreCase          => nameof(StringComparer.OrdinalIgnoreCase),
                 _                                           => throw new IndexOutOfRangeException($"Unknown {nameof(StringComparison)} {stringComparison}")
             };

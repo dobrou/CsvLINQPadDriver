@@ -338,7 +338,7 @@
                                 <KeyBinding
                                     Command="{x:Static this:ConnectionDialog.PasteFoldersWithSubfoldersCommand}"
                                     Gesture="{x:Static this:ConnectionDialog.PasteFoldersWithSubfoldersCommandKeyGesture}"/>
-                                <KeyBinding 
+                                <KeyBinding
                                     Command="{x:Static this:ConnectionDialog.BrowseCommand}"
                                     Gesture="{x:Static this:ConnectionDialog.BrowseCommandKeyGesture}"/>
                                 <KeyBinding
@@ -553,7 +553,7 @@
                                   IsEnabled="{Binding IsStringInternEnabled}"
                                   Content="{Binding ElementName=StringComparisonComboBox, Path=SelectedValue}"
                                   ContentStringFormat="Use {0} generation string comparison"
-                                  ToolTip="Compare interned strings using generation string comparison"
+                                  ToolTip="Compare interned strings using generation string comparison. Ordinal if not checked"
                                   Style="{StaticResource DependentCheckBoxStyle}"/>
                     </StackPanel>
                 </GroupBox>

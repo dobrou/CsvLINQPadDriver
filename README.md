@@ -177,7 +177,7 @@ CSV files connection can be added to LINQPad 7/6/5 the same way as any other con
   * `c:\Books\*.csv`: all `*.csv` files in folder `c:\Books`
   * `c:\Books\**.csv`: all `*.csv` files in folder `c:\Books` and its sub-folders.
 * Order files by: files sort order. Affects similar files order.
-* Fallback encoding: [encoding](https://docs.microsoft.com/en-us/windows/win32/intl/code-page-identifiers) to use if file encoding could not be detected. `UTF-8` is default.
+* Fallback encoding: [encoding](https://docs.microsoft.com/en-us/windows/win32/intl/code-page-identifiers) to use if file encoding could not be detected. `UTF-8` is used by default.
 * Auto-detect file encodings: try to detect file encodings.
 * Validate file paths: check if file paths are valid.
 * Ignore files with invalid format: files with content which does not resemble CSV will be ignored.
@@ -191,7 +191,7 @@ CSV files connection can be added to LINQPad 7/6/5 the same way as any other con
 * Ignore blank lines: do not process blank lines.
 * Skip leading rows: allow to skip the specified number of leading rows.
 * Trim spaces: allow to trim spaces around fields and/or inside quotes around fields.
-* Allow comments: allow single-line comments - lines starting with `#` (default) will be ignored.
+* Allow comments: allow single-line comments - lines starting with `#` (which is used by default) will be ignored.
 * Header detection: detect or add header with specific column fallback name format if header could not be detected.
   * Header detection approach: specify whether header is present or not, or how to detect it by symbols it consists of.
   * Header column fallback name format: define generated columns names if there is no header.
@@ -202,7 +202,7 @@ CSV files connection can be added to LINQPad 7/6/5 the same way as any other con
   * if checked: parsed rows are cached in memory. Cache survives multiple query runs, even when query is changed. Cache is cleared as soon as LINQPad clears query data. **May significantly increase** memory usage.
   * if unchecked: disable cache. Multiple enumerations of file content results in multiple reads and parsing of file. Can be significantly slower for complex queries. **Significantly reduces** memory usage. Useful when reading very large files.
 * Intern strings: intern strings. **May significantly reduce** memory consumption when CSV contains repeatable values; **may significantly increase** memory usage otherwise.
-  * Use [generation](#generation) string comparison: compare interned strings using generation string comparison.
+  * Use [generation](#generation) string comparison: compare interned strings using generation string comparison. `Ordinal` is used by default.
 
 ### Generation ###
 
