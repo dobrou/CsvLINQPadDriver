@@ -1,7 +1,7 @@
 ﻿<Project>
   <PropertyGroup>
-    <Version>7.3.14</Version>
-    <PackageReleaseNotes>CsvHelper 30.0.1</PackageReleaseNotes>
+    <Version>7.3.15</Version>
+    <PackageReleaseNotes>Cleanup.</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup>

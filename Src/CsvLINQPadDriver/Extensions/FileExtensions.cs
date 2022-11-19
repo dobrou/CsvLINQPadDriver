@@ -54,7 +54,7 @@ namespace CsvLINQPadDriver.Extensions
 
         private static readonly Dictionary<NoBomEncoding, Encoding> NoBomEncodings = new();
 
-        private record SupportedFileType(FileType FileType, string Extension, string Description)
+        private sealed record SupportedFileType(FileType FileType, string Extension, string Description)
         {
             private readonly string? _mask;
 
@@ -122,9 +122,7 @@ namespace CsvLINQPadDriver.Extensions
             CsvRowMappingBase<T> csvClassMap)
             where T : ICsvRowBase, new()
         {
-            _stringInternCache ??= internStringComparer is null
-                ? new()
-                : new(internStringComparer);
+            InitStringInternCache();
 
             return
                 SkipHeader(
@@ -149,7 +147,7 @@ namespace CsvLINQPadDriver.Extensions
 
                 if (enumerator.MoveNext())
                 {
-                    var columnHeader = enumerator.Current;
+                    var columnHeader = enumerator.Current!;
 
                     if (addHeader && !columnHeader.IsPresent(true, headerDetection ?? default))
                     {
@@ -159,22 +157,27 @@ namespace CsvLINQPadDriver.Extensions
 
                 while(enumerator.MoveNext())
                 {
-                    yield return enumerator.Current;
+                    yield return enumerator.Current!;
                 }
             }
 
-            T GetRecord(string?[] rowColumns)
+            T GetRecord(string?[] columns)
             {
                 if (internString)
                 {
-                    for (var i = 0; i < rowColumns.Length; i++)
+                    for (var i = 0; i < columns.Length; i++)
                     {
-                        rowColumns[i] = StringIntern(rowColumns[i]);
+                        columns[i] = StringIntern(columns[i]);
                     }
                 }
 
-                return csvClassMap.InitRowObject(rowColumns);
+                return csvClassMap.InitRowObject(columns);
             }
+
+            void InitStringInternCache() =>
+                _stringInternCache ??= internStringComparer is null
+                    ? new()
+                    : new(internStringComparer);
         }
 
         public static IEnumerable<string> CsvReadHeader(

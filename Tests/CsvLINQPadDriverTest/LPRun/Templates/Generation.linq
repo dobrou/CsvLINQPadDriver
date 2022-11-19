@@ -42,8 +42,8 @@ copy.Equals((object)original).Should().BeTrue(Reason());
 (copy == original).Should().BeTrue(Reason());
 (copy != original).Should().BeFalse(Reason());
 
-(copy == null).Should().BeFalse(Reason());
-(copy != null).Should().BeTrue(Reason());
+(copy is null).Should().BeFalse(Reason());
+(copy is not null).Should().BeTrue(Reason());
 
 // Hash code.
 copy.GetHashCode().Should().Be(original.GetHashCode(), Reason());

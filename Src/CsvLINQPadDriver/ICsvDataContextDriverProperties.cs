@@ -191,7 +191,7 @@ namespace CsvLINQPadDriver
         bool UseStringComparerForStringIntern { get; set; }
 
         /// <summary>
-        /// Indicates that the parsed rows are cached. 
+        /// Indicates that the parsed rows are cached.
         /// </summary>
         /// <remarks>
         /// <para>

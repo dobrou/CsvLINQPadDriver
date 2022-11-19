@@ -24,7 +24,7 @@ namespace CsvLINQPadDriverTest
     {
         private static readonly string Files = Context.GetDataFullPath("**.csv");
 
-        private record FileEncoding(string FileName, Encoding Encoding);
+        private sealed record FileEncoding(string FileName, Encoding Encoding);
 
         [OneTimeSetUp]
         public void Init()
