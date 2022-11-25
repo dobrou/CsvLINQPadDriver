@@ -4,7 +4,7 @@ on: [push, pull_request]
 
 env:
   SLN:  CsvLINQPadDriver.sln
-  SLN5: CsvLINQPadDriver5.sln
+  SLN5: CsvLINQPadDriver.LINQPad5.sln
   SLN_CONFIG: Release
   BIN_POSTFIX: .Bin
   RETENTION_DAYS: 1
@@ -24,9 +24,6 @@ jobs:
       uses: actions/setup-dotnet@v3
       with:
           dotnet-version: '7.0.x'
-
-    - name: ${{env.SLN}} ${{ env.SLN_CONFIG }} clean
-      run: dotnet clean ${{ env.SLN }} --configuration ${{ env.SLN_CONFIG }} && dotnet nuget locals all --clear
 
     - name: ${{env.SLN}} restore dependencies
       run: dotnet restore ${{ env.SLN }}
