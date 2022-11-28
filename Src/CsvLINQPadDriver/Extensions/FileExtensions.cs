@@ -786,7 +786,7 @@ namespace CsvLINQPadDriver.Extensions
                                 Charset.None  or
                                 Charset.Ansi  or
                                 Charset.Ascii => UtfUnknown.CharsetDetector.DetectFromStream(stream).Detected?.Encoding,
-                                _ => null
+                                _             => null
                             };
                         }
                         catch

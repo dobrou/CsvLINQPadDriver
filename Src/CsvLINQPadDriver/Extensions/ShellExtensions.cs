@@ -66,14 +66,26 @@ namespace CsvLINQPadDriver.Extensions
         // ReSharper disable InconsistentNaming
         private const int SW_SHOW = 5;
 
-        [DllImport("shell32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-        private static extern IntPtr ShellExecute(IntPtr hwnd, string lpOperation, string lpFile, string? lpParameters, string? lpDirectory, int nShowCmd);
+#if NET7_0_OR_GREATER
+        [LibraryImport("shell32.dll", EntryPoint = nameof(ShellExecute)+"W", StringMarshalling = StringMarshalling.Utf16)] private static partial
+#else
+        [DllImport("shell32.dll", CharSet = CharSet.Unicode)] private static extern
+#endif
+        IntPtr ShellExecute(IntPtr hwnd, string lpOperation, string lpFile, string? lpParameters, string? lpDirectory, int nShowCmd);
 
-        [DllImport("shell32.dll")]
-        private static extern int SHOpenFolderAndSelectItems(IntPtr pidlFolder, uint cidl, [MarshalAs(UnmanagedType.LPArray)] IntPtr[] apidl, uint dwFlags);
+#if NET7_0_OR_GREATER
+        [LibraryImport("shell32.dll")] private static partial
+#else
+        [DllImport("shell32.dll")] private static extern
+#endif
+        int SHOpenFolderAndSelectItems(IntPtr pidlFolder, uint cidl, [MarshalAs(UnmanagedType.LPArray)] IntPtr[] apidl, uint dwFlags);
 
-        [DllImport("shell32.dll", CharSet = CharSet.Unicode)]
-        private static extern int SHParseDisplayName([MarshalAs(UnmanagedType.LPWStr)] string name, IntPtr bindingContext, out IntPtr pidl, uint sfgaoIn, out uint psfgaoOut);
+#if NET7_0_OR_GREATER
+        [LibraryImport("shell32.dll", StringMarshalling = StringMarshalling.Utf16)] private static partial
+#else
+        [DllImport("shell32.dll", CharSet = CharSet.Unicode)] private static extern
+#endif
+        int SHParseDisplayName([MarshalAs(UnmanagedType.LPWStr)] string name, IntPtr bindingContext, out IntPtr pidl, uint sfgaoIn, out uint psfgaoOut);
         // ReSharper restore InconsistentNaming
         // ReSharper restore IdentifierTypo
     }
