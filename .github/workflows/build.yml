@@ -29,7 +29,7 @@ jobs:
       run: dotnet restore ${{ env.SLN }}
 
     - name: ${{env.SLN}} ${{ env.SLN_CONFIG }} build
-      run: dotnet build ${{ env.SLN }} --configuration ${{ env.SLN_CONFIG }} --no-restore
+      run: dotnet build ${{ env.SLN }} --configuration ${{ env.SLN_CONFIG }} --no-restore -p:GITHUB_ACTIONS=true
 
     - name: ${{env.SLN}} ${{ env.SLN_CONFIG }} test
       run: dotnet test ${{ env.SLN }} --configuration ${{ env.SLN_CONFIG }} --no-build --verbosity normal --framework net7.0-windows
