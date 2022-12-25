@@ -88,17 +88,20 @@ namespace CsvLINQPadDriverTest
 
             Console.Write($"{linqScript}{Environment.NewLine}{Environment.NewLine}{queryConfig}");
 
-            var (output, error, exitCode) = Runner.Execute(linqScript);
+            var (output, error, exitCode) = Runner.Execute(
+                linqScript
+#if GITHUB_ACTIONS
+                , retryOnError: new (3)
+#endif
+            );
 
             if (ShouldRender(output))
             {
                 Console.WriteLine(output);
             }
 
-#if !GITHUB_ACTIONS
             error.Should().BeNullOrWhiteSpace();
             exitCode.Should().Be(0);
-#endif
 
             IEnumerable<string> GetQueryHeaders()
             {

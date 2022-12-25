@@ -28,10 +28,10 @@ $ThisFolder = Split-Path (Get-Item (&{ $MyInvocation.ScriptName }))
 
 function Main
 {
-    $projectFolder      = Join-Path $ThisFolder Src\CsvLINQPadDriver
+    $projectFolder      = Join-Path $ThisFolder    Src\CsvLINQPadDriver
     $buildPropsFile     = Join-Path $projectFolder Directory.Build.props
     $appManfestFile     = Join-Path $projectFolder app.manifest
-    $lpxBuildScriptFile = Join-Path $ThisFolder Deploy\buildlpx.cmd
+    $lpxBuildScriptFile = Join-Path $ThisFolder    Deploy\buildlpx.cmd
 
     Write-Output "Reading '$buildPropsFile'..."
 

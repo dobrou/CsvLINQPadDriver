@@ -2,10 +2,13 @@
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading;
 
 using static LPRun.Context;
 using static LPRun.LPRunException;
 
+// ReSharper disable ClassNeverInstantiated.Global
+// ReSharper disable NotAccessedPositionalProperty.Global
 // ReSharper disable UnusedType.Global
 // ReSharper disable UnusedMember.Global
 
@@ -24,6 +27,7 @@ namespace LPRun
         };
 
         private static readonly TimeSpan DefaultTimeout = TimeSpan.FromMinutes(1);
+        private static readonly TimeSpan RetryTimeout   = TimeSpan.FromMilliseconds(250);
 
         /// <summary>
         /// The LINQPad script execution result.
@@ -31,39 +35,71 @@ namespace LPRun
         /// <param name="Output">The LINQPad script execution captured output stream.</param>
         /// <param name="Error">The LINQPad script execution captured error stream.</param>
         /// <param name="ExitCode">The LINQPad script execution exit code.</param>
-        public record Result(string Output, string Error, int ExitCode);
+        public record Result(string Output, string Error, int ExitCode)
+        {
+            /// <summary>
+            /// Indicates that operation completed successfully.
+            /// </summary>
+            public bool Success => string.IsNullOrWhiteSpace(Error) && ExitCode == 0;
+        }
+
+        /// <summary>
+        /// The number of times to retry the operation on error and timeout between tries.
+        /// </summary>
+        /// <param name="Times">The number of times to retry the operation.</param>
+        /// <param name="Timeout">The timeout between tries.</param>
+        public record RetryOnError(int? Times = default, TimeSpan? Timeout = default);
 
         /// <summary>
         /// Executes LINQPad script using LPRun with optional timeout specified.
         /// </summary>
         /// <param name="linqFile">The LINQPad script file to execute.</param>
         /// <param name="waitForExit">The LINQPad script execution timeout. 1 minute is the default.</param>
+        /// <param name="retryOnError">The number of times to retry the operation on error and timeout between tries.</param>
         /// <returns>The LINQPad script execution <see cref="Result"/>.</returns>
         /// <exception cref="LPRunException">Keeps original exception as <see cref="P:System.Exception.InnerException"/>.</exception>
-        public static Result Execute(string linqFile, TimeSpan? waitForExit = default)
+        public static Result Execute(string linqFile, TimeSpan? waitForExit = default, RetryOnError? retryOnError = default)
         {
-            return Wrap(ExecuteInternal);
+           return Retry(() => Wrap(ExecuteInternal));
+
+           Result Retry(Func<Result> func)
+           {
+                var times   = retryOnError?.Times   ?? 1;
+                var timeout = retryOnError?.Timeout ?? RetryTimeout;
+
+                while (true)
+                {
+                    var result = func();
+
+                    if (result.Success || --times <= 0)
+                    {
+                        return result;
+                    }
+
+                    Thread.Sleep(timeout);
+                }
+           }
 
             Result ExecuteInternal()
             {
                 waitForExit ??= DefaultTimeout;
 
                 var output = new StringBuilder();
-                var error = new StringBuilder();
+                var error  = new StringBuilder();
 
                 using var process = new Process
                 {
                     StartInfo = new ProcessStartInfo(Exe, GetArguments())
                     {
-                        CreateNoWindow = true,
-                        UseShellExecute = false,
+                        UseShellExecute        = false,
+                        CreateNoWindow         = true,
                         RedirectStandardOutput = true,
-                        RedirectStandardError = true
+                        RedirectStandardError  = true
                     }
                 };
 
                 process.OutputDataReceived += OutputDataReceivedHandler;
-                process.ErrorDataReceived += ErrorDataReceivedHandler;
+                process.ErrorDataReceived  += ErrorDataReceivedHandler;
 
                 process.Start();
 
@@ -76,7 +112,7 @@ namespace LPRun
                 process.CancelErrorRead();
 
                 process.OutputDataReceived -= OutputDataReceivedHandler;
-                process.ErrorDataReceived -= ErrorDataReceivedHandler;
+                process.ErrorDataReceived  -= ErrorDataReceivedHandler;
 
                 if (completed)
                 {
