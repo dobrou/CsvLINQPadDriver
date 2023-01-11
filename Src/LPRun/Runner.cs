@@ -48,7 +48,7 @@ namespace LPRun
         /// </summary>
         /// <param name="Times">The number of times to retry the operation.</param>
         /// <param name="Timeout">The timeout between tries.</param>
-        public record RetryOnError(int? Times = default, TimeSpan? Timeout = default);
+        public record RetryOnError(int? Times = null, TimeSpan? Timeout = null);
 
         /// <summary>
         /// Executes LINQPad script using LPRun with optional timeout specified.
@@ -58,7 +58,7 @@ namespace LPRun
         /// <param name="retryOnError">The number of times to retry the operation on error and timeout between tries.</param>
         /// <returns>The LINQPad script execution <see cref="Result"/>.</returns>
         /// <exception cref="LPRunException">Keeps original exception as <see cref="P:System.Exception.InnerException"/>.</exception>
-        public static Result Execute(string linqFile, TimeSpan? waitForExit = default, RetryOnError? retryOnError = default)
+        public static Result Execute(string linqFile, TimeSpan? waitForExit = null, RetryOnError? retryOnError = null)
         {
            return Retry(() => Wrap(ExecuteInternal));
 
