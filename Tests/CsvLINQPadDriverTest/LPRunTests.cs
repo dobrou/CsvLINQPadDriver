@@ -89,9 +89,10 @@ namespace CsvLINQPadDriverTest
             Console.Write($"{linqScript}{Environment.NewLine}{Environment.NewLine}{queryConfig}");
 
             var (output, error, exitCode) = Runner.Execute(
-                linqScript
+                linqScript,
+                TimeSpan.FromMinutes(2)
 #if GITHUB_ACTIONS
-                , retryOnError: new (3)
+                , new (3)
 #endif
             );
 
