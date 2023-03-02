@@ -65,6 +65,8 @@ namespace CsvLINQPadDriver
         public abstract bool TrimSpaces { get; set; }
         public abstract WhitespaceTrimOptions WhitespaceTrimOptions { get; set; }
         public abstract bool UseCsvHelperSeparatorAutoDetection { get; set; }
+        public abstract bool RenameTable { get; set; }
+        public abstract TableNameFormat TableNameFormat { get; set; }
         public abstract bool UseRecordType { get; set; }
         public abstract bool UseSingleClassForSameFiles { get; set; }
         public abstract bool ShowSameFilesNonGrouped { get; set; }

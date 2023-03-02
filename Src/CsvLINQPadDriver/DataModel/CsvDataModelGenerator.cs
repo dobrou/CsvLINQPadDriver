@@ -68,14 +68,20 @@ namespace CsvLINQPadDriver.DataModel
             {
                 var tableCodeNames = new Dictionary<string, string>();
 
+                var fableNameFormatFunc = _csvDataContextDriverProperties.RenameTable
+                    ? _csvDataContextDriverProperties.TableNameFormat.GetFormatFunc()
+                    : null;
+
+                var fileIndex = 0;
+
                 foreach (var file in files.Where(File.Exists))
                 {
                     var doNotLockFiles = _csvDataContextDriverProperties.DoNotLockFiles;
                     var debugInfo = _csvDataContextDriverProperties.DebugInfo;
-                    var csvSeparator  = _csvDataContextDriverProperties.UseCsvHelperSeparatorAutoDetection
-                            ? null
-                            : _csvDataContextDriverProperties.SafeCsvSeparator
-                              ?? file.CsvDetectSeparator(doNotLockFiles, debugInfo).ToString();
+                    var csvSeparator = _csvDataContextDriverProperties.UseCsvHelperSeparatorAutoDetection
+                        ? null
+                        : _csvDataContextDriverProperties.SafeCsvSeparator
+                          ?? file.CsvDetectSeparator(doNotLockFiles, debugInfo).ToString();
                     var noBomEncoding = _csvDataContextDriverProperties.NoBomEncoding;
                     var allowComments = _csvDataContextDriverProperties.AllowComments;
                     var commentChar = _csvDataContextDriverProperties.CommentChar;
@@ -109,8 +115,9 @@ namespace CsvLINQPadDriver.DataModel
                     }
 
                     var fileName = Path.GetFileName(file);
-                    var fileDir  = (Path.GetDirectoryName($"{file.Remove(0, baseDir.Length)}x") ?? string.Empty).TrimStart(Path.DirectorySeparatorChar);
-                    var codeName = (Path.GetFileNameWithoutExtension(fileName) + (string.IsNullOrWhiteSpace(fileDir) ? string.Empty : $"_{fileDir}")).GetSafeCodeName();
+                    var fileDir = (Path.GetDirectoryName($"{file.Remove(0, baseDir.Length)}x") ?? string.Empty).TrimStart(Path.DirectorySeparatorChar);
+                    var codeName = fableNameFormatFunc?.Invoke(fileIndex++) ??
+                                   (Path.GetFileNameWithoutExtension(fileName) + (string.IsNullOrWhiteSpace(fileDir) ? string.Empty : $"_{fileDir}")).GetSafeCodeName();
 
 #if NETCOREAPP
                     ImmutableList<CsvColumn> columns;
@@ -257,8 +264,8 @@ namespace CsvLINQPadDriver.DataModel
             var maximumRelationsCount = csvTables.Count * csvTables.Count;
 
             var stringToCsvTableColumnLookup = (
-                from csvTable in csvTables 
-                from csvColumn in csvTable.Columns 
+                from csvTable in csvTables
+                from csvColumn in csvTable.Columns
                 where IsIdColumn(csvColumn.Name)
                 select (csvTable, csvColumn)
             ).ToLookup(

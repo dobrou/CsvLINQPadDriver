@@ -124,6 +124,16 @@ namespace CsvLINQPadDriver
         bool UseCsvHelperSeparatorAutoDetection { get; }
 
         /// <summary>
+        /// Indicates that the table should be renamed.
+        /// </summary>
+        bool RenameTable { get; set; }
+
+        /// <summary>
+        /// The table name format.
+        /// </summary>
+        TableNameFormat TableNameFormat { get; set; }
+
+        /// <summary>
         /// Indicates that the records should be created instead of the classes.
         /// </summary>
         bool UseRecordType { get; set; }

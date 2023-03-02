@@ -141,6 +141,18 @@ namespace CsvLINQPadDriver
             set => SetValue(value);
         }
 
+        public override bool RenameTable
+        {
+            get => GetValue(false);
+            set => SetValue(value);
+        }
+
+        public override TableNameFormat TableNameFormat
+        {
+            get => GetValue(TableNameFormat.table1);
+            set => SetValue(value);
+        }
+
         public override bool UseRecordType
         {
             get => GetValue(true);

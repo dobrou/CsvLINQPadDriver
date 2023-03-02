@@ -218,7 +218,7 @@ namespace CsvLINQPadDriver.Extensions
             string[] GetHeader()
             {
                 var header = csvParser.Record;
-                var headerFormatFunc = GetHeaderFormatFunc();
+                var headerFormatFunc = headerFormat.GetFormatFunc();
 
                 if (!header!.IsPresent(addHeader, headerDetection))
                 {
@@ -246,21 +246,6 @@ namespace CsvLINQPadDriver.Extensions
                     }
 
                     return header;
-                }
-
-                Func<int, string> GetHeaderFormatFunc()
-                {
-                    var name = Enum.GetName(typeof(HeaderFormat), headerFormat);
-                    if (name is null)
-                    {
-                        throw new IndexOutOfRangeException($"Unknown {nameof(HeaderFormat)} {headerFormat}");
-                    }
-
-                    var columnName = name[..^1];
-                    var startIndex = name[^1] == '0' ? 0 : 1;
-                    var format = $"{columnName}{{0}}";
-
-                    return i => string.Format(CultureInfo.InvariantCulture, format, i + startIndex);
                 }
 
                 Func<string> GetUniqueFallbackColumnNameGenerator()

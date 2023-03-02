@@ -183,21 +183,37 @@ namespace CsvLINQPadDriverTest
                     .Select(static stringComparison => new ScriptWithDriverPropertiesTestData(
                             "StringComparisonForInterning",
                             GetStringComparisonContext(stringComparison),
-                            GetDefaultCsvDataContextDriverPropertiesObject(stringComparison, useStringComparerForStringIntern: true)));
+                            GetDefaultCsvDataContextDriverPropertiesObject(
+                                stringComparison,
+                                useStringComparerForStringIntern: true)));
 
                 // Allow comments.
                 yield return new[] { true, false }
                     .Select(static allowComments => new ScriptWithDriverPropertiesTestData(
                             "Comments",
                             $"new {{ ExpectedCount = {(allowComments ? 1 : 2)} }}",
-                            GetDefaultCsvDataContextDriverPropertiesObject(defaultStringComparison, allowComments)));
+                            GetDefaultCsvDataContextDriverPropertiesObject(
+                                defaultStringComparison,
+                                allowComments)));
 
                 // Skip leading rows.
                 yield return new (string LinqScriptName, int Count)[] { ("SkipLeadingRows", 3), ("SkipLeadingRowsAll", 100) }
                     .Select(static skip => new ScriptWithDriverPropertiesTestData(
                             skip.LinqScriptName,
                             noContext,
-                            GetDefaultCsvDataContextDriverPropertiesObject(defaultStringComparison, skipLeadingRowsCount: skip.Count)));
+                            GetDefaultCsvDataContextDriverPropertiesObject(
+                                defaultStringComparison,
+                                skipLeadingRowsCount: skip.Count)));
+
+                // Rename table.
+                yield return new[] { true, false }
+                    .Select(static useSingleClassForSameFiles => new ScriptWithDriverPropertiesTestData(
+                        "RenameTable",
+                        noContext,
+                        GetDefaultCsvDataContextDriverPropertiesObject(
+                            defaultStringComparison,
+                            useSingleClassForSameFiles: useSingleClassForSameFiles,
+                            renameTable: true)));
             }
 
             IEnumerable<ICsvDataContextDriverProperties> GetCsvDataContextDriverProperties()
@@ -220,21 +236,25 @@ namespace CsvLINQPadDriverTest
                         csvDataContextDriverProperties.IgnoreInvalidFiles == false &&
                         csvDataContextDriverProperties.IsCacheEnabled == false &&
                         csvDataContextDriverProperties.HideRelationsFromDump == false &&
-                        csvDataContextDriverProperties.Persist == false);
+                        csvDataContextDriverProperties.Persist == false
+                    );
             }
 
             static ICsvDataContextDriverProperties GetDefaultCsvDataContextDriverPropertiesObject(
                 StringComparison stringComparison,
                 bool allowComments = false,
                 bool useStringComparerForStringIntern = false,
-                int skipLeadingRowsCount = 0) =>
+                int skipLeadingRowsCount = 0,
+                bool renameTable = false,
+                bool useSingleClassForSameFiles = true,
+                TableNameFormat tableNameFormat = TableNameFormat.table_1) =>
                 Mock.Of<ICsvDataContextDriverProperties>(csvDataContextDriverProperties =>
                     csvDataContextDriverProperties.Files == Files &&
                     csvDataContextDriverProperties.AutoDetectEncoding &&
                     csvDataContextDriverProperties.DebugInfo &&
                     csvDataContextDriverProperties.DetectRelations &&
                     csvDataContextDriverProperties.UseRecordType &&
-                    csvDataContextDriverProperties.UseSingleClassForSameFiles &&
+                    csvDataContextDriverProperties.UseSingleClassForSameFiles == useSingleClassForSameFiles &&
                     csvDataContextDriverProperties.AllowComments == allowComments &&
                     csvDataContextDriverProperties.StringComparison == stringComparison &&
                     csvDataContextDriverProperties.IsStringInternEnabled &&
@@ -244,7 +264,10 @@ namespace CsvLINQPadDriverTest
                     csvDataContextDriverProperties.HideRelationsFromDump &&
                     csvDataContextDriverProperties.Persist &&
                     csvDataContextDriverProperties.AllowSkipLeadingRows &&
-                    csvDataContextDriverProperties.SkipLeadingRowsCount == skipLeadingRowsCount);
+                    csvDataContextDriverProperties.SkipLeadingRowsCount == skipLeadingRowsCount &&
+                    csvDataContextDriverProperties.RenameTable == renameTable &&
+                    csvDataContextDriverProperties.TableNameFormat == tableNameFormat
+                );
 
             static IEnumerable<StringComparison> GetStringComparisons() =>
                 Enum.GetValues(typeof(StringComparison)).Cast<StringComparison>();

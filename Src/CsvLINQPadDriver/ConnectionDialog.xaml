@@ -9,7 +9,7 @@
     Icon="Connection.ico"
     Background="{x:Static SystemColors.ControlBrush}"
     Width="660"
-    Height="800"
+    Height="830"
     WindowStartupLocation="CenterScreen"
     ShowInTaskbar="True"
     SnapsToDevicePixels="True"
@@ -42,6 +42,9 @@
         <ObjectDataProvider x:Key="WhitespaceTrimOptionsData"
                             ObjectType="{x:Type enumObjectDataSources:WhitespaceTrimOptionsEnumObjectDataSource}"
                             MethodName="GetValues"/>
+        <ObjectDataProvider x:Key="TableNameFormatData"
+                            ObjectType="{x:Type enumObjectDataSources:TableNameFormatEnumObjectDataSource}"
+                            MethodName="GetValues"/>
 
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
 
@@ -51,7 +54,7 @@
 
         <Style TargetType="{x:Type CheckBox}">
             <Setter Property="VerticalContentAlignment" Value="Center"/>
-            <Setter Property="Margin" Value="0 0 0 1"/>
+            <Setter Property="Margin" Value="0 0.6 0 0.6"/>
         </Style>
 
         <Style TargetType="{x:Type Hyperlink}">
@@ -572,16 +575,37 @@
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" SharedSizeGroup="ComboBoxLabel"/>
                                 <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <StackPanel Style="{StaticResource CheckBoxStackPanelStyle}">
+                                <CheckBox
+                                    Name="TableNameFormatCheckBox"
+                                    IsChecked="{Binding RenameTable}"
+                                    Content="Rename _table"
+                                    ToolTip="Rename table"/>
+                            </StackPanel>
+                            <ComboBox Grid.Column="1"
+                                      Style="{StaticResource GroupComboBoxStyle}"
+                                      ToolTip="Table name format"
+                                      SelectedValue="{Binding TableNameFormat}"
+                                      ItemsSource="{Binding Source={StaticResource TableNameFormatData}}"
+                                      IsEnabled="{Binding IsChecked, ElementName=TableNameFormatCheckBox}"/>
+                        </Grid>
+
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" SharedSizeGroup="ComboBoxLabel"/>
+                                <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
 
                             <!-- ReSharper disable once MarkupAttributeTypo -->
-                            <Label Grid.Column="0" Padding="0 3 4 0" Content="S_tring comparison" Target="{Binding ElementName=StringComparisonComboBox}"/>
+                            <Label Grid.Column="0" Padding="0 5 0 0" Content="S_tring comparison" Target="{Binding ElementName=StringComparisonComboBox}"/>
                             <ComboBox Grid.Column="1"
                                       Name="StringComparisonComboBox"
                                       Style="{StaticResource EnumComboBoxStyle}"
                                       ToolTip="String comparison for Equals and GetHashCode methods"
-                                      Margin="0 1 0 0"
+                                      Margin="0 2 0 0"
                                       SelectedValue="{Binding Path=StringComparison}"
                                       ItemsSource="{Binding Source={StaticResource StringComparisonData}}"/>
                             <TextBlock Grid.Row="0" Grid.Column="2" Padding="5 3 0 0">

@@ -209,6 +209,9 @@ CSV files connection can be added to LINQPad 7/6/5 the same way as any other con
 * Use [record](https://docs.microsoft.com/en-us/dotnet/csharp/whats-new/tutorials/records) type: generate records instead of classes (LINQPad 7/6 only).
 * Generate single type for similar files: single type will be generated for similar files which allows to join similar files and query over them. Relations support is limited.
   * Also show similar files non-grouped: show similar files non-grouped in addition to similar files groups.
+* Rename table:
+  * if checked: the table name will be renamed according to the selected table name format.
+  * if unchecked: the table name is the file name.
 * String comparison: string comparison for `Equals` and `GetHashCode` methods.
 
 ### Relations ###
