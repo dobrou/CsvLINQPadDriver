@@ -608,7 +608,7 @@
                                       Margin="0 2 0 0"
                                       SelectedValue="{Binding Path=StringComparison}"
                                       ItemsSource="{Binding Source={StaticResource StringComparisonData}}"/>
-                            <TextBlock Grid.Row="0" Grid.Column="2" Padding="5 3 0 0">
+                            <TextBlock Grid.Row="0" Grid.Column="2" Padding="5 5 0 0">
                                 <Hyperlink NavigateUri="https://docs.microsoft.com/en-us/dotnet/api/system.stringcomparison#fields" ToolTip="StringComparison on Microsoft Docs" Style="{StaticResource HelpHyperlink}">
                                     <TextBlock Style="{StaticResource HelpTextBlock}"/>
                                 </Hyperlink>
