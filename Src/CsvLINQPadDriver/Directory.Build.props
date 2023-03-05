@@ -1,6 +1,6 @@
 ﻿<Project>
   <PropertyGroup>
-    <Version>7.3.16</Version>
+    <Version>7.3.17</Version>
     <PackageReleaseNotes>Added table rename.</PackageReleaseNotes>
   </PropertyGroup>
 

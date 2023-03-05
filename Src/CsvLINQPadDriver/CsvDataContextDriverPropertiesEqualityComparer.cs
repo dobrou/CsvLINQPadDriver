@@ -71,6 +71,12 @@ namespace CsvLINQPadDriver
                 yield return x.UseSingleClassForSameFiles == y.UseSingleClassForSameFiles;
                 yield return x.StringComparison           == y.StringComparison;
 
+                yield return x.RenameTable == y.RenameTable;
+                if (x.RenameTable && y.RenameTable)
+                {
+                    yield return x.TableNameFormat == y.TableNameFormat;
+                }
+
                 yield return x.DetectRelations == y.DetectRelations;
 
                 IEnumerable<string> GetFiles(IEnumerable<string> files) =>
