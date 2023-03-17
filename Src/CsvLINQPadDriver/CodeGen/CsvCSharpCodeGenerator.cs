@@ -111,6 +111,7 @@ namespace CsvLINQPadDriver.CodeGen
     // Data types{string.Join(Environment.NewLine, groups.Select(static grouping => grouping.OrderByDescending(code => code.Code.Length).First().Code))} // data types
 }} // namespace
 // {stopwatch.Elapsed}
+// .NET {Environment.Version}
 ", groups);
 
             static string GetBoolConst(bool value) =>
