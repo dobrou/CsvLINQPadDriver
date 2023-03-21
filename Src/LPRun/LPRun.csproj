@@ -20,13 +20,13 @@
   <PropertyGroup>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <Authors>Ivan Ivon (ivan.ivon@gmail.com), LINQPad/LPRun by Joseph Albahari</Authors>
+    <Authors>Ivan Ivon (ivan.ivon@gmail.com), LINQPad.Runtime/LPRun binaries by Joseph Albahari (licensed under https://www.linqpad.net/eula.txt)</Authors>
     <RepositoryType>git</RepositoryType>
     <PackageTags>linqpad lprun tests unittests integrationtests windows</PackageTags>
     <PackageProjectUrl>https://github.com/i2van/CsvLINQPadDriver/tree/master/Src/LPRun</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/i2van/CsvLINQPadDriver</RepositoryUrl>
-    <Copyright>Copyright © 2021-$([System.DateTime]::Now.Year) Ivan Ivon, LINQPad/LPRun by Joseph Albahari</Copyright>
+    <Copyright>Copyright © 2021-$([System.DateTime]::Now.Year) $(Authors)</Copyright>
     <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
@@ -61,6 +61,11 @@
       <PackagePath>contentFiles\any\netstandard2.1\LPRun\Bin</PackagePath>
     </Content>
     <Content Include="LPRun\Bin\LPRun7-x64.exe">
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <PackagePath>contentFiles\any\netstandard2.1\LPRun\Bin</PackagePath>
+    </Content>
+    <Content Include="LPRun\Bin\eula.txt">
       <PackageCopyToOutput>true</PackageCopyToOutput>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <PackagePath>contentFiles\any\netstandard2.1\LPRun\Bin</PackagePath>

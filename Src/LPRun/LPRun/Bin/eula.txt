@@ -1,0 +1,47 @@
+﻿https://www.linqpad.net/eula.txt
+
+LINQPad End User License Agreement
+
+LINQPad Pty Ltd (the “licensor”) grants you (the “licensee”) a nonexclusive license to
+use LINQPad, free and paid editions, for personal and commercial use. The licensor retains
+all intellectual ownership of LINQPad.
+
+Usage
+
+You may redistribute an unmodified version of the LINQPad executable with a commercial or 
+non-commercial application or library for the sole purpose of allowing end-users to run LINQPad.
+Redistribution for other purposes requires written permission from the licensor.
+
+You may not make or distribute modifications to LINQPad, nor sub-license LINQPad, nor circumvent
+any paid edition usage restrictions described on the product pages at www.linqpad.net.
+
+Collection of Information
+
+LINQPad automatically contacts a web server:
+- to check for and retrieve updates;
+- to post feedback and error reports (if the licensee chooses);
+- to activate a paid edition.
+LINQPad sends only a minimal set of data required to reasonably perform the task.
+
+Disclaimer
+
+LINQPad is provided "as is" without any warranty of any kind, either expressed or implied. 
+The licensor shall in no event be liable for any damages including, but not limited to,
+direct, indirect, special, incidental or consequential damages or other losses arising out
+of the use of or inability to use the product.
+
+Licensing Terminology
+
+- A single-user license is for use by a single developer, and can be installed on up to 3
+  machines at a time, plus 3 virtual machines. 
+
+- A 10-user team license is for use by up to ten developers, on up to 25 machines.
+
+- An Enterprise license can be used by an unlimited number of developers, for use within a single
+  company or organization, in up to 10 locations. A location is defined as a normal place of
+  business. This limit does not apply to employees working from home or remotely.
+
+LINQPad © LINQPad Pty Ltd
+Marmion, AUSTRALIA
+ABN 63629706663
+All rights reserved
