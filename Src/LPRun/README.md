@@ -19,7 +19,7 @@
 * [Credits](#credits)
   * [Tools](#tools)
   * [NuGet](#nuget)
-* [License](#license)
+* [Licenses](#licenses)
 
 ## Description ##
 
@@ -222,6 +222,7 @@ public class LPRunTests
 * [Fluent Assertions](https://github.com/fluentassertions/fluentassertions)
 * [NUnit](https://github.com/nunit/nunit)
 
-## License ##
+## Licenses ##
 
-[MIT](https://opensource.org/licenses/MIT), see [LICENSE](https://github.com/i2van/CsvLINQPadDriver/blob/master/LICENSE) file for details.
+* [LICENSE](https://github.com/i2van/CsvLINQPadDriver/blob/master/Src/LPRun/LICENSE) ([MIT](https://opensource.org/licenses/MIT))
+* [LINQPad End User License Agreement](https://www.linqpad.net/eula.txt)
