@@ -70,6 +70,11 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <PackagePath>contentFiles\any\netstandard2.1\LPRun\Bin</PackagePath>
     </Content>
+    <Content Include="LPRun\Bin\eula.url">
+      <PackageCopyToOutput>true</PackageCopyToOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <PackagePath>contentFiles\any\netstandard2.1\LPRun\Bin</PackagePath>
+    </Content>
     <Content Include="README.md">
       <Pack>true</Pack>
       <PackagePath/>

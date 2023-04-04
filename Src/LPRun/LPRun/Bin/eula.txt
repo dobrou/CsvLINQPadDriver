@@ -1,6 +1,4 @@
-﻿https://www.linqpad.net/eula.txt
-
-LINQPad End User License Agreement
+﻿LINQPad End User License Agreement
 
 LINQPad Pty Ltd (the “licensor”) grants you (the “licensee”) a nonexclusive license to
 use LINQPad, free and paid editions, for personal and commercial use. The licensor retains
