@@ -214,7 +214,7 @@ public class LPRunTests
 
 ### Tools ###
 
-* [LINQPad 7](https://www.linqpad.net/LINQPad7.aspx)/[LINQPad 6](https://www.linqpad.net/LINQPad6.aspx)
+* [LINQPad 7](https://www.linqpad.net/LINQPad7.aspx)
 * [LINQPad Command-Line and Scripting](https://www.linqpad.net/lprun.aspx)
 
 ### NuGet ###
