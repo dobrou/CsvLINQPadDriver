@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace CsvLINQPadDriver.CodeGen
 {
-    public class LazyEnumerable<T> : IEnumerable<T>
+    public sealed class LazyEnumerable<T> : IEnumerable<T>
     {
         private readonly Lazy<IEnumerable<T>> _data;
 

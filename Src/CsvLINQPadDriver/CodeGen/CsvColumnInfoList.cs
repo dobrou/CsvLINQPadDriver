@@ -2,7 +2,7 @@
 
 namespace CsvLINQPadDriver.CodeGen
 {
-    public class CsvColumnInfoList : List<CsvColumnInfo>
+    public sealed class CsvColumnInfoList : List<CsvColumnInfo>
     {
         // ReSharper disable once UnusedMember.Global
         public void Add(int csvColumnIndex, string name) =>

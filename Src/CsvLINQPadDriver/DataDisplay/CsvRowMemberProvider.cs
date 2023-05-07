@@ -17,14 +17,14 @@ using CsvLINQPadDriver.Bcl.Extensions;
 
 namespace CsvLINQPadDriver.DataDisplay
 {
-    internal class CsvRowMemberProvider : ICustomMemberProvider
+    internal sealed class CsvRowMemberProvider : ICustomMemberProvider
     {
         private static readonly Dictionary<Type, ProviderData> ProvidersDataCache = new();
 
         private readonly object _objectToDisplay;
         private readonly ProviderData _providerData;
 
-        protected CsvRowMemberProvider(object objectToDisplay, ProviderData providerData)
+        private CsvRowMemberProvider(object objectToDisplay, ProviderData providerData)
         {
             _objectToDisplay = objectToDisplay;
             _providerData = providerData;
@@ -43,9 +43,9 @@ namespace CsvLINQPadDriver.DataDisplay
         public IEnumerable<object> GetValues() =>
             _providerData.ValuesGetter(_objectToDisplay);
 
-        protected record ProviderData(IList<PropertyInfo> Properties, IList<FieldInfo> Fields, Func<object, object[]> ValuesGetter);
+        private sealed record ProviderData(IList<PropertyInfo> Properties, IList<FieldInfo> Fields, Func<object, object[]> ValuesGetter);
 
-        protected static ProviderData GetProviderData(Type objectType)
+        private static ProviderData GetProviderData(Type objectType)
         {
             var param = Parameter(typeof(object));
             var properties = objectType.GetProperties().Where(IsMemberVisible).ToImmutableList();

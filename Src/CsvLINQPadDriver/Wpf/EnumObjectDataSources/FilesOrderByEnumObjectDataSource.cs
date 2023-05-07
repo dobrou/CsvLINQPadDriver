@@ -1,6 +1,6 @@
 ﻿namespace CsvLINQPadDriver.Wpf.EnumObjectDataSources
 {
-    internal class FilesOrderByEnumObjectDataSource : EnumObjectDataSource<FilesOrderBy>
+    internal sealed class FilesOrderByEnumObjectDataSource : EnumObjectDataSource<FilesOrderBy>
     {
     }
 }

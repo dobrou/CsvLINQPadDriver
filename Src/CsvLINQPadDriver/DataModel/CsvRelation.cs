@@ -1,6 +1,6 @@
 ﻿namespace CsvLINQPadDriver.DataModel
 {
-    internal record CsvRelation(
+    internal sealed record CsvRelation(
         CsvTable SourceTable,
         CsvTable TargetTable,
         CsvColumn SourceColumn,

@@ -15,7 +15,7 @@ using CsvLINQPadDriver.Bcl.Extensions;
 
 namespace CsvLINQPadDriver.DataModel
 {
-    internal class CsvDataModelGenerator
+    internal sealed class CsvDataModelGenerator
     {
         private const StringComparison IdsComparison = StringComparison.OrdinalIgnoreCase;
 

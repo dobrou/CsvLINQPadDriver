@@ -1,6 +1,6 @@
 ﻿namespace CsvLINQPadDriver.Wpf.EnumObjectDataSources
 {
-    internal class FileTypeEnumObjectDataSource : EnumObjectDataSource<FileType>
+    internal sealed class FileTypeEnumObjectDataSource : EnumObjectDataSource<FileType>
     {
     }
 }

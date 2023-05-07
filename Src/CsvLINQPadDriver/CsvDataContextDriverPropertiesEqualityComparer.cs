@@ -5,7 +5,7 @@ using CsvLINQPadDriver.Extensions;
 
 namespace CsvLINQPadDriver
 {
-    internal class CsvDataContextDriverPropertiesEqualityComparer : IEqualityComparer<ICsvDataContextDriverProperties>
+    internal sealed class CsvDataContextDriverPropertiesEqualityComparer : IEqualityComparer<ICsvDataContextDriverProperties>
     {
         public static readonly CsvDataContextDriverPropertiesEqualityComparer Default = new();
 

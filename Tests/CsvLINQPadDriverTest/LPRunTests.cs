@@ -20,7 +20,7 @@ using LPRun;
 namespace CsvLINQPadDriverTest
 {
     [TestFixture]
-    public class LPRunTests
+    public sealed class LPRunTests
     {
         private static readonly string Files = Context.GetDataFullPath("**.csv");
 
@@ -61,7 +61,7 @@ namespace CsvLINQPadDriverTest
             }
         }
 
-        public record ScriptWithDriverPropertiesTestData(string LinqScriptName, string? Context, ICsvDataContextDriverProperties DriverProperties, params string?[] Defines)
+        public sealed record ScriptWithDriverPropertiesTestData(string LinqScriptName, string? Context, ICsvDataContextDriverProperties DriverProperties, params string?[] Defines)
         {
             public int Index { get; init; }
         }

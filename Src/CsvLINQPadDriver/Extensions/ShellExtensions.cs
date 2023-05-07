@@ -7,7 +7,7 @@ namespace CsvLINQPadDriver.Extensions
 {
     internal static partial class ShellExtensions
     {
-        public record ShellResult(string Message)
+        public sealed record ShellResult(string Message)
         {
             public ShellResult() : this(string.Empty)
             {

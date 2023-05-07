@@ -3,7 +3,7 @@ using System.Windows.Input;
 
 namespace CsvLINQPadDriver.Wpf
 {
-    internal class RoutedUICommandEx : RoutedUICommand
+    internal sealed class RoutedUICommandEx : RoutedUICommand
     {
         private readonly string? _toolTip;
 

@@ -2,7 +2,7 @@
 
 namespace CsvLINQPadDriver.DataModel
 {
-    internal record CsvTable
+    internal sealed record CsvTable
     (
         string FilePath,
         string? CsvSeparator,

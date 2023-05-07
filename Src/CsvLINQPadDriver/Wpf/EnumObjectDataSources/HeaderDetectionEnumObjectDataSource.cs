@@ -1,6 +1,6 @@
 ﻿namespace CsvLINQPadDriver.Wpf.EnumObjectDataSources
 {
-    internal class HeaderDetectionEnumObjectDataSource : EnumObjectDataSource<HeaderDetection>
+    internal sealed class HeaderDetectionEnumObjectDataSource : EnumObjectDataSource<HeaderDetection>
     {
     }
 }

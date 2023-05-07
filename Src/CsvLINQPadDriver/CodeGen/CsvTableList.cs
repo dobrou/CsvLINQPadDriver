@@ -6,7 +6,7 @@ using LINQPad;
 
 namespace CsvLINQPadDriver.CodeGen
 {
-    internal class CsvTableList<TRow> : CsvTableBase<TRow>, IList<TRow>
+    internal sealed class CsvTableList<TRow> : CsvTableBase<TRow>, IList<TRow>
         where TRow : ICsvRowBase, new()
     {
         private readonly IDictionary<string, ILookup<string, TRow>> _indices = new Dictionary<string, ILookup<string, TRow>>();

@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace CsvLINQPadDriver.CodeGen
 {
-    internal class CsvTableEnumerable<TRow> : CsvTableBase<TRow>
+    internal sealed class CsvTableEnumerable<TRow> : CsvTableBase<TRow>
         where TRow : ICsvRowBase, new()
     {
         public CsvTableEnumerable(

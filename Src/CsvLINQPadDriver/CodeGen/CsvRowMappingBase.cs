@@ -6,7 +6,7 @@ using static System.Linq.Expressions.Expression;
 
 namespace CsvLINQPadDriver.CodeGen
 {
-    public class CsvRowMappingBase<TRow>
+    public sealed class CsvRowMappingBase<TRow>
         where TRow : ICsvRowBase, new()
     {
         private readonly Action<TRow, string?[]> _propertiesInit;

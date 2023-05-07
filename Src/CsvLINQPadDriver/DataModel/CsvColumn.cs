@@ -1,6 +1,6 @@
 ﻿namespace CsvLINQPadDriver.DataModel
 {
-    internal record CsvColumn
+    internal sealed record CsvColumn
     (
         string Name,
         int Index

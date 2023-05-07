@@ -577,7 +577,7 @@ namespace CsvLINQPadDriver.Extensions
             }
         }
 
-        public record DeduceFileOrFolderResult(bool IsFile, string Path);
+        public sealed record DeduceFileOrFolderResult(bool IsFile, string Path);
 
         public static DeduceFileOrFolderResult DeduceIsFileOrFolder(this string path, bool removeMask = false) =>
             MatchDeduceIsFileOrFolderRegex().IsMatch(path)

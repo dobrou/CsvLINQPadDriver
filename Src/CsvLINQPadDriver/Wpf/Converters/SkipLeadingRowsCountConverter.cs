@@ -8,7 +8,7 @@ namespace CsvLINQPadDriver.Wpf.Converters
 {
     [ValueConversion(typeof(string), typeof(int))]
     [ValueConversion(typeof(int), typeof(string))]
-    internal class SkipLeadingRowsCountConverter : IValueConverter
+    internal sealed class SkipLeadingRowsCountConverter : IValueConverter
     {
         private const int DefaultCount = 0;
 
