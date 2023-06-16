@@ -1,7 +1,13 @@
 ﻿<Project>
   <PropertyGroup>
-    <Version>7.3.17</Version>
-    <PackageReleaseNotes>Added table rename.</PackageReleaseNotes>
+    <Version>7.3.18</Version>
+    <PackageReleaseNotes>Non-Safe extension methods throw exception on invalid data.
+Added ToUtcDateTimeFromUnixTimeSeconds, ToUtcDateTimeFromUnixTimeMilliseconds, ToUtcDateTimeFromUnixTimeSecondsSafe, ToUtcDateTimeFromUnixTimeMillisecondsSafe.
+Added ToUtcDateOffsetTimeFromUnixTimeSeconds, ToUtcDateTimeOffsetFromUnixTimeMilliseconds, ToUtcDateOffsetTimeFromUnixTimeSecondsSafe, ToUtcDateTimeOffsetFromUnixTimeMillisecondsSafe.</PackageReleaseNotes>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <NoWarn>1701;1702;8032;NETSDK1182;NETSDK1138</NoWarn>
   </PropertyGroup>
 
   <PropertyGroup>

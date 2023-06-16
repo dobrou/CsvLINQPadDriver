@@ -249,7 +249,7 @@ Don't expect performance comparable with SQL server. But for reasonably sized CS
 
 ## Data Types ##
 
-Everything is string. Because there is no data type info in CSV files, this is best we can do.
+Everything is `string`. Because there is no data type info in CSV files, this is the best we can do - see conversion [extension methods](#extension-methods).
 
 ## Generated Data Object ##
 
@@ -361,7 +361,10 @@ Authors.First()
 
 ### Extension Methods ###
 
-Driver provides extension methods for converting `string` (and `ReadOnlySpan<char>` for .NET Core/.NET) to `T?`. `CultureInfo.InvariantCulture` is used by default.
+* Driver provides extension methods for converting `string` (and `ReadOnlySpan<char>` for .NET Core/.NET) to `T?`
+* `CultureInfo.InvariantCulture` is used for `provider` by default.
+* `null` is returned for `null` or empty input.
+* `CsvLINQPadDriver.ConvertException` is thrown for non-`Safe` methods.
 
 ```csharp
 public static class Styles
@@ -402,201 +405,406 @@ public static class Styles
 // Bool
 bool? ToBool(
     NumberStyles style = Styles.Integer,
-    CultureInfo? cultureInfo = null);
+    IFormatProvider? provider = null);
+
+bool? ToBoolSafe(
+    NumberStyles style = Styles.Integer,
+    IFormatProvider? provider = null);
 
 // SByte
 sbyte? ToSByte(
     NumberStyles style = Styles.Integer,
-    CultureInfo? cultureInfo = null);
+    IFormatProvider? provider = null);
+
+sbyte? ToSByteSafe(
+    NumberStyles style = Styles.Integer,
+    IFormatProvider? provider = null);
 
 // Byte
 byte? ToByte(
     NumberStyles style = Styles.Integer,
-    CultureInfo? cultureInfo = null);
+    IFormatProvider? provider = null);
+
+byte? ToByteSafe(
+    NumberStyles style = Styles.Integer,
+    IFormatProvider? provider = null);
 
 // Short
 short? ToShort(
     NumberStyles style = Styles.Integer,
-    CultureInfo? cultureInfo = null);
+    IFormatProvider? provider = null);
+
+short? ToShortSafe(
+    NumberStyles style = Styles.Integer,
+    IFormatProvider? provider = null);
 
 // UShort
 ushort? ToUShort(
     NumberStyles style = Styles.Integer,
-    CultureInfo? cultureInfo = null);
+    IFormatProvider? provider = null);
+
+ushort? ToUShortSafe(
+    NumberStyles style = Styles.Integer,
+    IFormatProvider? provider = null);
 
 // Int
 int? ToInt(
     NumberStyles style = Styles.Integer,
-    CultureInfo? cultureInfo = null);
+    IFormatProvider? provider = null);
+
+int? ToIntSafe(
+    NumberStyles style = Styles.Integer,
+    IFormatProvider? provider = null);
 
 // UInt
 uint? ToUInt(
     NumberStyles style = Styles.Integer,
-    CultureInfo? cultureInfo = null);
+    IFormatProvider? provider = null);
+
+uint? ToUIntSafe(
+    NumberStyles style = Styles.Integer,
+    IFormatProvider? provider = null);
 
 // Long
 long? ToLong(
     NumberStyles style = Styles.Integer,
-    CultureInfo? cultureInfo = null);
+    IFormatProvider? provider = null);
+
+long? ToLongSafe(
+    NumberStyles style = Styles.Integer,
+    IFormatProvider? provider = null);
 
 // ULong
 ulong? ToULong(
     NumberStyles style = Styles.Integer,
-    CultureInfo? cultureInfo = null);
+    IFormatProvider? provider = null);
+
+ulong? ToULongSafe(
+    NumberStyles style = Styles.Integer,
+    IFormatProvider? provider = null);
 
 // NInt: .NET 5+
 nint? ToNInt(
     NumberStyles style = Styles.Integer,
-    CultureInfo? cultureInfo = null);
+    IFormatProvider? provider = null);
+
+nint? ToNIntSafe(
+    NumberStyles style = Styles.Integer,
+    IFormatProvider? provider = null);
 
 // NUInt: .NET 5+
 nuint? ToNUInt(
     NumberStyles style = Styles.Integer,
-    CultureInfo? cultureInfo = null);
+    IFormatProvider? provider = null);
+
+nuint? ToNUIntSafe(
+    NumberStyles style = Styles.Integer,
+    IFormatProvider? provider = null);
 
 // Float
 float? ToFloat(
     NumberStyles style = Styles.Float,
-    CultureInfo? cultureInfo = null);
+    IFormatProvider? provider = null);
+
+float? ToFloatSafe(
+    NumberStyles style = Styles.Float,
+    IFormatProvider? provider = null);
 
 // Double
 double? ToDouble(
     NumberStyles style = Styles.Float,
-    CultureInfo? cultureInfo = null);
+    IFormatProvider? provider = null);
+
+double? ToDoubleSafe(
+    NumberStyles style = Styles.Float,
+    IFormatProvider? provider = null);
 
 // Decimal
 decimal? ToDecimal(
     NumberStyles style = Styles.Decimal,
-    CultureInfo? cultureInfo = null);
+    IFormatProvider? provider = null);
+
+decimal? ToDecimalSafe(
+    NumberStyles style = Styles.Decimal,
+    IFormatProvider? provider = null);
 
 // Half: .NET 5+
 Half? ToHalf(
     NumberStyles style = Styles.Float,
-    CultureInfo? cultureInfo = null);
+    IFormatProvider? provider = null);
+
+Half? ToHalfSafe(
+    NumberStyles style = Styles.Float,
+    IFormatProvider? provider = null);
 
 // Int128: .NET 7+
 static Int128? ToInt128(
     NumberStyles style = Styles.Integer,
-    CultureInfo? cultureInfo = null);
+    IFormatProvider? provider = null);
+
+static Int128? ToInt128Safe(
+    NumberStyles style = Styles.Integer,
+    IFormatProvider? provider = null);
 
 // UInt128: .NET 7+
 static UInt128? ToUInt128(
     NumberStyles style = Styles.Integer,
-    CultureInfo? cultureInfo = null);
+    IFormatProvider? provider = null);
+
+static UInt128? ToUInt128Safe(
+    NumberStyles style = Styles.Integer,
+    IFormatProvider? provider = null);
 
 // Guid
 Guid? ToGuid();
+Guid? ToGuidSafe();
+
 Guid? ToGuid(string format);
+Guid? ToGuidSafe(string format);
+
 Guid? ToGuid(ReadOnlySpan<char> format);
+Guid? ToGuidSafe(ReadOnlySpan<char> format);
+
 Guid? ToGuid(string[] formats);
+Guid? ToGuidSafe(string[] formats);
 
 // DateTime
 DateTime? ToDateTime(
     DateTimeStyles style = Styles.DateTime,
-    CultureInfo? cultureInfo = null);
+    IFormatProvider? provider = null);
+
+DateTime? ToDateTimeSafe(
+    DateTimeStyles style = Styles.DateTime,
+    IFormatProvider? provider = null);
 
 DateTime? ToDateTime(
     string format,
     DateTimeStyles style = Styles.DateTime,
-    CultureInfo? cultureInfo = null);
+    IFormatProvider? provider = null);
+
+DateTime? ToDateTimeSafe(
+    string format,
+    DateTimeStyles style = Styles.DateTime,
+    IFormatProvider? provider = null);
 
 // .NET Core/.NET
 DateTime? ToDateTime(
     ReadOnlySpan<char> format,
     DateTimeStyles style = Styles.DateTime,
-    CultureInfo? cultureInfo = null);
+    IFormatProvider? provider = null);
+
+DateTime? ToDateTimeSafe(
+    ReadOnlySpan<char> format,
+    DateTimeStyles style = Styles.DateTime,
+    IFormatProvider? provider = null);
 
 DateTime? ToDateTime(
     string[] formats,
     DateTimeStyles style = Styles.DateTime,
-    CultureInfo? cultureInfo = null);
+    IFormatProvider? provider = null);
+
+DateTime? ToDateTimeSafe(
+    string[] formats,
+    DateTimeStyles style = Styles.DateTime,
+    IFormatProvider? provider = null);
 
 DateTime? ToUtcDateTime(
     DateTimeStyles style = Styles.UtcDateTime,
-    CultureInfo? cultureInfo = null);
+    IFormatProvider? provider = null);
+
+DateTime? ToUtcDateTimeSafe(
+    DateTimeStyles style = Styles.UtcDateTime,
+    IFormatProvider? provider = null);
+
+DateTime? ToUtcDateTimeFromUnixTimeSeconds(
+    NumberStyles style = Styles.Integer,
+    IFormatProvider? provider = null);
+
+DateTime? ToUtcDateTimeFromUnixTimeSecondsSafe(
+    NumberStyles style = Styles.Integer,
+    IFormatProvider? provider = null);
+
+DateTime? ToUtcDateTimeFromUnixTimeMilliseconds(
+    NumberStyles style = Styles.Integer,
+    IFormatProvider? provider = null);
+
+DateTime? ToUtcDateTimeFromUnixTimeMillisecondsSafe(
+    NumberStyles style = Styles.Integer,
+    IFormatProvider? provider = null);
 
 // DateTimeOffset
 DateTimeOffset? ToDateTimeOffset(
     DateTimeStyles style = Styles.DateTimeOffset,
-    CultureInfo? cultureInfo = null);
+    IFormatProvider? provider = null);
+
+DateTimeOffset? ToDateTimeOffsetSafe(
+    DateTimeStyles style = Styles.DateTimeOffset,
+    IFormatProvider? provider = null);
 
 DateTimeOffset? ToDateTimeOffset(
     string format,
     DateTimeStyles style = Styles.DateTimeOffset,
-    CultureInfo? cultureInfo = null);
+    IFormatProvider? provider = null);
+
+DateTimeOffset? ToDateTimeOffsetSafe(
+    string format,
+    DateTimeStyles style = Styles.DateTimeOffset,
+    IFormatProvider? provider = null);
 
 // .NET Core/.NET
 DateTimeOffset? ToDateTimeOffset(
     ReadOnlySpan<char> format,
     DateTimeStyles style = Styles.DateTimeOffset,
-    CultureInfo? cultureInfo = null);
+    IFormatProvider? provider = null);
+
+DateTimeOffset? ToDateTimeOffsetSafe(
+    ReadOnlySpan<char> format,
+    DateTimeStyles style = Styles.DateTimeOffset,
+    IFormatProvider? provider = null);
 
 DateTimeOffset? ToDateTimeOffset(
     string[] formats,
     DateTimeStyles style = Styles.DateTimeOffset,
-    CultureInfo? cultureInfo = null);
+    IFormatProvider? provider = null);
+
+DateTimeOffset? ToDateTimeOffsetSafe(
+    string[] formats,
+    DateTimeStyles style = Styles.DateTimeOffset,
+    IFormatProvider? provider = null);
+
+DateTimeOffset? ToDateTimeOffsetFromUnixTimeSeconds(
+    NumberStyles style = Styles.Integer,
+    IFormatProvider? provider = null);
+
+DateTimeOffset? ToDateTimeOffsetFromUnixTimeSecondsSafe(
+    NumberStyles style = Styles.Integer,
+    IFormatProvider? provider = null);
+
+DateTimeOffset? ToDateTimeOffsetFromUnixTimeMilliseconds(
+    NumberStyles style = Styles.Integer,
+    IFormatProvider? provider = null);
+
+DateTimeOffset? ToDateTimeOffsetFromUnixTimeMillisecondsSafe(
+    NumberStyles style = Styles.Integer,
+    IFormatProvider? provider = null);
 
 // TimeSpan
 TimeSpan? ToTimeSpan(
-    CultureInfo? cultureInfo = null);
+    IFormatProvider? provider = null);
+
+TimeSpan? ToTimeSpanSafe(
+    IFormatProvider? provider = null);
 
 TimeSpan? ToTimeSpan(
     string format,
     TimeSpanStyles style = Styles.TimeSpan,
-    CultureInfo? cultureInfo = null);
+    IFormatProvider? provider = null);
+
+TimeSpan? ToTimeSpanSafe(
+    string format,
+    TimeSpanStyles style = Styles.TimeSpan,
+    IFormatProvider? provider = null);
 
 // .NET Core/.NET
 TimeSpan? ToTimeSpan(
     ReadOnlySpan<char> format,
     TimeSpanStyles style = Styles.TimeSpan,
-    CultureInfo? cultureInfo = null);
+    IFormatProvider? provider = null);
+
+TimeSpan? ToTimeSpanSafe(
+    ReadOnlySpan<char> format,
+    TimeSpanStyles style = Styles.TimeSpan,
+    IFormatProvider? provider = null);
 
 TimeSpan? ToTimeSpan(
     string[] formats,
     TimeSpanStyles style = Styles.TimeSpan,
-    CultureInfo? cultureInfo = null);
+    IFormatProvider? provider = null);
+
+TimeSpan? ToTimeSpanSafe(
+    string[] formats,
+    TimeSpanStyles style = Styles.TimeSpan,
+    IFormatProvider? provider = null);
 
 // DateOnly: .NET 6+
 DateOnly? ToDateOnly(
     DateTimeStyles style = Styles.DateOnly,
-    CultureInfo? cultureInfo = null);
+    IFormatProvider? provider = null);
+
+DateOnly? ToDateOnlySafe(
+    DateTimeStyles style = Styles.DateOnly,
+    IFormatProvider? provider = null);
 
 DateOnly? ToDateOnly(
     string format,
     DateTimeStyles style = Styles.DateOnly,
-    CultureInfo? cultureInfo = null);
+    IFormatProvider? provider = null);
+
+DateOnly? ToDateOnlySafe(
+    string format,
+    DateTimeStyles style = Styles.DateOnly,
+    IFormatProvider? provider = null);
 
 // .NET Core/.NET
 DateOnly? ToDateOnly(
     ReadOnlySpan<char> format,
     DateTimeStyles style = Styles.DateOnly,
-    CultureInfo? cultureInfo = null);
+    IFormatProvider? provider = null);
+
+DateOnly? ToDateOnlySafe(
+    ReadOnlySpan<char> format,
+    DateTimeStyles style = Styles.DateOnly,
+    IFormatProvider? provider = null);
 
 DateOnly? ToDateOnly(
     string[] formats,
     DateTimeStyles style = Styles.DateOnly,
-    CultureInfo? cultureInfo = null);
+    IFormatProvider? provider = null);
+
+DateOnly? ToDateOnlySafe(
+    string[] formats,
+    DateTimeStyles style = Styles.DateOnly,
+    IFormatProvider? provider = null);
 
 // TimeOnly: .NET 6+
 TimeOnly? ToTimeOnly(
     DateTimeStyles style = Styles.TimeOnly,
-    CultureInfo? cultureInfo = null);
+    IFormatProvider? provider = null);
+
+TimeOnly? ToTimeOnlySafe(
+    DateTimeStyles style = Styles.TimeOnly,
+    IFormatProvider? provider = null);
 
 TimeOnly? ToTimeOnly(
     string format,
     DateTimeStyles style = Styles.TimeOnly,
-    CultureInfo? cultureInfo = null);
+    IFormatProvider? provider = null);
+
+TimeOnly? ToTimeOnlySafe(
+    string format,
+    DateTimeStyles style = Styles.TimeOnly,
+    IFormatProvider? provider = null);
 
 // .NET Core/.NET
 TimeOnly? ToTimeOnly(
     ReadOnlySpan<char> format,
     DateTimeStyles style = Styles.TimeOnly,
-    CultureInfo? cultureInfo = null);
+    IFormatProvider? provider = null);
+
+TimeOnly? ToTimeOnlySafe(
+    ReadOnlySpan<char> format,
+    DateTimeStyles style = Styles.TimeOnly,
+    IFormatProvider? provider = null);
 
 TimeOnly? ToTimeOnly(
     string[] formats,
     DateTimeStyles style = Styles.TimeOnly,
-    CultureInfo? cultureInfo = null);
+    IFormatProvider? provider = null);
+
+TimeOnly? ToTimeOnlySafe(
+    string[] formats,
+    DateTimeStyles style = Styles.TimeOnly,
+    IFormatProvider? provider = null);
 ```
 
 ## Known Issues ##

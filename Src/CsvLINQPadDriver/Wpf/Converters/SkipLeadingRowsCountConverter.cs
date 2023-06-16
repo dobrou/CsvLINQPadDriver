@@ -17,7 +17,7 @@ namespace CsvLINQPadDriver.Wpf.Converters
             var intValue = (int)value;
             return intValue == DefaultCount
                         ? string.Empty
-                        : intValue.ToString(StringExtensions.DefaultCultureInfo);
+                        : intValue.ToString(StringExtensions.DefaultFormatProvider);
         }
 
         public object? ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) =>

@@ -1,4 +1,4 @@
-const string Header = "Header";
+const string header = "Header";
 
-SkipLeadingRows.First()[Header].Should().Be("Value1", Reason());
-SkipLeadingRows. Last()[Header].Should().Be("Value2", Reason());
+SkipLeadingRows.First()[header].Should().Be("Value1", Reason());
+SkipLeadingRows. Last()[header].Should().Be("Value2", Reason());

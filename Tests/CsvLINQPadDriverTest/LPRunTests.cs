@@ -106,7 +106,7 @@ namespace CsvLINQPadDriverTest
 
             IEnumerable<string> GetQueryHeaders()
             {
-                yield return ConnectionHeader.Get("CsvLINQPadDriver", "CsvLINQPadDriver.CsvDataContextDriver", driverProperties, "System.Runtime.CompilerServices");
+                yield return ConnectionHeader.Get("CsvLINQPadDriver", "CsvLINQPadDriver.CsvDataContextDriver", driverProperties, "System.Runtime.CompilerServices", nameof(CsvLINQPadDriver));
                 yield return defines.Where(ShouldRender).Select(static define => $"#define {define}").JoinNewLine();
                 yield return @"string Reason([CallerLineNumber] int sourceLineNumber = 0) => $""something went wrong at line #{sourceLineNumber}"";";
                 if (ShouldRender(context))
@@ -146,7 +146,7 @@ namespace CsvLINQPadDriverTest
                             driverProperties.UseRecordType ? "USE_RECORD_TYPE" : null)));
 
                 // Single driver properties.
-                yield return new[] { "Extensions", "SimilarFilesRelations" }
+                yield return new[] { "Extensions", "ExtensionsSafe", "SimilarFilesRelations" }
                     .Select(linqFile => new ScriptWithDriverPropertiesTestData(
                             linqFile,
                             noContext,

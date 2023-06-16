@@ -121,7 +121,7 @@ namespace CsvLINQPadDriver.CodeGen
                 hasValue ? valueProvider() : "null";
 
             static string IntToStr(int value) =>
-                value.ToString(Extensions.StringExtensions.DefaultCultureInfo);
+                value.ToString(Extensions.StringExtensions.DefaultFormatProvider);
 
             static string ParamName(string name) =>
                 $"{name}: ";
