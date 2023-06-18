@@ -82,19 +82,19 @@ namespace CsvLINQPadDriver.Extensions
 #endif
 
         public static sbyte? ToSByteSafe(this string? s, NumberStyles style = Styles.Integer, IFormatProvider? provider = null) =>
-            GetValueOrNull(sbyte.TryParse(s, style, provider.ResolveFormatProvider(), out var parsedValue), parsedValue);
+            sbyte.TryParse(s, style, provider.ResolveFormatProvider(), out var parsedValue) ? parsedValue : null;
 
 #if NETCOREAPP
         public static sbyte? ToSByteSafe(this ReadOnlySpan<char> s, NumberStyles style = Styles.Integer, IFormatProvider? provider = null) =>
-            GetValueOrNull(sbyte.TryParse(s, style, provider.ResolveFormatProvider(), out var parsedValue), parsedValue);
+            sbyte.TryParse(s, style, provider.ResolveFormatProvider(), out var parsedValue) ? parsedValue : null;
 #endif
 
         public static byte? ToByteSafe(this string? s, NumberStyles style = Styles.Integer, IFormatProvider? provider = null) =>
-            GetValueOrNull(byte.TryParse(s, style, provider.ResolveFormatProvider(), out var parsedValue), parsedValue);
+            byte.TryParse(s, style, provider.ResolveFormatProvider(), out var parsedValue) ? parsedValue : null;
 
 #if NETCOREAPP
         public static byte? ToByteSafe(this ReadOnlySpan<char> s, NumberStyles style = Styles.Integer, IFormatProvider? provider = null) =>
-            GetValueOrNull(byte.TryParse(s, style, provider.ResolveFormatProvider(), out var parsedValue), parsedValue);
+            byte.TryParse(s, style, provider.ResolveFormatProvider(), out var parsedValue) ? parsedValue : null;
 #endif
     }
 }

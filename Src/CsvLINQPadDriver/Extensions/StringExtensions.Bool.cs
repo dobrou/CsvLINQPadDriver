@@ -68,7 +68,7 @@ namespace CsvLINQPadDriver.Extensions
 
             return longValue.HasValue
                 ? longValue.Value != 0
-                : GetValueOrNull(bool.TryParse(s, out var parsedValue), parsedValue);
+                : bool.TryParse(s, out var parsedValue) ? parsedValue : null;
         }
 
 #if NETCOREAPP
@@ -78,7 +78,7 @@ namespace CsvLINQPadDriver.Extensions
 
             return longValue.HasValue
                 ? longValue.Value != 0
-                : GetValueOrNull(bool.TryParse(s, out var parsedValue), parsedValue);
+                : bool.TryParse(s, out var parsedValue) ? parsedValue : null;
         }
 #endif
     }

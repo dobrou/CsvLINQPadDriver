@@ -114,22 +114,22 @@ namespace CsvLINQPadDriver.Extensions
         }
 
         public static TimeOnly? ToTimeOnlySafe(this string? s, DateTimeStyles style = Styles.TimeOnly, IFormatProvider? provider = null) =>
-            GetValueOrNull(TimeOnly.TryParse(s, provider.ResolveFormatProvider(), style, out var parsedValue), parsedValue);
+            TimeOnly.TryParse(s, provider.ResolveFormatProvider(), style, out var parsedValue) ? parsedValue : null;
 
         public static TimeOnly? ToTimeOnlySafe(this ReadOnlySpan<char> s, DateTimeStyles style = Styles.TimeOnly, IFormatProvider? provider = null) =>
-            GetValueOrNull(TimeOnly.TryParse(s, provider.ResolveFormatProvider(), style, out var parsedValue), parsedValue);
+            TimeOnly.TryParse(s, provider.ResolveFormatProvider(), style, out var parsedValue) ? parsedValue : null;
 
         public static TimeOnly? ToTimeOnlySafe(this string? s, string format, DateTimeStyles style = Styles.TimeOnly, IFormatProvider? provider = null) =>
-            GetValueOrNull(TimeOnly.TryParseExact(s, format, provider.ResolveFormatProvider(), style, out var parsedValue), parsedValue);
+            TimeOnly.TryParseExact(s, format, provider.ResolveFormatProvider(), style, out var parsedValue) ? parsedValue : null;
 
         public static TimeOnly? ToTimeOnlySafe(this ReadOnlySpan<char> s, ReadOnlySpan<char> format, DateTimeStyles style = Styles.TimeOnly, IFormatProvider? provider = null) =>
-            GetValueOrNull(TimeOnly.TryParseExact(s, format, provider.ResolveFormatProvider(), style, out var parsedValue), parsedValue);
+            TimeOnly.TryParseExact(s, format, provider.ResolveFormatProvider(), style, out var parsedValue) ? parsedValue : null;
 
         public static TimeOnly? ToTimeOnlySafe(this string? s, string[] formats, DateTimeStyles style = Styles.TimeOnly, IFormatProvider? provider = null) =>
-            GetValueOrNull(TimeOnly.TryParseExact(s, formats, provider.ResolveFormatProvider(), style, out var parsedValue), parsedValue);
+            TimeOnly.TryParseExact(s, formats, provider.ResolveFormatProvider(), style, out var parsedValue) ? parsedValue : null;
 
         public static TimeOnly? ToTimeOnlySafe(this ReadOnlySpan<char> s, string[] formats, DateTimeStyles style = Styles.TimeOnly, IFormatProvider? provider = null) =>
-            GetValueOrNull(TimeOnly.TryParseExact(s, formats, provider.ResolveFormatProvider(), style, out var parsedValue), parsedValue);
+            TimeOnly.TryParseExact(s, formats, provider.ResolveFormatProvider(), style, out var parsedValue) ? parsedValue : null;
     }
 }
 #endif

@@ -81,19 +81,19 @@ namespace CsvLINQPadDriver.Extensions
 #endif
 
         public static int? ToIntSafe(this string? s, NumberStyles style = Styles.Integer, IFormatProvider? provider = null) =>
-            GetValueOrNull(int.TryParse(s, style, provider.ResolveFormatProvider(), out var parsedValue), parsedValue);
+            int.TryParse(s, style, provider.ResolveFormatProvider(), out var parsedValue) ? parsedValue : null;
 
 #if NETCOREAPP
         public static int? ToIntSafe(this ReadOnlySpan<char> s, NumberStyles style = Styles.Integer, IFormatProvider? provider = null) =>
-            GetValueOrNull(int.TryParse(s, style, provider.ResolveFormatProvider(), out var parsedValue), parsedValue);
+            int.TryParse(s, style, provider.ResolveFormatProvider(), out var parsedValue) ? parsedValue : null;
 #endif
 
         public static uint? ToUIntSafe(this string? s, NumberStyles style = Styles.Integer, IFormatProvider? provider = null) =>
-            GetValueOrNull(uint.TryParse(s, style, provider.ResolveFormatProvider(), out var parsedValue), parsedValue);
+            uint.TryParse(s, style, provider.ResolveFormatProvider(), out var parsedValue) ? parsedValue : null;
 
 #if NETCOREAPP
         public static uint? ToUIntSafe(this ReadOnlySpan<char> s, NumberStyles style = Styles.Integer, IFormatProvider? provider = null) =>
-            GetValueOrNull(uint.TryParse(s, style, provider.ResolveFormatProvider(), out var parsedValue), parsedValue);
+            uint.TryParse(s, style, provider.ResolveFormatProvider(), out var parsedValue) ? parsedValue : null;
 #endif
     }
 }

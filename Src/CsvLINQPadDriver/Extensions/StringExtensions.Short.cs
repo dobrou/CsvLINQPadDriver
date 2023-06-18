@@ -81,19 +81,19 @@ namespace CsvLINQPadDriver.Extensions
 #endif
 
         public static short? ToShortSafe(this string? s, NumberStyles style = Styles.Integer, IFormatProvider? provider = null) =>
-            GetValueOrNull(short.TryParse(s, style, provider.ResolveFormatProvider(), out var parsedValue), parsedValue);
+            short.TryParse(s, style, provider.ResolveFormatProvider(), out var parsedValue) ? parsedValue : null;
 
 #if NETCOREAPP
         public static short? ToShortSafe(this ReadOnlySpan<char> s, NumberStyles style = Styles.Integer, IFormatProvider? provider = null) =>
-            GetValueOrNull(short.TryParse(s, style, provider.ResolveFormatProvider(), out var parsedValue), parsedValue);
+            short.TryParse(s, style, provider.ResolveFormatProvider(), out var parsedValue) ? parsedValue : null;
 #endif
 
         public static ushort? ToUShortSafe(this string? s, NumberStyles style = Styles.Integer, IFormatProvider? provider = null) =>
-            GetValueOrNull(ushort.TryParse(s, style, provider.ResolveFormatProvider(), out var parsedValue), parsedValue);
+            ushort.TryParse(s, style, provider.ResolveFormatProvider(), out var parsedValue) ? parsedValue : null;
 
 #if NETCOREAPP
         public static ushort? ToUShortSafe(this ReadOnlySpan<char> s, NumberStyles style = Styles.Integer, IFormatProvider? provider = null) =>
-            GetValueOrNull(ushort.TryParse(s, style, provider.ResolveFormatProvider(), out var parsedValue), parsedValue);
+            ushort.TryParse(s, style, provider.ResolveFormatProvider(), out var parsedValue) ? parsedValue : null;
 #endif
     }
 }

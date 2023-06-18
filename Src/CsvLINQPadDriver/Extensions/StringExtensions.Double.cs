@@ -45,11 +45,11 @@ namespace CsvLINQPadDriver.Extensions
 #endif
 
         public static double? ToDoubleSafe(this string? s, NumberStyles style = Styles.Float, IFormatProvider? provider = null) =>
-            GetValueOrNull(double.TryParse(s, style, provider.ResolveFormatProvider(), out var parsedValue), parsedValue);
+            double.TryParse(s, style, provider.ResolveFormatProvider(), out var parsedValue) ? parsedValue : null;
 
 #if NETCOREAPP
         public static double? ToDoubleSafe(this ReadOnlySpan<char> s, NumberStyles style = Styles.Float, IFormatProvider? provider = null) =>
-            GetValueOrNull(double.TryParse(s, style, provider.ResolveFormatProvider(), out var parsedValue), parsedValue);
+            double.TryParse(s, style, provider.ResolveFormatProvider(), out var parsedValue) ? parsedValue : null;
 #endif
     }
 }

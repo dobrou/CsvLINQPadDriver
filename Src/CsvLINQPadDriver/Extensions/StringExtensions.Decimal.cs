@@ -45,11 +45,11 @@ namespace CsvLINQPadDriver.Extensions
 #endif
 
         public static decimal? ToDecimalSafe(this string? s, NumberStyles style = Styles.Decimal, IFormatProvider? provider = null) =>
-            GetValueOrNull(decimal.TryParse(s, style, provider.ResolveFormatProvider(), out var parsedValue), parsedValue);
+            decimal.TryParse(s, style, provider.ResolveFormatProvider(), out var parsedValue) ? parsedValue : null;
 
 #if NETCOREAPP
         public static decimal? ToDecimalSafe(this ReadOnlySpan<char> s, NumberStyles style = Styles.Decimal, IFormatProvider? provider = null) =>
-            GetValueOrNull(decimal.TryParse(s, style, provider.ResolveFormatProvider(), out var parsedValue), parsedValue);
+            decimal.TryParse(s, style, provider.ResolveFormatProvider(), out var parsedValue) ? parsedValue : null;
 #endif
     }
 }

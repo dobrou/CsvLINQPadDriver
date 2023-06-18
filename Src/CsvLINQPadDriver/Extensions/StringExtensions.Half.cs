@@ -44,10 +44,10 @@ namespace CsvLINQPadDriver.Extensions
         }
 
         public static Half? ToHalfSafe(this string? s, NumberStyles style = Styles.Float, IFormatProvider? provider = null) =>
-            GetValueOrNull(Half.TryParse(s, style, provider.ResolveFormatProvider(), out var parsedValue), parsedValue);
+            Half.TryParse(s, style, provider.ResolveFormatProvider(), out var parsedValue) ? parsedValue : null;
 
         public static Half? ToHalfSafe(this ReadOnlySpan<char> s, NumberStyles style = Styles.Float, IFormatProvider? provider = null) =>
-            GetValueOrNull(Half.TryParse(s, style, provider.ResolveFormatProvider(), out var parsedValue), parsedValue);
+            Half.TryParse(s, style, provider.ResolveFormatProvider(), out var parsedValue) ? parsedValue : null;
     }
 }
 #endif

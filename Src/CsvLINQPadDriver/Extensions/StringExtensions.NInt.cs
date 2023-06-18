@@ -82,19 +82,19 @@ namespace CsvLINQPadDriver.Extensions
 #endif
 
         public static nint? ToNIntSafe(this string? s, NumberStyles style = Styles.Integer, IFormatProvider? provider = null) =>
-            GetValueOrNull(nint.TryParse(s, style, provider.ResolveFormatProvider(), out var parsedValue), parsedValue);
+            nint.TryParse(s, style, provider.ResolveFormatProvider(), out var parsedValue) ? parsedValue : null;
 
 #if NET6_0_OR_GREATER
         public static nint? ToNIntSafe(this ReadOnlySpan<char> s, NumberStyles style = Styles.Integer, IFormatProvider? provider = null) =>
-            GetValueOrNull(nint.TryParse(s, style, provider.ResolveFormatProvider(), out var parsedValue), parsedValue);
+            nint.TryParse(s, style, provider.ResolveFormatProvider(), out var parsedValue) ? parsedValue : null;
 #endif
 
         public static nuint? ToNUIntSafe(this string? s, NumberStyles style = Styles.Integer, IFormatProvider? provider = null) =>
-            GetValueOrNull(nuint.TryParse(s, style, provider.ResolveFormatProvider(), out var parsedValue), parsedValue);
+            nuint.TryParse(s, style, provider.ResolveFormatProvider(), out var parsedValue) ? parsedValue : null;
 
 #if NET6_0_OR_GREATER
         public static nuint? ToNUIntSafe(this ReadOnlySpan<char> s, NumberStyles style = Styles.Integer, IFormatProvider? provider = null) =>
-            GetValueOrNull(nuint.TryParse(s, style, provider.ResolveFormatProvider(), out var parsedValue), parsedValue);
+            nuint.TryParse(s, style, provider.ResolveFormatProvider(), out var parsedValue) ? parsedValue : null;
 #endif
     }
 }

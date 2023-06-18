@@ -31,9 +31,5 @@ namespace CsvLINQPadDriver.Extensions
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static IFormatProvider ResolveFormatProvider(this IFormatProvider? provider) =>
             provider ?? DefaultFormatProvider;
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static T? GetValueOrNull<T>(bool converted, T value) where T : struct =>
-            converted ? value : null;
     }
 }

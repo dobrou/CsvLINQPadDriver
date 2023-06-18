@@ -81,19 +81,19 @@ namespace CsvLINQPadDriver.Extensions
 #endif
 
         public static long? ToLongSafe(this string? s, NumberStyles style = Styles.Integer, IFormatProvider? provider = null) =>
-            GetValueOrNull(long.TryParse(s, style, provider.ResolveFormatProvider(), out var parsedValue), parsedValue);
+            long.TryParse(s, style, provider.ResolveFormatProvider(), out var parsedValue) ? parsedValue : null;
 
 #if NETCOREAPP
         public static long? ToLongSafe(this ReadOnlySpan<char> s, NumberStyles style = Styles.Integer, IFormatProvider? provider = null) =>
-            GetValueOrNull(long.TryParse(s, style, provider.ResolveFormatProvider(), out var parsedValue), parsedValue);
+            long.TryParse(s, style, provider.ResolveFormatProvider(), out var parsedValue) ? parsedValue : null;
 #endif
 
         public static ulong? ToULongSafe(this string? s, NumberStyles style = Styles.Integer, IFormatProvider? provider = null) =>
-            GetValueOrNull(ulong.TryParse(s, style, provider.ResolveFormatProvider(), out var parsedValue), parsedValue);
+            ulong.TryParse(s, style, provider.ResolveFormatProvider(), out var parsedValue) ? parsedValue : null;
 
 #if NETCOREAPP
         public static ulong? ToULongSafe(this ReadOnlySpan<char> s, NumberStyles style = Styles.Integer, IFormatProvider? provider = null) =>
-            GetValueOrNull(ulong.TryParse(s, style, provider.ResolveFormatProvider(), out var parsedValue), parsedValue);
+            ulong.TryParse(s, style, provider.ResolveFormatProvider(), out var parsedValue) ? parsedValue : null;
 #endif
     }
 }

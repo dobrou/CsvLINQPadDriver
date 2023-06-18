@@ -78,16 +78,16 @@ namespace CsvLINQPadDriver.Extensions
         }
 
         public static Int128? ToInt128Safe(this string? s, NumberStyles style = Styles.Integer, IFormatProvider? provider = null) =>
-            GetValueOrNull(Int128.TryParse(s, style, provider.ResolveFormatProvider(), out var parsedValue), parsedValue);
+            Int128.TryParse(s, style, provider.ResolveFormatProvider(), out var parsedValue) ? parsedValue : null;
 
         public static Int128? ToInt128Safe(this ReadOnlySpan<char> s, NumberStyles style = Styles.Integer, IFormatProvider? provider = null) =>
-            GetValueOrNull(Int128.TryParse(s, style, provider.ResolveFormatProvider(), out var parsedValue), parsedValue);
+            Int128.TryParse(s, style, provider.ResolveFormatProvider(), out var parsedValue) ? parsedValue : null;
 
         public static UInt128? ToUInt128Safe(this string? s, NumberStyles style = Styles.Integer, IFormatProvider? provider = null) =>
-            GetValueOrNull(UInt128.TryParse(s, style, provider.ResolveFormatProvider(), out var parsedValue), parsedValue);
+            UInt128.TryParse(s, style, provider.ResolveFormatProvider(), out var parsedValue) ? parsedValue : null;
 
         public static UInt128? ToUInt128Safe(this ReadOnlySpan<char> s, NumberStyles style = Styles.Integer, IFormatProvider? provider = null) =>
-            GetValueOrNull(UInt128.TryParse(s, style, provider.ResolveFormatProvider(), out var parsedValue), parsedValue);
+            UInt128.TryParse(s, style, provider.ResolveFormatProvider(), out var parsedValue) ? parsedValue : null;
     }
 }
 #endif

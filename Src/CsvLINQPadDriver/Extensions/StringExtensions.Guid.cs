@@ -120,25 +120,25 @@ namespace CsvLINQPadDriver.Extensions
 #endif
 
         public static Guid? ToGuidSafe(this string? s) =>
-            GetValueOrNull(Guid.TryParse(s, out var parsedValue), parsedValue);
+            Guid.TryParse(s, out var parsedValue) ? parsedValue : null;
 
 #if NETCOREAPP
         public static Guid? ToGuidSafe(this ReadOnlySpan<char> s) =>
-            GetValueOrNull(Guid.TryParse(s, out var parsedValue), parsedValue);
+            Guid.TryParse(s, out var parsedValue) ? parsedValue : null;
 #endif
 
         public static Guid? ToGuidSafe(this string? s, string format) =>
-            GetValueOrNull(Guid.TryParseExact(s, format, out var parsedValue), parsedValue);
+            Guid.TryParseExact(s, format, out var parsedValue) ? parsedValue : null;
 
 #if NETCOREAPP
         public static Guid? ToGuidSafe(this ReadOnlySpan<char> s, ReadOnlySpan<char> format) =>
-            GetValueOrNull(Guid.TryParseExact(s, format, out var parsedValue), parsedValue);
+            Guid.TryParseExact(s, format, out var parsedValue) ? parsedValue : null;
 #endif
 
         // ReSharper disable once ParameterTypeCanBeEnumerable.Global
         public static Guid? ToGuidSafe(this string? s, string[] formats) =>
             formats
-                .Select(format => GetValueOrNull(Guid.TryParseExact(s, format, out var parsedValue), parsedValue))
+                .Select(format => Guid.TryParseExact(s, format, out var parsedValue) ? parsedValue : (Guid?)null)
                 .FirstOrDefault(static guid => guid is not null);
 
 #if NETCOREAPP
@@ -146,10 +146,9 @@ namespace CsvLINQPadDriver.Extensions
         {
             foreach (var format in formats)
             {
-                var guid = GetValueOrNull(Guid.TryParseExact(s, format, out var parsedValue), parsedValue);
-                if (guid is not null)
+                if (Guid.TryParseExact(s, format, out var parsedValue))
                 {
-                    return guid;
+                    return parsedValue;
                 }
             }
 

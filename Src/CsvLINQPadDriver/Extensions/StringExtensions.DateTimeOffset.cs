@@ -193,27 +193,27 @@ namespace CsvLINQPadDriver.Extensions
         }
 
         public static DateTimeOffset? ToDateTimeOffsetSafe(this string? s, DateTimeStyles style = Styles.DateTimeOffset, IFormatProvider? provider = null) =>
-            GetValueOrNull(DateTimeOffset.TryParse(s, provider.ResolveFormatProvider(), style, out var parsedValue), parsedValue);
+            DateTimeOffset.TryParse(s, provider.ResolveFormatProvider(), style, out var parsedValue) ? parsedValue : null;
 
 #if NETCOREAPP
         public static DateTimeOffset? ToDateTimeOffsetSafe(this ReadOnlySpan<char> s, DateTimeStyles style = Styles.DateTimeOffset, IFormatProvider? provider = null) =>
-            GetValueOrNull(DateTimeOffset.TryParse(s, provider.ResolveFormatProvider(), style, out var parsedValue), parsedValue);
+            DateTimeOffset.TryParse(s, provider.ResolveFormatProvider(), style, out var parsedValue) ? parsedValue : null;
 #endif
 
         public static DateTimeOffset? ToDateTimeOffsetSafe(this string? s, string format, DateTimeStyles style = Styles.DateTimeOffset, IFormatProvider? provider = null) =>
-            GetValueOrNull(DateTimeOffset.TryParseExact(s, format, provider.ResolveFormatProvider(), style, out var parsedValue), parsedValue);
+            DateTimeOffset.TryParseExact(s, format, provider.ResolveFormatProvider(), style, out var parsedValue) ? parsedValue : null;
 
 #if NETCOREAPP
         public static DateTimeOffset? ToDateTimeOffsetSafe(this ReadOnlySpan<char> s, ReadOnlySpan<char> format, DateTimeStyles style = Styles.DateTimeOffset, IFormatProvider? provider = null) =>
-            GetValueOrNull(DateTimeOffset.TryParseExact(s, format, provider.ResolveFormatProvider(), style, out var parsedValue), parsedValue);
+            DateTimeOffset.TryParseExact(s, format, provider.ResolveFormatProvider(), style, out var parsedValue) ? parsedValue : null;
 #endif
 
         public static DateTimeOffset? ToDateTimeOffsetSafe(this string? s, string[] formats, DateTimeStyles style = Styles.DateTimeOffset, IFormatProvider? provider = null) =>
-            GetValueOrNull(DateTimeOffset.TryParseExact(s, formats, provider.ResolveFormatProvider(), style, out var parsedValue), parsedValue);
+            DateTimeOffset.TryParseExact(s, formats, provider.ResolveFormatProvider(), style, out var parsedValue) ? parsedValue : null;
 
 #if NETCOREAPP
         public static DateTimeOffset? ToDateTimeOffsetSafe(this ReadOnlySpan<char> s, string[] formats, DateTimeStyles style = Styles.DateTimeOffset, IFormatProvider? provider = null) =>
-            GetValueOrNull(DateTimeOffset.TryParseExact(s, formats, provider.ResolveFormatProvider(), style, out var parsedValue), parsedValue);
+            DateTimeOffset.TryParseExact(s, formats, provider.ResolveFormatProvider(), style, out var parsedValue) ? parsedValue : null;
 #endif
 
 #if NETCOREAPP

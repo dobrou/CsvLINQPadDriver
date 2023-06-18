@@ -117,27 +117,27 @@ namespace CsvLINQPadDriver.Extensions
 #endif
 
         public static TimeSpan? ToTimeSpanSafe(this string? s, IFormatProvider? provider = null) =>
-            GetValueOrNull(TimeSpan.TryParse(s, provider.ResolveFormatProvider(), out var parsedValue), parsedValue);
+            TimeSpan.TryParse(s, provider.ResolveFormatProvider(), out var parsedValue) ? parsedValue : null;
 
 #if NETCOREAPP
         public static TimeSpan? ToTimeSpanSafe(this ReadOnlySpan<char> s, IFormatProvider? provider = null) =>
-            GetValueOrNull(TimeSpan.TryParse(s, provider.ResolveFormatProvider(), out var parsedValue), parsedValue);
+            TimeSpan.TryParse(s, provider.ResolveFormatProvider(), out var parsedValue) ? parsedValue : null;
 #endif
 
         public static TimeSpan? ToTimeSpanSafe(this string? s, string format, TimeSpanStyles style = Styles.TimeSpan, IFormatProvider? provider = null) =>
-            GetValueOrNull(TimeSpan.TryParseExact(s, format, provider.ResolveFormatProvider(), style, out var parsedValue), parsedValue);
+            TimeSpan.TryParseExact(s, format, provider.ResolveFormatProvider(), style, out var parsedValue) ? parsedValue : null;
 
 #if NETCOREAPP
         public static TimeSpan? ToTimeSpanSafe(this ReadOnlySpan<char> s, ReadOnlySpan<char> format, TimeSpanStyles style = Styles.TimeSpan, IFormatProvider? provider = null) =>
-            GetValueOrNull(TimeSpan.TryParseExact(s, format, provider.ResolveFormatProvider(), style, out var parsedValue), parsedValue);
+            TimeSpan.TryParseExact(s, format, provider.ResolveFormatProvider(), style, out var parsedValue) ? parsedValue : null;
 #endif
 
         public static TimeSpan? ToTimeSpanSafe(this string? s, string[] formats, TimeSpanStyles style = Styles.TimeSpan, IFormatProvider? provider = null) =>
-            GetValueOrNull(TimeSpan.TryParseExact(s, formats, provider.ResolveFormatProvider(), style, out var parsedValue), parsedValue);
+            TimeSpan.TryParseExact(s, formats, provider.ResolveFormatProvider(), style, out var parsedValue) ? parsedValue : null;
 
 #if NETCOREAPP
         public static TimeSpan? ToTimeSpanSafe(this ReadOnlySpan<char> s, string[] formats, TimeSpanStyles style = Styles.TimeSpan, IFormatProvider? provider = null) =>
-            GetValueOrNull(TimeSpan.TryParseExact(s, formats, provider.ResolveFormatProvider(), style, out var parsedValue), parsedValue);
+            TimeSpan.TryParseExact(s, formats, provider.ResolveFormatProvider(), style, out var parsedValue) ? parsedValue : null;
 #endif
     }
 }

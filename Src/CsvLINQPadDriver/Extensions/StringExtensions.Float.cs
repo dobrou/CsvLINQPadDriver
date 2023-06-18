@@ -45,11 +45,11 @@ namespace CsvLINQPadDriver.Extensions
 #endif
 
         public static float? ToFloatSafe(this string? s, NumberStyles style = Styles.Float, IFormatProvider? provider = null) =>
-            GetValueOrNull(float.TryParse(s, style, provider.ResolveFormatProvider(), out var parsedValue), parsedValue);
+            float.TryParse(s, style, provider.ResolveFormatProvider(), out var parsedValue) ? parsedValue : null;
 
 #if NETCOREAPP
         public static float? ToFloatSafe(this ReadOnlySpan<char> s, NumberStyles style = Styles.Float, IFormatProvider? provider = null) =>
-            GetValueOrNull(float.TryParse(s, style, provider.ResolveFormatProvider(), out var parsedValue), parsedValue);
+            float.TryParse(s, style, provider.ResolveFormatProvider(), out var parsedValue) ? parsedValue : null;
 #endif
     }
 }

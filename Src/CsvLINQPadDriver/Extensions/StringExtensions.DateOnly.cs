@@ -112,22 +112,22 @@ namespace CsvLINQPadDriver.Extensions
         }
 
         public static DateOnly? ToDateOnlySafe(this string? s, DateTimeStyles style = Styles.DateOnly, IFormatProvider? provider = null) =>
-            GetValueOrNull(DateOnly.TryParse(s, provider.ResolveFormatProvider(), style, out var parsedValue), parsedValue);
+            DateOnly.TryParse(s, provider.ResolveFormatProvider(), style, out var parsedValue) ? parsedValue : null;
 
         public static DateOnly? ToDateOnlySafe(this ReadOnlySpan<char> s, DateTimeStyles style = Styles.DateOnly, IFormatProvider? provider = null) =>
-            GetValueOrNull(DateOnly.TryParse(s, provider.ResolveFormatProvider(), style, out var parsedValue), parsedValue);
+            DateOnly.TryParse(s, provider.ResolveFormatProvider(), style, out var parsedValue) ? parsedValue : null;
 
         public static DateOnly? ToDateOnlySafe(this string? s, string format, DateTimeStyles style = Styles.DateOnly, IFormatProvider? provider = null) =>
-            GetValueOrNull(DateOnly.TryParseExact(s, format, provider.ResolveFormatProvider(), style, out var parsedValue), parsedValue);
+            DateOnly.TryParseExact(s, format, provider.ResolveFormatProvider(), style, out var parsedValue) ? parsedValue : null;
 
         public static DateOnly? ToDateOnlySafe(this ReadOnlySpan<char> s, ReadOnlySpan<char> format, DateTimeStyles style = Styles.DateOnly, IFormatProvider? provider = null) =>
-            GetValueOrNull(DateOnly.TryParseExact(s, format, provider.ResolveFormatProvider(), style, out var parsedValue), parsedValue);
+            DateOnly.TryParseExact(s, format, provider.ResolveFormatProvider(), style, out var parsedValue) ? parsedValue : null;
 
         public static DateOnly? ToDateOnlySafe(this string? s, string[] formats, DateTimeStyles style = Styles.DateOnly, IFormatProvider? provider = null) =>
-            GetValueOrNull(DateOnly.TryParseExact(s, formats, provider.ResolveFormatProvider(), style, out var parsedValue), parsedValue);
+            DateOnly.TryParseExact(s, formats, provider.ResolveFormatProvider(), style, out var parsedValue) ? parsedValue : null;
 
         public static DateOnly? ToDateOnlySafe(this ReadOnlySpan<char> s, string[] formats, DateTimeStyles style = Styles.DateOnly, IFormatProvider? provider = null) =>
-            GetValueOrNull(DateOnly.TryParseExact(s, formats, provider.ResolveFormatProvider(), style, out var parsedValue), parsedValue);
+            DateOnly.TryParseExact(s, formats, provider.ResolveFormatProvider(), style, out var parsedValue) ? parsedValue : null;
     }
 }
 #endif
