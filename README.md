@@ -365,7 +365,7 @@ Authors.First()
 * `CultureInfo.InvariantCulture` is used for `provider` by default.
 * `null` is returned for `null` or empty input.
 * `CsvLINQPadDriver.ConvertException` is thrown for non-`Safe` methods.
-* These methods are much more (~5 times) slower than .NET methods due to road-trip to driver.
+* **These methods are much more (~3-5 times) slower than .NET methods due to road-trip to driver.**
 
 ```csharp
 public static class Styles
