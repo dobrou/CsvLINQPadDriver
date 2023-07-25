@@ -1,9 +1,9 @@
+# LINQPad Driver LPRun Unit/Integration Tests Runner #
+
 [![Latest build](https://github.com/i2van/CsvLINQPadDriver/workflows/build/badge.svg)](https://github.com/i2van/CsvLINQPadDriver/actions)
 [![NuGet](https://img.shields.io/nuget/v/LPRun)](https://www.nuget.org/packages/LPRun)
 [![Downloads](https://img.shields.io/nuget/dt/LPRun)](https://www.nuget.org/packages/LPRun)
 [![License](https://img.shields.io/badge/license-MIT-yellow)](https://opensource.org/licenses/MIT)
-
-# LINQPad Driver LPRun Unit/Integration Tests Runner #
 
 ## Table of Contents ##
 
