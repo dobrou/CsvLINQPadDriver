@@ -1,9 +1,9 @@
+# CsvLINQPadDriver for LINQPad 7/6/5 #
+
 [![Latest build](https://github.com/i2van/CsvLINQPadDriver/workflows/build/badge.svg)](https://github.com/i2van/CsvLINQPadDriver/actions)
 [![NuGet](https://img.shields.io/nuget/v/CsvLINQPadDriver)](https://www.nuget.org/packages/CsvLINQPadDriver)
 [![Downloads](https://img.shields.io/nuget/dt/CsvLINQPadDriver)](https://www.nuget.org/packages/CsvLINQPadDriver)
 [![License](https://img.shields.io/badge/license-MIT-yellow)](https://opensource.org/licenses/MIT)
-
-# CsvLINQPadDriver for LINQPad 7/6/5 #
 
 ## Table of Contents ##
 
