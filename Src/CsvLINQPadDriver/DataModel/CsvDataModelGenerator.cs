@@ -281,7 +281,7 @@ namespace CsvLINQPadDriver.DataModel
             // t1.bookID -> books.ID
             var csvTableColumns = from csvTable in csvTables
                 let keyNamesForeign = GetTableForeignKeyPossibleNames(csvTable)
-                let keyNames = keyNamesForeign.Concat(new []{ "id" })
+                let keyNames = keyNamesForeign.Append("id")
                 from csvColumn in csvTable.Columns
                 where keyNames.Contains(csvColumn.Name, IdsComparer)
                 from csvTableColumn in keyNamesForeign.SelectMany(k => stringToCsvTableColumnLookup[k])

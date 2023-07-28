@@ -50,7 +50,7 @@
 CsvLINQPadDriver is LINQPad 7/6/5 data context dynamic driver for querying [CSV](https://en.wikipedia.org/wiki/Comma-separated_values) files.
 
 * You can query data in CSV files with LINQ, just like it would be regular database. No need to write custom data model, mappings, etc.
-* Driver automatically generates new data types for every CSV file with corresponding properties and mappings for all columns.
+* Driver automatically generates new data types for every CSV file with corresponding properties and mappings for all the columns. Every column is a `string`, no data type detection is provided.
 * Based on column and file names, possible relations between CSV tables are detected and generated.
 * Single class generation allows to join similar files and query over them. Might not work well for files with relations.
 
@@ -125,7 +125,7 @@ select new { author.Name, book.Title }
 
 * [LINQPad 7](https://www.linqpad.net/LINQPad7.aspx): [.NET 7](https://dotnet.microsoft.com/download/dotnet/7.0)/[.NET 6](https://dotnet.microsoft.com/download/dotnet/6.0)/[.NET 5](https://dotnet.microsoft.com/download/dotnet/5.0)/[.NET Core 3.1](https://dotnet.microsoft.com/download/dotnet-core/3.1)
 * [LINQPad 6](https://www.linqpad.net/LINQPad6.aspx): [.NET 5](https://dotnet.microsoft.com/download/dotnet/5.0)/[.NET Core 3.1](https://dotnet.microsoft.com/download/dotnet-core/3.1)
-* [LINQPad 5](https://www.linqpad.net/LINQPad5.aspx): [.NET Framework 4.6.1](https://www.microsoft.com/en-us/download/details.aspx?id=49981)
+* [LINQPad 5](https://www.linqpad.net/LINQPad5.aspx): [.NET Framework 4.7.1](https://dotnet.microsoft.com/en-us/download/dotnet-framework/net471)
 
 ## Installation ##
 

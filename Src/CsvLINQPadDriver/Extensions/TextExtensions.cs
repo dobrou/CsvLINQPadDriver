@@ -9,7 +9,7 @@ namespace CsvLINQPadDriver.Extensions
     internal static partial class TextExtensions
     {
         public static string JoinNewLine(this string? first, params string?[] other) =>
-            JoinNewLine(new[] { first }.Concat(other));
+            JoinNewLine(other.Prepend(first));
 
         public static string JoinNewLine(this IEnumerable<string?> other) =>
             string.Join(Environment.NewLine, other);

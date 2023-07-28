@@ -101,7 +101,7 @@ namespace CsvLINQPadDriver
                         ToolTipText =
                             $"Drag&drop {similarFilesCount} similar files joined data to text window".JoinNewLine(
                             string.Empty,
-                            $"{string.Join(Environment.NewLine, similarFilesCount <= 4 ? codeNames : codeNames.Take(2).Concat(new []{ "..." }).Concat(codeNames.Skip(similarFilesCount - 1)))}"),
+                            $"{string.Join(Environment.NewLine, similarFilesCount <= 4 ? codeNames : codeNames.Take(2).Append("...").Concat(codeNames.Skip(similarFilesCount - 1)))}"),
                         DragText = $@"new []
 {{
 {string.Join(Environment.NewLine, codeNames.Select(static n => $"\t{n},"))}

@@ -37,7 +37,7 @@ Added ToUtcDateOffsetTimeFromUnixTimeSeconds, ToUtcDateTimeOffsetFromUnixTimeMil
     <PackageReference Include="UTF.Unknown" Version="2.5.1" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'net461' or '$(TargetFramework)' == 'netcoreapp3.1'">
+  <ItemGroup Condition="'$(TargetFramework)' == 'net471' or '$(TargetFramework)' == 'netcoreapp3.1'">
     <PackageReference Include="IsExternalInit" Version="1.0.3">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
