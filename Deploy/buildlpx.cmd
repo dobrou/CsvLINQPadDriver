@@ -35,6 +35,7 @@ set additional=%folder%\CsvLINQPadDriver.deps.json
 
 if exist %lpx% del %lpx%
 if exist %folder%\Microsoft.Bcl.*.dll set additional=^
+%folder%\Microsoft.Bcl.AsyncInterfaces.dll ^
 %folder%\Microsoft.Bcl.HashCode.dll ^
 %folder%\CsvHelper.dll ^
 %folder%\Humanizer.dll ^
