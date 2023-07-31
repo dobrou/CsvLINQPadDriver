@@ -22,7 +22,7 @@ namespace LPRun
         /// <param name="connection">The LINQPad script connection header created by call to <see cref="ConnectionHeader"/>.<see cref="ConnectionHeader.Get{T}"/> method.</param>
         /// <param name="scriptFileName">The expected script file name without extension. <paramref name="file"/> by default.</param>
         /// <returns>The path to LINQPad script file created by combining the script <paramref name="file"/> content and the <paramref name="connection"/> header.</returns>
-        /// <exception cref="LPRunException">Keeps original exception as <see cref="P:System.Exception.InnerException"/>.</exception>
+        /// <exception cref="LPRunException">Keeps the original exception as <see cref="P:System.Exception.InnerException"/>.</exception>
         /// <example>
         /// This shows how to create the LINQPad script file and get path to it:
         /// <code>

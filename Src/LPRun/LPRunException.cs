@@ -47,10 +47,10 @@ namespace LPRun
         }
 
         /// <summary>
-        /// Rethrows the exception thrown by <paramref name="action"/> as <see cref="LPRunException"/>. Keeps original exception as <see cref="P:System.Exception.InnerException"/>.
+        /// Rethrows the exception thrown by <paramref name="action"/> as <see cref="LPRunException"/>. Keeps the original exception as <see cref="P:System.Exception.InnerException"/>.
         /// </summary>
         /// <param name="action">The <see cref="Action"/> to execute.</param>
-        /// <exception cref="LPRunException">Keeps original exception as <see cref="P:System.Exception.InnerException"/>.</exception>
+        /// <exception cref="LPRunException">Keeps the original exception as <see cref="P:System.Exception.InnerException"/>.</exception>
         internal static void Wrap(Action action)
         {
             try
@@ -64,11 +64,11 @@ namespace LPRun
         }
 
         /// <summary>
-        /// Rethrows the exception thrown by <paramref name="func"/> as <see cref="LPRunException"/>. Keeps original exception as <see cref="P:System.Exception.InnerException"/>.
+        /// Rethrows the exception thrown by <paramref name="func"/> as <see cref="LPRunException"/>. Keeps the original exception as <see cref="P:System.Exception.InnerException"/>.
         /// </summary>
         /// <typeparam name="TResult">The <paramref name="func"/> result type.</typeparam>
         /// <param name="func">The <see cref="Func{T}"/> to execute.</param>
-        /// <exception cref="LPRunException">Keeps original exception as <see cref="P:System.Exception.InnerException"/>.</exception>
+        /// <exception cref="LPRunException">Keeps the original exception as <see cref="P:System.Exception.InnerException"/>.</exception>
         internal static TResult Wrap<TResult>(Func<TResult> func)
         {
             try

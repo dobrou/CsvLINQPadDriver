@@ -25,7 +25,7 @@ namespace LPRun
         /// </summary>
         /// <param name="driverDir">The directory to copy driver <paramref name="files"/> to.</param>
         /// <param name="files">The LINQPad driver files.</param>
-        /// <exception cref="LPRunException">Keeps original exception as <see cref="P:System.Exception.InnerException"/>.</exception>
+        /// <exception cref="LPRunException">Keeps the original exception as <see cref="P:System.Exception.InnerException"/>.</exception>
         /// <example>
         /// This shows how to install the LINQPad driver and specify the driver dependencies JSON (use InstallWithDepsJson instead):
         /// <code>
@@ -85,7 +85,7 @@ namespace LPRun
         /// <param name="driverFileName">The directory to copy driver <paramref name="files"/> to.</param>
         /// <param name="testsFolderPath">The test folder path which resides into the driver build folder.</param>
         /// <param name="files">The LINQPad driver files.</param>
-        /// <exception cref="LPRunException">Keeps original exception as <see cref="P:System.Exception.InnerException"/>.</exception>
+        /// <exception cref="LPRunException">Keeps the original exception as <see cref="P:System.Exception.InnerException"/>.</exception>
         /// <example>
         /// This shows how to install the LINQPad driver with the driver dependencies JSON:
         /// <code>
@@ -109,7 +109,7 @@ namespace LPRun
         /// <param name="driverFileName">The directory to copy driver <paramref name="files"/> to.</param>
         /// <param name="getDepsJsonFileFullPath">The function which returns the absolute driver dependencies JSON path based on the tests build folder path.</param>
         /// <param name="files">The LINQPad driver files.</param>
-        /// <exception cref="LPRunException">Keeps original exception as <see cref="P:System.Exception.InnerException"/>.</exception>
+        /// <exception cref="LPRunException">Keeps the original exception as <see cref="P:System.Exception.InnerException"/>.</exception>
         /// <example>
         /// This shows how to install the LINQPad driver with the driver dependencies JSON (this does the same thing as overloaded method):
         /// <code>

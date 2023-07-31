@@ -52,14 +52,14 @@ namespace LPRun
         /// Gets the LPRun\Files folder full path.
         /// </summary>
         /// <returns>The LPRun\Files folder full path.</returns>
-        /// <exception cref="LPRunException">Keeps original exception as <see cref="P:System.Exception.InnerException"/>.</exception>
+        /// <exception cref="LPRunException">Keeps the original exception as <see cref="P:System.Exception.InnerException"/>.</exception>
         public static string FilesDir { get; } = GetLpRunFullPath("Files");
 
         /// <summary>
         /// Gets the LPRun\Bin folder full path.
         /// </summary>
         /// <returns>The LPRun\Bin folder full path.</returns>
-        /// <exception cref="LPRunException">Keeps original exception as <see cref="P:System.Exception.InnerException"/>.</exception>
+        /// <exception cref="LPRunException">Keeps the original exception as <see cref="P:System.Exception.InnerException"/>.</exception>
         public static string Exe { get; } = GetExeFullPath(LpRunExe);
 
         /// <summary>
@@ -67,7 +67,7 @@ namespace LPRun
         /// </summary>
         /// <param name="path">The path to append to the LPRun\Bin path.</param>
         /// <returns>The <paramref name="path"/> appended to the LPRun\Bin path.</returns>
-        /// <exception cref="LPRunException">Keeps original exception as <see cref="P:System.Exception.InnerException"/>.</exception>
+        /// <exception cref="LPRunException">Keeps the original exception as <see cref="P:System.Exception.InnerException"/>.</exception>
         public static string GetExeFullPath(string path) =>
             WrapCombine(ExeDir, path);
 
@@ -76,7 +76,7 @@ namespace LPRun
         /// </summary>
         /// <param name="path">The path to append to the LPRun\Data path.</param>
         /// <returns>The <paramref name="path"/> appended to the LPRun\Data path.</returns>
-        /// <exception cref="LPRunException">Keeps original exception as <see cref="P:System.Exception.InnerException"/>.</exception>
+        /// <exception cref="LPRunException">Keeps the original exception as <see cref="P:System.Exception.InnerException"/>.</exception>
         public static string GetDataFullPath(string path) =>
             WrapCombine(DataDir, path);
 
@@ -85,7 +85,7 @@ namespace LPRun
         /// </summary>
         /// <param name="path">The path to append to the LPRun\Templates path.</param>
         /// <returns>The <paramref name="path"/> appended to the LPRun\Templates path.</returns>
-        /// <exception cref="LPRunException">Keeps original exception as <see cref="P:System.Exception.InnerException"/>.</exception>
+        /// <exception cref="LPRunException">Keeps the original exception as <see cref="P:System.Exception.InnerException"/>.</exception>
         public static string GetTemplatesFullPath(string path) =>
             WrapCombine(TemplatesDir, path);
 
@@ -94,7 +94,7 @@ namespace LPRun
         /// </summary>
         /// <param name="path">The path to append to the LPRun\Files path.</param>
         /// <returns>The <paramref name="path"/> appended to the LPRun\Files path.</returns>
-        /// <exception cref="LPRunException">Keeps original exception as <see cref="P:System.Exception.InnerException"/>.</exception>
+        /// <exception cref="LPRunException">Keeps the original exception as <see cref="P:System.Exception.InnerException"/>.</exception>
         public static string GetFilesFullPath(string path) =>
             WrapCombine(FilesDir, path);
 
@@ -103,7 +103,7 @@ namespace LPRun
         /// </summary>
         /// <param name="path">The path to append to the path of executing assembly.</param>
         /// <returns>The <paramref name="path"/> appended to the path of executing assembly.</returns>
-        /// <exception cref="LPRunException">Keeps original exception as <see cref="P:System.Exception.InnerException"/>.</exception>
+        /// <exception cref="LPRunException">Keeps the original exception as <see cref="P:System.Exception.InnerException"/>.</exception>
         public static string GetFullPath(string path) =>
             WrapCombine(BaseDir, path);
 
@@ -113,7 +113,7 @@ namespace LPRun
         /// <param name="driverFileName">The file driver name.</param>
         /// <param name="testsFolderPath">The test folder path which resides into the driver build folder.</param>
         /// <returns>The driver dependencies JSON path relative to the tests build folder.</returns>
-        /// <exception cref="LPRunException">Keeps original exception as <see cref="P:System.Exception.InnerException"/>.</exception>
+        /// <exception cref="LPRunException">Keeps the original exception as <see cref="P:System.Exception.InnerException"/>.</exception>
         /// <remarks>Use this method if the tests folder name is used in path only once. Otherwise use the overloaded method <see cref="GetDepsJsonRelativePath(string, Func{string, string})"/>.</remarks>
         /// <seealso cref="GetDepsJsonRelativePath(string, Func{string, string})"/>
         public static string GetDepsJsonRelativePath(string driverFileName, string testsFolderPath) =>
@@ -127,7 +127,7 @@ namespace LPRun
         /// <param name="driverFileName">The driver file name.</param>
         /// <param name="getDepsJsonFileFullPath">The function which returns the absolute driver dependencies JSON path based on the tests build folder path.</param>
         /// <returns>The driver dependencies JSON path relative to the tests build folder.</returns>
-        /// <exception cref="LPRunException">Keeps original exception as <see cref="P:System.Exception.InnerException"/>.</exception>
+        /// <exception cref="LPRunException">Keeps the original exception as <see cref="P:System.Exception.InnerException"/>.</exception>
         /// <remarks>Use this method if the tests folder name is used in path multiple times. Otherwise use the overloaded method <see cref="GetDepsJsonRelativePath(string, string)"/>.</remarks>
         /// <seealso cref="GetDepsJsonRelativePath(string, string)"/>
         public static string GetDepsJsonRelativePath(string driverFileName, Func<string, string> getDepsJsonFileFullPath) =>

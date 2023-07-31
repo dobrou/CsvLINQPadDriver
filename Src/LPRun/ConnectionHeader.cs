@@ -26,7 +26,7 @@ namespace LPRun
         /// <param name="driverConfig">The driver configuration object.</param>
         /// <param name="additionalNamespaces">The optional additional namespaces.</param>
         /// <returns>The XML LINQPad connection header.</returns>
-        /// <exception cref="LPRunException">Keeps original exception as <see cref="P:System.Exception.InnerException"/>.</exception>
+        /// <exception cref="LPRunException">Keeps the original exception as <see cref="P:System.Exception.InnerException"/>.</exception>
         /// <example>
         /// This shows how to get the LINQPad script connection header:
         /// <code>

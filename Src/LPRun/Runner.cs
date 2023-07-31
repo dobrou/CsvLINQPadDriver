@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Linq;
 using System.Text;
 using System.Threading;
 
@@ -57,7 +56,7 @@ namespace LPRun
         /// <param name="waitForExit">The LINQPad script execution timeout. 1 minute is the default.</param>
         /// <param name="retryOnError">The number of times to retry the operation on error and timeout between tries.</param>
         /// <returns>The LINQPad script execution <see cref="Result"/>.</returns>
-        /// <exception cref="LPRunException">Keeps original exception as <see cref="P:System.Exception.InnerException"/>.</exception>
+        /// <exception cref="LPRunException">Keeps the original exception as <see cref="P:System.Exception.InnerException"/>.</exception>
         public static Result Execute(string linqFile, TimeSpan? waitForExit = null, RetryOnError? retryOnError = null)
         {
            return Retry(() => Wrap(ExecuteInternal));
@@ -131,7 +130,7 @@ namespace LPRun
 
                 void ErrorDataReceivedHandler(object _, DataReceivedEventArgs e)
                 {
-                    if (IgnoredErrorMessages.All(message => e.Data?.StartsWith(message) == false))
+                    if (Array.TrueForAll(IgnoredErrorMessages, message => e.Data?.StartsWith(message) == false))
                     {
                         error.Append(e.Data);
                     }
