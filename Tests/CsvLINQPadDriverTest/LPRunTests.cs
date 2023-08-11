@@ -160,6 +160,9 @@ namespace CsvLINQPadDriverTest
 #if NET7_0_OR_GREATER
                             , "NET7_0_OR_GREATER"
 #endif
+#if NET8_0_OR_GREATER
+                            , "NET8_0_OR_GREATER"
+#endif
                            ));
 
                 // String comparison.
