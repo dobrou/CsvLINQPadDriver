@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 using FluentAssertions;
 
@@ -69,7 +70,7 @@ namespace CsvLINQPadDriverTest
         [Test]
         [Parallelizable(ParallelScope.Children)]
         [TestCaseSource(nameof(ParallelizableScriptWithDriverPropertiesTestDataTestsData))]
-        public void Execute_ScriptWithDriverProperties_Success(ScriptWithDriverPropertiesTestData testData)
+        public async Task Execute_ScriptWithDriverProperties_Success(ScriptWithDriverPropertiesTestData testData)
         {
             var (linqScriptName, context, driverProperties, defines) = testData;
 
@@ -88,7 +89,7 @@ namespace CsvLINQPadDriverTest
 
             Console.Write($"{linqScript}{Environment.NewLine}{Environment.NewLine}{queryConfig}");
 
-            var (output, error, exitCode) = Runner.Execute(
+            var (output, error, exitCode) = await Runner.ExecuteAsync(
                 linqScript,
                 TimeSpan.FromMinutes(2)
 #if GITHUB_ACTIONS

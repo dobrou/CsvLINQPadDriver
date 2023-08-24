@@ -15,6 +15,9 @@
   * [LINQPad Test Script Example](#linqpad-test-script-example)
   * [NUnit Test Example](#nunit-test-example)
 * [Known Issues](#known-issues)
+  * [Unit-testing Frameworks Support](#unit-testing-frameworks-support)
+  * [LINQPad Runtime Reference](#linqpad-runtime-reference)
+* [Troubleshooting](#troubleshooting)
 * [Authors](#authors)
 * [Credits](#credits)
   * [Tools](#tools)
@@ -92,7 +95,7 @@ public class LPRunTests
 
     [Test]
     [TestCaseSource(nameof(TestsData))]
-    public void Execute_ScriptWithDriverProperties_Success(
+    public async Task Execute_ScriptWithDriverProperties_Success(
         (string linqScriptName,
          string? context,
          ICsvDataContextDriverProperties driverProperties) testData)
@@ -116,7 +119,7 @@ public class LPRunTests
 
         // Act: Execute test LNQPad script.
         var (output, error, exitCode) =
-            Runner.Execute(linqScript);
+            await Runner.ExecuteAsync(linqScript);
 
         // Assert.
         error.Should().BeNullOrWhiteSpace();
@@ -204,7 +207,37 @@ public class LPRunTests
 
 ## Known Issues ##
 
-* Tested with [NUnit](https://github.com/nunit/nunit). Other test frameworks should work as well.
+### Unit-testing Frameworks Support ###
+
+Tested with [NUnit](https://github.com/nunit/nunit). Other test frameworks should work as well.
+
+### LINQPad Runtime Reference ###
+
+Avoid referencing `LINQPad.Runtime.dll` in your tests, e.g. for [Moq](https://github.com/moq/moq4):
+
+```csharp
+// LINQPad.Runtime.dll IConnectionInfo reference:
+var connectionInfoMock = new Mock<LINQPad.Extensibility.DataContext.IConnectionInfo>();
+var driverProperties   = new DriverProperties(connectionInfoMock.Object);
+```
+
+This code compiles but fails in runtime with `Could not load file or assembly LINQPad.Runtime` error. If you still need to reference it, add the following target which copies assembly to output folder of the test project:
+
+```xml
+<Target Name="CopyLINQPadRuntimeToOutput" AfterTargets="Build">
+  <Copy SourceFiles="$(OutputPath)\LPRun\Bin\LINQPad.Runtime.dll" DestinationFolder="$(OutputPath)" UseHardlinksIfPossible="true" />
+</Target>
+```
+
+Your can avoid referencing `LINQPad.Runtime.dll` assembly by using mock framework facilities, e.g. for [Moq](https://github.com/moq/moq4) you can extract `IDriverProperties` interface and setup driver properties as follows:
+
+```csharp
+var driverProperties = Mock.Of<IDriverProperties>(props =>
+    props.BoolProp   == true     &&
+    props.IntProp    == 42       &&
+    props.StringProp == "string"
+);
+```
 
 ## Authors ##
 
@@ -220,6 +253,7 @@ public class LPRunTests
 ### NuGet ###
 
 * [Fluent Assertions](https://github.com/fluentassertions/fluentassertions)
+* [Moq](https://github.com/moq/moq4)
 * [NUnit](https://github.com/nunit/nunit)
 
 ## Licenses ##

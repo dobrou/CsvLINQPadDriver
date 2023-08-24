@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 
 using static LPRun.Context;
 using static LPRun.LPRunException;
@@ -55,31 +56,59 @@ namespace LPRun
         /// <param name="linqFile">The LINQPad script file to execute.</param>
         /// <param name="waitForExit">The LINQPad script execution timeout. 1 minute is the default.</param>
         /// <param name="retryOnError">The number of times to retry the operation on error and timeout between tries.</param>
+        /// <param name="commandLineParams">The additional <a href="https://www.linqpad.net/lprun.aspx">LPRun command-line</a> parameters. <seealso href="https://www.linqpad.net/lprun.aspx">LINQPad Command-Line and Scripting</seealso></param>
         /// <returns>The LINQPad script execution <see cref="Result"/>.</returns>
         /// <exception cref="LPRunException">Keeps the original exception as <see cref="P:System.Exception.InnerException"/>.</exception>
-        public static Result Execute(string linqFile, TimeSpan? waitForExit = null, RetryOnError? retryOnError = null)
-        {
-           return Retry(() => Wrap(ExecuteInternal));
+        public static Result Execute(string linqFile, TimeSpan? waitForExit = null, RetryOnError? retryOnError = null, params string[] commandLineParams) =>
+            ExecuteAsyncInternal(true, linqFile, waitForExit, retryOnError, commandLineParams).GetAwaiter().GetResult();
 
-           Result Retry(Func<Result> func)
-           {
+        /// <summary>
+        /// Asynchronously executes LINQPad script using LPRun with optional timeout specified.
+        /// </summary>
+        /// <param name="linqFile">The LINQPad script file to execute.</param>
+        /// <param name="waitForExit">The LINQPad script execution timeout. 1 minute is the default.</param>
+        /// <param name="retryOnError">The number of times to retry the operation on error and timeout between tries.</param>
+        /// <param name="commandLineParams">The additional <a href="https://www.linqpad.net/lprun.aspx">LPRun command-line</a> parameters. <seealso href="https://www.linqpad.net/lprun.aspx">LINQPad Command-Line and Scripting</seealso></param>
+        /// <returns>A task that represents the asynchronous LINQPad script execution <see cref="Result"/>.</returns>
+        /// <exception cref="LPRunException">Keeps the original exception as <see cref="P:System.Exception.InnerException"/>.</exception>
+        public static Task<Result> ExecuteAsync(string linqFile, TimeSpan? waitForExit = null, RetryOnError? retryOnError = null, params string[] commandLineParams) =>
+            ExecuteAsyncInternal(false, linqFile, waitForExit, retryOnError, commandLineParams);
+
+        private static Task<Result> ExecuteAsyncInternal(bool asSync, string linqFile, TimeSpan? waitForExit, RetryOnError? retryOnError, params string[] commandLineParams)
+        {
+            return RetryAsync(() => WrapAsync(ExecuteAsyncLocal));
+
+            async Task<Result> RetryAsync(Func<Task<Result>> func)
+            {
                 var times   = retryOnError?.Times   ?? 1;
                 var timeout = retryOnError?.Timeout ?? RetryTimeout;
 
                 while (true)
                 {
-                    var result = func();
+                    var result = await func();
 
                     if (result.Success || --times <= 0)
                     {
                         return result;
                     }
 
-                    Thread.Sleep(timeout);
+                    await Sleep();
                 }
-           }
 
-            Result ExecuteInternal()
+                async Task Sleep()
+                {
+                    if (asSync)
+                    {
+                        Thread.Sleep(timeout);
+                    }
+                    else
+                    {
+                        await Task.Delay(timeout).ConfigureAwait(false);
+                    }
+                }
+            }
+
+            async Task<Result> ExecuteAsyncLocal()
             {
                 waitForExit ??= DefaultTimeout;
 
@@ -105,7 +134,8 @@ namespace LPRun
                 process.BeginOutputReadLine();
                 process.BeginErrorReadLine();
 
-                var completed = process.WaitForExit((int)waitForExit?.TotalMilliseconds!);
+                var waitForExitMilliseconds = (int)waitForExit?.TotalMilliseconds!;
+                var completed = await WaitForExitAsync();
 
                 process.CancelOutputRead();
                 process.CancelErrorRead();
@@ -123,7 +153,7 @@ namespace LPRun
                 throw new TimeoutException($"LPRun timed out after {waitForExit}");
 
                 string GetArguments() =>
-                    $@"-fx={FrameworkInfo.Version.Major}.{FrameworkInfo.Version.Minor} ""{GetFullPath(linqFile)}""";
+                    $@"-fx={FrameworkInfo.Version.Major}.{FrameworkInfo.Version.Minor} ""{GetFullPath(linqFile)}"" {string.Join(" ", commandLineParams)}";
 
                 void OutputDataReceivedHandler(object _, DataReceivedEventArgs e) =>
                     output.Append(e.Data);
@@ -135,6 +165,42 @@ namespace LPRun
                         error.Append(e.Data);
                     }
                 }
+
+#if NET5_0_OR_GREATER
+                async Task<bool> WaitForExitAsync()
+                {
+                    if (asSync)
+                    {
+                        return WaitForExit();
+                    }
+
+                    try
+                    {
+                        var waitForExitTimeSpan = TimeSpan.FromMilliseconds(waitForExitMilliseconds);
+#if !NET6_0_OR_GREATER
+                        using var cancellationTokenSource = new CancellationTokenSource(waitForExitTimeSpan);
+#endif
+                        await process.WaitForExitAsync
+#if NET6_0_OR_GREATER
+                            ().WaitAsync(waitForExitTimeSpan)
+#else
+                            (cancellationTokenSource.Token)
+#endif
+                            .ConfigureAwait(false);
+                        return true;
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        return false;
+                    }
+                }
+#else
+                Task<bool> WaitForExitAsync() =>
+                    Task.FromResult(WaitForExit());
+#endif
+
+                bool WaitForExit() =>
+                    process.WaitForExit(waitForExitMilliseconds);
             }
         }
     }

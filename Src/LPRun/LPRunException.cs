@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Serialization;
+using System.Threading.Tasks;
 
 namespace LPRun
 {
@@ -68,12 +69,32 @@ namespace LPRun
         /// </summary>
         /// <typeparam name="TResult">The <paramref name="func"/> result type.</typeparam>
         /// <param name="func">The <see cref="Func{T}"/> to execute.</param>
+        /// <returns>The result of <see cref="Func{T}"/> call.</returns>
         /// <exception cref="LPRunException">Keeps the original exception as <see cref="P:System.Exception.InnerException"/>.</exception>
         internal static TResult Wrap<TResult>(Func<TResult> func)
         {
             try
             {
                 return func();
+            }
+            catch (Exception e)
+            {
+                throw Wrap(e);
+            }
+        }
+
+        /// <summary>
+        /// Rethrows the exception thrown by asynchronous <paramref name="func"/> as <see cref="LPRunException"/>. Keeps the original exception as <see cref="P:System.Exception.InnerException"/>.
+        /// </summary>
+        /// <typeparam name="TResult">The <paramref name="func"/> result type.</typeparam>
+        /// <param name="func">The asynchronous <see cref="Func{T}"/> where TResult is a <see cref="Task{T}"/> to execute.</param>
+        /// <returns>A task that represents the asynchronous result of <see cref="Func{T}"/> call.</returns>
+        /// <exception cref="LPRunException">Keeps the original exception as <see cref="P:System.Exception.InnerException"/>.</exception>
+        internal static async Task<TResult> WrapAsync<TResult>(Func<Task<TResult>> func)
+        {
+            try
+            {
+                return await func();
             }
             catch (Exception e)
             {

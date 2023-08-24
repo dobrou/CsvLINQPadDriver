@@ -1,5 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
-
   <PropertyGroup>
     <TargetFramework>net471</TargetFramework>
     <AssemblyName>CsvLINQPadDriver</AssemblyName>
@@ -29,5 +28,4 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
   </ItemGroup>
-
 </Project>

@@ -1,12 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
+    <TargetFrameworks>netstandard2.1;net5.0;net6.0;net7.0</TargetFrameworks>
     <Deterministic>true</Deterministic>
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
-    <NoWarn>1701;1702;NU5100</NoWarn>
+    <NoWarn>1701;1702;NU5100;NETSDK1138</NoWarn>
     <OutputPath>..\..\bin\$(Configuration)</OutputPath>
   </PropertyGroup>
 
@@ -48,32 +47,32 @@
     <Content Include="LPRun\Bin\LINQPad.Runtime.dll">
       <PackageCopyToOutput>true</PackageCopyToOutput>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <PackagePath>contentFiles\any\netstandard2.1\LPRun\Bin</PackagePath>
+      <PackagePath>contentFiles\any\any\LPRun\Bin</PackagePath>
     </Content>
     <Content Include="LPRun\Bin\LPRun7-arm64.exe">
       <PackageCopyToOutput>true</PackageCopyToOutput>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <PackagePath>contentFiles\any\netstandard2.1\LPRun\Bin</PackagePath>
+      <PackagePath>contentFiles\any\any\LPRun\Bin</PackagePath>
     </Content>
     <Content Include="LPRun\Bin\LPRun7-x86.exe">
       <PackageCopyToOutput>true</PackageCopyToOutput>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <PackagePath>contentFiles\any\netstandard2.1\LPRun\Bin</PackagePath>
+      <PackagePath>contentFiles\any\any\LPRun\Bin</PackagePath>
     </Content>
     <Content Include="LPRun\Bin\LPRun7-x64.exe">
       <PackageCopyToOutput>true</PackageCopyToOutput>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <PackagePath>contentFiles\any\netstandard2.1\LPRun\Bin</PackagePath>
+      <PackagePath>contentFiles\any\any\LPRun\Bin</PackagePath>
     </Content>
     <Content Include="LPRun\Bin\eula.txt">
       <PackageCopyToOutput>true</PackageCopyToOutput>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <PackagePath>contentFiles\any\netstandard2.1\LPRun\Bin</PackagePath>
+      <PackagePath>contentFiles\any\any\LPRun\Bin</PackagePath>
     </Content>
     <Content Include="LPRun\Bin\eula.url">
       <PackageCopyToOutput>true</PackageCopyToOutput>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <PackagePath>contentFiles\any\netstandard2.1\LPRun\Bin</PackagePath>
+      <PackagePath>contentFiles\any\any\LPRun\Bin</PackagePath>
     </Content>
     <Content Include="README.md">
       <Pack>true</Pack>
@@ -81,10 +80,10 @@
     </Content>
   </ItemGroup>
 
-  <ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.1'">
     <PackageReference Include="IsExternalInit" Version="1.0.3">
       <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
   </ItemGroup>
-
 </Project>

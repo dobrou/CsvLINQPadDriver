@@ -26,7 +26,7 @@ namespace LPRun
             ThrowNotSupportedFrameworkException(IsNetNative, "Native") ??
             FrameworkInfo.Version.Major switch
             {
-                >= 5 and <= 7 or 3 => $"LPRun7-{(IsArm ? "arm" : "x")}{(Is64Bit ? "64" : "86")}.exe",
+                >= 5 and <= 8 or 3 => $"LPRun7-{(IsArm ? "arm" : "x")}{(Is64Bit ? "64" : "86")}.exe",
                 _                  => ThrowNotSupportedNetVersionException()
             };
 
