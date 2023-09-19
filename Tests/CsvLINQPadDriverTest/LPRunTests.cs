@@ -34,6 +34,8 @@ namespace CsvLINQPadDriverTest
 
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
+            // TODO: Release with next LINQPad. Update readme.
+            //Driver.EnsureNotInstalledViaNuGet(driverFileName);
             Driver.InstallWithDepsJson(driverFileName, $"{driverFileName}.dll", "Tests");
 
             CreateFileEncodings(@"Encoding\Utf8Cp65001",   Encoding.Default);

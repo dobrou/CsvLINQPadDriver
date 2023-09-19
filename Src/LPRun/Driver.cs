@@ -2,6 +2,8 @@
 using System.IO;
 using System.Linq;
 
+using static System.Environment;
+using static System.Environment.SpecialFolder;
 using static System.IO.Directory;
 using static System.IO.File;
 using static System.IO.Path;
@@ -125,5 +127,38 @@ namespace LPRun
         /// </example>
         public static void InstallWithDepsJson(string driverDir, string driverFileName, Func<string, string> getDepsJsonFileFullPath, params string[] files) =>
             Install(driverDir, files.Concat(new[] { driverFileName, GetDepsJsonRelativePath(driverFileName, getDepsJsonFileFullPath) }).ToArray());
+
+        /// <summary>
+        /// Ensures that there is no driver is installed via NuGet. Throws <see cref="LPRunException"/> exception otherwise.
+        /// </summary>
+        /// <param name="driverDir">The driver directory. The file search patterns are allowed; it might be useful for looking for signed drivers.</param>
+        /// <exception cref="LPRunException">Thrown when driver has been installed via NuGet.</exception>
+        /// <example>
+        /// This shows how to verify that driver is not installed via NuGet:
+        /// <code>
+        /// Driver.EnsureNotInstalledViaNuGet("CsvLINQPadDriver*");
+        /// </code>
+        /// </example>
+        public static void EnsureNotInstalledViaNuGet(string driverDir)
+        {
+            Wrap(CheckForDriverDir);
+
+            void CheckForDriverDir()
+            {
+                try
+                {
+                    var path = $@"{GetFolderPath(LocalApplicationData)}\LINQPad\NuGet.Drivers";
+
+                    if (GetDirectories(path, driverDir).Any())
+                    {
+                        throw new LPRunException($@"""{driverDir}"" has been installed via NuGet under ""{path}"". LPRun will use it instead of local one. Please uninstall the driver via LINQPad or delete it manually. You can also remove call of {nameof(EnsureNotInstalledViaNuGet)} if this is intended");
+                    }
+                }
+                catch (Exception e) when(e is not LPRunException)
+                {
+                    // Ignore other exceptions.
+                }
+            }
+        }
     }
 }
