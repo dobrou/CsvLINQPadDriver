@@ -17,8 +17,6 @@ namespace CsvLINQPadDriver
 {
     internal partial class ConnectionDialog
     {
-        private const string HelpUri = "https://github.com/i2van/CsvLINQPadDriver/#readme";
-
         public const string ConfirmCheck = "check";
         public const string ConfirmUncheck = "uncheck";
 
@@ -133,7 +131,16 @@ namespace CsvLINQPadDriver
 
         public static readonly KeyGesture HelpCommandKeyGesture = HelpCommand.InputGestureAsKeyGesture;
 
-        public static readonly string ConnectionHelp = $"CSV Files Connection help ({HelpCommand.InputGestureText} for driver help) on GitHub";
+        public static readonly string ConnectionHelp = $"View context help on GitHub. {HelpCommand.InputGestureText} for driver help on GitHub";
+
+        private const string BaseHelpUri             = "https://github.com/i2van/CsvLINQPadDriver#";
+        private const string HelpUri                 = $"{BaseHelpUri}readme";
+        public static readonly Uri FilesHelp         = new($"{BaseHelpUri}csv-files");
+        public static readonly Uri FormatHelp        = new($"{BaseHelpUri}format");
+        public static readonly Uri MemoryHelp        = new($"{BaseHelpUri}memory");
+        public static readonly Uri GenerationHelp    = new($"{BaseHelpUri}generation");
+        public static readonly Uri RelationsHelp     = new($"{BaseHelpUri}relations");
+
         // ReSharper restore StringLiteralTypo
 
         private static T IfWin10<T>(T ifTrue, T ifFalse) =>

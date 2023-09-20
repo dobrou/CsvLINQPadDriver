@@ -141,6 +141,15 @@
         <Style x:Key="DependentCheckBoxStyle" TargetType="{x:Type CheckBox}" BasedOn="{StaticResource {x:Type CheckBox}}">
             <Setter Property="Margin" Value="16 0 0 0"/>
         </Style>
+
+        <Style x:Key="GroupBoxHeaderLabelStyle" TargetType="{x:Type Label}">
+            <Setter Property="Padding" Value="0 3 0 3"/>
+        </Style>
+
+        <Style x:Key="GroupBoxHeaderTextBlockHyperlinkStyle" TargetType="{x:Type TextBlock}">
+            <Setter Property="Margin" Value="3 2 0 0"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
     </Window.Resources>
 
     <Window.CommandBindings>
@@ -238,7 +247,7 @@
                             SelectionChanged="FileTypeComboBox_OnSelectionChanged"/>
                         <Label Padding="3 2 0 3" Content="_Files" Target="{Binding ElementName=FilesTextBox}"/>
                         <TextBlock Margin="3 0 0 0" VerticalAlignment="Center">
-                            <Hyperlink NavigateUri="https://github.com/i2van/CsvLINQPadDriver/#csv-files" ToolTip="{x:Static this:ConnectionDialog.ConnectionHelp}" Style="{StaticResource HelpHyperlink}">
+                            <Hyperlink NavigateUri="{x:Static this:ConnectionDialog.FilesHelp}" ToolTip="{x:Static this:ConnectionDialog.ConnectionHelp}" Style="{StaticResource HelpHyperlink}">
                                 <TextBlock Style="{StaticResource HelpTextBlock}"/>
                             </Hyperlink>
                         </TextBlock>
@@ -436,7 +445,18 @@
             </GroupBox>
 
             <StackPanel Grid.Row="1">
-                <GroupBox Header="Format">
+                <GroupBox>
+                    <GroupBox.Header>
+                        <StackPanel Orientation="Horizontal">
+                            <Label Content="Format" Style="{StaticResource GroupBoxHeaderLabelStyle}"/>
+                            <TextBlock Style="{StaticResource GroupBoxHeaderTextBlockHyperlinkStyle}">
+                                <Hyperlink NavigateUri="{x:Static this:ConnectionDialog.FormatHelp}" ToolTip="{x:Static this:ConnectionDialog.ConnectionHelp}" Style="{StaticResource HelpHyperlink}">
+                                    <TextBlock Style="{StaticResource HelpTextBlock}"/>
+                                </Hyperlink>
+                            </TextBlock>
+                        </StackPanel>
+                    </GroupBox.Header>
+
                     <Grid Style="{StaticResource GroupGridStyle}">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" SharedSizeGroup="ComboBoxLabel"/>
@@ -547,7 +567,18 @@
                     </Grid>
                 </GroupBox>
 
-                <GroupBox Header="Memory">
+                <GroupBox>
+                    <GroupBox.Header>
+                        <StackPanel Orientation="Horizontal">
+                            <Label Content="Memory" Style="{StaticResource GroupBoxHeaderLabelStyle}" />
+                            <TextBlock Style="{StaticResource GroupBoxHeaderTextBlockHyperlinkStyle}">
+                                <Hyperlink NavigateUri="{x:Static this:ConnectionDialog.MemoryHelp}" ToolTip="{x:Static this:ConnectionDialog.ConnectionHelp}" Style="{StaticResource HelpHyperlink}">
+                                    <TextBlock Style="{StaticResource HelpTextBlock}"/>
+                                </Hyperlink>
+                            </TextBlock>
+                        </StackPanel>
+                    </GroupBox.Header>
+
                     <StackPanel Style="{StaticResource GroupStackPanelStyle}">
                         <CheckBox IsChecked="{Binding IsCacheEnabled}" Content="_Cache data in memory" ToolTip="Cache parsed rows. This cache survives multiple query runs, even when query is changed"/>
                         <!-- ReSharper disable once MarkupAttributeTypo -->
@@ -561,7 +592,18 @@
                     </StackPanel>
                 </GroupBox>
 
-                <GroupBox Header="Generation">
+                <GroupBox>
+                    <GroupBox.Header>
+                        <StackPanel Orientation="Horizontal">
+                            <Label Content="Generation" Style="{StaticResource GroupBoxHeaderLabelStyle}" />
+                            <TextBlock Style="{StaticResource GroupBoxHeaderTextBlockHyperlinkStyle}">
+                                <Hyperlink NavigateUri="{x:Static this:ConnectionDialog.GenerationHelp}" ToolTip="{x:Static this:ConnectionDialog.ConnectionHelp}" Style="{StaticResource HelpHyperlink}">
+                                    <TextBlock Style="{StaticResource HelpTextBlock}"/>
+                                </Hyperlink>
+                            </TextBlock>
+                        </StackPanel>
+                    </GroupBox.Header>
+
                     <StackPanel Style="{StaticResource GroupStackPanelStyle}">
                         <CheckBox IsChecked="{Binding UseRecordType}" Visibility="{x:Static this:ConnectionDialog.NetCoreOnlyVisibility}" Content="Use record t_ype" ToolTip="Generate records instead of classes"/>
                         <!-- ReSharper disable once MarkupAttributeTypo -->
@@ -617,7 +659,18 @@
                     </StackPanel>
                 </GroupBox>
 
-                <GroupBox Header="Relations">
+                <GroupBox>
+                    <GroupBox.Header>
+                        <StackPanel Orientation="Horizontal">
+                            <Label Content="Relations" Style="{StaticResource GroupBoxHeaderLabelStyle}" />
+                            <TextBlock Style="{StaticResource GroupBoxHeaderTextBlockHyperlinkStyle}">
+                                <Hyperlink NavigateUri="{x:Static this:ConnectionDialog.RelationsHelp}" ToolTip="{x:Static this:ConnectionDialog.ConnectionHelp}" Style="{StaticResource HelpHyperlink}">
+                                    <TextBlock Style="{StaticResource HelpTextBlock}"/>
+                                </Hyperlink>
+                            </TextBlock>
+                        </StackPanel>
+                    </GroupBox.Header>
+
                     <StackPanel Style="{StaticResource GroupStackPanelStyle}">
                         <CheckBox IsChecked="{Binding DetectRelations}" Content="Detect _relations" ToolTip="Detect relations between CSV files/tables (based on files and column names)"/>
                         <CheckBox IsChecked="{Binding HideRelationsFromDump}"

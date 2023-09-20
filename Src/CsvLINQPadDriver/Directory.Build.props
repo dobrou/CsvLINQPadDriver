@@ -1,7 +1,7 @@
 ﻿<Project>
   <PropertyGroup>
-    <Version>7.3.19</Version>
-    <PackageReleaseNotes>Update dependencies.</PackageReleaseNotes>
+    <Version>7.3.20</Version>
+    <PackageReleaseNotes>Added context help.</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup>
