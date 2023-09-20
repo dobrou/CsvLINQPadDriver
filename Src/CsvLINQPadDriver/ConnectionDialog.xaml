@@ -69,6 +69,10 @@
             <Setter Property="Command" Value="{x:Static this:ConnectionDialog.HelpCommand}"/>
         </Style>
 
+        <Style x:Key="ContextHelpHyperlink" TargetType="{x:Type Hyperlink}" BasedOn="{StaticResource HelpHyperlink}">
+            <Setter Property="ToolTip" Value="{x:Static this:ConnectionDialog.ConnectionHelp}"/>
+        </Style>
+
         <Style x:Key="CommandHyperlink" TargetType="{x:Type Hyperlink}" BasedOn="{StaticResource {x:Type Hyperlink}}">
             <!-- ReSharper disable once Xaml.BindingWithContextNotResolved -->
             <Setter Property="ToolTip" Value="{Binding Command.ToolTip, RelativeSource={RelativeSource Self}}"/>
@@ -247,7 +251,7 @@
                             SelectionChanged="FileTypeComboBox_OnSelectionChanged"/>
                         <Label Padding="3 2 0 3" Content="_Files" Target="{Binding ElementName=FilesTextBox}"/>
                         <TextBlock Margin="3 0 0 0" VerticalAlignment="Center">
-                            <Hyperlink NavigateUri="{x:Static this:ConnectionDialog.FilesHelp}" ToolTip="{x:Static this:ConnectionDialog.ConnectionHelp}" Style="{StaticResource HelpHyperlink}">
+                            <Hyperlink NavigateUri="{x:Static this:ConnectionDialog.FilesHelp}" Style="{StaticResource ContextHelpHyperlink}">
                                 <TextBlock Style="{StaticResource HelpTextBlock}"/>
                             </Hyperlink>
                         </TextBlock>
@@ -450,7 +454,7 @@
                         <StackPanel Orientation="Horizontal">
                             <Label Content="Format" Style="{StaticResource GroupBoxHeaderLabelStyle}"/>
                             <TextBlock Style="{StaticResource GroupBoxHeaderTextBlockHyperlinkStyle}">
-                                <Hyperlink NavigateUri="{x:Static this:ConnectionDialog.FormatHelp}" ToolTip="{x:Static this:ConnectionDialog.ConnectionHelp}" Style="{StaticResource HelpHyperlink}">
+                                <Hyperlink NavigateUri="{x:Static this:ConnectionDialog.FormatHelp}" Style="{StaticResource ContextHelpHyperlink}">
                                     <TextBlock Style="{StaticResource HelpTextBlock}"/>
                                 </Hyperlink>
                             </TextBlock>
@@ -572,7 +576,7 @@
                         <StackPanel Orientation="Horizontal">
                             <Label Content="Memory" Style="{StaticResource GroupBoxHeaderLabelStyle}" />
                             <TextBlock Style="{StaticResource GroupBoxHeaderTextBlockHyperlinkStyle}">
-                                <Hyperlink NavigateUri="{x:Static this:ConnectionDialog.MemoryHelp}" ToolTip="{x:Static this:ConnectionDialog.ConnectionHelp}" Style="{StaticResource HelpHyperlink}">
+                                <Hyperlink NavigateUri="{x:Static this:ConnectionDialog.MemoryHelp}" Style="{StaticResource ContextHelpHyperlink}">
                                     <TextBlock Style="{StaticResource HelpTextBlock}"/>
                                 </Hyperlink>
                             </TextBlock>
@@ -597,7 +601,7 @@
                         <StackPanel Orientation="Horizontal">
                             <Label Content="Generation" Style="{StaticResource GroupBoxHeaderLabelStyle}" />
                             <TextBlock Style="{StaticResource GroupBoxHeaderTextBlockHyperlinkStyle}">
-                                <Hyperlink NavigateUri="{x:Static this:ConnectionDialog.GenerationHelp}" ToolTip="{x:Static this:ConnectionDialog.ConnectionHelp}" Style="{StaticResource HelpHyperlink}">
+                                <Hyperlink NavigateUri="{x:Static this:ConnectionDialog.GenerationHelp}" Style="{StaticResource ContextHelpHyperlink}">
                                     <TextBlock Style="{StaticResource HelpTextBlock}"/>
                                 </Hyperlink>
                             </TextBlock>
@@ -664,7 +668,7 @@
                         <StackPanel Orientation="Horizontal">
                             <Label Content="Relations" Style="{StaticResource GroupBoxHeaderLabelStyle}" />
                             <TextBlock Style="{StaticResource GroupBoxHeaderTextBlockHyperlinkStyle}">
-                                <Hyperlink NavigateUri="{x:Static this:ConnectionDialog.RelationsHelp}" ToolTip="{x:Static this:ConnectionDialog.ConnectionHelp}" Style="{StaticResource HelpHyperlink}">
+                                <Hyperlink NavigateUri="{x:Static this:ConnectionDialog.RelationsHelp}" Style="{StaticResource ContextHelpHyperlink}">
                                     <TextBlock Style="{StaticResource HelpTextBlock}"/>
                                 </Hyperlink>
                             </TextBlock>
