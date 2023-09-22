@@ -83,8 +83,12 @@ Full NUnit test code can be found [here](https://github.com/i2van/CsvLINQPadDriv
 public class LPRunTests
 {
     [OneTimeSetUp]
-    public void Init() =>
-        // Copy driver to LPRun drivers folder.
+    public void Init()
+    {
+        // Check that driver is not installed via NuGet.
+        Driver.EnsureNotInstalledViaNuGet("CsvLINQPadDriver");
+
+        // Install driver.
         Driver.InstallWithDepsJson(
             // The directory to copy driver files to.
             "CsvLINQPadDriver",
@@ -92,6 +96,7 @@ public class LPRunTests
             "CsvLINQPadDriver.dll",
             // The test folder path.
             "Tests");
+    }
 
     [Test]
     [TestCaseSource(nameof(TestsData))]
@@ -113,7 +118,8 @@ public class LPRunTests
         }).ToString();
 
         // Arrange: Create test LNQPad script.
-        var linqScript = LinqScript.Create(
+        // You can also use LinqScript.FromScript method.
+        var linqScript = LinqScript.FromFile(
             $"{linqScriptName}.linq",
             queryConfig);
 
@@ -176,7 +182,8 @@ public class LPRunTests
         // ...
 
         // Arrange: Create test LNQPad script.
-        var linqScript = LinqScript.Create(
+        // You can also use LinqScript.FromScript method.
+        var linqScript = LinqScript.FromFile(
             $"{linqScriptName}.linq",
             queryConfig,
             $"{linqScriptName}_{testData.index}");

@@ -16,13 +16,20 @@ using CsvLINQPadDriver.Extensions;
 
 using LPRun;
 
+#pragma warning disable IDE0079
 #pragma warning disable CA1416
+#pragma warning restore IDE0079
 
 namespace CsvLINQPadDriverTest
 {
     [TestFixture]
     public sealed class LPRunTests
     {
+#if GITHUB_ACTIONS
+        private const int RetryCount = 3;
+#endif
+        private static readonly TimeSpan RetryTimeout = TimeSpan.FromMinutes(2);
+
         private static readonly string Files = Context.GetDataFullPath("**.csv");
 
         private sealed record FileEncoding(string FileName, Encoding Encoding);
@@ -34,8 +41,7 @@ namespace CsvLINQPadDriverTest
 
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
-            // TODO: Release with next LINQPad. Update readme.
-            //Driver.EnsureNotInstalledViaNuGet(driverFileName);
+            Driver.EnsureNotInstalledViaNuGet(driverFileName);
             Driver.InstallWithDepsJson(driverFileName, $"{driverFileName}.dll", "Tests");
 
             CreateFileEncodings(@"Encoding\Utf8Cp65001",   Encoding.Default);
@@ -69,6 +75,8 @@ namespace CsvLINQPadDriverTest
             public int Index { get; init; }
         }
 
+        public sealed record ScriptFromSourceTestData(bool Succeeded, string Payload, bool HasErrorOutput = false, int? ExitCode = null);
+
         [Test]
         [Parallelizable(ParallelScope.Children)]
         [TestCaseSource(nameof(ParallelizableScriptWithDriverPropertiesTestDataTestsData))]
@@ -87,15 +95,15 @@ namespace CsvLINQPadDriverTest
                 return stringBuilder;
             }).ToString();
 
-            var linqScript = LinqScript.Create($"{linqScriptName}.linq", queryConfig, $"{linqScriptName}_{testData.Index}");
+            var linqScript = LinqScript.FromFile($"{linqScriptName}.linq", queryConfig, $"{linqScriptName}_{testData.Index}");
 
             Console.Write($"{linqScript}{Environment.NewLine}{Environment.NewLine}{queryConfig}");
 
             var (output, error, exitCode) = await Runner.ExecuteAsync(
                 linqScript,
-                TimeSpan.FromMinutes(2)
+                RetryTimeout
 #if GITHUB_ACTIONS
-                , new (3)
+                , new (RetryCount)
 #endif
             );
 
@@ -122,6 +130,53 @@ namespace CsvLINQPadDriverTest
                 !string.IsNullOrWhiteSpace(str);
         }
 
+        [Test]
+        [Parallelizable(ParallelScope.Children)]
+        [TestCaseSource(nameof(ScriptFromSourceTestDataTestsData))]
+        public async Task Execute_ScriptFromSource_Success(ScriptFromSourceTestData testData)
+        {
+            var scriptFile = LinqScript.FromScript(GetScript(), @"<Query Kind=""Program"" />");
+
+            var result = await Runner.ExecuteAsync(scriptFile,
+                RetryTimeout
+#if GITHUB_ACTIONS
+                , new (RetryCount)
+#endif
+                );
+
+            result.Success.Should().Be(testData.Succeeded);
+            result.ExitCode.Should().Be(testData.ExitCode ?? (testData.Succeeded ? 0 : 1));
+
+            if (testData.HasErrorOutput)
+            {
+                result.Error.Should().NotBeNullOrEmpty();
+            }
+            else
+            {
+                result.Error.Should().BeNullOrEmpty();
+            }
+
+            string GetScript() => $$"""
+                int Main()
+                {
+                    {{testData.Payload}};
+                    return 0;
+                }
+                """;
+        }
+
+        private static IEnumerable<ScriptFromSourceTestData> ScriptFromSourceTestDataTestsData()
+        {
+            yield return new(false, @"Console.Error.WriteLine(""Failed!"")", true, 0);
+            yield return new(true,  @"Console.WriteLine(""Succeeded!"")");
+            yield return new(true,  "Environment.Exit(0)");
+            yield return new(false, "Environment.Exit(1)");
+            yield return new(true,  "//");
+            yield return new(false, @"throw new Exception(""Failed!"")", true);
+            yield return new(false, "return 1");
+            yield return new(true,  "return 0");
+        }
+
         private static IEnumerable<ScriptWithDriverPropertiesTestData> ParallelizableScriptWithDriverPropertiesTestDataTestsData() =>
             ScriptWithDriverPropertiesTestDataTestsData().AugmentWithFileIndex(
                 static testData => testData.LinqScriptName,
@@ -133,7 +188,7 @@ namespace CsvLINQPadDriverTest
 
             var defaultCsvDataContextDriverProperties = GetDefaultCsvDataContextDriverPropertiesObject(defaultStringComparison);
 
-            return GetTestData().SelectMany(_ => _);
+            return GetTestData().SelectMany(static t => t);
 
             IEnumerable<IEnumerable<ScriptWithDriverPropertiesTestData>> GetTestData()
             {
@@ -236,13 +291,15 @@ namespace CsvLINQPadDriverTest
                         csvDataContextDriverProperties.DebugInfo &&
                         csvDataContextDriverProperties.DetectRelations &&
                         csvDataContextDriverProperties.UseRecordType == useRecordType &&
-                        csvDataContextDriverProperties.UseSingleClassForSameFiles == false &&
                         csvDataContextDriverProperties.StringComparison == defaultStringComparison &&
+#pragma warning disable S1125
+                        csvDataContextDriverProperties.UseSingleClassForSameFiles == false &&
                         csvDataContextDriverProperties.IsStringInternEnabled == false &&
                         csvDataContextDriverProperties.IgnoreInvalidFiles == false &&
                         csvDataContextDriverProperties.IsCacheEnabled == false &&
                         csvDataContextDriverProperties.HideRelationsFromDump == false &&
                         csvDataContextDriverProperties.Persist == false
+#pragma warning restore S1125
                     );
             }
 

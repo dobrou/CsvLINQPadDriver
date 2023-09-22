@@ -81,7 +81,7 @@
 
   <ItemGroup>
     <PackageReference Include="FluentAssertions" Version="6.12.0" />
-    <PackageReference Include="LPRun" Version="7.8.6" />
+    <PackageReference Include="LPRun" Version="7.8.7-beta1" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.7.2" />
     <PackageReference Include="Moq" Version="[4.18.4]" />
     <PackageReference Include="NUnit" Version="3.13.3" />

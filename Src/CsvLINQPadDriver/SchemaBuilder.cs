@@ -105,7 +105,7 @@ namespace CsvLINQPadDriver
                         DragText = $@"new []
 {{
 {string.Join(Environment.NewLine, codeNames.Select(static n => $"\t{n},"))}
-}}.SelectMany(_ => _)
+}}.SelectMany(n => n)
 "
                     });
 
