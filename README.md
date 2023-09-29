@@ -179,7 +179,7 @@ CSV files connection can be added to LINQPad 7/6/5 the same way as any other con
 * Order files by: files sort order. Affects similar files order.
 * Fallback encoding: [encoding](https://docs.microsoft.com/en-us/windows/win32/intl/code-page-identifiers) to use if file encoding could not be detected. `UTF-8` is used by default.
 * Auto-detect file encodings: try to detect file encodings.
-* Validate file paths: check if file paths are valid.
+* Validate file paths: checks if file paths are valid.
 * Ignore files with invalid format: files with content which does not resemble CSV will be ignored.
 * Do not lock files being read: allow other processes to modify files being read. Note that driver does not track files changes.
 
@@ -818,7 +818,8 @@ TimeOnly? ToTimeOnlySafe(
 
 ## Troubleshooting ##
 
-* In case of `Cannot load type 'LINQPad.User.***' from cache` error use connection context menu **Close all connections**.
+* In case of `Cannot load type 'LINQPad.User.***' from cache` error, use connection context menu **Close all connections**.
+* In case of `BadDataException: You can ignore bad data by setting BadDataFound to null` error, check `Ignore bad data` at [Format](#format) section.
 
 ## Authors ##
 

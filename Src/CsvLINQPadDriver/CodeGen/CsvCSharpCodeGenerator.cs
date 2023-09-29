@@ -97,7 +97,7 @@ namespace CsvLINQPadDriver.CodeGen
                 {ParamName("filePath")}{context.Table.FilePath.AsValidCSharpCode()},
                 {ParamName("propertiesInfo")}new {typeof(CsvColumnInfoList).GetCodeTypeClassName()} {{
                     {string.Join(string.Empty, string.Join(@",
-                    ", context.Table.Columns.Select(csvColumn => $@"{{ {IntToString(csvColumn.Index)}, {NameOf(context.ClassName, csvColumn.CodeName!)} }}")))}
+                    ", context.Table.Columns.Select(csvColumn => $"{{ {IntToString(csvColumn.Index)}, {NameOf(context.ClassName, csvColumn.CodeName!)} }}")))}
                 }},
                 {ParamName("relationsInit")}r => {{{string.Join(string.Empty, context.Table.Relations.Select(csvRelation => (Relation: csvRelation, ClassName: GetClassName(csvRelation.TargetTable))).Select(static context => $@"
                     r.{context.Relation.CodeName} = new {typeof(LazyEnumerable<>).GetCodeTypeClassName(context.ClassName)}(
