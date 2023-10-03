@@ -4,52 +4,51 @@ using System.Globalization;
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable UnusedMember.Global
 
-namespace CsvLINQPadDriver.Extensions
+namespace CsvLINQPadDriver.Extensions;
+
+public static partial class StringExtensions
 {
-    public static partial class StringExtensions
+    public static decimal? ToDecimal(this string? s, NumberStyles style = Styles.Decimal, IFormatProvider? provider = null)
     {
-        public static decimal? ToDecimal(this string? s, NumberStyles style = Styles.Decimal, IFormatProvider? provider = null)
+        if (string.IsNullOrEmpty(s))
         {
-            if (string.IsNullOrEmpty(s))
-            {
-                return null;
-            }
-
-            try
-            {
-                return decimal.Parse(s, style, provider.ResolveFormatProvider());
-            }
-            catch (Exception e) when (e.CanBeHandled())
-            {
-                throw ConvertException.Create("decimal", s, e);
-            }
+            return null;
         }
 
-#if NETCOREAPP
-        public static decimal? ToDecimal(this ReadOnlySpan<char> s, NumberStyles style = Styles.Decimal, IFormatProvider? provider = null)
+        try
         {
-            if (s.IsEmpty)
-            {
-                return null;
-            }
-
-            try
-            {
-                return decimal.Parse(s, style, provider.ResolveFormatProvider());
-            }
-            catch (Exception e) when (e.CanBeHandled())
-            {
-                throw ConvertException.Create("decimal", s, e);
-            }
+            return decimal.Parse(s, style, provider.ResolveFormatProvider());
         }
-#endif
-
-        public static decimal? ToDecimalSafe(this string? s, NumberStyles style = Styles.Decimal, IFormatProvider? provider = null) =>
-            decimal.TryParse(s, style, provider.ResolveFormatProvider(), out var parsedValue) ? parsedValue : null;
-
-#if NETCOREAPP
-        public static decimal? ToDecimalSafe(this ReadOnlySpan<char> s, NumberStyles style = Styles.Decimal, IFormatProvider? provider = null) =>
-            decimal.TryParse(s, style, provider.ResolveFormatProvider(), out var parsedValue) ? parsedValue : null;
-#endif
+        catch (Exception e) when (e.CanBeHandled())
+        {
+            throw ConvertException.Create("decimal", s, e);
+        }
     }
+
+#if NETCOREAPP
+    public static decimal? ToDecimal(this ReadOnlySpan<char> s, NumberStyles style = Styles.Decimal, IFormatProvider? provider = null)
+    {
+        if (s.IsEmpty)
+        {
+            return null;
+        }
+
+        try
+        {
+            return decimal.Parse(s, style, provider.ResolveFormatProvider());
+        }
+        catch (Exception e) when (e.CanBeHandled())
+        {
+            throw ConvertException.Create("decimal", s, e);
+        }
+    }
+#endif
+
+    public static decimal? ToDecimalSafe(this string? s, NumberStyles style = Styles.Decimal, IFormatProvider? provider = null) =>
+        decimal.TryParse(s, style, provider.ResolveFormatProvider(), out var parsedValue) ? parsedValue : null;
+
+#if NETCOREAPP
+    public static decimal? ToDecimalSafe(this ReadOnlySpan<char> s, NumberStyles style = Styles.Decimal, IFormatProvider? provider = null) =>
+        decimal.TryParse(s, style, provider.ResolveFormatProvider(), out var parsedValue) ? parsedValue : null;
+#endif
 }

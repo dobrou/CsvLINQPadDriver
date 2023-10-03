@@ -4,107 +4,106 @@ using System.Linq;
 
 using LINQPad;
 
-namespace CsvLINQPadDriver.CodeGen
+namespace CsvLINQPadDriver.CodeGen;
+
+internal sealed class CsvTableList<TRow> : CsvTableBase<TRow>, IList<TRow>
+    where TRow : ICsvRowBase, new()
 {
-    internal sealed class CsvTableList<TRow> : CsvTableBase<TRow>, IList<TRow>
-        where TRow : ICsvRowBase, new()
+    private readonly IDictionary<string, ILookup<string, TRow>> _indices = new Dictionary<string, ILookup<string, TRow>>();
+    private readonly Lazy<IList<TRow>> _dataCache;
+
+    public CsvTableList(
+        bool isStringInternEnabled,
+        StringComparer? internStringComparer,
+        string? csvSeparator,
+        NoBomEncoding noBomEncoding,
+        bool allowComments,
+        char? commentChar,
+        bool ignoreBadData,
+        bool autoDetectEncoding,
+        bool ignoreBlankLines,
+        bool doNotLockFiles,
+        bool addHeader,
+        HeaderDetection? headerDetection,
+        WhitespaceTrimOptions? whitespaceTrimOptions,
+        bool allowSkipLeadingRows,
+        int skipLeadingRowsCount,
+        string filePath,
+        IEnumerable<CsvColumnInfo> propertiesInfo,
+        Action<TRow> relationsInit)
+        : base(
+            isStringInternEnabled,
+            internStringComparer,
+            csvSeparator,
+            noBomEncoding,
+            allowComments,
+            commentChar,
+            ignoreBadData,
+            autoDetectEncoding,
+            ignoreBlankLines,
+            doNotLockFiles,
+            addHeader,
+            headerDetection,
+            whitespaceTrimOptions,
+            allowSkipLeadingRows,
+            skipLeadingRowsCount,
+            filePath,
+            propertiesInfo,
+            relationsInit) =>
+        _dataCache = new Lazy<IList<TRow>>(() => ReadData().Cache($"{typeof(TRow).Name}:{FilePath}"));
+
+    private IList<TRow> DataCache =>
+        _dataCache.Value;
+
+    public override IEnumerator<TRow> GetEnumerator() =>
+        DataCache.GetEnumerator();
+
+    public override IEnumerable<TRow> WhereIndexed(Func<TRow, string> getProperty, string propertyName, params string[] values)
     {
-        private readonly IDictionary<string, ILookup<string, TRow>> _indices = new Dictionary<string, ILookup<string, TRow>>();
-        private readonly Lazy<IList<TRow>> _dataCache;
-
-        public CsvTableList(
-            bool isStringInternEnabled,
-            StringComparer? internStringComparer,
-            string? csvSeparator,
-            NoBomEncoding noBomEncoding,
-            bool allowComments,
-            char? commentChar,
-            bool ignoreBadData,
-            bool autoDetectEncoding,
-            bool ignoreBlankLines,
-            bool doNotLockFiles,
-            bool addHeader,
-            HeaderDetection? headerDetection,
-            WhitespaceTrimOptions? whitespaceTrimOptions,
-            bool allowSkipLeadingRows,
-            int skipLeadingRowsCount,
-            string filePath,
-            IEnumerable<CsvColumnInfo> propertiesInfo,
-            Action<TRow> relationsInit)
-            : base(
-                isStringInternEnabled,
-                internStringComparer,
-                csvSeparator,
-                noBomEncoding,
-                allowComments,
-                commentChar,
-                ignoreBadData,
-                autoDetectEncoding,
-                ignoreBlankLines,
-                doNotLockFiles,
-                addHeader,
-                headerDetection,
-                whitespaceTrimOptions,
-                allowSkipLeadingRows,
-                skipLeadingRowsCount,
-                filePath,
-                propertiesInfo,
-                relationsInit) =>
-            _dataCache = new Lazy<IList<TRow>>(() => ReadData().Cache($"{typeof(TRow).Name}:{FilePath}"));
-
-        private IList<TRow> DataCache =>
-            _dataCache.Value;
-
-        public override IEnumerator<TRow> GetEnumerator() =>
-            DataCache.GetEnumerator();
-
-        public override IEnumerable<TRow> WhereIndexed(Func<TRow, string> getProperty, string propertyName, params string[] values)
+        if (!_indices.TryGetValue(propertyName, out var propertyIndex))
         {
-            if (!_indices.TryGetValue(propertyName, out var propertyIndex))
-            {
-                propertyIndex = this.ToLookup(getProperty, StringComparer);
-                _indices.Add(propertyName, propertyIndex);
-            }
-
-            var result = values.SelectMany(value => propertyIndex[value]);
-
-            return values.Length > 1 ? result.Distinct() : result;
+            propertyIndex = this.ToLookup(getProperty, StringComparer);
+            _indices.Add(propertyName, propertyIndex);
         }
 
-        public void Add(TRow item) =>
-            DataCache.Add(item);
+        var result = values.SelectMany(value => propertyIndex[value]);
 
-        public void Clear() =>
-            DataCache.Clear();
+        return values.Length > 1 ? result.Distinct() : result;
+    }
 
-        public bool Contains(TRow item) =>
-            DataCache.Contains(item);
+    public void Add(TRow item) =>
+        DataCache.Add(item);
 
-        public void CopyTo(TRow[] array, int arrayIndex) =>
-            DataCache.CopyTo(array, arrayIndex);
+    public void Clear() =>
+        DataCache.Clear();
 
-        public bool Remove(TRow item) =>
-            DataCache.Remove(item);
+    public bool Contains(TRow item) =>
+        DataCache.Contains(item);
 
-        public int Count =>
-            DataCache.Count;
+    public void CopyTo(TRow[] array, int arrayIndex) =>
+        DataCache.CopyTo(array, arrayIndex);
 
-        public bool IsReadOnly =>
-            DataCache.IsReadOnly;
+    public bool Remove(TRow item) =>
+        DataCache.Remove(item);
 
-        public int IndexOf(TRow item) =>
-            DataCache.IndexOf(item);
+    public int Count =>
+        DataCache.Count;
 
-        public void Insert(int index, TRow item) =>
-            DataCache.Insert(index, item);
+    public bool IsReadOnly =>
+        DataCache.IsReadOnly;
 
-        public void RemoveAt(int index) =>
-            DataCache.RemoveAt(index);
+    public int IndexOf(TRow item) =>
+        DataCache.IndexOf(item);
 
-        public TRow this[int index]
-        {
-            get => DataCache[index];
-            set => DataCache[index] = value;
-        }
+    public void Insert(int index, TRow item) =>
+        DataCache.Insert(index, item);
+
+    public void RemoveAt(int index) =>
+        DataCache.RemoveAt(index);
+
+    public TRow this[int index]
+    {
+        get => DataCache[index];
+        set => DataCache[index] = value;
     }
 }

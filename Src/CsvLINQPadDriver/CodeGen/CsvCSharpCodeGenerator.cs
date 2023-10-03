@@ -21,58 +21,58 @@ using System.Collections.Immutable;
 using CsvLINQPadDriver.Bcl.Extensions;
 #endif
 
-namespace CsvLINQPadDriver.CodeGen
-{
-    internal sealed class CsvCSharpCodeGenerator
-    {
-        private const string DefaultContextTypeName = "CsvDataContext";
+namespace CsvLINQPadDriver.CodeGen;
 
-        private const string NullableReferenceTypeSign =
+internal sealed class CsvCSharpCodeGenerator
+{
+    private const string DefaultContextTypeName = "CsvDataContext";
+
+    private const string NullableReferenceTypeSign =
 #if NETCOREAPP
-            "?"
+        "?"
 #else
-            "/*?*/"
+        "/*?*/"
 #endif
         ;
 
-        private readonly ICsvDataContextDriverProperties _properties;
+    private readonly ICsvDataContextDriverProperties _properties;
 
-        private readonly string _contextNameSpace;
-        private readonly string _contextTypeName;
+    private readonly string _contextNameSpace;
+    private readonly string _contextTypeName;
 
-        private CsvCSharpCodeGenerator(string contextNameSpace, string contextTypeName, ICsvDataContextDriverProperties properties)
-        {
-            _contextNameSpace = contextNameSpace;
-            _contextTypeName = contextTypeName;
-            _properties = properties;
-        }
+    private CsvCSharpCodeGenerator(string contextNameSpace, string contextTypeName, ICsvDataContextDriverProperties properties)
+    {
+        _contextNameSpace = contextNameSpace;
+        _contextTypeName = contextTypeName;
+        _properties = properties;
+    }
 
-        public sealed record TypeCodeResult(string TypeName, string Code, string CodeName, string FilePath);
-        public sealed record Result(string Code, IReadOnlyCollection<IGrouping<string, TypeCodeResult>> CodeGroups);
+    public sealed record TypeCodeResult(string TypeName, string Code, string CodeName, string FilePath);
+    public sealed record Result(string Code, IReadOnlyCollection<IGrouping<string, TypeCodeResult>> CodeGroups);
 
-        // ReSharper disable once RedundantAssignment
-        public static Result GenerateCode(CsvDatabase db, ref string nameSpace, ref string typeName, ICsvDataContextDriverProperties properties, Stopwatch stopwatch) =>
-            new CsvCSharpCodeGenerator(nameSpace, typeName = DefaultContextTypeName, properties).GenerateSrcFile(db, stopwatch);
+    // ReSharper disable once RedundantAssignment
+    public static Result GenerateCode(CsvDatabase db, ref string nameSpace, ref string typeName, ICsvDataContextDriverProperties properties, Stopwatch stopwatch) =>
+        new CsvCSharpCodeGenerator(nameSpace, typeName = DefaultContextTypeName, properties).GenerateSrcFile(db, stopwatch);
 
-        private Result GenerateSrcFile(CsvDatabase csvDatabase, Stopwatch stopwatch)
-        {
-            var csvTables = csvDatabase.Tables;
+    private Result GenerateSrcFile(CsvDatabase csvDatabase, Stopwatch stopwatch)
+    {
+        var csvTables = csvDatabase.Tables;
 
-            var groups = csvTables
-                    .Select(table => GenerateTableRowDataTypeClass(table, _properties.UseRecordType, _properties.StringComparison, _properties.HideRelationsFromDump))
-                    .GroupBy(static typeCode => typeCode.TypeName)
-                    .ToImmutableList();
+        var groups = csvTables
+            .Select(table => GenerateTableRowDataTypeClass(table, _properties.UseRecordType, _properties.StringComparison, _properties.HideRelationsFromDump))
+            .GroupBy(static typeCode => typeCode.TypeName)
+            .ToImmutableList();
 
-            var isStringInternEnabled = _properties.IsStringInternEnabled;
+        var isStringInternEnabled = _properties.IsStringInternEnabled;
 
-            return new Result($@"namespace {_contextNameSpace}
+        return new Result($@"namespace {_contextNameSpace}
 {{
     /// <summary>CSV Data Context</summary>
     public class {_contextTypeName} : {typeof(CsvDataContextBase).GetCodeTypeClassName()}
     {{{string.Join(string.Empty, csvTables.Select(static table => $@"
         /// <summary>File: {SecurityElement.Escape(table.FilePath)}</summary>
         public {typeof(CsvTableBase<>).GetCodeTypeClassName(GetClassName(table))} {table.CodeName} {{ get; private set; }}")
-                )}
+    )}
 
         public {_contextTypeName}()
         {{
@@ -104,7 +104,7 @@ namespace CsvLINQPadDriver.CodeGen
                         () => {context.Relation.TargetTable.CodeName}.WhereIndexed(tr => tr.{context.Relation.TargetColumn.CodeName}, {NameOf(context.ClassName, context.Relation.TargetColumn.CodeName!)}, r.{context.Relation.SourceColumn.CodeName}));"))}
                 }}
             );")
-                )}
+            )}
         }}
     }} // context class
 
@@ -114,38 +114,38 @@ namespace CsvLINQPadDriver.CodeGen
 // .NET {Environment.Version}
 ", groups);
 
-            static string GetBoolConst(bool value) =>
-                value ? "true" : "false";
+        static string GetBoolConst(bool value) =>
+            value ? "true" : "false";
 
-            static string GetNullableValue(bool hasValue, Func<string> valueProvider) =>
-                hasValue ? valueProvider() : "null";
+        static string GetNullableValue(bool hasValue, Func<string> valueProvider) =>
+            hasValue ? valueProvider() : "null";
 
-            static string IntToStr(int value) =>
-                value.ToString(Extensions.StringExtensions.DefaultFormatProvider);
+        static string IntToStr(int value) =>
+            value.ToString(Extensions.StringExtensions.DefaultFormatProvider);
 
-            static string ParamName(string name) =>
-                $"{name}: ";
+        static string ParamName(string name) =>
+            $"{name}: ";
 
-            static string NameOf(string tableName, string name) =>
+        static string NameOf(string tableName, string name) =>
 #if NETCOREAPP
-                $"nameof({tableName}.{name})";
+            $"nameof({tableName}.{name})";
 #else
-                $@"""{name}"" /* {tableName}.{name} */";
+            $@"""{name}"" /* {tableName}.{name} */";
 #endif
-        }
+    }
 
-        private static TypeCodeResult GenerateTableRowDataTypeClass(CsvTable table, bool useRecordType, StringComparison stringComparison, bool hideRelationsFromDump)
-        {
-            var className = GetClassName(table);
-            var properties = table.Columns.Select(GetPropertyName).ToImmutableList();
+    private static TypeCodeResult GenerateTableRowDataTypeClass(CsvTable table, bool useRecordType, StringComparison stringComparison, bool hideRelationsFromDump)
+    {
+        var className = GetClassName(table);
+        var properties = table.Columns.Select(GetPropertyName).ToImmutableList();
 
-            var (generatedType, interfaces) =
+        var (generatedType, interfaces) =
 #if NETCOREAPP
-                useRecordType ? ("record", string.Empty) :
+            useRecordType ? ("record", string.Empty) :
 #endif
-                ("class", $", {nameof(System)}.{nameof(IEquatable<object>)}<{className}>");
+            ("class", $", {nameof(System)}.{nameof(IEquatable<object>)}<{className}>");
 
-            return new TypeCodeResult(className, $@"
+        return new TypeCodeResult(className, $@"
     public sealed {generatedType} {className} : {typeof(ICsvRowBase).GetCodeTypeClassName()}{interfaces}
     {{{string.Join(string.Empty, table.Columns.Select(static csvColumn => $@"
         public string{NullableReferenceTypeSign} {GetPropertyName(csvColumn)} {{ get; set; }}"))}
@@ -157,23 +157,23 @@ namespace CsvLINQPadDriver.CodeGen
         /// <summary>{SecurityElement.Escape(csvRelation.DisplayName)}</summary>{(hideRelationsFromDump ? $@"
         [{typeof(HideFromDumpAttribute).GetCodeTypeClassName()}]" : string.Empty)}
         public {nameof(System)}.{nameof(System.Collections)}.{nameof(System.Collections.Generic)}.{nameof(IEnumerable)}<{csvRelation.TargetTable.GetCodeRowClassName()}>{NullableReferenceTypeSign} {csvRelation.CodeName} {{ get; set; }}")
-            )}
+)}
     }}", table.CodeName!, table.FilePath);
 
-            static string GetPropertyName(ICsvNames csvColumn) =>
-                csvColumn.CodeName!;
+        static string GetPropertyName(ICsvNames csvColumn) =>
+            csvColumn.CodeName!;
 
-            static string NameOf(string name) =>
+        static string NameOf(string name) =>
 #if NETCOREAPP
-                $"nameof({name})";
+            $"nameof({name})";
 #else
-                $@"""{name}""";
+            $@"""{name}""";
 #endif
-        }
+    }
 
-        private static string GenerateIndexer(IReadOnlyCollection<string> properties, string indexerType, Func<string, int, string> caseGetter, string exceptionMessage)
-        {
-            return $@"
+    private static string GenerateIndexer(IReadOnlyCollection<string> properties, string indexerType, Func<string, int, string> caseGetter, string exceptionMessage)
+    {
+        return $@"
         [{typeof(HideFromDumpAttribute).GetCodeTypeClassName()}]
         public string{NullableReferenceTypeSign} this[{indexerType} index]
         {{
@@ -195,18 +195,18 @@ namespace CsvLINQPadDriver.CodeGen
             }}
         }}";
 
-            string GenerateIndexerException() =>
-                $@"default: throw new {nameof(System)}.{nameof(IndexOutOfRangeException)}(string.Format(""There is no property {exceptionMessage}"", index));";
-        }
+        string GenerateIndexerException() =>
+            $@"default: throw new {nameof(System)}.{nameof(IndexOutOfRangeException)}(string.Format(""There is no property {exceptionMessage}"", index));";
+    }
 
-        private static string IntToString(int val) =>
-            val.ToString(CultureInfo.InvariantCulture);
+    private static string IntToString(int val) =>
+        val.ToString(CultureInfo.InvariantCulture);
 
-        private static string GenerateToString(IReadOnlyCollection<string> properties)
-        {
-            var namePadding = properties.Max(static property => property.Length);
+    private static string GenerateToString(IReadOnlyCollection<string> properties)
+    {
+        var namePadding = properties.Max(static property => property.Length);
 
-            return $@"
+        return $@"
         public override string{NullableReferenceTypeSign} ToString()
         {{
             return string.Format({string.Join(" +", properties.Select((property, index) => $@"
@@ -216,15 +216,15 @@ namespace CsvLINQPadDriver.CodeGen
                 {string.Join(@",
                 ", properties)});
         }}";
-        }
+    }
 
-        private static string GenerateEqualsAndGetHashCode(string typeName, bool useRecordType, StringComparison stringComparison, IReadOnlyCollection<string> properties)
-        {
-            var nullableTypeName = typeName + NullableReferenceTypeSign;
+    private static string GenerateEqualsAndGetHashCode(string typeName, bool useRecordType, StringComparison stringComparison, IReadOnlyCollection<string> properties)
+    {
+        var nullableTypeName = typeName + NullableReferenceTypeSign;
 
-            var objectEquals = useRecordType
-                ? string.Empty
-                : $@"
+        var objectEquals = useRecordType
+            ? string.Empty
+            : $@"
         public override bool Equals(object{NullableReferenceTypeSign} obj)
         {{
             if(obj == null || obj.GetType() != typeof({typeName})) return false;
@@ -244,7 +244,7 @@ namespace CsvLINQPadDriver.CodeGen
         }}
 ";
 
-            return $@"{objectEquals}
+        return $@"{objectEquals}
         public bool Equals({nullableTypeName} obj)
         {{
             if(obj == null) return false;
@@ -262,56 +262,55 @@ namespace CsvLINQPadDriver.CodeGen
             return hashCode.ToHashCode();
         }}";
 
-            string GetStringEquals(string property) =>
+        string GetStringEquals(string property) =>
 #if NETCOREAPP
-                $"{GetStringComparer(stringComparison)}.Equals({property}, obj.{property})";
+            $"{GetStringComparer(stringComparison)}.Equals({property}, obj.{property})";
 #else
-                $"string.Equals({property}, obj.{property}, {nameof(System)}.{nameof(StringComparison)}.{stringComparison})";
+            $"string.Equals({property}, obj.{property}, {nameof(System)}.{nameof(StringComparison)}.{stringComparison})";
 #endif
-        }
-
-        private static string GetClassName(CsvTable table) =>
-            table.GetCodeRowClassName();
-
-        private static string GetIndent(int count) =>
-            new(' ', count);
-
-        private static string GetStringComparer(StringComparison stringComparison) =>
-            $"{nameof(System)}.{nameof(StringComparer)}." + stringComparison switch
-            {
-                StringComparison.CurrentCulture             => nameof(StringComparer.CurrentCulture),
-                StringComparison.CurrentCultureIgnoreCase   => nameof(StringComparer.CurrentCultureIgnoreCase),
-                StringComparison.InvariantCulture           => nameof(StringComparer.InvariantCulture),
-                StringComparison.InvariantCultureIgnoreCase => nameof(StringComparer.InvariantCultureIgnoreCase),
-                StringComparison.Ordinal                    => nameof(StringComparer.Ordinal),
-                StringComparison.OrdinalIgnoreCase          => nameof(StringComparer.OrdinalIgnoreCase),
-                _                                           => throw new IndexOutOfRangeException($"Unknown {nameof(StringComparison)} {stringComparison}")
-            };
     }
 
-    internal static class CsvCSharpCodeGeneratorExtensions
+    private static string GetClassName(CsvTable table) =>
+        table.GetCodeRowClassName();
+
+    private static string GetIndent(int count) =>
+        new(' ', count);
+
+    private static string GetStringComparer(StringComparison stringComparison) =>
+        $"{nameof(System)}.{nameof(StringComparer)}." + stringComparison switch
+        {
+            StringComparison.CurrentCulture             => nameof(StringComparer.CurrentCulture),
+            StringComparison.CurrentCultureIgnoreCase   => nameof(StringComparer.CurrentCultureIgnoreCase),
+            StringComparison.InvariantCulture           => nameof(StringComparer.InvariantCulture),
+            StringComparison.InvariantCultureIgnoreCase => nameof(StringComparer.InvariantCultureIgnoreCase),
+            StringComparison.Ordinal                    => nameof(StringComparer.Ordinal),
+            StringComparison.OrdinalIgnoreCase          => nameof(StringComparer.OrdinalIgnoreCase),
+            _                                           => throw new IndexOutOfRangeException($"Unknown {nameof(StringComparison)} {stringComparison}")
+        };
+}
+
+internal static class CsvCSharpCodeGeneratorExtensions
+{
+    public static string GetCodeRowClassName(this CsvTable table)
     {
-        public static string GetCodeRowClassName(this CsvTable table)
-        {
-            return ToClassName(table.ClassName);
+        return ToClassName(table.ClassName);
 
-            static string ToClassName(string? name) =>
-                string.IsNullOrWhiteSpace(name)
-                    ? throw new NullReferenceException("Class name is null or whitespace")
-                    : $"R{(name!.Length < 3 ? name : name.Singularize())}";
-        }
+        static string ToClassName(string? name) =>
+            string.IsNullOrWhiteSpace(name)
+                ? throw new NullReferenceException("Class name is null or whitespace")
+                : $"R{(name!.Length < 3 ? name : name.Singularize())}";
+    }
 
-        public static string GetCodeTypeClassName(this Type type, params string[] genericParameters) =>
-            type.FullName!.Split('`').First() + (genericParameters.Any() ? $"<{string.Join(",", genericParameters)}>" : string.Empty);
+    public static string GetCodeTypeClassName(this Type type, params string[] genericParameters) =>
+        type.FullName!.Split('`').First() + (genericParameters.Any() ? $"<{string.Join(",", genericParameters)}>" : string.Empty);
 
-        public static string AsValidCSharpCode<T>(this T input)
-        {
-            using var stringWriter = new StringWriter();
-            using var csharpCodeProvider = new CSharpCodeProvider();
+    public static string AsValidCSharpCode<T>(this T input)
+    {
+        using var stringWriter = new StringWriter();
+        using var csharpCodeProvider = new CSharpCodeProvider();
 
-            csharpCodeProvider.GenerateCodeFromExpression(new CodePrimitiveExpression(input), stringWriter, null);
+        csharpCodeProvider.GenerateCodeFromExpression(new CodePrimitiveExpression(input), stringWriter, null);
 
-            return stringWriter.ToString();
-        }
+        return stringWriter.ToString();
     }
 }

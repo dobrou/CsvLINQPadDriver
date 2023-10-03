@@ -4,67 +4,66 @@ using System.Windows.Controls;
 
 using CsvLINQPadDriver.Extensions;
 
-namespace CsvLINQPadDriver.Wpf.Extensions
+namespace CsvLINQPadDriver.Wpf.Extensions;
+
+internal static class ControlExtensions
 {
-    internal static class ControlExtensions
+    private static readonly char[] NewLineChars = Environment.NewLine.ToCharArray();
+
+    public static string GetLineTextAtCaretIndex(this TextBox textBox)
     {
-        private static readonly char[] NewLineChars = Environment.NewLine.ToCharArray();
+        var caretIndex = textBox.CaretIndex;
+        var text = textBox.Text;
+        var textLength = text.Length;
 
-        public static string GetLineTextAtCaretIndex(this TextBox textBox)
+        return text[ScanLeft()..ScanRight()];
+
+        int ScanLeft()
         {
-            var caretIndex = textBox.CaretIndex;
-            var text = textBox.Text;
-            var textLength = text.Length;
+            var pos = GetCurrentPos();
 
-            return text[ScanLeft()..ScanRight()];
-
-            int ScanLeft()
+            for (var newLineCheck = NewLineChars.Length; --newLineCheck != 0 && pos >= 0 && IsNewLine(pos); pos--)
             {
-                var pos = GetCurrentPos();
-
-                for (var newLineCheck = NewLineChars.Length; --newLineCheck != 0 && pos >= 0 && IsNewLine(pos); pos--)
-                {
-                }
-
-                for (; pos >= 0; pos--)
-                {
-                    if (IsNewLine(pos))
-                    {
-                        return pos;
-                    }
-                }
-
-                return 0;
             }
 
-            int ScanRight()
+            for (; pos >= 0; pos--)
             {
-                var pos = GetCurrentPos();
-
-                for (; pos < textLength; pos++)
+                if (IsNewLine(pos))
                 {
-                    if (IsNewLine(pos))
-                    {
-                        return pos;
-                    }
+                    return pos;
                 }
-
-                return textLength;
             }
 
-            int GetCurrentPos() =>
-                caretIndex == 0 || caretIndex < textLength
-                    ? caretIndex
-                    : textLength - 1;
-
-            bool IsNewLine(int pos) =>
-                textLength > pos && Array.IndexOf(NewLineChars, text[pos]) != -1;
+            return 0;
         }
 
-        public static void UpdateTargetBinding(this FrameworkElement frameworkElement, DependencyProperty dependencyProperty) =>
-            frameworkElement.GetBindingExpression(dependencyProperty)!.UpdateTarget();
+        int ScanRight()
+        {
+            var pos = GetCurrentPos();
 
-        public static string ReplaceHotKeyChar(this ContentControl contentControl, string? newChar = null) =>
-            ((string)contentControl.Content).ReplaceHotKeyChar(newChar);
+            for (; pos < textLength; pos++)
+            {
+                if (IsNewLine(pos))
+                {
+                    return pos;
+                }
+            }
+
+            return textLength;
+        }
+
+        int GetCurrentPos() =>
+            caretIndex == 0 || caretIndex < textLength
+                ? caretIndex
+                : textLength - 1;
+
+        bool IsNewLine(int pos) =>
+            textLength > pos && Array.IndexOf(NewLineChars, text[pos]) != -1;
     }
+
+    public static void UpdateTargetBinding(this FrameworkElement frameworkElement, DependencyProperty dependencyProperty) =>
+        frameworkElement.GetBindingExpression(dependencyProperty)!.UpdateTarget();
+
+    public static string ReplaceHotKeyChar(this ContentControl contentControl, string? newChar = null) =>
+        ((string)contentControl.Content).ReplaceHotKeyChar(newChar);
 }

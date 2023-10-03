@@ -2,19 +2,19 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace CsvLINQPadDriver.CodeGen
+namespace CsvLINQPadDriver.CodeGen;
+
+public sealed class LazyEnumerable<T> : IEnumerable<T>
 {
-    public sealed class LazyEnumerable<T> : IEnumerable<T>
-    {
-        private readonly Lazy<IEnumerable<T>> _data;
+    private readonly Lazy<IEnumerable<T>> _data;
 
-        public LazyEnumerable(Func<IEnumerable<T>> data) =>
-            _data = new Lazy<IEnumerable<T>>(data);
+    public LazyEnumerable(Func<IEnumerable<T>> data) =>
+        _data = new Lazy<IEnumerable<T>>(data);
 
-        public IEnumerator<T> GetEnumerator() =>
-            _data.Value.GetEnumerator();
+    public IEnumerator<T> GetEnumerator() =>
+        _data.Value.GetEnumerator();
 
-        IEnumerator IEnumerable.GetEnumerator() =>
-            GetEnumerator();
-    }
+    IEnumerator IEnumerable.GetEnumerator() =>
+        GetEnumerator();
 }
+

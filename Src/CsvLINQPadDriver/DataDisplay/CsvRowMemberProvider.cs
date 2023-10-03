@@ -15,78 +15,77 @@ using System.Collections.Immutable;
 using CsvLINQPadDriver.Bcl.Extensions;
 #endif
 
-namespace CsvLINQPadDriver.DataDisplay
+namespace CsvLINQPadDriver.DataDisplay;
+
+internal sealed class CsvRowMemberProvider : ICustomMemberProvider
 {
-    internal sealed class CsvRowMemberProvider : ICustomMemberProvider
+    private static readonly Dictionary<Type, ProviderData> ProvidersDataCache = new();
+
+    private readonly object _objectToDisplay;
+    private readonly ProviderData _providerData;
+
+    private CsvRowMemberProvider(object objectToDisplay, ProviderData providerData)
     {
-        private static readonly Dictionary<Type, ProviderData> ProvidersDataCache = new();
+        _objectToDisplay = objectToDisplay;
+        _providerData = providerData;
+    }
 
-        private readonly object _objectToDisplay;
-        private readonly ProviderData _providerData;
+    public IEnumerable<string> GetNames() =>
+        _providerData.Properties
+            .Select(static propertyInfo => propertyInfo.Name)
+            .Concat(_providerData.Fields.Select(static fieldInfo => fieldInfo.Name));
 
-        private CsvRowMemberProvider(object objectToDisplay, ProviderData providerData)
-        {
-            _objectToDisplay = objectToDisplay;
-            _providerData = providerData;
-        }
+    public IEnumerable<Type> GetTypes() =>
+        _providerData.Properties
+            .Select(static propertyInfo => propertyInfo.PropertyType)
+            .Concat(_providerData.Fields.Select(static fieldInfo => fieldInfo.FieldType));
 
-        public IEnumerable<string> GetNames() =>
-            _providerData.Properties
-                .Select(static propertyInfo => propertyInfo.Name)
-                .Concat(_providerData.Fields.Select(static fieldInfo => fieldInfo.Name));
+    public IEnumerable<object> GetValues() =>
+        _providerData.ValuesGetter(_objectToDisplay);
 
-        public IEnumerable<Type> GetTypes() =>
-            _providerData.Properties
-                .Select(static propertyInfo => propertyInfo.PropertyType)
-                .Concat(_providerData.Fields.Select(static fieldInfo => fieldInfo.FieldType));
+    private sealed record ProviderData(IList<PropertyInfo> Properties, IList<FieldInfo> Fields, Func<object, object[]> ValuesGetter);
 
-        public IEnumerable<object> GetValues() =>
-            _providerData.ValuesGetter(_objectToDisplay);
+    private static ProviderData GetProviderData(Type objectType)
+    {
+        var param = Parameter(typeof(object));
+        var properties = objectType.GetProperties().Where(IsMemberVisible).ToImmutableList();
+        var fields = objectType.GetFields().Where(IsMemberVisible).ToImmutableList();
 
-        private sealed record ProviderData(IList<PropertyInfo> Properties, IList<FieldInfo> Fields, Func<object, object[]> ValuesGetter);
-
-        private static ProviderData GetProviderData(Type objectType)
-        {
-            var param = Parameter(typeof(object));
-            var properties = objectType.GetProperties().Where(IsMemberVisible).ToImmutableList();
-            var fields = objectType.GetFields().Where(IsMemberVisible).ToImmutableList();
-
-            return new ProviderData(
-                properties,
-                fields,
-                Lambda<Func<object, object[]>>(
+        return new ProviderData(
+            properties,
+            fields,
+            Lambda<Func<object, object[]>>(
                     NewArrayInit(typeof(object),
                         properties
                             .Where(static propertyInfo => propertyInfo.GetIndexParameters().Length == 0)
                             .Select(propertyInfo => Property(TypeAs(param, objectType), propertyInfo))
                             .Concat(fields.Select(fieldInfo => Field(TypeAs(param, objectType), fieldInfo)))),
                     param)
-                    .Compile()
-            );
+                .Compile()
+        );
 
-            static bool IsMemberVisible(MemberInfo member) =>
-                 (member.MemberType & (MemberTypes.Field | MemberTypes.Property)) != 0 &&
-                 !member.GetCustomAttributes(typeof(HideFromDumpAttribute), true).Any();
-        }
+        static bool IsMemberVisible(MemberInfo member) =>
+            (member.MemberType & (MemberTypes.Field | MemberTypes.Property)) != 0 &&
+            !member.GetCustomAttributes(typeof(HideFromDumpAttribute), true).Any();
+    }
 
-        public static ICustomMemberProvider? GetCsvRowMemberProvider(object objectToDisplay)
+    public static ICustomMemberProvider? GetCsvRowMemberProvider(object objectToDisplay)
+    {
+        var objectType = objectToDisplay.GetType();
+        if (!IsSupportedType(objectType))
         {
-            var objectType = objectToDisplay.GetType();
-            if (!IsSupportedType(objectType))
-            {
-                return null;
-            }
-
-            if (!ProvidersDataCache.TryGetValue(objectType, out var providerData))
-            {
-                providerData = GetProviderData(objectType);
-                ProvidersDataCache.Add(objectType, providerData);
-            }
-
-            return new CsvRowMemberProvider(objectToDisplay, providerData);
-
-            static bool IsSupportedType(Type objectType) =>
-                typeof(ICsvRowBase).IsAssignableFrom(objectType);
+            return null;
         }
+
+        if (!ProvidersDataCache.TryGetValue(objectType, out var providerData))
+        {
+            providerData = GetProviderData(objectType);
+            ProvidersDataCache.Add(objectType, providerData);
+        }
+
+        return new CsvRowMemberProvider(objectToDisplay, providerData);
+
+        static bool IsSupportedType(Type objectType) =>
+            typeof(ICsvRowBase).IsAssignableFrom(objectType);
     }
 }

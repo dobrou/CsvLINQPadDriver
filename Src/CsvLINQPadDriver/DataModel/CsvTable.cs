@@ -1,25 +1,24 @@
 ﻿using System.Collections.Generic;
 
-namespace CsvLINQPadDriver.DataModel
+namespace CsvLINQPadDriver.DataModel;
+
+internal sealed record CsvTable
+(
+    string FilePath,
+    string? CsvSeparator,
+
+    IList<CsvColumn> Columns,
+    IList<CsvRelation> Relations
+) : ICsvNames
 {
-    internal sealed record CsvTable
-    (
-        string FilePath,
-        string? CsvSeparator,
+    public string? CodeName { get; set; }
+    public string? DisplayName { get; set; }
 
-        IList<CsvColumn> Columns,
-        IList<CsvRelation> Relations
-    ) : ICsvNames
+    public string? ClassName
     {
-        public string? CodeName { get; set; }
-        public string? DisplayName { get; set; }
-
-        public string? ClassName
-        {
-            get => _className ?? CodeName;
-            init => _className = value;
-        }
-
-        private readonly string? _className;
+        get => _className ?? CodeName;
+        init => _className = value;
     }
+
+    private readonly string? _className;
 }
