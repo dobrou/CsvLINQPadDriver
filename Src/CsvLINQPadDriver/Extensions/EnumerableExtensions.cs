@@ -1,31 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace CsvLINQPadDriver.Extensions
+namespace CsvLINQPadDriver.Extensions;
+
+internal static class EnumerableExtensions
 {
-    internal static class EnumerableExtensions
+    public static IEnumerable<T> SkipExceptions<T>(this IEnumerable<T> source, ICollection<Exception>? exceptions = null)
     {
-        public static IEnumerable<T> SkipExceptions<T>(this IEnumerable<T> source, ICollection<Exception>? exceptions = null)
+        using var enumerator = source.GetEnumerator();
+
+        while (true)
         {
-            using var enumerator = source.GetEnumerator();
-
-            while (true)
+            try
             {
-                try
+                if (!enumerator.MoveNext())
                 {
-                    if (!enumerator.MoveNext())
-                    {
-                        break;
-                    }
+                    break;
                 }
-                catch (Exception exception) when (exception.CanBeHandled())
-                {
-                    exceptions?.Add(exception);
-                    continue;
-                }
-
-                yield return enumerator.Current;
             }
+            catch (Exception exception) when (exception.CanBeHandled())
+            {
+                exceptions?.Add(exception);
+                continue;
+            }
+
+            yield return enumerator.Current;
         }
     }
 }

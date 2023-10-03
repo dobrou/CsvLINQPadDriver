@@ -4,292 +4,291 @@ using System.Globalization;
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable UnusedMember.Global
 
-namespace CsvLINQPadDriver.Extensions
+namespace CsvLINQPadDriver.Extensions;
+
+public static partial class StringExtensions
 {
-    public static partial class StringExtensions
+    public static DateTimeOffset? ToDateTimeOffset(this string? s, DateTimeStyles style = Styles.DateTimeOffset, IFormatProvider? provider = null)
     {
-        public static DateTimeOffset? ToDateTimeOffset(this string? s, DateTimeStyles style = Styles.DateTimeOffset, IFormatProvider? provider = null)
+        if (string.IsNullOrEmpty(s))
         {
-            if (string.IsNullOrEmpty(s))
-            {
-                return null;
-            }
-
-            try
-            {
-                return DateTimeOffset.Parse(s, provider.ResolveFormatProvider(), style);
-            }
-            catch (Exception e) when (e.CanBeHandled())
-            {
-                throw ConvertException.Create("DateTimeOffset", s, e);
-            }
+            return null;
         }
+
+        try
+        {
+            return DateTimeOffset.Parse(s, provider.ResolveFormatProvider(), style);
+        }
+        catch (Exception e) when (e.CanBeHandled())
+        {
+            throw ConvertException.Create("DateTimeOffset", s, e);
+        }
+    }
 
 #if NETCOREAPP
-        public static DateTimeOffset? ToDateTimeOffset(this ReadOnlySpan<char> s, DateTimeStyles style = Styles.DateTimeOffset, IFormatProvider? provider = null)
+    public static DateTimeOffset? ToDateTimeOffset(this ReadOnlySpan<char> s, DateTimeStyles style = Styles.DateTimeOffset, IFormatProvider? provider = null)
+    {
+        if (s.IsEmpty)
         {
-            if (s.IsEmpty)
-            {
-                return null;
-            }
-
-            try
-            {
-                return DateTimeOffset.Parse(s, provider.ResolveFormatProvider(), style);
-            }
-            catch (Exception e) when (e.CanBeHandled())
-            {
-                throw ConvertException.Create("DateTimeOffset", s, e);
-            }
+            return null;
         }
+
+        try
+        {
+            return DateTimeOffset.Parse(s, provider.ResolveFormatProvider(), style);
+        }
+        catch (Exception e) when (e.CanBeHandled())
+        {
+            throw ConvertException.Create("DateTimeOffset", s, e);
+        }
+    }
 #endif
 
-        public static DateTimeOffset? ToDateTimeOffset(this string? s, string format, DateTimeStyles style = Styles.DateTimeOffset, IFormatProvider? provider = null)
+    public static DateTimeOffset? ToDateTimeOffset(this string? s, string format, DateTimeStyles style = Styles.DateTimeOffset, IFormatProvider? provider = null)
+    {
+        if (string.IsNullOrEmpty(s))
         {
-            if (string.IsNullOrEmpty(s))
-            {
-                return null;
-            }
-
-            try
-            {
-                return DateTimeOffset.ParseExact(s, format, provider.ResolveFormatProvider(), style);
-            }
-            catch (Exception e) when (e.CanBeHandled())
-            {
-                throw ConvertException.Create("DateTimeOffset", s, e);
-            }
+            return null;
         }
+
+        try
+        {
+            return DateTimeOffset.ParseExact(s, format, provider.ResolveFormatProvider(), style);
+        }
+        catch (Exception e) when (e.CanBeHandled())
+        {
+            throw ConvertException.Create("DateTimeOffset", s, e);
+        }
+    }
 
 #if NETCOREAPP
-        public static DateTimeOffset? ToDateTimeOffset(this ReadOnlySpan<char> s, ReadOnlySpan<char> format, DateTimeStyles style = Styles.DateTimeOffset, IFormatProvider? provider = null)
+    public static DateTimeOffset? ToDateTimeOffset(this ReadOnlySpan<char> s, ReadOnlySpan<char> format, DateTimeStyles style = Styles.DateTimeOffset, IFormatProvider? provider = null)
+    {
+        if (s.IsEmpty)
         {
-            if (s.IsEmpty)
-            {
-                return null;
-            }
-
-            try
-            {
-                return DateTimeOffset.ParseExact(s, format, provider.ResolveFormatProvider(), style);
-            }
-            catch (Exception e) when (e.CanBeHandled())
-            {
-                throw ConvertException.Create("DateTimeOffset", s, e);
-            }
+            return null;
         }
+
+        try
+        {
+            return DateTimeOffset.ParseExact(s, format, provider.ResolveFormatProvider(), style);
+        }
+        catch (Exception e) when (e.CanBeHandled())
+        {
+            throw ConvertException.Create("DateTimeOffset", s, e);
+        }
+    }
 #endif
 
-        public static DateTimeOffset? ToDateTimeOffset(this string? s, string[] formats, DateTimeStyles style = Styles.DateTimeOffset, IFormatProvider? provider = null)
+    public static DateTimeOffset? ToDateTimeOffset(this string? s, string[] formats, DateTimeStyles style = Styles.DateTimeOffset, IFormatProvider? provider = null)
+    {
+        if (string.IsNullOrEmpty(s))
         {
-            if (string.IsNullOrEmpty(s))
-            {
-                return null;
-            }
-
-            try
-            {
-                return DateTimeOffset.ParseExact(s, formats, provider.ResolveFormatProvider(), style);
-            }
-            catch (Exception e) when (e.CanBeHandled())
-            {
-                throw ConvertException.Create("DateTimeOffset", s, e);
-            }
+            return null;
         }
 
-#if NETCOREAPP
-        public static DateTimeOffset? ToDateTimeOffset(this ReadOnlySpan<char> s, string[] formats, DateTimeStyles style = Styles.DateTimeOffset, IFormatProvider? provider = null)
+        try
         {
-            if (s.IsEmpty)
-            {
-                return null;
-            }
-
-            try
-            {
-                return DateTimeOffset.ParseExact(s, formats, provider.ResolveFormatProvider(), style);
-            }
-            catch (Exception e) when (e.CanBeHandled())
-            {
-                throw ConvertException.Create("DateTimeOffset", s, e);
-            }
+            return DateTimeOffset.ParseExact(s, formats, provider.ResolveFormatProvider(), style);
         }
-#endif
+        catch (Exception e) when (e.CanBeHandled())
+        {
+            throw ConvertException.Create("DateTimeOffset", s, e);
+        }
+    }
 
 #if NETCOREAPP
-        public static DateTimeOffset? ToDateTimeOffsetFromUnixTimeSeconds(this ReadOnlySpan<char> s, NumberStyles style = Styles.Integer, IFormatProvider? provider = null)
+    public static DateTimeOffset? ToDateTimeOffset(this ReadOnlySpan<char> s, string[] formats, DateTimeStyles style = Styles.DateTimeOffset, IFormatProvider? provider = null)
+    {
+        if (s.IsEmpty)
         {
-            if (s.IsEmpty)
-            {
-                return null;
-            }
-
-            try
-            {
-                var longVar = s.ToLong(style, provider);
-                return longVar is null ? null : DateTimeOffset.FromUnixTimeSeconds(longVar.Value);
-            }
-            catch (Exception e) when (e.CanBeHandled())
-            {
-                throw ConvertException.Create("DateTimeOffset", s, e);
-            }
-        }
-#endif
-
-        public static DateTimeOffset? ToDateTimeOffsetFromUnixTimeSeconds(this string? s, NumberStyles style = Styles.Integer, IFormatProvider? provider = null)
-        {
-            if (string.IsNullOrEmpty(s))
-            {
-                return null;
-            }
-
-            try
-            {
-                var longVar = s.ToLong(style, provider);
-                return longVar is null ? null : DateTimeOffset.FromUnixTimeSeconds(longVar.Value);
-            }
-            catch (Exception e) when (e.CanBeHandled())
-            {
-                throw ConvertException.Create("DateTimeOffset", s, e);
-            }
+            return null;
         }
 
-#if NETCOREAPP
-        public static DateTimeOffset? ToDateTimeOffsetFromUnixTimeMilliseconds(this ReadOnlySpan<char> s, NumberStyles style = Styles.Integer, IFormatProvider? provider = null)
+        try
         {
-            if (s.IsEmpty)
-            {
-                return null;
-            }
-
-            try
-            {
-                var longVar = s.ToLong(style, provider);
-                return longVar is null ? null : DateTimeOffset.FromUnixTimeMilliseconds(longVar.Value);
-            }
-            catch (Exception e) when (e.CanBeHandled())
-            {
-                throw ConvertException.Create("DateTimeOffset", s, e);
-            }
+            return DateTimeOffset.ParseExact(s, formats, provider.ResolveFormatProvider(), style);
         }
-#endif
-
-        public static DateTimeOffset? ToDateTimeOffsetFromUnixTimeMilliseconds(this string? s, NumberStyles style = Styles.Integer, IFormatProvider? provider = null)
+        catch (Exception e) when (e.CanBeHandled())
         {
-            if (string.IsNullOrEmpty(s))
-            {
-                return null;
-            }
-
-            try
-            {
-                var longVar = s.ToLong(style, provider);
-                return longVar is null ? null : DateTimeOffset.FromUnixTimeMilliseconds(longVar.Value);
-            }
-            catch (Exception e) when (e.CanBeHandled())
-            {
-                throw ConvertException.Create("DateTimeOffset", s, e);
-            }
+            throw ConvertException.Create("DateTimeOffset", s, e);
         }
-
-        public static DateTimeOffset? ToDateTimeOffsetSafe(this string? s, DateTimeStyles style = Styles.DateTimeOffset, IFormatProvider? provider = null) =>
-            DateTimeOffset.TryParse(s, provider.ResolveFormatProvider(), style, out var parsedValue) ? parsedValue : null;
-
-#if NETCOREAPP
-        public static DateTimeOffset? ToDateTimeOffsetSafe(this ReadOnlySpan<char> s, DateTimeStyles style = Styles.DateTimeOffset, IFormatProvider? provider = null) =>
-            DateTimeOffset.TryParse(s, provider.ResolveFormatProvider(), style, out var parsedValue) ? parsedValue : null;
-#endif
-
-        public static DateTimeOffset? ToDateTimeOffsetSafe(this string? s, string format, DateTimeStyles style = Styles.DateTimeOffset, IFormatProvider? provider = null) =>
-            DateTimeOffset.TryParseExact(s, format, provider.ResolveFormatProvider(), style, out var parsedValue) ? parsedValue : null;
-
-#if NETCOREAPP
-        public static DateTimeOffset? ToDateTimeOffsetSafe(this ReadOnlySpan<char> s, ReadOnlySpan<char> format, DateTimeStyles style = Styles.DateTimeOffset, IFormatProvider? provider = null) =>
-            DateTimeOffset.TryParseExact(s, format, provider.ResolveFormatProvider(), style, out var parsedValue) ? parsedValue : null;
-#endif
-
-        public static DateTimeOffset? ToDateTimeOffsetSafe(this string? s, string[] formats, DateTimeStyles style = Styles.DateTimeOffset, IFormatProvider? provider = null) =>
-            DateTimeOffset.TryParseExact(s, formats, provider.ResolveFormatProvider(), style, out var parsedValue) ? parsedValue : null;
-
-#if NETCOREAPP
-        public static DateTimeOffset? ToDateTimeOffsetSafe(this ReadOnlySpan<char> s, string[] formats, DateTimeStyles style = Styles.DateTimeOffset, IFormatProvider? provider = null) =>
-            DateTimeOffset.TryParseExact(s, formats, provider.ResolveFormatProvider(), style, out var parsedValue) ? parsedValue : null;
+    }
 #endif
 
 #if NETCOREAPP
-        public static DateTimeOffset? ToDateTimeOffsetFromUnixTimeSecondsSafe(this ReadOnlySpan<char> s, NumberStyles style = Styles.Integer, IFormatProvider? provider = null)
+    public static DateTimeOffset? ToDateTimeOffsetFromUnixTimeSeconds(this ReadOnlySpan<char> s, NumberStyles style = Styles.Integer, IFormatProvider? provider = null)
+    {
+        if (s.IsEmpty)
         {
-            if (s.IsEmpty)
-            {
-                return null;
-            }
-
-            try
-            {
-                var longVar = s.ToLongSafe(style, provider);
-                return longVar is null ? null : DateTimeOffset.FromUnixTimeSeconds(longVar.Value);
-            }
-            catch (Exception e) when (e.CanBeHandled())
-            {
-                return null;
-            }
+            return null;
         }
+
+        try
+        {
+            var longVar = s.ToLong(style, provider);
+            return longVar is null ? null : DateTimeOffset.FromUnixTimeSeconds(longVar.Value);
+        }
+        catch (Exception e) when (e.CanBeHandled())
+        {
+            throw ConvertException.Create("DateTimeOffset", s, e);
+        }
+    }
 #endif
 
-        public static DateTimeOffset? ToDateTimeOffsetFromUnixTimeSecondsSafe(this string? s, NumberStyles style = Styles.Integer, IFormatProvider? provider = null)
+    public static DateTimeOffset? ToDateTimeOffsetFromUnixTimeSeconds(this string? s, NumberStyles style = Styles.Integer, IFormatProvider? provider = null)
+    {
+        if (string.IsNullOrEmpty(s))
         {
-            if (string.IsNullOrEmpty(s))
-            {
-                return null;
-            }
-
-            try
-            {
-                var longVar = s.ToLongSafe(style, provider);
-                return longVar is null ? null : DateTimeOffset.FromUnixTimeSeconds(longVar.Value);
-            }
-            catch (Exception e) when (e.CanBeHandled())
-            {
-                return null;
-            }
+            return null;
         }
+
+        try
+        {
+            var longVar = s.ToLong(style, provider);
+            return longVar is null ? null : DateTimeOffset.FromUnixTimeSeconds(longVar.Value);
+        }
+        catch (Exception e) when (e.CanBeHandled())
+        {
+            throw ConvertException.Create("DateTimeOffset", s, e);
+        }
+    }
 
 #if NETCOREAPP
-        public static DateTimeOffset? ToDateTimeOffsetFromUnixTimeMillisecondsSafe(this ReadOnlySpan<char> s, NumberStyles style = Styles.Integer, IFormatProvider? provider = null)
+    public static DateTimeOffset? ToDateTimeOffsetFromUnixTimeMilliseconds(this ReadOnlySpan<char> s, NumberStyles style = Styles.Integer, IFormatProvider? provider = null)
+    {
+        if (s.IsEmpty)
         {
-            if (s.IsEmpty)
-            {
-                return null;
-            }
-
-            try
-            {
-                var longVar = s.ToLongSafe(style, provider);
-                return longVar is null ? null : DateTimeOffset.FromUnixTimeMilliseconds(longVar.Value);
-            }
-            catch (Exception e) when (e.CanBeHandled())
-            {
-                return null;
-            }
+            return null;
         }
+
+        try
+        {
+            var longVar = s.ToLong(style, provider);
+            return longVar is null ? null : DateTimeOffset.FromUnixTimeMilliseconds(longVar.Value);
+        }
+        catch (Exception e) when (e.CanBeHandled())
+        {
+            throw ConvertException.Create("DateTimeOffset", s, e);
+        }
+    }
 #endif
 
-        public static DateTimeOffset? ToDateTimeOffsetFromUnixTimeMillisecondsSafe(this string? s, NumberStyles style = Styles.Integer, IFormatProvider? provider = null)
+    public static DateTimeOffset? ToDateTimeOffsetFromUnixTimeMilliseconds(this string? s, NumberStyles style = Styles.Integer, IFormatProvider? provider = null)
+    {
+        if (string.IsNullOrEmpty(s))
         {
-            if (string.IsNullOrEmpty(s))
-            {
-                return null;
-            }
+            return null;
+        }
 
-            try
-            {
-                var longVar = s.ToLongSafe(style, provider);
-                return longVar is null ? null : DateTimeOffset.FromUnixTimeMilliseconds(longVar.Value);
-            }
-            catch (Exception e) when (e.CanBeHandled())
-            {
-                return null;
-            }
+        try
+        {
+            var longVar = s.ToLong(style, provider);
+            return longVar is null ? null : DateTimeOffset.FromUnixTimeMilliseconds(longVar.Value);
+        }
+        catch (Exception e) when (e.CanBeHandled())
+        {
+            throw ConvertException.Create("DateTimeOffset", s, e);
+        }
+    }
+
+    public static DateTimeOffset? ToDateTimeOffsetSafe(this string? s, DateTimeStyles style = Styles.DateTimeOffset, IFormatProvider? provider = null) =>
+        DateTimeOffset.TryParse(s, provider.ResolveFormatProvider(), style, out var parsedValue) ? parsedValue : null;
+
+#if NETCOREAPP
+    public static DateTimeOffset? ToDateTimeOffsetSafe(this ReadOnlySpan<char> s, DateTimeStyles style = Styles.DateTimeOffset, IFormatProvider? provider = null) =>
+        DateTimeOffset.TryParse(s, provider.ResolveFormatProvider(), style, out var parsedValue) ? parsedValue : null;
+#endif
+
+    public static DateTimeOffset? ToDateTimeOffsetSafe(this string? s, string format, DateTimeStyles style = Styles.DateTimeOffset, IFormatProvider? provider = null) =>
+        DateTimeOffset.TryParseExact(s, format, provider.ResolveFormatProvider(), style, out var parsedValue) ? parsedValue : null;
+
+#if NETCOREAPP
+    public static DateTimeOffset? ToDateTimeOffsetSafe(this ReadOnlySpan<char> s, ReadOnlySpan<char> format, DateTimeStyles style = Styles.DateTimeOffset, IFormatProvider? provider = null) =>
+        DateTimeOffset.TryParseExact(s, format, provider.ResolveFormatProvider(), style, out var parsedValue) ? parsedValue : null;
+#endif
+
+    public static DateTimeOffset? ToDateTimeOffsetSafe(this string? s, string[] formats, DateTimeStyles style = Styles.DateTimeOffset, IFormatProvider? provider = null) =>
+        DateTimeOffset.TryParseExact(s, formats, provider.ResolveFormatProvider(), style, out var parsedValue) ? parsedValue : null;
+
+#if NETCOREAPP
+    public static DateTimeOffset? ToDateTimeOffsetSafe(this ReadOnlySpan<char> s, string[] formats, DateTimeStyles style = Styles.DateTimeOffset, IFormatProvider? provider = null) =>
+        DateTimeOffset.TryParseExact(s, formats, provider.ResolveFormatProvider(), style, out var parsedValue) ? parsedValue : null;
+#endif
+
+#if NETCOREAPP
+    public static DateTimeOffset? ToDateTimeOffsetFromUnixTimeSecondsSafe(this ReadOnlySpan<char> s, NumberStyles style = Styles.Integer, IFormatProvider? provider = null)
+    {
+        if (s.IsEmpty)
+        {
+            return null;
+        }
+
+        try
+        {
+            var longVar = s.ToLongSafe(style, provider);
+            return longVar is null ? null : DateTimeOffset.FromUnixTimeSeconds(longVar.Value);
+        }
+        catch (Exception e) when (e.CanBeHandled())
+        {
+            return null;
+        }
+    }
+#endif
+
+    public static DateTimeOffset? ToDateTimeOffsetFromUnixTimeSecondsSafe(this string? s, NumberStyles style = Styles.Integer, IFormatProvider? provider = null)
+    {
+        if (string.IsNullOrEmpty(s))
+        {
+            return null;
+        }
+
+        try
+        {
+            var longVar = s.ToLongSafe(style, provider);
+            return longVar is null ? null : DateTimeOffset.FromUnixTimeSeconds(longVar.Value);
+        }
+        catch (Exception e) when (e.CanBeHandled())
+        {
+            return null;
+        }
+    }
+
+#if NETCOREAPP
+    public static DateTimeOffset? ToDateTimeOffsetFromUnixTimeMillisecondsSafe(this ReadOnlySpan<char> s, NumberStyles style = Styles.Integer, IFormatProvider? provider = null)
+    {
+        if (s.IsEmpty)
+        {
+            return null;
+        }
+
+        try
+        {
+            var longVar = s.ToLongSafe(style, provider);
+            return longVar is null ? null : DateTimeOffset.FromUnixTimeMilliseconds(longVar.Value);
+        }
+        catch (Exception e) when (e.CanBeHandled())
+        {
+            return null;
+        }
+    }
+#endif
+
+    public static DateTimeOffset? ToDateTimeOffsetFromUnixTimeMillisecondsSafe(this string? s, NumberStyles style = Styles.Integer, IFormatProvider? provider = null)
+    {
+        if (string.IsNullOrEmpty(s))
+        {
+            return null;
+        }
+
+        try
+        {
+            var longVar = s.ToLongSafe(style, provider);
+            return longVar is null ? null : DateTimeOffset.FromUnixTimeMilliseconds(longVar.Value);
+        }
+        catch (Exception e) when (e.CanBeHandled())
+        {
+            return null;
         }
     }
 }

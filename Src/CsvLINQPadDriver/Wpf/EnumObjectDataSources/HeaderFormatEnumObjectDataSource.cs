@@ -1,6 +1,5 @@
-﻿namespace CsvLINQPadDriver.Wpf.EnumObjectDataSources
+﻿namespace CsvLINQPadDriver.Wpf.EnumObjectDataSources;
+
+internal sealed class HeaderFormatEnumObjectDataSource : EnumObjectDataSource<HeaderFormat>
 {
-    internal sealed class HeaderFormatEnumObjectDataSource : EnumObjectDataSource<HeaderFormat>
-    {
-    }
 }
