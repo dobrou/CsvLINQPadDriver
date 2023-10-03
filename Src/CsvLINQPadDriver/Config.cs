@@ -1,19 +1,18 @@
 ﻿using System;
 
-namespace CsvLINQPadDriver
+namespace CsvLINQPadDriver;
+
+internal static class Config
 {
-    internal static class Config
+    internal static class Regex
     {
-        internal static class Regex
-        {
 #if NET7_0_OR_GREATER
-            public
+        public
 #else
-            private
+        private
 #endif
             const int TimeoutMs = 250;
 
-            public static readonly TimeSpan Timeout = TimeSpan.FromMilliseconds(TimeoutMs);
-        }
+        public static readonly TimeSpan Timeout = TimeSpan.FromMilliseconds(TimeoutMs);
     }
 }

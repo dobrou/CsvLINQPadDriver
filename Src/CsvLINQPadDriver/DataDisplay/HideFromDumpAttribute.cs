@@ -1,9 +1,8 @@
 ﻿using System;
 
-namespace CsvLINQPadDriver.DataDisplay
+namespace CsvLINQPadDriver.DataDisplay;
+
+[AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
+public class HideFromDumpAttribute : Attribute
 {
-    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
-    public class HideFromDumpAttribute : Attribute
-    {
-    }
 }

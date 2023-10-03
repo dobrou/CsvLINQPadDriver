@@ -1,6 +1,5 @@
-﻿namespace CsvLINQPadDriver.CodeGen
+﻿namespace CsvLINQPadDriver.CodeGen;
+
+public class CsvDataContextBase
 {
-    public class CsvDataContextBase
-    {
-    }
 }

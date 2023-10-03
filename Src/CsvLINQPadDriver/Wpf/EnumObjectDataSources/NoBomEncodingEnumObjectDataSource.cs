@@ -1,6 +1,5 @@
-﻿namespace CsvLINQPadDriver.Wpf.EnumObjectDataSources
+﻿namespace CsvLINQPadDriver.Wpf.EnumObjectDataSources;
+
+internal class NoBomEncodingEnumObjectDataSource : EnumObjectDataSource<NoBomEncoding>
 {
-    internal class NoBomEncodingEnumObjectDataSource : EnumObjectDataSource<NoBomEncoding>
-    {
-    }
 }

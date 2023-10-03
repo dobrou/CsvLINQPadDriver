@@ -1,6 +1,5 @@
-﻿namespace CsvLINQPadDriver.Wpf.EnumObjectDataSources
+﻿namespace CsvLINQPadDriver.Wpf.EnumObjectDataSources;
+
+internal class TableNameFormatEnumObjectDataSource : EnumObjectDataSource<TableNameFormat>
 {
-    internal class TableNameFormatEnumObjectDataSource : EnumObjectDataSource<TableNameFormat>
-    {
-    }
 }

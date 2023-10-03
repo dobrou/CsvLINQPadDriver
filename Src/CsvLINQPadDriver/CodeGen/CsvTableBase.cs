@@ -4,106 +4,105 @@ using System.Collections.Generic;
 
 using CsvLINQPadDriver.Extensions;
 
-namespace CsvLINQPadDriver.CodeGen
+namespace CsvLINQPadDriver.CodeGen;
+
+public class CsvTableBase
 {
-    public class CsvTableBase
+    public static readonly StringComparer StringComparer = StringComparer.Ordinal;
+
+    internal bool IsStringInternEnabled { get; }
+
+    protected CsvTableBase(bool isStringInternEnabled) =>
+        IsStringInternEnabled = isStringInternEnabled;
+}
+
+public abstract class CsvTableBase<TRow> : CsvTableBase, IEnumerable<TRow>
+    where TRow : ICsvRowBase, new()
+{
+    private static CsvRowMappingBase<TRow>? _cachedCsvRowMappingBase;
+
+    private readonly string? _csvSeparator;
+    private readonly NoBomEncoding _noBomEncoding;
+    private readonly StringComparer? _internStringComparer;
+    private readonly bool _allowComments;
+    private readonly char? _commentChar;
+    private readonly bool _ignoreBadData;
+    private readonly bool _autoDetectEncoding;
+    private readonly bool _ignoreBlankLines;
+    private readonly bool _doNotLockFiles;
+    private readonly bool _addHeader;
+    private readonly HeaderDetection? _headerDetection;
+    private readonly WhitespaceTrimOptions? _whitespaceTrimOptions;
+    private readonly bool _allowSkipLeadingRows;
+    private readonly int _skipLeadingRowsCount;
+
+    protected readonly string FilePath;
+
+    protected CsvTableBase(
+        bool isStringInternEnabled,
+        StringComparer? internStringComparer,
+        string? csvSeparator,
+        NoBomEncoding noBomEncoding,
+        bool allowComments,
+        char? commentChar,
+        bool ignoreBadData,
+        bool autoDetectEncoding,
+        bool ignoreBlankLines,
+        bool doNotLockFiles,
+        bool addHeader,
+        HeaderDetection? headerDetection,
+        WhitespaceTrimOptions? whitespaceTrimOptions,
+        bool allowSkipLeadingRows,
+        int skipLeadingRowsCount,
+        string filePath,
+        IEnumerable<CsvColumnInfo> propertiesInfo,
+        Action<TRow> relationsInit)
+        : base(isStringInternEnabled)
     {
-        public static readonly StringComparer StringComparer = StringComparer.Ordinal;
+        _internStringComparer = internStringComparer;
+        _csvSeparator = csvSeparator;
+        _noBomEncoding = noBomEncoding;
+        _allowComments = allowComments;
+        _commentChar = commentChar;
+        _ignoreBadData = ignoreBadData;
+        _autoDetectEncoding = autoDetectEncoding;
+        _ignoreBlankLines = ignoreBlankLines;
+        _doNotLockFiles = doNotLockFiles;
+        _addHeader = addHeader;
+        _headerDetection = headerDetection;
+        _whitespaceTrimOptions = whitespaceTrimOptions;
+        _allowSkipLeadingRows = allowSkipLeadingRows;
+        _skipLeadingRowsCount = skipLeadingRowsCount;
 
-        internal bool IsStringInternEnabled { get; }
+        FilePath = filePath;
 
-        protected CsvTableBase(bool isStringInternEnabled) =>
-            IsStringInternEnabled = isStringInternEnabled;
+        _cachedCsvRowMappingBase ??= new CsvRowMappingBase<TRow>(propertiesInfo, relationsInit);
     }
 
-    public abstract class CsvTableBase<TRow> : CsvTableBase, IEnumerable<TRow>
-        where TRow : ICsvRowBase, new()
-    {
-        private static CsvRowMappingBase<TRow>? _cachedCsvRowMappingBase;
+    protected IEnumerable<TRow> ReadData() =>
+        FilePath.CsvReadRows(
+            _csvSeparator,
+            IsStringInternEnabled,
+            _internStringComparer,
+            _noBomEncoding,
+            _allowComments,
+            _commentChar,
+            _ignoreBadData,
+            _autoDetectEncoding,
+            _ignoreBlankLines,
+            _doNotLockFiles,
+            _addHeader,
+            _headerDetection,
+            _whitespaceTrimOptions,
+            _allowSkipLeadingRows,
+            _skipLeadingRowsCount,
+            _cachedCsvRowMappingBase!);
 
-        private readonly string? _csvSeparator;
-        private readonly NoBomEncoding _noBomEncoding;
-        private readonly StringComparer? _internStringComparer;
-        private readonly bool _allowComments;
-        private readonly char? _commentChar;
-        private readonly bool _ignoreBadData;
-        private readonly bool _autoDetectEncoding;
-        private readonly bool _ignoreBlankLines;
-        private readonly bool _doNotLockFiles;
-        private readonly bool _addHeader;
-        private readonly HeaderDetection? _headerDetection;
-        private readonly WhitespaceTrimOptions? _whitespaceTrimOptions;
-        private readonly bool _allowSkipLeadingRows;
-        private readonly int _skipLeadingRowsCount;
+    // ReSharper disable once UnusedMember.Global
+    public abstract IEnumerable<TRow> WhereIndexed(Func<TRow, string> getProperty, string propertyName, params string[] values);
 
-        protected readonly string FilePath;
+    public abstract IEnumerator<TRow> GetEnumerator();
 
-        protected CsvTableBase(
-            bool isStringInternEnabled,
-            StringComparer? internStringComparer,
-            string? csvSeparator,
-            NoBomEncoding noBomEncoding,
-            bool allowComments,
-            char? commentChar,
-            bool ignoreBadData,
-            bool autoDetectEncoding,
-            bool ignoreBlankLines,
-            bool doNotLockFiles,
-            bool addHeader,
-            HeaderDetection? headerDetection,
-            WhitespaceTrimOptions? whitespaceTrimOptions,
-            bool allowSkipLeadingRows,
-            int skipLeadingRowsCount,
-            string filePath,
-            IEnumerable<CsvColumnInfo> propertiesInfo,
-            Action<TRow> relationsInit)
-            : base(isStringInternEnabled)
-        {
-            _internStringComparer = internStringComparer;
-            _csvSeparator = csvSeparator;
-            _noBomEncoding = noBomEncoding;
-            _allowComments = allowComments;
-            _commentChar = commentChar;
-            _ignoreBadData = ignoreBadData;
-            _autoDetectEncoding = autoDetectEncoding;
-            _ignoreBlankLines = ignoreBlankLines;
-            _doNotLockFiles = doNotLockFiles;
-            _addHeader = addHeader;
-            _headerDetection = headerDetection;
-            _whitespaceTrimOptions = whitespaceTrimOptions;
-            _allowSkipLeadingRows = allowSkipLeadingRows;
-            _skipLeadingRowsCount = skipLeadingRowsCount;
-
-            FilePath = filePath;
-
-            _cachedCsvRowMappingBase ??= new CsvRowMappingBase<TRow>(propertiesInfo, relationsInit);
-        }
-
-        protected IEnumerable<TRow> ReadData() =>
-            FilePath.CsvReadRows(
-                _csvSeparator,
-                IsStringInternEnabled,
-                _internStringComparer,
-                _noBomEncoding,
-                _allowComments,
-                _commentChar,
-                _ignoreBadData,
-                _autoDetectEncoding,
-                _ignoreBlankLines,
-                _doNotLockFiles,
-                _addHeader,
-                _headerDetection,
-                _whitespaceTrimOptions,
-                _allowSkipLeadingRows,
-                _skipLeadingRowsCount,
-                _cachedCsvRowMappingBase!);
-
-        // ReSharper disable once UnusedMember.Global
-        public abstract IEnumerable<TRow> WhereIndexed(Func<TRow, string> getProperty, string propertyName, params string[] values);
-
-        public abstract IEnumerator<TRow> GetEnumerator();
-
-        IEnumerator IEnumerable.GetEnumerator() =>
-            GetEnumerator();
-    }
+    IEnumerator IEnumerable.GetEnumerator() =>
+        GetEnumerator();
 }

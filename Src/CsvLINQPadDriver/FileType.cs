@@ -1,11 +1,10 @@
-﻿namespace CsvLINQPadDriver
+﻿namespace CsvLINQPadDriver;
+
+public enum FileType
 {
-    public enum FileType
-    {
-        CSV,
-        TSV,
-        Text,
-        Log,
-        All
-    }
+    CSV,
+    TSV,
+    Text,
+    Log,
+    All
 }
