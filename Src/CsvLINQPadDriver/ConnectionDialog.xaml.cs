@@ -10,6 +10,7 @@ using System.Windows.Documents;
 using System.Windows.Input;
 
 using CsvLINQPadDriver.Extensions;
+using CsvLINQPadDriver.Wpf;
 using CsvLINQPadDriver.Wpf.Extensions;
 
 namespace CsvLINQPadDriver;
@@ -460,5 +461,33 @@ internal partial class ConnectionDialog
                 $"Do not {tag} it",
                 false)
             ?? isUnchecked;
+    }
+
+    public static readonly string[] SettingsData = { "Item1", "Item2", "Item3" };
+
+    private static int ooo = 0;
+
+    private void Selector_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        var r = new Random();
+
+        ++ooo;
+        foreach (var result in this.EnumChildren<string>(element => {
+                     var elem = DriverProperties.GetProperty(element);
+                     return string.IsNullOrWhiteSpace(elem)
+                         ? null
+                         : new(element, elem);
+                 }))
+        {
+            if (ooo % 2 == 1)
+            {
+                //if (r.Next() % 2 == 1)
+                    result.Element.SetValue(FontWeightProperty, FontWeights.Bold);
+            }
+            else
+            {
+                result.Element.SetValue(FontWeightProperty, DependencyProperty.UnsetValue);
+            }
+        }
     }
 }

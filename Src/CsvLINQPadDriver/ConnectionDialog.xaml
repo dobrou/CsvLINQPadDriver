@@ -250,7 +250,7 @@
                             Padding="4 2 4 3"
                             ItemsSource="{Binding Source={StaticResource FileTypeData}}"
                             SelectionChanged="FileTypeComboBox_OnSelectionChanged"
-                            wpf:Settings.Name="aaa"/>
+                            wpf:DriverProperties.Property="FileType"/>
                         <Label Padding="3 3 0 3" Content="_Files" Target="{Binding ElementName=FilesTextBox}"/>
                         <TextBlock Margin="3 0 0 0" VerticalAlignment="Center">
                             <Hyperlink NavigateUri="{x:Static this:ConnectionDialog.FilesHelp}" Style="{StaticResource ContextHelpHyperlink}">
@@ -338,8 +338,7 @@
                              AcceptsReturn="{Binding AcceptsReturn, ElementName=FilesTextBox}"
                              Background="{Binding Background, ElementName=FilesTextBox}"
                              VerticalAlignment="{Binding VerticalAlignment, ElementName=FilesTextBox}"
-                             HorizontalAlignment="{Binding HorizontalAlignment, ElementName=FilesTextBox}"
-                             wpf:Settings.Name="aaa"/>
+                             HorizontalAlignment="{Binding HorizontalAlignment, ElementName=FilesTextBox}"/>
 
                         <TextBox
                             Name="FilesTextBox"
@@ -355,7 +354,7 @@
                             PreviewDragEnter="FilesTextBox_DragEnter"
                             PreviewDragOver="FilesTextBox_DragEnter"
                             PreviewDrop="FilesTextBox_DragDrop"
-                            wpf:Settings.Name="aaa">
+                            wpf:DriverProperties.Property="Files">
                             <TextBox.InputBindings>
                                 <MouseBinding
                                     Command="{x:Static this:ConnectionDialog.CtrlLeftClickCommand}"
@@ -433,7 +432,7 @@
                         ToolTip="Files sort order. Affects similar files order"
                         SelectedValue="{Binding FilesOrderBy}"
                         ItemsSource="{Binding Source={StaticResource FilesOrderByData}}"
-                        wpf:Settings.Name="aaa"/>
+                        wpf:DriverProperties.Property="FilesOrderBy"/>
 
                     <Label Grid.Row="4" Grid.Column="0" Padding="0 5 4 0" Content="Fall_back encoding" Target="{Binding ElementName=NoBomEncodingComboBox}"/>
                     <ComboBox Grid.Row="4" Grid.Column="1"
@@ -442,7 +441,7 @@
                         ToolTip="Encoding to use if file encoding could not be detected"
                         SelectedValue="{Binding NoBomEncoding}"
                         ItemsSource="{Binding Source={StaticResource NoBomEncodingData}}"
-                        wpf:Settings.Name="aaa"/>
+                        wpf:DriverProperties.Property="NoBomEncoding"/>
                     <TextBlock Grid.Row="4" Grid.Column="2" Padding="5 5 0 0">
                         <Hyperlink NavigateUri="https://docs.microsoft.com/en-us/windows/win32/intl/code-page-identifiers" ToolTip="Code Page Identifiers on Microsoft Docs" Style="{StaticResource HelpHyperlink}">
                             <TextBlock Style="{StaticResource HelpTextBlock}"/>
@@ -451,10 +450,25 @@
 
                     <StackPanel Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="3" Margin="0 5 0 0" Orientation="Vertical">
                         <!-- ReSharper disable once MarkupAttributeTypo -->
-                        <CheckBox IsChecked="{Binding AutoDetectEncoding}" Content="Auto-detect file encodin_gs" ToolTip="Try to detect file encodings" wpf:Settings.Name="aaa"/>
-                        <CheckBox IsChecked="{Binding ValidateFilePaths}" Content="_Validate file paths" ToolTip="Check if file paths are valid" Name="ValidateFilePathsCheckBox" Tag="{x:Static this:ConnectionDialog.ConfirmUncheck}" wpf:Settings.Name="bbb"/>
-                        <CheckBox IsChecked="{Binding IgnoreInvalidFiles}" Content="Ignore files _with invalid format" ToolTip="Ignore files with content which does not resemble CSV" wpf:Settings.Name="ccc"/>
-                        <CheckBox IsChecked="{Binding DoNotLockFiles}" Content="Do not _lock files being read" ToolTip="Allow other processes to modify files being read" Tag="{x:Static this:ConnectionDialog.ConfirmCheck}" wpf:Settings.Name="ddd"/>
+                        <CheckBox IsChecked="{Binding AutoDetectEncoding}"
+                                  Content="Auto-detect file encodin_gs"
+                                  ToolTip="Try to detect file encodings"
+                                  wpf:DriverProperties.Property="AutoDetectEncoding"/>
+                        <CheckBox IsChecked="{Binding ValidateFilePaths}"
+                                  Content="_Validate file paths"
+                                  ToolTip="Check if file paths are valid"
+                                  Name="ValidateFilePathsCheckBox"
+                                  Tag="{x:Static this:ConnectionDialog.ConfirmUncheck}"
+                                  wpf:DriverProperties.Property="ValidateFilePaths"/>
+                        <CheckBox IsChecked="{Binding IgnoreInvalidFiles}"
+                                  Content="Ignore files _with invalid format"
+                                  ToolTip="Ignore files with content which does not resemble CSV"
+                                  wpf:DriverProperties.Property="IgnoreInvalidFiles"/>
+                        <CheckBox IsChecked="{Binding DoNotLockFiles}"
+                                  Content="Do not _lock files being read"
+                                  ToolTip="Allow other processes to modify files being read"
+                                  Tag="{x:Static this:ConnectionDialog.ConfirmCheck}"
+                                  wpf:DriverProperties.Property="DoNotLockFiles"/>
                     </StackPanel>
                 </Grid>
             </GroupBox>
@@ -488,25 +502,33 @@
 
                         <Label Content="_Separator (\t for tab)"
                                Padding="0"
-                               IsEnabled="{Binding IsChecked, ElementName=UseCsvHelperSeparatorAutoDetectionCheckBox, Converter={StaticResource InvertedBooleanConverter}}"
-                               wpf:Settings.Name="aaa"/>
+                               IsEnabled="{Binding IsChecked,
+                               ElementName=UseCsvHelperSeparatorAutoDetectionCheckBox,
+                               Converter={StaticResource InvertedBooleanConverter}}"/>
                         <TextBox Grid.Row="0" Grid.Column="1"
                                  MaxLength="260"
                                  MaxLines="1"
                                  Text="{Binding CsvSeparator}"
                                  ToolTip="Characters used to separate columns in file. Separator is auto-detected for each file if empty"
                                  IsEnabled="{Binding IsChecked, ElementName=UseCsvHelperSeparatorAutoDetectionCheckBox, Converter={StaticResource InvertedBooleanConverter}}"
-                                 wpf:Settings.Name="aaa"/>
+                                 wpf:DriverProperties.Property="CsvSeparator"/>
 
                         <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
                             <CheckBox Name="UseCsvHelperSeparatorAutoDetectionCheckBox"
                                       IsChecked="{Binding UseCsvHelperSeparatorAutoDetection}"
                                       Content="_Use CsvHelper library separator auto-detection"
                                       ToolTip="Use CsvHelper library separator auto-detection instead of internal one"
-                                      wpf:Settings.Name="aaa"/>
-                            <CheckBox IsChecked="{Binding IgnoreBadData}" Content="Ignore b_ad data" ToolTip="Ignore malformed files" Tag="{x:Static this:ConnectionDialog.ConfirmCheck}" wpf:Settings.Name="aaa"/>
+                                      wpf:DriverProperties.Property="UseCsvHelperSeparatorAutoDetection"/>
+                            <CheckBox IsChecked="{Binding IgnoreBadData}"
+                                      Content="Ignore b_ad data"
+                                      ToolTip="Ignore malformed files"
+                                      Tag="{x:Static this:ConnectionDialog.ConfirmCheck}"
+                                      wpf:DriverProperties.Property="IgnoreBadData"/>
                             <!-- ReSharper disable once MarkupAttributeTypo -->
-                            <CheckBox IsChecked="{Binding IgnoreBlankLines}" Content="Ignore blan_k lines" ToolTip="Do not process blank lines" wpf:Settings.Name="aaa"/>
+                            <CheckBox IsChecked="{Binding IgnoreBlankLines}"
+                                      Content="Ignore blan_k lines"
+                                      ToolTip="Do not process blank lines"
+                                      wpf:DriverProperties.Property="IgnoreBlankLines"/>
                         </StackPanel>
 
                         <StackPanel Grid.Row="2" Grid.Column="0" Style="{StaticResource CheckBoxStackPanelStyle}">
@@ -515,7 +537,7 @@
                                 IsChecked="{Binding AllowSkipLeadingRows}"
                                 Content="S_kip leading rows"
                                 ToolTip="Skip the specified number of leading rows"
-                                wpf:Settings.Name="aaa"/>
+                                wpf:DriverProperties.Property="AllowSkipLeadingRows"/>
                         </StackPanel>
                         <TextBox Grid.Row="2" Grid.Column="1"
                                  Style="{StaticResource GroupTextBoxStyle}"
@@ -524,7 +546,7 @@
                                  Text="{Binding SkipLeadingRowsCount, Converter={StaticResource SkipLeadingRowsCountConverter}}"
                                  ToolTip="Number of leading rows to skip. 0 if empty"
                                  IsEnabled="{Binding IsChecked, ElementName=AllowSkipLeadingRowsCheckBox}"
-                                 wpf:Settings.Name="aaa"/>
+                                 wpf:DriverProperties.Property="SkipLeadingRowsCount"/>
 
                         <!-- ReSharper disable once MarkupAttributeTypo -->
                         <StackPanel Grid.Row="3" Grid.Column="0" Style="{StaticResource CheckBoxStackPanelStyle}">
@@ -533,7 +555,7 @@
                                   IsChecked="{Binding TrimSpaces}"
                                   Content="Tri_m spaces"
                                   ToolTip="Trim spaces"
-                                  wpf:Settings.Name="aaa"/>
+                                  wpf:DriverProperties.Property="TrimSpaces"/>
                         </StackPanel>
                         <ComboBox Grid.Row="3" Grid.Column="1"
                                   Style="{StaticResource GroupComboBoxStyle}"
@@ -541,7 +563,7 @@
                                   SelectedValue="{Binding WhitespaceTrimOptions}"
                                   ItemsSource="{Binding Source={StaticResource WhitespaceTrimOptionsData}}"
                                   IsEnabled="{Binding IsChecked, ElementName=TrimSpacesCheckBox}"
-                                  wpf:Settings.Name="aaa"/>
+                                  wpf:DriverProperties.Property="WhitespaceTrimOptions"/>
 
                         <!-- ReSharper disable once MarkupAttributeTypo -->
                         <StackPanel Grid.Row="4" Grid.Column="0" Style="{StaticResource CheckBoxStackPanelStyle}">
@@ -550,7 +572,7 @@
                                   IsChecked="{Binding AllowComments}"
                                   Content="Allow co_mments"
                                   ToolTip="Allow single-line comments"
-                                  wpf:Settings.Name="aaa"/>
+                                  wpf:DriverProperties.Property="AllowComments"/>
                         </StackPanel>
                         <TextBox Grid.Row="4" Grid.Column="1"
                                  Style="{StaticResource GroupTextBoxStyle}"
@@ -559,14 +581,14 @@
                                  Text="{Binding CommentChars}"
                                  ToolTip="Character used as a single-line comment. # if empty"
                                  IsEnabled="{Binding IsChecked, ElementName=AllowCommentsCheckBox}"
-                                 wpf:Settings.Name="aaa"/>
+                                 wpf:DriverProperties.Property="CommentChars"/>
 
                         <StackPanel Grid.Row="5" Grid.Column="0" Style="{StaticResource CheckBoxStackPanelStyle}">
                             <CheckBox
                                 Name="HeaderFormatCheckBox"
                                 IsChecked="{Binding AddHeader}"
                                 Content="_Header detection" ToolTip="Detect or add header"
-                                wpf:Settings.Name="aaa"/>
+                                wpf:DriverProperties.Property="AddHeader"/>
                         </StackPanel>
                         <Grid Grid.Row="5" Grid.Column="1" IsEnabled="{Binding IsChecked, ElementName=HeaderFormatCheckBox}">
                             <Grid.ColumnDefinitions>
@@ -580,7 +602,7 @@
                                 ToolTip="Header detection approach"
                                 SelectedValue="{Binding HeaderDetection}"
                                 ItemsSource="{Binding Source={StaticResource HeaderDetectionData}}"
-                                wpf:Settings.Name="aaa"/>
+                                wpf:DriverProperties.Property="HeaderDetection"/>
 
                             <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch"/>
 
@@ -589,7 +611,7 @@
                                       ToolTip="Header column fallback name format"
                                       SelectedValue="{Binding HeaderFormat}"
                                       ItemsSource="{Binding Source={StaticResource HeaderFormatData}}"
-                                      wpf:Settings.Name="aaa"/>
+                                      wpf:DriverProperties.Property="HeaderFormat"/>
                         </Grid>
                     </Grid>
                 </GroupBox>
@@ -607,16 +629,22 @@
                     </GroupBox.Header>
 
                     <StackPanel Style="{StaticResource GroupStackPanelStyle}">
-                        <CheckBox IsChecked="{Binding IsCacheEnabled}" Content="_Cache data in memory" ToolTip="Cache parsed rows. This cache survives multiple query runs, even when query is changed" wpf:Settings.Name="aaa"/>
+                        <CheckBox IsChecked="{Binding IsCacheEnabled}"
+                                  Content="_Cache data in memory"
+                                  ToolTip="Cache parsed rows. This cache survives multiple query runs, even when query is changed"
+                                  wpf:DriverProperties.Property="IsCacheEnabled"/>
                         <!-- ReSharper disable once MarkupAttributeTypo -->
-                        <CheckBox IsChecked="{Binding IsStringInternEnabled}" Content="I_ntern strings" ToolTip="Intern strings. Significantly reduce memory consumption when CSV contains repeatable values" wpf:Settings.Name="aaa"/>
+                        <CheckBox IsChecked="{Binding IsStringInternEnabled}"
+                                  Content="I_ntern strings"
+                                  ToolTip="Intern strings. Significantly reduce memory consumption when CSV contains repeatable values"
+                                  wpf:DriverProperties.Property="IsStringInternEnabled"/>
                         <CheckBox IsChecked="{Binding UseStringComparerForStringIntern}"
                                   IsEnabled="{Binding IsStringInternEnabled}"
                                   Content="{Binding ElementName=StringComparisonComboBox, Path=SelectedValue}"
                                   ContentStringFormat="Use {0} generation string comparison"
                                   ToolTip="Compare interned strings using generation string comparison. Ordinal if not checked"
                                   Style="{StaticResource DependentCheckBoxStyle}"
-                                  wpf:Settings.Name="aaa"/>
+                                  wpf:DriverProperties.Property="UseStringComparerForStringIntern"/>
                     </StackPanel>
                 </GroupBox>
 
@@ -633,15 +661,21 @@
                     </GroupBox.Header>
 
                     <StackPanel Style="{StaticResource GroupStackPanelStyle}">
-                        <CheckBox IsChecked="{Binding UseRecordType}" Visibility="{x:Static this:ConnectionDialog.NetCoreOnlyVisibility}" Content="Use record t_ype" ToolTip="Generate records instead of classes" wpf:Settings.Name="aaa"/>
+                        <CheckBox IsChecked="{Binding UseRecordType}"
+                                  Visibility="{x:Static this:ConnectionDialog.NetCoreOnlyVisibility}"
+                                  Content="Use record t_ype" ToolTip="Generate records instead of classes"
+                                  wpf:DriverProperties.Property="UseRecordType"/>
                         <!-- ReSharper disable once MarkupAttributeTypo -->
-                        <CheckBox IsChecked="{Binding UseSingleClassForSameFiles}" Content="G_enerate single type for similar files" ToolTip="Single type generation allows to join similar files and query over them. Relations support is limited" wpf:Settings.Name="aaa"/>
+                        <CheckBox IsChecked="{Binding UseSingleClassForSameFiles}"
+                                  Content="G_enerate single type for similar files"
+                                  ToolTip="Single type generation allows to join similar files and query over them. Relations support is limited"
+                                  wpf:DriverProperties.Property="UseSingleClassForSameFiles"/>
                         <CheckBox IsChecked="{Binding ShowSameFilesNonGrouped}"
                                   IsEnabled="{Binding UseSingleClassForSameFiles}"
                                   Content="Also show similar files non-grouped"
                                   ToolTip="Show similar files non-grouped in addition to similar files groups"
                                   Style="{StaticResource DependentCheckBoxStyle}"
-                                  wpf:Settings.Name="aaa"/>
+                                  wpf:DriverProperties.Property="ShowSameFilesNonGrouped"/>
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" SharedSizeGroup="ComboBoxLabel"/>
@@ -654,7 +688,7 @@
                                     IsChecked="{Binding RenameTable}"
                                     Content="Rename _table"
                                     ToolTip="Rename table"
-                                    wpf:Settings.Name="aaa"/>
+                                    wpf:DriverProperties.Property="RenameTable"/>
                             </StackPanel>
                             <ComboBox Grid.Column="1"
                                       Style="{StaticResource GroupComboBoxStyle}"
@@ -662,7 +696,7 @@
                                       SelectedValue="{Binding TableNameFormat}"
                                       ItemsSource="{Binding Source={StaticResource TableNameFormatData}}"
                                       IsEnabled="{Binding IsChecked, ElementName=TableNameFormatCheckBox}"
-                                      wpf:Settings.Name="aaa"/>
+                                      wpf:DriverProperties.Property="TableNameFormat"/>
                         </Grid>
 
                         <Grid>
@@ -681,7 +715,7 @@
                                       Margin="0 2 0 0"
                                       SelectedValue="{Binding Path=StringComparison}"
                                       ItemsSource="{Binding Source={StaticResource StringComparisonData}}"
-                                      wpf:Settings.Name="aaa"/>
+                                      wpf:DriverProperties.Property="StringComparison"/>
                             <TextBlock Grid.Row="0" Grid.Column="2" Padding="5 5 0 0">
                                 <Hyperlink NavigateUri="https://docs.microsoft.com/en-us/dotnet/api/system.stringcomparison#fields" ToolTip="StringComparison on Microsoft Docs" Style="{StaticResource HelpHyperlink}">
                                     <TextBlock Style="{StaticResource HelpTextBlock}"/>
@@ -704,13 +738,16 @@
                     </GroupBox.Header>
 
                     <StackPanel Style="{StaticResource GroupStackPanelStyle}">
-                        <CheckBox IsChecked="{Binding DetectRelations}" Content="Detect _relations" ToolTip="Detect relations between CSV files/tables (based on files and column names)" wpf:Settings.Name="aaa"/>
+                        <CheckBox IsChecked="{Binding DetectRelations}"
+                                  Content="Detect _relations"
+                                  ToolTip="Detect relations between CSV files/tables (based on files and column names)"
+                                  wpf:DriverProperties.Property="DetectRelations"/>
                         <CheckBox IsChecked="{Binding HideRelationsFromDump}"
                                   IsEnabled="{Binding DetectRelations}"
                                   Content="Hide relations from Dump()"
                                   ToolTip="LINQPad will not show relations content when Dump()ed. This prevents from loading too many data"
                                   Style="{StaticResource DependentCheckBoxStyle}"
-                                  wpf:Settings.Name="aaa"/>
+                                  wpf:DriverProperties.Property="HideRelationsFromDump"/>
                     </StackPanel>
                 </GroupBox>
             </StackPanel>
@@ -730,15 +767,24 @@
                     </Grid.ColumnDefinitions>
                     <StackPanel Style="{StaticResource CheckBoxStackPanelStyle}">
                         <!-- ReSharper disable once MarkupAttributeTypo -->
-                        <CheckBox IsChecked="{Binding Persist}" Content="Remember this c_onnection" ToolTip="Connection will be available on next run" wpf:Settings.Name="aaa"/>
+                        <CheckBox IsChecked="{Binding Persist}"
+                                  Content="Remember this c_onnection"
+                                  ToolTip="Connection will be available on next run"
+                                  wpf:DriverProperties.Property="Persist"/>
                     </StackPanel>
 
                     <StackPanel Grid.Column="1" Style="{StaticResource CheckBoxStackPanelStyle}">
-                        <CheckBox IsChecked="{Binding IsProduction}" Content="Contains _production data" ToolTip="Files contain production data" wpf:Settings.Name="aaa"/>
+                        <CheckBox IsChecked="{Binding IsProduction}"
+                                  Content="Contains _production data"
+                                  ToolTip="Files contain production data"
+                                  wpf:DriverProperties.Property="IsProduction"/>
                     </StackPanel>
 
                     <StackPanel Grid.Column="2" Style="{StaticResource CheckBoxStackPanelStyle}">
-                        <CheckBox IsChecked="{Binding DebugInfo}" Content="_Debug info" ToolTip="Show additional driver debug info" wpf:Settings.Name="aaa"/>
+                        <CheckBox IsChecked="{Binding DebugInfo}"
+                                  Content="_Debug info"
+                                  ToolTip="Show additional driver debug info"
+                                  wpf:DriverProperties.Property="DebugInfo"/>
                     </StackPanel>
                 </Grid>
                 <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">

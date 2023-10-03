@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 
 using CsvLINQPadDriver.Extensions;
 
@@ -24,6 +26,7 @@ internal static class ControlExtensions
 
             for (var newLineCheck = NewLineChars.Length; --newLineCheck != 0 && pos >= 0 && IsNewLine(pos); pos--)
             {
+                // Skip empty lines.
             }
 
             for (; pos >= 0; pos--)
@@ -66,4 +69,34 @@ internal static class ControlExtensions
 
     public static string ReplaceHotKeyChar(this ContentControl contentControl, string? newChar = null) =>
         ((string)contentControl.Content).ReplaceHotKeyChar(newChar);
+
+    public sealed record EnumChildrenResult<T>(FrameworkElement Element, T Value);
+
+    public static IEnumerable<EnumChildrenResult<T>> EnumChildren<T>(this DependencyObject? parent, Func<FrameworkElement, EnumChildrenResult<T>?> getResult)
+    {
+        if (parent is null)
+        {
+            yield break;
+        }
+
+        if (parent is FrameworkElement frameworkElement)
+        {
+            var result = getResult(frameworkElement);
+            if (result is not null)
+            {
+                yield return result;
+            }
+
+            frameworkElement.ApplyTemplate();
+        }
+
+        for (var i = 0; i < VisualTreeHelper.GetChildrenCount(parent); i++)
+        {
+            var child = VisualTreeHelper.GetChild(parent, i);
+            foreach (var result in EnumChildren(child, getResult))
+            {
+                yield return result;
+            }
+        }
+    }
 }
