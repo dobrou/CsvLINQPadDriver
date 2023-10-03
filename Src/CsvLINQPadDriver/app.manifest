@@ -8,7 +8,7 @@
 
     <assemblyIdentity
         name="CsvLINQPadDriver"
-        version="7.3.20.0"
+        version="7.3.21.0"
         type="win32"
     />
 

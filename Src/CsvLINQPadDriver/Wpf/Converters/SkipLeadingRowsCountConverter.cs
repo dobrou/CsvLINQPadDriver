@@ -12,15 +12,15 @@ namespace CsvLINQPadDriver.Wpf.Converters
     {
         private const int DefaultCount = 0;
 
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
         {
-            var intValue = (int)value;
+            var intValue = (int)value!;
             return intValue == DefaultCount
                         ? string.Empty
                         : intValue.ToString(StringExtensions.DefaultFormatProvider);
         }
 
-        public object? ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) =>
-            ((string?)value).ToInt() ?? DefaultCount;
+        public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture) =>
+            ((string?)value).ToIntSafe() ?? DefaultCount;
     }
 }

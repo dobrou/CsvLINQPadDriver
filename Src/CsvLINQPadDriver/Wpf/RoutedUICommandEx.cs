@@ -9,7 +9,6 @@ namespace CsvLINQPadDriver.Wpf
 
         public string? ToolTip
         {
-            // ReSharper disable once UnusedMember.Global
             get => _toolTip is null ? null : string.Format($"{_toolTip}{(_toolTip.Contains("{0}") ? string.Empty : " ({0})")}", InputGestureText);
             init => _toolTip = value;
         }

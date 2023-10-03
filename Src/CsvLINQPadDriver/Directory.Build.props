@@ -1,7 +1,7 @@
 ﻿<Project>
   <PropertyGroup>
-    <Version>7.3.20</Version>
-    <PackageReleaseNotes>Added context help.</PackageReleaseNotes>
+    <Version>7.3.21</Version>
+    <PackageReleaseNotes>Fixed skip leading rows conversion.</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup>
